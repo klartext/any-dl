@@ -1,66 +1,75 @@
-
-open Xml
-
-let print_element elem =
-  let a = fst elem in
-  let second = snd elem in
-  let b = fst second in
-  let c = snd second in
-  Printf.printf "(%s, (%s /// %s))\n" a b c
-
-
-let traverse_print xml =
-  print_endline "------------------------------------------------";
-  let rec aux xml_elem = match xml_elem with
-    | Element (tagname, attrl, chldl) -> Printf.printf "Tagname: %s\n" tagname;
-                                         List.iter (fun attr -> Printf.printf "(%s,%s)\n" (fst attr) (snd attr)) attrl;
-                                         List.iter aux chldl
-    | PCData str -> Printf.printf "PCata: \"%s\"\n" str
-  in
-    aux xml
-
-
-(* erst mal nur Pseudo-Code:
-
-let orf_thek_get_mmsurl url =
-  let main_doc = Network.Curly.get url in
-  let asx_url = Network.linkextract main_doc in
-  let asx_doc = Network.Curly.get asx_url in
-  let xml = parse_string asx_doc in
-  traverse_print xml
-
-*)
-
+exception Could_not_find_mediafile_link of string
 
 let get_some_with_exit_if_exit_none  value messages = match value with
   | None       -> List.iter prerr_endline messages; exit 1
   | Some stuff -> stuff
 
 
-let orf_thek_get_mmsurl url =
-  let base_url = "http://tvthek.orf.at" in
+
+
+(* ZDF-/ORF-Mediathek-get *)
+(* ---------------------- *)
+let orf_zdf_mediathek_get_mmsurl url suffix =
+
+  (* get main-apage via initial URL *)
+  (* ------------------------------ *)
   let main_doc_opt = Network.Curly.get url None in
+  let doc          = get_some_with_exit_if_exit_none main_doc_opt ["Could not retrieve the url "; url; "\n" ]  in
 
-  let doc = get_some_with_exit_if_exit_none main_doc_opt ["Could not retrieve the url "; url; "\n" ]  in
-  let urls = Network.linkextract doc in
-  let asx_urls = List.filter (fun url -> Filename.check_suffix url ".asx") urls in
-  List.iter print_endline asx_urls;
+  let urls = Parsers.linkextract doc in
 
-  let asx_url = base_url ^ (List.hd asx_urls) in  (* select just the first one *)
+  (* extract the ASX-file-URL *)
+  (* ------------------------ *)
+  let asx_urls = List.filter (fun url -> Filename.check_suffix url suffix ) urls in
 
-  let asx_doc_opt = Network.Curly.get asx_url None in
-  let xml = get_some_with_exit_if_exit_none asx_doc_opt ["Could not retrieve the asx-document via url "; asx_url; "\n"] in
-  traverse_print (parse_string xml)
+  (* prepend the baseurl if necessary *)
+  let asx_urls = List.map ( fun asxurl -> if Parsers.url_is_rel_root asxurl then Parsers.url_get_baseurl url ^ asxurl else asxurl ) asx_urls in
 
 
+  if List.length asx_urls > 0 then
+  begin
+    (* create the URL for the asx-file *)
+    (* ------------------------------- *)
+    (*
+    let asx_url = base_url_to_prepend ^ (List.hd asx_urls) in  (* select just the first one *)
+    *)
+    let asx_url = List.hd asx_urls in  (* select just the first one *)
+
+    (* get the ASX-file via ASX-URL *)
+    (* ---------------------------- *)
+    let asx_doc_opt = Network.Curly.get asx_url None in
+    let xml_doc = get_some_with_exit_if_exit_none asx_doc_opt ["Could not retrieve the "; suffix; "-document via url "; asx_url; "\n"] in
+
+    (* extract the real URLs of the streams *)
+    (* ------------------------------------ *)
+    let xml_as_xml = Parsers.Xmlparse.parse_string xml_doc in
+    let href_list = Parsers.xml_get_href xml_as_xml in
+    href_list
+  end
+  else
+  begin
+    prerr_endline "Could not extract asf-file";
+    []
+  end
+
+
+
+
+
+
+let zdf_example   = ("http://www.zdf.de/ZDFmediathek/beitrag/video/1577656/heute-show-vom-24.02.2012?bc=sts;stt&flash=off", ".asx")
+let orf_example   = ("http://tvthek.orf.at/programs/3619175-Joachim-Gauck-im-Gespraech/episodes/3619173-Joachim-Gauck-im-Gespraech", ".asx")
+let arte_example  = ("http://videos.arte.tv/de/videos/raetsel_burnout-6411716.html", ".asx")
+let vimeo_example = ("http://vimeo.com/3985019", ".asx")
+
+
+let example_urls = [ zdf_example; orf_example ]
 
 let () =
-  (*
-  let file1 = "3627079-CLUB-2.asx" in
-  let file2 = "ORF-Club-2_Joachim-Gauck-im-Gespraech_3621047.asx" in
+  List.iter ( fun example -> let mms_urls =
+                                 match example with
+                                   | url, suffix -> orf_zdf_mediathek_get_mmsurl url suffix
+                             in
+                               List.iter print_endline mms_urls
+            ) example_urls
 
-  let xml_stuff = List.map parse_file [ file1; file2 ] in
-  List.iter traverse_print xml_stuff
-  *)
-  let gauck_interview_url = "http://tvthek.orf.at/programs/3619175-Joachim-Gauck-im-Gespraech/episodes/3619173-Joachim-Gauck-im-Gespraech" in
-  orf_thek_get_mmsurl gauck_interview_url

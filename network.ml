@@ -78,28 +78,6 @@ let url_scheme url =
   Pcre.replace ~pat:"^([^:]+).*" ~itempl:(Pcre.subst "$+") url
 
 
-let rebase_aggregated extracted_list baseurl =
-              List.map ( fun extracted ->
-         let newextracteding = 
-                                       match detect_urlpath_type extracted with
-                                           Absolute_site   -> extracted
-                                         | Absolute_base   -> extracted
-                                         | Relative_root   -> Filename.concat (siteurl baseurl) extracted
-                                         | Same_protocoll  -> (url_scheme baseurl) ^ extracted
-                                         | Relative_local  -> Filename.concat (siteurl baseurl) extracted
-                                         | Base_url        -> baseurl
-                                         | Undetected      -> baseurl
-         in
-         newextracteding
-                                     ) extracted_list
-    
-
-
-
-
-
-
-
 
 
 
@@ -207,97 +185,5 @@ let print_times ?(scale=1) character times =
     do
       print_char character
     done
-
-
-(* DUMPING HTML *)
-
-(*
-val parse_document : ?dtd:simplified_dtd ->
-     ?return_declarations:bool ->
-     ?return_pis:bool ->
-     ?return_comments:bool -> Lexing.lexbuf -> document list
-*)
-
-
-let dump_html str =
-  let doclist = (Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)) in
-
-  let rec traverse_aux doclist depth =
-    
-    match doclist with
-    |  hd::tl ->
-        begin
-          match hd with
-            | Element (tag, arg, dl) ->
-                                           print_times '_' depth ~scale:2;
-                                           Printf.printf "<%s> " tag;
-                                           List.iter ( fun a ->
-                                                       (*
-                                                       print_times '*' depth;
-                                                       *)
-                                                       Printf.printf "%s=\"%s\"\t" (fst a) (snd a)
-                                                     ) arg;
-                                       traverse_aux dl (depth+1);
-                                       print_times '_' depth ~scale:2;    Printf.printf "</%s>\n" tag
-
-            | Data    data          -> print_newline();print_times '_' depth ~scale:2; Printf.printf "data: %s\n" data 
-        end;
-        traverse_aux tl depth
-    | [] -> ()
-  in
-    traverse_aux doclist 0
-
-
-
-
-
-
-(* Analysing HTML *)
-
-let parse_html ?(datamatch="") ?(tagmatch="") ?(subtag=None) ?(matcher=fun (matcher:string) -> true) str =
-  let doclist = (Nethtml.parse(new Netchannels.input_string str)) in
-  let collection = ref [] in (* string list that will be collected *)
-
-  let traverse doclist tagmatch subtag2 datamatch =
-
-    let rec traverse_aux doclist depth =
-
-      
-      match doclist with
-      |  hd::tl ->
-          begin
-            match hd with
-              | Element (tag, arg, dl) ->
-                                         traverse_aux dl (depth+1);
-                                             if tag = tagmatch
-                                             then
-                                                 List.iter ( fun a ->
-                                                             let st_arg = fst a in
-
-                                                             match subtag with
-                                                               | None    ->  collection := (snd a) :: !collection
-                                                               | Some st -> if st_arg = st then collection := (snd a) :: !collection
-                                                             
-                                                           ) arg
-              | Data    data          -> if data = datamatch then ignore (data :: !collection)   (*pd();Printf.printf "traverse_aux: Data found: \"%s\"\n" data*)
-          end;
-          traverse_aux tl depth
-      | [] -> (*print_endline "=========================================";
-              print_stringlist_endline (Strlist !collection);*)
-              !collection
-    in
-      traverse_aux doclist 0
-
-  in
-
-  let parsed = traverse  doclist tagmatch subtag datamatch in (* calling the traverser *)
-  List.filter matcher parsed                                  (* filter the result     *)
-
-
-
-let linkextract  = parse_html ~tagmatch:"a" ~subtag:(Some "href")
-let imageextract = parse_html ~tagmatch:"img" ~subtag:(Some "src")
-
-
 
 

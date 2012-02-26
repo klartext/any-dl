@@ -5,7 +5,7 @@ all: byte-code
 
 LIBS=unix pcre netstring netsys netclient curl xml-light
 
-SOURCES :=  network.ml main.ml
+SOURCES :=  parsers.ml network.ml main.ml
 
 PACKS := pcre netstring netsys netclient curl xml-light
 
