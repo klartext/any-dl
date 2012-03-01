@@ -128,20 +128,20 @@ let arte_get  url =
 
   let urls_array_opt = Parsers.if_match_give_group_of_groups xml_doc arte_video_url_re in
   let urls_array     = get_some_with_exit_if_none urls_array_opt [] Not_found in
-(* this array-crap looks ugly *)
-  let url1 = urls_array.(0).(1) in
-  let url2 = urls_array.(0).(2) in
-  let url3 = urls_array.(1).(1) in
-  let url4 = urls_array.(1).(2) in
-(* this array-crap looks ugly *)
 
-  (*
-  Array.iter ( fun el -> Printf.printf "Array: %s\n" el ) urls;
-  *)
+  let res = ref [] in
+  Array.iter ( fun arr -> res := arr.(1) :: arr.(2) :: !res ) urls_array;
 
-  [url1; url2; url3; url4]
+  !res
 
 
+(* für ARD
+rtmpdump -y mp4:ard/mediendb/weltweit/video/2012/0228/120228_weltweit_web-m.mp4 -r rtmp://gffstream.fcod.llnwd.net/a792/e2/   -o out_l.flv
+
+Das funktioniert auch:
+
+rtmpdump -r rtmp://gffstream.fcod.llnwd.net/a792/e2/mp4:ard/mediendb/weltweit/video/2012/0228/120228_weltweit_web-m.mp4   -o out_l.flv
+*)
 
 let ard_mediathek_get_rtmp_mp4_url  url =
   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
@@ -149,18 +149,20 @@ let ard_mediathek_get_rtmp_mp4_url  url =
 
   let rtmp_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "rtmp://[^\"]+") in
   let rtmp_urls     = get_some_with_exit_if_none rtmp_urls_opt [] ARD_Rtmp_url_extraction_error in
-  List.iter ( fun arr -> Array.iter print_endline arr)  rtmp_urls;
 
   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "mp4:[^\"]+") in
   let mp4_urls     = get_some_with_exit_if_none mp4_urls_opt [] ARD_mp4_url_extraction_error in
-  List.iter ( fun arr -> Array.iter print_endline arr)  mp4_urls;
+
+  let links = List.map2 ( fun rtmp_arr mp4_arr -> rtmp_arr.(0) ^ mp4_arr.(0)  )  rtmp_urls mp4_urls in
+
+  links
 
 
-  [ ]
-(* für ARD
-rtmpdump -y mp4:ard/mediendb/weltweit/video/2012/0228/120228_weltweit_web-m.mp4 -r rtmp://gffstream.fcod.llnwd.net/a792/e2/   -o out_l.flv
+(* WDR:
+Stringmatch auf:
+  rtmp://gffstream.fcod.llnwd.net/a792/e2/mediendb/markt/video/2012/0227/120227_markt_web-m.mp4&amp;overlay
 *)
-
+let wdr_mediathek_get_rtmp_mp4_url  url = ()
 
 
 
@@ -200,7 +202,7 @@ let ard_example   = "http://www.ardmediathek.de/ard/servlet/content/3517136?docu
 
 
 let example_urls = [ zdf_example; orf_example ]
-let example_urls_2 = [ arte_example ]
+let example_urls_2 = [ arte_example; ard_example ]
 
 let all_examples = List.append example_urls example_urls_2
 
@@ -208,6 +210,7 @@ let all_examples = List.append example_urls example_urls_2
 let () =
 
   List.iter ( fun url ->
+                             print_endline "--------------------";
                              let url_grabber = select_url_grabber_via_url url in
 
                              let video_urls =
@@ -215,7 +218,7 @@ let () =
                                               with Mainurl_error | Asx_error | Stream_error | Not_found -> prerr_endline "dl-error occured"; []
                              in
                                List.iter print_endline video_urls
-            ) [ ard_example ]
+            ) example_urls_2
 
 
 
