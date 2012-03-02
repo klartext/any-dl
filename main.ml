@@ -86,25 +86,22 @@ let web_asx_mms_get url =
   let asx_urls = List.map ( fun asxurl -> prepend_baseurl_if_necessary url asxurl ) asx_urls in
 
 
-  if List.length asx_urls > 0 then
-  begin
-    let asx_url = List.hd asx_urls in  (* select just the first one (easiest criterium) *)
+  let all_hrefs = ref [] in
+  List.iter ( fun asx_url ->
+                              let asx_url = List.hd asx_urls in  (* select just the first one (easiest criterium) *)
 
-    (* get the ASX-file via ASX-URL *)
-    (* ---------------------------- *)
-    let xml_doc = get_document  asx_url  ["Could not retrieve the "; suffix; "-document via url "; asx_url; "\n"] Not_found in
+                              (* get the ASX-file via ASX-URL *)
+                              (* ---------------------------- *)
+                              let xml_doc = get_document  asx_url  ["Could not retrieve the "; suffix; "-document via url "; asx_url; "\n"] Not_found in
 
-    (* extract the real URLs of the streams *)
-    (* ------------------------------------ *)
-    let xml_as_xml = Parsers.Xmlparse.parse_string xml_doc in
-    let href_list  = Parsers.xml_get_href xml_as_xml in
-    href_list
-  end
-  else
-  begin
-    prerr_endline "Could not extract asf-file";
-    raise Not_found
-  end
+                              (* extract the real URLs of the streams *)
+                              (* ------------------------------------ *)
+                              let xml_as_xml = Parsers.Xmlparse.parse_string xml_doc in
+                              let href_list  = Parsers.xml_get_href xml_as_xml in
+                              all_hrefs := List.append href_list !all_hrefs
+            ) asx_urls;
+  if List.length asx_urls = 0 then raise Not_found;
+  !all_hrefs
 
 
 
@@ -153,7 +150,7 @@ let ard_mediathek_get_rtmp_mp4_url  url =
   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "mp4:[^\"]+") in
   let mp4_urls     = get_some_with_exit_if_none mp4_urls_opt [] ARD_mp4_url_extraction_error in
 
-  let links = List.map2 ( fun rtmp_arr mp4_arr -> rtmp_arr.(0) ^ mp4_arr.(0)  )  rtmp_urls mp4_urls in
+  let links = List.map2 ( fun rtmp_arr mp4_arr -> rtmp_arr.(0) ^ "   " ^ mp4_arr.(0)  )  rtmp_urls mp4_urls in
 
   links
 
@@ -209,8 +206,9 @@ let all_examples = List.append example_urls example_urls_2
 
 let () =
 
+  let urls_from_argv = List.tl ( Array.to_list Sys.argv ) in
   List.iter ( fun url ->
-                             print_endline "--------------------";
+                             print_endline "# --------------------";
                              let url_grabber = select_url_grabber_via_url url in
 
                              let video_urls =
@@ -218,7 +216,7 @@ let () =
                                               with Mainurl_error | Asx_error | Stream_error | Not_found -> prerr_endline "dl-error occured"; []
                              in
                                List.iter print_endline video_urls
-            ) example_urls_2
+            ) urls_from_argv
 
 
 
