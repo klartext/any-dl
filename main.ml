@@ -103,7 +103,7 @@ let web_asx_mms_get url =
   else
   begin
     prerr_endline "Could not extract asf-file";
-    []
+    raise Not_found
   end
 
 
