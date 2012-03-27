@@ -29,6 +29,7 @@ exception Could_not_extract_ARTE_Ajax_url
 exception Could_not_get_ARTE_xml
 exception ARD_Rtmp_url_extraction_error
 exception ARD_mp4_url_extraction_error
+exception NDR_url_extraction_error
 
 exception Unknown_Base_Url
 
@@ -144,7 +145,7 @@ let ard_mediathek_get_rtmp_mp4_url  url =
   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
   let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
 
-  let rtmp_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "rtmp://[^\"]+") in
+  let rtmp_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "rtmpt{0,1}://[^\"]+") in
   let rtmp_urls     = get_some_with_exit_if_none rtmp_urls_opt [] ARD_Rtmp_url_extraction_error in
 
   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "mp4:[^\"]+") in
@@ -153,6 +154,32 @@ let ard_mediathek_get_rtmp_mp4_url  url =
   let links = List.map2 ( fun rtmp_arr mp4_arr -> rtmp_arr.(0) ^ "   " ^ mp4_arr.(0)  )  rtmp_urls mp4_urls in
 
   links
+
+
+
+(* http://www.ndr.de/fernsehen/sendungen/45_min/videos/minuten393.html
+
+<div id="flash_player_audio_gallery_minuten393">
+F&uuml;r diesen Inhalt muss JavaScript aktiviert und die aktuelle Version vom Adobe Flash Player installiert sein. Sie k&ouml;nnen den Player hier runterladen. <a href="http://get.adobe.com/de/flashplayer/" title="Adobe Flash Player runterladen">http://get.adobe.com/de/flashplayer/</a>
+<div class="filename invisible" data-value="http://media.ndr.de/progressive/2011/1205/TV-20111205-2327-1201.hq.mp4"></div>
+<div class="imgname invisible" data-value="/fernsehen/sendungen/45_min/hintergrund/paketsklaven133_v-contentgross.jpg"></div>
+</div>
+*)
+
+
+let ndr_mediathek_get  url =
+  (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
+  let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
+
+  (* mp4-url extrahieren *)
+  let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "http://.*?mp4") in
+  let mp4_urls     = get_some_with_exit_if_none mp4_urls_opt [] NDR_url_extraction_error in
+
+  let links = List.map ( fun mp4_arr -> mp4_arr.(0)  )  mp4_urls in
+
+  links
+
+
 
 
 (* WDR:
@@ -169,7 +196,17 @@ let zdf_mediathek_get_mmsurl    = web_asx_mms_get
 let orf_mediathek_get_mmsurl    = web_asx_mms_get
 let arte_mediathek_get_rtmp_url = arte_get
 let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url
+let ndr_mediathek_get           = ndr_mediathek_get
 
+let _3sat_mediathek_get = ()
+(*
+1. suche hauptseite
+2. get &mode=play - Seite
+3. get smil-Datei
+4. ...
+
+120308_japan_scobel.smil
+*)
 
 
 
@@ -183,6 +220,7 @@ let select_url_grabber_via_url  url =
     | "http://tvthek.orf.at"        -> orf_mediathek_get_mmsurl
     | "http://www.zdf.de"           -> zdf_mediathek_get_mmsurl
     | "http://www.ardmediathek.de"  -> ard_mediathek_get
+    | "http://www.ndr.de"           -> ndr_mediathek_get
     | _                       -> raise Unknown_Base_Url
   in
     url_grabber
