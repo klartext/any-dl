@@ -1,3 +1,37 @@
+
+
+type match_result_t = string array array
+type selected_t     = string array list
+type selector_t     = ( match_result_t -> string -> selected_t )
+
+
+type commands_t =
+  | Get       of string * string              (* url, referrer *)
+  | Extract   of string * string              (* url, regexp-string *)
+  | Select    of match_result_t * selected_t
+  | Print     of string
+  | Save      of string * string
+  | Dummy
+
+
+type results_t =
+  | Document of string
+
+
+
+let eval_commands cmd = match cmd with
+  | Get     (url, referrer)   -> print_endline "should now get doc"
+  | Extract (url, regexp)     -> print_endline "should now extract stuff from string"
+  | Select   _                -> print_endline "Select..."
+  | Print   str               -> print_endline str
+  | Save    (contents, fname) -> print_endline "shold now save data to a file"
+  | Dummy                     -> print_endline "Dummy-command"
+
+
+let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print "xxxxxx"; Dummy]
+
+
+
 (*
   any-dl:
   -------
@@ -226,7 +260,7 @@ let ard_mediathek_get_rtmp_mp4_url_version_3  url =
 
   (* EXTRACT *)
   (* ------- *)
-  let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "(rtmp://[^\"])(.*?)(mp4:.+?mp4)\"") in
+  let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "(rtmpt{0,1}://[^\"])(.*?)(mp4:[^\"]+)\"") in
   let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_Mp4_url_extraction_error in
 
   (*
@@ -361,11 +395,12 @@ let select_url_grabber_via_url  url =
   let baseurl = Parsers.url_get_baseurl url in
   (* Printf.printf "URL: %s  /// Baseurl: %s\n" url baseurl; *)
   let url_grabber = match baseurl with
-    | "http://videos.arte.tv"       -> arte_mediathek_get_rtmp_url
-    | "http://tvthek.orf.at"        -> orf_mediathek_get_mmsurl
-    | "http://www.zdf.de"           -> zdf_mediathek_get_mmsurl
-    | "http://www.ardmediathek.de"  -> ard_mediathek_get
-    | "http://www.ndr.de"           -> ndr_mediathek_get
+    | "http://videos.arte.tv"                -> arte_mediathek_get_rtmp_url
+    | "http://tvthek.orf.at"                 -> orf_mediathek_get_mmsurl
+    | "http://www.zdf.de"                    -> zdf_mediathek_get_mmsurl
+    | "http://www.ardmediathek.de"           -> ard_mediathek_get
+    | "http://mediathek.daserste.de"         -> ard_mediathek_get
+    | "http://www.ndr.de"                    -> ndr_mediathek_get
     | _                       -> raise Unknown_Base_Url
   in
     url_grabber
@@ -387,6 +422,7 @@ let example_urls_2 = [ arte_example; ard_example ]
 let all_examples = List.append example_urls example_urls_2
 
 
+(*
 let () =
 
   let urls_from_argv = List.tl ( Array.to_list Sys.argv ) in
@@ -401,7 +437,9 @@ let () =
                                List.iter print_endline video_urls
             ) urls_from_argv
 
+*)
 
 
 
+let () = List.iter eval_commands example_commands
 
