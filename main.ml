@@ -1,5 +1,8 @@
 
 
+exception Command_Sequence_error
+exception No_document_found
+
 type match_result_t = string array array
 type selected_t     = string array list
 type selector_t     = ( match_result_t -> string -> selected_t )
@@ -7,28 +10,80 @@ type selector_t     = ( match_result_t -> string -> selected_t )
 
 type commands_t =
   | Get       of string * string              (* url, referrer *)
-  | Extract   of string * string              (* url, regexp-string *)
-  | Select    of match_result_t * selected_t
-  | Print     of string
+  | Match     of string * string              (* url, regexp-pattern-string *)
+  | Select    of match_result_t * selector_t
+  | Print
+  | Print_string of string
   | Save      of string * string
   | Dummy
 
 
 type results_t =
   | Document of string
+  | Printed
+  | Dummy_result
+  | Match_result of match_result_t option
 
 
+(*
+  let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "http://.*?mp4") in
+*)
 
-let eval_commands cmd = match cmd with
-  | Get     (url, referrer)   -> print_endline "should now get doc"
-  | Extract (url, regexp)     -> print_endline "should now extract stuff from string"
-  | Select   _                -> print_endline "Select..."
-  | Print   str               -> print_endline str
-  | Save    (contents, fname) -> print_endline "shold now save data to a file"
-  | Dummy                     -> print_endline "Dummy-command"
+let eval_command cmd = match cmd with
+  | Get           (url, referrer)   -> let document = Network.Curly.get url (Some referrer) in
+                                         begin
+                                           match document with Some doc -> Document doc | None -> raise No_document_found
+                                         end
+  | Match         (str, pattern)    -> Match_result ( Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern) )
+  | Select        (data, selector)  -> print_endline "Select..."; Dummy_result
+  | Print_string   str              -> print_endline str; flush stdout; Printed
+  | Save          (contents, fname) -> print_endline "shold now save data to a file"; Dummy_result
+  | Dummy                           -> print_endline "Dummy-command"; Dummy_result
 
 
-let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print "xxxxxx"; Dummy]
+let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print_string "xxxxxx"; Dummy ]
+
+
+let evaluate_command_list cmdlst =
+  let rec command commandlist = match commandlist with
+    | []                          -> ()
+    | cmd::next::tl               -> begin
+                                       match cmd, next with
+                                         | Get (url, referrer),     Print -> let doc = eval_command cmd in
+                                                                               begin
+                                                                                 match doc with
+                                                                                   Document d -> command (Print_string d :: tl)
+                                                                                   | _ -> ()
+                                                                               end
+
+                                         | Get (url, referrer),     _     -> eval_command cmd;()
+                                         | Match   (str, pattern),  _ -> print_endline "Match   detected"
+                                         | Select _ ,               _ -> print_endline "Select detected"
+                                         | Print,                   _ -> eval_command cmd;()
+                                         | (Print_string  str),     _  -> eval_command cmd;()
+                                         | Save   _   ,             _  -> print_endline "Save detected"
+                                         | Dummy      ,             _ -> print_endline "Dummy detected"
+                                     end
+                                     (*
+                                     command (next::tl)
+                                     *)
+
+    (*
+  and prepare result follow tail = match result, follow   with
+    | Document (Some doc),        Print -> command ( (Print_string doc) :: tail )
+    | Document None      ,        _     -> prerr_endline "Could not download the document"; raise No_document_found
+    | Printed,           _      -> command follow
+    | Dummy_result,      _      -> command follow
+    | Match_result _,    hd::tl -> ()
+    | _             , []        -> ()
+    *)
+
+  in
+    command cmdlst
+  (*
+  List.map eval_command example_commands; ()
+  *)
+
 
 
 
@@ -58,7 +113,6 @@ Module Neturl
 
 
 
-type action_t = Get | Select | Save
 
 
 exception Could_not_find_mediafile_link of string
@@ -422,8 +476,7 @@ let example_urls_2 = [ arte_example; ard_example ]
 let all_examples = List.append example_urls example_urls_2
 
 
-(*
-let () =
+let do_old_any_dl () =
 
   let urls_from_argv = List.tl ( Array.to_list Sys.argv ) in
   List.iter ( fun url ->
@@ -437,9 +490,15 @@ let () =
                                List.iter print_endline video_urls
             ) urls_from_argv
 
-*)
 
 
 
-let () = List.iter eval_commands example_commands
+let _  =
+  (*
+    do_old_any_dl ()
+  *)
+  (*
+  *)
+  evaluate_command_list example_commands
+
 
