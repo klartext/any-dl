@@ -43,18 +43,6 @@ type results_t =
   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "http://.*?mp4") in
 *)
 
-  (*
-let eval_command cmd = match cmd with
-  | Get           (url, referrer)   -> let document = Network.Curly.get url (Some referrer) in
-                                         begin
-                                           match document with Some doc -> Document doc | None -> raise No_document_found
-                                         end
-  | Match         (str, pattern)    -> Match_result ( Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern) )
-  | Select        (data, selector)  -> print_endline "Select..."; Dummy_result
-  | Print_string   str              -> print_endline str; flush stdout; Printed
-  | Save          (contents, fname) -> print_endline "shold now save data to a file"; Dummy_result
-  | Dummy                           -> print_endline "Dummy-command"; Dummy_result
-  *)
 
 
 let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print_string "xxxxxx"; Dummy; Print_string "sdfiuzsfd" ]
