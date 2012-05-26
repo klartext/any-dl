@@ -3,27 +3,55 @@
 exception NOT_IMPLEMENTED_SO_FAR (* for planned, but not already implemented functionality *)
 exception Command_Sequence_error of string (* for sequences that are not allowed *)
 
-exception No_document_found
-exception No_Match
+exception No_document_found         (* a dcoument could not be retrieved *)
+exception No_Match                  (* if a match was tried, but no match could be found *)
+exception No_Matchresult_available  (* if Select is used, but there is no match-result available as tmpvar *)
+exception No_Matchable_value_available  (* if Match is used, but there is no matchabe tmpvar *)
+
+exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... without more detailed info *)
 
 
 
 type match_result_t = string array array
+(*
 type selected_t     = string array list
-type selector_t     = ( match_result_t -> string -> selected_t )
+*)
+(*
+type selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
+*)
+
+type url_t = { url: string; referrer: string }
+
+type selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
+
+type results_t =
+  | Document of string (* hier könnte noch der Referrer ergänzt werden *)
+  | Url      of string * string  (* needed for Get-command *)
+  | Url_list of (string * string) list
+  | Dummy_result
+  | Match_result of match_result_t
+  | Empty
 
 
 type commands_t =
-  | Get       of string * string              (* url, referrer *)
-  | Match     of string * string              (* contents, regexp-pattern-string *)
-  | Select    of match_result_t * selector_t
+  | Get_url       of string * string          (* url, referrer *)
+  | Get_urls                                  (* get via tmpvar *)
+  | Get                                       (* get ONE document via tmpvar (Url-type) *)
+  | Match     of string                       (* regexp-pattern-string *)
+  | Select    of selector_t                   (* acts as a filter *)
   | Print
   | Print_string of string
   | Save      of string * string
   | Dummy
+  | Setvar    of results_t
+  | Showvar
+
+
+
+
 
 let command_to_string cmd = match cmd with
-  | Get     _      -> "Get"
+  | Get_url     _      -> "Get_url"
   | Match   _      -> "Match"
   | Select  _      -> "Select"
   | Print          -> "Print"
@@ -32,11 +60,13 @@ let command_to_string cmd = match cmd with
   | Dummy          -> "Dummy"
   
 
-type results_t =
-  | Document of string
-  | Printed
-  | Dummy_result
-  | Match_result of match_result_t option
+
+
+
+let print_warning str = prerr_string "WARNING: "; prerr_endline str
+
+
+
 
 
 (*
@@ -45,46 +75,73 @@ type results_t =
 
 
 
-let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print_string "xxxxxx"; Dummy; Print_string "sdfiuzsfd" ]
+let example_commands = [ Get_url("http://www.first.in-berlin.de", ""); Print_string "xxxxxx"; Dummy; Print_string "sdfiuzsfd" ]
+let example_commands = [ Get_url("http://www.first.in-berlin.de", ""); Dummy; Select ( fun x -> x);  Dummy;Dummy]
+let example_commands = [ Get_url("http://www.first.in-berlin.de", ""); Print; Dummy ]
+let example_commands = []
+let example_commands = [ Dummy ]
+let example_commands = [ Dummy; Dummy ]
+let example_commands = [ Dummy; Dummy; Dummy ]
+let example_commands = [ Get_url("http://www.first.in-berlin.de", ""); Match "(NTM.*(Triviale Maschine))"; Print ]
+
+let example_commands = [ Get_url("http://www.zdf.de/ZDFmediathek/beitrag/video/1649590/Happy-Birthday-Raumschiff-Enterprise?bc=sts;stt&flash=off", "");
+                         Match "href=.(.*?asx)";
+                         Print;
+                         Showvar;
+                         Select (fun x -> [|x.(0)|]);
+                         Print;
+                         Showvar;
+                         Setvar( Url_list [("http://www.first.in-berlin.de", "-")]);
+                         Showvar;
+                         Get_urls;
+                         Dummy
+                       ]
+
+
+let example_commands = [Setvar( Url ("http://www.first.in-berlin.de", "-") ); Get; Print ]
+
+
 (*
-let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print_string "xxxxxx"; Dummy; Print_string "sdfiuzsfd" ]
-let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print_string "xxxxxx"; Dummy ]
-let example_commands = [ Get("http://www.first.in-berlin.de", ""); Dummy ]
-let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print ]
+(* store is the intermeidate value for *all* operations *)
+let store = ref Empty
 *)
 
-let print_warning str = prerr_string "WARNING: "; prerr_endline str
-
-
 let evaluate_command_list cmdlst =
-  let rec command commandlist = match commandlist with
-    | []                          -> prerr_endline "EMPTY!"
-    | cmd::[] (* evtl. guard ? *) -> prerr_endline "HALLO, match case 2 -- only commands without follower do make sense here "
-                                         (* Print_string, Save, Dummy *)
-    | cmd::next::tl               -> begin
+  let rec command commandlist tmpvar = match commandlist with
+    | []                    -> prerr_endline "READY!"
+    | cmd::tl               -> begin
                                        match cmd with
-                                         | Get (url, referrer)            -> let document = Network.Curly.get url (Some referrer) in
-                                                                               let doc = 
-                                                                                 begin
-                                                                                   match document with
-                                                                                     | Some d -> d
-                                                                                     | None -> raise No_document_found       
-                                                                                 end
-                                                                               in
-                                                                                 begin
-                                                                                 match next with
-                                                                                   | Print -> command (Print_string doc :: tl)
-                                                                                   | Save _ -> raise NOT_IMPLEMENTED_SO_FAR
-                                                                                   | Dummy  -> ()
-                                                                                   (*
-                                                                                   | Print_string str  -> print_warning "document unused";
-                                                                                                          command (Print_string str :: tl)
-                                                                                   *)
-                                                                                   | _ as errcmd     -> raise (Command_Sequence_error (command_to_string errcmd))
-                                                                                 end
+                                         | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) in
+                                                                     let doc = 
+                                                                       begin
+                                                                         match document with
+                                                                           | Some d -> d
+                                                                           | None -> raise No_document_found       
+                                                                       end
+                                                                     in
+                                                                     command tl (Document doc)
 
 
-                                         | Match   (str, pattern)     -> let match_res = Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern) in
+                                         | Get             -> let (u,r) = begin match tmpvar with Url (u,r) -> u,r | _ -> raise Wrong_tmpvar_type end in
+                                                              command (Get_url (u,r) :: tl) tmpvar
+
+                                         | Get_urls        -> begin
+                                                                match tmpvar with
+                                                                  | Url_list urllist -> prerr_endline "Should now get Documents!";
+                                                                                        List.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urllist
+                                                                  | _                -> raise Wrong_tmpvar_type
+                                                              end
+
+                                         (* hmhh, str sollte doch aus der tmpvar besser entnommen werden !  !!!!!!!!!!!!!! *)
+                                         | Match   pattern            ->
+                                                                         let str =
+                                                                           begin
+                                                                             match tmpvar with
+                                                                               | Document doc -> doc
+                                                                               | _            -> raise No_Matchable_value_available
+                                                                           end
+                                                                         in
+                                                                         let match_res = Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern) in
                                                                          let matched =
                                                                            begin
                                                                              match match_res with
@@ -92,19 +149,54 @@ let evaluate_command_list cmdlst =
                                                                                | Some res -> res
                                                                            end
                                                                          in
-                                                                         ignore(matched);
-                                                                         print_endline "Match   detected"; command (next::tl)
+                                                                         print_endline "Match   detected";
+                                                                         command tl (Match_result matched)
 
-                                         | Select _                   -> print_endline "Select detected"; command (next::tl)
-                                         | Print                      -> command (next::tl) (* already handled by former recursion step *)
-                                         | Print_string str           -> print_endline str; command (next::tl)
-                                         | Save   _                   -> print_endline "Save detected"; command (next::tl)
-                                         | Dummy                      -> print_endline "Dummy detected"; command (next::tl)
+                                         | Select selfunc             -> print_endline "Select detected";
+                                                                         let matchres =
+                                                                         begin
+                                                                           match tmpvar with
+                                                                             | Match_result mr -> mr
+                                                                             | _           -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                                         end
+                                                                         in
+                                                                           command tl (Match_result (selfunc matchres))
+
+                                         | Print                      ->
+                                                                         begin
+                                                                           match tmpvar with
+                                                                             | Document doc      -> print_endline doc
+                                                                             | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
+                                                                                                                          print_newline() ) mres
+                                                                             | _ -> print_warning "Print-command found non-printable type"
+                                                                         end;
+                                                                         command tl tmpvar
+
+                                         | Print_string str           -> print_endline str;
+                                                                         command tl tmpvar
+
+                                         | Save   _                   -> print_endline "Save detected";
+                                                                         command tl tmpvar
+
+                                         | Dummy                      -> print_endline "Dummy detected";
+                                                                         command tl tmpvar
+
+                                         | Setvar var                 -> command tl var
+
+                                         | Showvar                    -> begin
+                                                                           match tmpvar with
+                                                                             | Document doc      -> print_endline "TMPVAR contains a document"
+                                                                             | Url_list url_list -> print_endline "TMPVAR contains an Url_list"
+                                                                             | Dummy_result      -> print_endline "TMPVAR contains Dummy_result"
+                                                                             | Match_result match_res -> print_endline "TMPVAR contains Match_result"
+                                                                             | Empty                  -> print_endline "TMPVAR contains EMPTY"
+                                                                         end;
+                                                                         command tl tmpvar
                                      end
 
 
   in
-    command cmdlst
+    command cmdlst Empty
 
 
 
