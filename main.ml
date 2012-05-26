@@ -1,7 +1,12 @@
 
 
-exception Command_Sequence_error
+exception NOT_IMPLEMENTED_SO_FAR (* for planned, but not already implemented functionality *)
+exception Command_Sequence_error of string (* for sequences that are not allowed *)
+
 exception No_document_found
+exception No_Match
+
+
 
 type match_result_t = string array array
 type selected_t     = string array list
@@ -10,13 +15,22 @@ type selector_t     = ( match_result_t -> string -> selected_t )
 
 type commands_t =
   | Get       of string * string              (* url, referrer *)
-  | Match     of string * string              (* url, regexp-pattern-string *)
+  | Match     of string * string              (* contents, regexp-pattern-string *)
   | Select    of match_result_t * selector_t
   | Print
   | Print_string of string
   | Save      of string * string
   | Dummy
 
+let command_to_string cmd = match cmd with
+  | Get     _      -> "Get"
+  | Match   _      -> "Match"
+  | Select  _      -> "Select"
+  | Print          -> "Print"
+  | Print_string _ -> "Print_string"
+  | Save         _ -> "Save"
+  | Dummy          -> "Dummy"
+  
 
 type results_t =
   | Document of string
@@ -29,6 +43,7 @@ type results_t =
   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "http://.*?mp4") in
 *)
 
+  (*
 let eval_command cmd = match cmd with
   | Get           (url, referrer)   -> let document = Network.Curly.get url (Some referrer) in
                                          begin
@@ -39,50 +54,69 @@ let eval_command cmd = match cmd with
   | Print_string   str              -> print_endline str; flush stdout; Printed
   | Save          (contents, fname) -> print_endline "shold now save data to a file"; Dummy_result
   | Dummy                           -> print_endline "Dummy-command"; Dummy_result
+  *)
 
 
+let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print_string "xxxxxx"; Dummy; Print_string "sdfiuzsfd" ]
+(*
+let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print_string "xxxxxx"; Dummy; Print_string "sdfiuzsfd" ]
 let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print_string "xxxxxx"; Dummy ]
+let example_commands = [ Get("http://www.first.in-berlin.de", ""); Dummy ]
+let example_commands = [ Get("http://www.first.in-berlin.de", ""); Print ]
+*)
+
+let print_warning str = prerr_string "WARNING: "; prerr_endline str
 
 
 let evaluate_command_list cmdlst =
   let rec command commandlist = match commandlist with
-    | []                          -> ()
+    | []                          -> prerr_endline "EMPTY!"
+    | cmd::[] (* evtl. guard ? *) -> prerr_endline "HALLO, match case 2 -- only commands without follower do make sense here "
+                                         (* Print_string, Save, Dummy *)
     | cmd::next::tl               -> begin
-                                       match cmd, next with
-                                         | Get (url, referrer),     Print -> let doc = eval_command cmd in
-                                                                               begin
-                                                                                 match doc with
-                                                                                   Document d -> command (Print_string d :: tl)
-                                                                                   | _ -> ()
-                                                                               end
+                                       match cmd with
+                                         | Get (url, referrer)            -> let document = Network.Curly.get url (Some referrer) in
+                                                                               let doc = 
+                                                                                 begin
+                                                                                   match document with
+                                                                                     | Some d -> d
+                                                                                     | None -> raise No_document_found       
+                                                                                 end
+                                                                               in
+                                                                                 begin
+                                                                                 match next with
+                                                                                   | Print -> command (Print_string doc :: tl)
+                                                                                   | Save _ -> raise NOT_IMPLEMENTED_SO_FAR
+                                                                                   | Dummy  -> ()
+                                                                                   (*
+                                                                                   | Print_string str  -> print_warning "document unused";
+                                                                                                          command (Print_string str :: tl)
+                                                                                   *)
+                                                                                   | _ as errcmd     -> raise (Command_Sequence_error (command_to_string errcmd))
+                                                                                 end
 
-                                         | Get (url, referrer),     _     -> eval_command cmd;()
-                                         | Match   (str, pattern),  _ -> print_endline "Match   detected"
-                                         | Select _ ,               _ -> print_endline "Select detected"
-                                         | Print,                   _ -> eval_command cmd;()
-                                         | (Print_string  str),     _  -> eval_command cmd;()
-                                         | Save   _   ,             _  -> print_endline "Save detected"
-                                         | Dummy      ,             _ -> print_endline "Dummy detected"
+
+                                         | Match   (str, pattern)     -> let match_res = Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern) in
+                                                                         let matched =
+                                                                           begin
+                                                                             match match_res with
+                                                                               | None   -> raise No_Match
+                                                                               | Some res -> res
+                                                                           end
+                                                                         in
+                                                                         ignore(matched);
+                                                                         print_endline "Match   detected"; command (next::tl)
+
+                                         | Select _                   -> print_endline "Select detected"; command (next::tl)
+                                         | Print                      -> command (next::tl) (* already handled by former recursion step *)
+                                         | Print_string str           -> print_endline str; command (next::tl)
+                                         | Save   _                   -> print_endline "Save detected"; command (next::tl)
+                                         | Dummy                      -> print_endline "Dummy detected"; command (next::tl)
                                      end
-                                     (*
-                                     command (next::tl)
-                                     *)
 
-    (*
-  and prepare result follow tail = match result, follow   with
-    | Document (Some doc),        Print -> command ( (Print_string doc) :: tail )
-    | Document None      ,        _     -> prerr_endline "Could not download the document"; raise No_document_found
-    | Printed,           _      -> command follow
-    | Dummy_result,      _      -> command follow
-    | Match_result _,    hd::tl -> ()
-    | _             , []        -> ()
-    *)
 
   in
     command cmdlst
-  (*
-  List.map eval_command example_commands; ()
-  *)
 
 
 
@@ -252,8 +286,10 @@ let ard_mediathek_get_rtmp_mp4_url  url =
 
   (* EXTRACT *)
   (* ------- *)
+(*
   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "http://[^\"]+?mp4\"") in
   let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_Mp4_url_extraction_error in
+*)
 
   let rtmp_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "rtmpt{0,1}://[^\"]+") in
   let rtmp_urls     = extract_some_with_exit_if_none rtmp_urls_opt [] ARD_Rtmp_url_extraction_error in
