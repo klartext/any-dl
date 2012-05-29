@@ -75,14 +75,10 @@ let print_warning str = prerr_string "WARNING: "; prerr_endline str
 
 
 
-let example_commands = [ Get_url("http://www.first.in-berlin.de", ""); Print_string "xxxxxx"; Dummy; Print_string "sdfiuzsfd" ]
-let example_commands = [ Get_url("http://www.first.in-berlin.de", ""); Dummy; Select ( fun x -> x);  Dummy;Dummy]
-let example_commands = [ Get_url("http://www.first.in-berlin.de", ""); Print; Dummy ]
 let example_commands = []
 let example_commands = [ Dummy ]
 let example_commands = [ Dummy; Dummy ]
 let example_commands = [ Dummy; Dummy; Dummy ]
-let example_commands = [ Get_url("http://www.first.in-berlin.de", ""); Match "(NTM.*(Triviale Maschine))"; Print ]
 
 let example_commands = [ Get_url("http://www.zdf.de/ZDFmediathek/beitrag/video/1649590/Happy-Birthday-Raumschiff-Enterprise?bc=sts;stt&flash=off", "");
                          Match "href=.(.*?asx)";
@@ -91,20 +87,50 @@ let example_commands = [ Get_url("http://www.zdf.de/ZDFmediathek/beitrag/video/1
                          Select (fun x -> [|x.(0)|]);
                          Print;
                          Showvar;
-                         Setvar( Url_list [("http://www.first.in-berlin.de", "-")]);
+                         Setvar( Url_list [("http://www.first.in-berlin.de", "-"); ("http://www.google.de", "")]);
                          Showvar;
                          Get_urls;
                          Dummy
                        ]
 
 
-let example_commands = [Setvar( Url ("http://www.first.in-berlin.de", "-") ); Get; Print ]
+(*
+let  printstuff mres = Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x; print_newline() ) mres
+
+let select res_arr stringmatcher =
+  let collect = ref [] in
+  Array.iter ( fun x -> let match_flag = ref false in
+                        Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y; if stringmatcher y then match_flag := true ) x;
+                        print_newline();
+                        if !match_flag then collect := x :: !collect
+                        
+             ) res_arr;
+*)
 
 
 (*
-(* store is the intermeidate value for *all* operations *)
-let store = ref Empty
+let select_where_laban matched =
+  Array.iter( fun line -> Array.iter ( fun y ->  print_endline y; y ) line; print_newline(); line  ) matched
 *)
+
+let example_selector stuff =
+  Printf.printf "Array.length: %d\n" (Array.length stuff);
+  Array.iter ( fun line ->
+                           Printf.printf "\n\n-------------------------------\nArray.length of LINE: %d\n"  (Array.length line);
+                           Array.iter print_endline line;
+                           print_endline "-------------------------------"
+             ) stuff;
+  stuff
+
+let example_commands = [ Setvar( Url ("http://www.first.in-berlin.de", "-") ); Get;
+                         Match("H2>(.*?)</H2");
+                         Showvar;
+                         Print;
+                         Select( example_selector );
+                         Dummy ]
+(*
+*)
+
 
 let evaluate_command_list cmdlst =
   let rec command commandlist tmpvar = match commandlist with
@@ -112,14 +138,11 @@ let evaluate_command_list cmdlst =
     | cmd::tl               -> begin
                                        match cmd with
                                          | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) in
-                                                                     let doc = 
                                                                        begin
                                                                          match document with
-                                                                           | Some d -> d
+                                                                           | Some doc -> command tl (Document doc)
                                                                            | None -> raise No_document_found       
                                                                        end
-                                                                     in
-                                                                     command tl (Document doc)
 
 
                                          | Get             -> let (u,r) = begin match tmpvar with Url (u,r) -> u,r | _ -> raise Wrong_tmpvar_type end in
@@ -149,18 +172,15 @@ let evaluate_command_list cmdlst =
                                                                                | Some res -> res
                                                                            end
                                                                          in
-                                                                         print_endline "Match   detected";
                                                                          command tl (Match_result matched)
 
                                          | Select selfunc             -> print_endline "Select detected";
-                                                                         let matchres =
                                                                          begin
                                                                            match tmpvar with
-                                                                             | Match_result mr -> mr
+                                                                             | Match_result matchres -> command tl (Match_result (selfunc matchres))
                                                                              | _           -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                                          end
-                                                                         in
-                                                                           command tl (Match_result (selfunc matchres))
+                                                                           
 
                                          | Print                      ->
                                                                          begin
@@ -262,7 +282,7 @@ let prepend_baseurl_if_necessary  mainurl  suburl =
   if Parsers.url_is_rel_root suburl then Parsers.url_get_baseurl mainurl ^ suburl else suburl
 
 
-(* params: one webdoc (html) and a string-matcher  *)
+
 (* result: list of string-matching href hyperlinks *)
 (* ----------------------------------------------- *)
 let get_href_from_webdoc_and_match  webdoc  matcher =
@@ -453,6 +473,48 @@ let ard_mediathek_get_rtmp_mp4_url_version_3  url =
 
 
 
+let ard_mediathek_get_rtmp_mp4_url_version_4_DSL  url =
+
+  Printf.printf "NEU!!! url=%s\n" url;
+  let commandlist = [ Get_url(url, "-");
+                      Showvar;
+                      Match( "(rtmpt{0,1}://[^\"]+)(.*?)(mp4:[^\"]+)\"" );
+                      Showvar;
+                      Select( example_selector );
+                      (*
+                      *)
+                      Dummy
+                    ]
+  in
+  evaluate_command_list commandlist;
+  [""]
+
+  (* ORIGINAL
+  let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
+
+  let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "(rtmpt{0,1}://[^\"])(.*?)(mp4:[^\"]+)\"") in
+  let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_Mp4_url_extraction_error in
+
+  let links = List.map ( fun mp4_arr ->  mp4_arr.(0)  )  mp4_urls in
+
+  links
+  *)
+
+(*
+let example_commands = [ Setvar( Url ("http://www.first.in-berlin.de", "-") ); Get;
+                         Match("H2>(.*?)</H2");
+                         Showvar;
+                         Print;
+                         Select( example_selector );
+                         Dummy ]
+
+*)
+
+
+
+
+
+
 
 (* http://www.ndr.de/fernsehen/sendungen/45_min/videos/minuten393.html
 
@@ -533,6 +595,9 @@ let arte_mediathek_get_rtmp_url = arte_get
 let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url
 *)
 let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url_version_3
+let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url_version_4_DSL
+(*
+*)
 let ndr_mediathek_get           = ndr_mediathek_get
 
 let _3sat_mediathek_get = ()
@@ -610,11 +675,11 @@ let do_old_any_dl () =
 
 
 let _  =
-  (*
     do_old_any_dl ()
-  *)
   (*
   *)
+  (*
   evaluate_command_list example_commands
+  *)
 
 
