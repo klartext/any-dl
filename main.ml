@@ -9,6 +9,7 @@ exception No_Matchresult_available  (* if Select is used, but there is no match-
 exception No_Matchable_value_available  (* if Match is used, but there is no matchabe tmpvar *)
 
 exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... without more detailed info *)
+exception Wrong_argument_type           (* e.g. Print_match on non-match *)
 
 
 
@@ -40,6 +41,7 @@ type commands_t =
   | Match     of string                       (* regexp-pattern-string *)
   | Select    of selector_t                   (* acts as a filter *)
   | Print
+  | Print_match
   | Print_string of string
   | Save      of string * string
   | Dummy
@@ -75,6 +77,8 @@ let print_warning str = prerr_string "WARNING: "; prerr_endline str
 
 
 
+(* TESTING / DEVEL purposes only *)
+(*
 let example_commands = []
 let example_commands = [ Dummy ]
 let example_commands = [ Dummy; Dummy ]
@@ -92,6 +96,15 @@ let example_commands = [ Get_url("http://www.zdf.de/ZDFmediathek/beitrag/video/1
                          Get_urls;
                          Dummy
                        ]
+
+let example_commands = [ Setvar( Url ("http://www.first.in-berlin.de", "-") ); Get;
+                         Match("H2>(.*?)</H2");
+                         Showvar;
+                         Print;
+                         Select( example_selector );
+                         Dummy ]
+*)
+
 
 
 (*
@@ -122,97 +135,150 @@ let example_selector stuff =
              ) stuff;
   stuff
 
-let example_commands = [ Setvar( Url ("http://www.first.in-berlin.de", "-") ); Get;
-                         Match("H2>(.*?)</H2");
-                         Showvar;
-                         Print;
-                         Select( example_selector );
-                         Dummy ]
-(*
-*)
+
+module Selector =
+  struct
+    exception Selection_Index_error
+
+    let select_line ( matcharr : match_result_t ) lnum = Array.copy matcharr.(lnum)
+
+    let select_first_match matcharr = Array.create 1 (Array.copy matcharr.(0))
+
+    (* matcharr is a selction result; lineselection is a selection-index-array *)
+    (* ----------------------------------------------------------------------- *)
+    (* be aware: 0 means fullmatch-line, so for all real lines, add + 1        *)
+    (* ----------------------------------------------------------------------- *)
+    (*
+    let select_lines (matcharr:match_result_t) lineselection =
+      let maxline_idx = Array.length matcharr - 1 in
+      let maxcol_idx = Array.length matcharr.(0) - 1 in
+
+      let result_linenum = Array.length lineselection in
+
+      if List.exists ( fun selidx -> selidx > maxline_idx  ) (Array.to_list lineselection) then raise Selection_Index_error;
+
+      let res = Array.make_matrix result_linenum maxcol_idx in
+
+      for line_idx = 0 to result_linenum - 1
+      do
+        for column = 0 to maxcol_idx
+        do
+          res.(line_idx).(column) <- matcharr.(line_idx).(column)
+        done
+      done;
+      ()
+    *)
+
+  end
+
+
+
+
+
+
+
+
 
 
 let evaluate_command_list cmdlst =
   let rec command commandlist tmpvar = match commandlist with
-    | []                    -> prerr_endline "READY!"
-    | cmd::tl               -> begin
-                                       match cmd with
-                                         | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) in
-                                                                       begin
-                                                                         match document with
-                                                                           | Some doc -> command tl (Document doc)
-                                                                           | None -> raise No_document_found       
-                                                                       end
+    | []        -> ()
+    | cmd::tl   -> begin
+                     match cmd with
+                       | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) in
+                                                     begin
+                                                       match document with
+                                                         | Some doc -> command tl (Document doc)
+                                                         | None -> raise No_document_found       
+                                                     end
 
 
-                                         | Get             -> let (u,r) = begin match tmpvar with Url (u,r) -> u,r | _ -> raise Wrong_tmpvar_type end in
-                                                              command (Get_url (u,r) :: tl) tmpvar
+                       | Get             -> let (u,r) = begin match tmpvar with Url (u,r) -> u,r | _ -> raise Wrong_tmpvar_type end in
+                                            command (Get_url (u,r) :: tl) tmpvar
 
-                                         | Get_urls        -> begin
-                                                                match tmpvar with
-                                                                  | Url_list urllist -> prerr_endline "Should now get Documents!";
-                                                                                        List.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urllist
-                                                                  | _                -> raise Wrong_tmpvar_type
-                                                              end
 
-                                         (* hmhh, str sollte doch aus der tmpvar besser entnommen werden !  !!!!!!!!!!!!!! *)
-                                         | Match   pattern            ->
-                                                                         let str =
-                                                                           begin
-                                                                             match tmpvar with
-                                                                               | Document doc -> doc
-                                                                               | _            -> raise No_Matchable_value_available
-                                                                           end
-                                                                         in
-                                                                         let match_res = Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern) in
-                                                                         let matched =
-                                                                           begin
-                                                                             match match_res with
-                                                                               | None   -> raise No_Match
-                                                                               | Some res -> res
-                                                                           end
-                                                                         in
-                                                                         command tl (Match_result matched)
+                       | Get_urls        -> begin
+                                              match tmpvar with
+                                                | Url_list urllist -> prerr_endline "Should now get Documents!";
+                                                                      List.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urllist
+                                                | _                -> raise Wrong_tmpvar_type
+                                            end
 
-                                         | Select selfunc             -> print_endline "Select detected";
-                                                                         begin
-                                                                           match tmpvar with
-                                                                             | Match_result matchres -> command tl (Match_result (selfunc matchres))
-                                                                             | _           -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
-                                                                         end
-                                                                           
 
-                                         | Print                      ->
-                                                                         begin
-                                                                           match tmpvar with
-                                                                             | Document doc      -> print_endline doc
-                                                                             | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
-                                                                                                                          print_newline() ) mres
-                                                                             | _ -> print_warning "Print-command found non-printable type"
-                                                                         end;
-                                                                         command tl tmpvar
+                       (* hmhh, str sollte doch aus der tmpvar besser entnommen werden !  !!!!!!!!!!!!!! *)
+                       | Match   pattern            ->
+                                                       let str =
+                                                         begin
+                                                           match tmpvar with
+                                                             | Document doc -> doc
+                                                             | _            -> raise No_Matchable_value_available
+                                                         end
+                                                       in
+                                                       let match_res = Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern) in
+                                                       let matched =
+                                                         begin
+                                                           match match_res with
+                                                             | None   -> raise No_Match
+                                                             | Some res -> res
+                                                         end
+                                                       in
+                                                       command tl (Match_result matched)
 
-                                         | Print_string str           -> print_endline str;
-                                                                         command tl tmpvar
 
-                                         | Save   _                   -> print_endline "Save detected";
-                                                                         command tl tmpvar
+                       | Select selfunc             -> 
+                                                       begin
+                                                         match tmpvar with
+                                                           | Match_result matchres -> command tl (Match_result (selfunc matchres))
+                                                           | _           -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                       end
+                                                         
 
-                                         | Dummy                      -> print_endline "Dummy detected";
-                                                                         command tl tmpvar
+                       | Print                      ->
+                                                       begin
+                                                         match tmpvar with
+                                                           | Document doc      -> print_endline doc
+                                                           | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
+                                                                                                        print_newline() ) mres
+                                                           | _ -> print_warning "Print-command found non-printable type"
+                                                       end;
+                                                       command tl tmpvar
 
-                                         | Setvar var                 -> command tl var
 
-                                         | Showvar                    -> begin
-                                                                           match tmpvar with
-                                                                             | Document doc      -> print_endline "TMPVAR contains a document"
-                                                                             | Url_list url_list -> print_endline "TMPVAR contains an Url_list"
-                                                                             | Dummy_result      -> print_endline "TMPVAR contains Dummy_result"
-                                                                             | Match_result match_res -> print_endline "TMPVAR contains Match_result"
-                                                                             | Empty                  -> print_endline "TMPVAR contains EMPTY"
-                                                                         end;
-                                                                         command tl tmpvar
-                                     end
+                       | Print_match                -> (* prints "real" matches only (and not the fullmatch with index = 0) *)
+                                                       begin
+                                                         match tmpvar with
+                                                           | Match_result mres -> let lines = Array.to_list mres in
+                                                                      Array.iter ( fun x -> let matched_groups = List.tl (Array.to_list x) in
+                                                                                            List.iter ( fun y -> Printf.printf "\"%s\" ||| " y) matched_groups;
+                                                                                            print_newline()
+                                                                                 ) mres
+                                                           | _ -> raise Wrong_argument_type
+                                                       end;
+                                                       command tl tmpvar
+
+
+                       | Print_string str           -> print_endline str;
+                                                       command tl tmpvar
+
+
+                       | Save   _                   -> print_endline "Save detected"; raise NOT_IMPLEMENTED_SO_FAR;
+                                                       command tl tmpvar
+
+
+                       | Dummy                      -> command tl tmpvar (* does nothing; just a Dummy (NOP) *)
+
+                       | Setvar var                 -> command tl var (* sets the argument of setvar as new tmpvar *)
+
+                       | Showvar                    -> begin
+                                                         match tmpvar with
+                                                           | Document doc      -> print_endline "TMPVAR contains a document"
+                                                           | Url_list url_list -> print_endline "TMPVAR contains an Url_list"
+                                                           | Dummy_result      -> print_endline "TMPVAR contains Dummy_result"
+                                                           | Match_result match_res -> print_endline "TMPVAR contains Match_result"
+                                                           | Empty                  -> print_endline "TMPVAR contains EMPTY"
+                                                       end;
+                                                       command tl tmpvar
+                   end
 
 
   in
@@ -410,6 +476,7 @@ let ard_mediathek_get_rtmp_mp4_url  url =
   links
 
 
+
 let ard_mediathek_get_rtmp_mp4_url_version_2  url =
 
   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
@@ -422,20 +489,6 @@ let ard_mediathek_get_rtmp_mp4_url_version_2  url =
   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "http://[^\"]+?mp4\"") in
   let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_Mp4_url_extraction_error in
 
-  (*
-  let rtmp_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "rtmpt{0,1}://[^\"]+") in
-  let rtmp_urls     = extract_some_with_exit_if_none rtmp_urls_opt [] ARD_Rtmp_url_extraction_error in
-  *)
-
-  (*
-  let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "mp4:[^\"]+") in
-  let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_mp4_url_extraction_error in
-  *)
-
-  (* zipping *)
-  (*
-  let links = List.map2 ( fun rtmp_arr mp4_arr -> rtmp_arr.(0) ^ "   " ^ mp4_arr.(0)  )  rtmp_urls mp4_urls in
-  *)
   let links = List.map ( fun mp4_arr ->  mp4_arr.(0)  )  mp4_urls in
 
   links
@@ -453,63 +506,26 @@ let ard_mediathek_get_rtmp_mp4_url_version_3  url =
   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "(rtmpt{0,1}://[^\"])(.*?)(mp4:[^\"]+)\"") in
   let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_Mp4_url_extraction_error in
 
-  (*
-  let rtmp_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "rtmpt{0,1}://[^\"]+") in
-  let rtmp_urls     = extract_some_with_exit_if_none rtmp_urls_opt [] ARD_Rtmp_url_extraction_error in
-  *)
-
-  (*
-  let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "mp4:[^\"]+") in
-  let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_mp4_url_extraction_error in
-  *)
-
-  (* zipping *)
-  (*
-  let links = List.map2 ( fun rtmp_arr mp4_arr -> rtmp_arr.(0) ^ "   " ^ mp4_arr.(0)  )  rtmp_urls mp4_urls in
-  *)
   let links = List.map ( fun mp4_arr ->  mp4_arr.(0)  )  mp4_urls in
 
   links
 
 
 
-let ard_mediathek_get_rtmp_mp4_url_version_4_DSL  url =
+let ard_mediathek_get_rtmp_mp4_url_version_4 url =
 
-  Printf.printf "NEU!!! url=%s\n" url;
+  Printf.printf "NEU (probeweise Funktion fuer ARD) !!! url=%s\n" url;
   let commandlist = [ Get_url(url, "-");
-                      Showvar;
-                      Match( "(rtmpt{0,1}://[^\"]+)(.*?)(mp4:[^\"]+)\"" );
-                      Showvar;
-                      Select( example_selector );
+                      Match( "(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"" );
                       (*
+                      Select( Selector.select_first_match );
                       *)
+                      Print_match;
                       Dummy
                     ]
   in
   evaluate_command_list commandlist;
   [""]
-
-  (* ORIGINAL
-  let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
-
-  let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "(rtmpt{0,1}://[^\"])(.*?)(mp4:[^\"]+)\"") in
-  let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_Mp4_url_extraction_error in
-
-  let links = List.map ( fun mp4_arr ->  mp4_arr.(0)  )  mp4_urls in
-
-  links
-  *)
-
-(*
-let example_commands = [ Setvar( Url ("http://www.first.in-berlin.de", "-") ); Get;
-                         Match("H2>(.*?)</H2");
-                         Showvar;
-                         Print;
-                         Select( example_selector );
-                         Dummy ]
-
-*)
-
 
 
 
@@ -543,6 +559,8 @@ let ndr_mediathek_get  url =
 
 
 
+(* W D R *)
+(* ===== *)
 
 (* WDR:
 Stringmatch auf:
@@ -554,9 +572,19 @@ http://www.wdr.de/tv/quarks/sendungsbeitraege/2009/1222/003_arena_mannfrau.jsp?s
 
 Stringmatch auf:
 dslSrc=rtmp://gffstream.fcod.llnwd.net/a792/e2/tv/quarks/091229_das_eyetracking_experiment_big.flv&
-
 *)
-let wdr_mediathek_get_rtmp_mp4_url  url = ()
+let wdr_mediathek_get_rtmp_mp4_url  url =
+  let commandlist = [ Get_url(url, "-");
+                      Match( "(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"" );
+                      Select( Selector.select_first_match );
+                      Print_match;
+                      Dummy
+                    ]
+  in
+  evaluate_command_list commandlist;
+  [""]
+
+
 
 
 (*
@@ -591,13 +619,7 @@ let wdr_mediathek_get_rtmp_mp4_url  url = ()
 let zdf_mediathek_get_mmsurl    = web_asx_mms_get
 let orf_mediathek_get_mmsurl    = web_asx_mms_get
 let arte_mediathek_get_rtmp_url = arte_get
-(*
-let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url
-*)
-let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url_version_3
-let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url_version_4_DSL
-(*
-*)
+let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url_version_4
 let ndr_mediathek_get           = ndr_mediathek_get
 
 let _3sat_mediathek_get = ()
@@ -678,8 +700,25 @@ let _  =
     do_old_any_dl ()
   (*
   *)
-  (*
+  (* this was for testing purposes only!
   evaluate_command_list example_commands
   *)
 
 
+
+
+(* --------------------------------------------------------------------------------------------------------------
+
+  HOW TO DUMP STREAMS:
+ ======================
+
+rtmp / rtmpt:
+
+  rtmpdump --resume  -r rtmp://.... -y mp4:....  -o outfile.ext
+
+
+mms:
+
+  mplayer -dumpstream mms://example.com/Globalplayers/GP_14.wmv -dumpfile ./download/test.wmv 
+
+ ------------------------------------------------------------------------------------------------------------- *)
