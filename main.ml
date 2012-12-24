@@ -1,3 +1,4 @@
+open Parsetreetypes
 
 
 exception NOT_IMPLEMENTED_SO_FAR (* for planned, but not already implemented functionality *)
@@ -13,7 +14,6 @@ exception Wrong_argument_type           (* e.g. Print_match on non-match *)
 
 
 
-type match_result_t = string array array
 (*
 type selected_t     = string array list
 *)
@@ -22,31 +22,6 @@ type selector_t     = ( match_result_t -> match_result_t ) (* function, that has
 *)
 
 type url_t = { url: string; referrer: string }
-
-type selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
-
-type results_t =
-  | Document of string (* hier könnte noch der Referrer ergänzt werden *)
-  | Url      of string * string  (* needed for Get-command *)
-  | Url_list of (string * string) list
-  | Dummy_result
-  | Match_result of match_result_t
-  | Empty
-
-
-type commands_t =
-  | Get_url       of string * string          (* url, referrer *)
-  | Get_urls                                  (* get via tmpvar *)
-  | Get                                       (* get ONE document via tmpvar (Url-type) *)
-  | Match     of string                       (* regexp-pattern-string *)
-  | Select    of selector_t                   (* acts as a filter *)
-  | Print
-  | Print_match
-  | Print_string of string
-  | Save      of string * string
-  | Dummy
-  | Setvar    of results_t
-  | Showvar
 
 
 

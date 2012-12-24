@@ -1,3 +1,34 @@
+
+
+
+type match_result_t = string array array
+type selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
+
+
+type results_t =
+  | Document of string (* hier könnte noch der Referrer ergänzt werden *)
+  | Url      of string * string  (* needed for Get-command *)
+  | Url_list of (string * string) list
+  | Dummy_result
+  | Match_result of match_result_t
+  | Empty
+
+
+type commands_t =
+  | Get_url       of string * string          (* url, referrer *)
+  | Get_urls                                  (* get via tmpvar *)
+  | Get                                       (* get ONE document via tmpvar (Url-type) *)
+  | Match     of string                       (* regexp-pattern-string *)
+  | Select    of selector_t                   (* acts as a filter *)
+  | Print
+  | Print_match
+  | Print_string of string
+  | Save      of string * string
+  | Dummy
+  | Setvar    of results_t
+  | Showvar
+
+
 (*
 type var_t = Variable.variable
 *)
@@ -23,6 +54,9 @@ type function_type = Function of string
 (*
 type basic_t = String of string | Int of int | Bool of bool
 *)
+
+
+(* OOOOLD
 
 
 type unary_op  =  CHANGE_SIGN | NOT
@@ -71,5 +105,4 @@ type parse_snippet_t =
     | Funcdef   of string * param_t * statement_t list
 
 
-
-
+*)
