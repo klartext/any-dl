@@ -695,8 +695,52 @@ let do_old_any_dl () =
 
 
 
+let scriptname = "script.adl"
+
+let start_parser filename_opt =
+  print_endline "Starting experimental parser!  \n";
+  Printf.printf "Scriptname: %s" scriptname;
+    let tokenlist = ref [] in
+
+    let input_channel = match filename_opt with None -> stdin | Some filename -> open_in filename in
+    let lexer = Lexing.from_channel input_channel in
+    begin
+      try
+        while true do
+          prerr_string "$: "; flush_all(); (* prompt *)
+          let result = Scriptparser.main Scriptlexer.read_command lexer in
+          (*
+          tokenlist := result :: !tokenlist
+          List.rev_append result :: !tokenlist
+          *)
+          tokenlist := result :: !tokenlist
+        done
+      with End_of_file -> prerr_endline "Ende der Eingabe erreicht; Parser-Definitionen gelesen!"
+
+           (*
+           | Not_found -> prerr_string "Variable not known in line ";
+                          prerr_int !Scriptlex.linenum;prerr_newline()
+                          (*
+                          exit 1
+                          *)
+           *)
+
+           | Parsing.Parse_error -> 
+                  prerr_string "Parse error in line ";
+                  prerr_int !Scriptlexer.linenum;
+                  (*
+                  *)
+                  prerr_newline();
+                  exit 1
+
+    end
+    ;
+    close_in input_channel;
+    List.rev !tokenlist
+
 
 let _  =
+    start_parser (Some scriptname);
     do_old_any_dl ()
   (*
   *)

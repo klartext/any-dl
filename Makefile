@@ -5,13 +5,14 @@ all: byte-code
 
 LIBS=unix pcre netstring netsys netclient curl xml-light
 
-SOURCES :=  parsers.ml network.ml main.ml
+SOURCES :=  scriptparser.mly scriptlexer.mll parsers.ml network.ml parsetreetypes.ml main.ml
+#SOURCES :=  parsers.ml network.ml main.ml 
 
 PACKS := pcre netstring netsys netclient curl xml-light
 
-#YFLAGS=-v
+YFLAGS=-v
 #OCAMLYACC = menhir
-#OCAMLYACC = ocamlyacc
+OCAMLYACC = ocamlyacc
 
 RESULT = any-dl
 
