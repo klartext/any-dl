@@ -49,7 +49,7 @@
 
 
 %start main
-%type <string> main
+%type <Parsetreetypes.parserdef_t> main
 
 
 /* nun die Definitionen der Typen fuer non-terminals */
@@ -93,7 +93,7 @@ exception Undefined_value of string
 
 
 %%
-main: parsername urlmatches START parser_script END { $1 }
+main: parsername urlmatches START parser_script END { Parser ($1, $2, $4) }
     | EOF        { (*print_stringlist_endlinehash variable_hash;*) raise End_of_file }
     ;
 
@@ -115,11 +115,11 @@ statement_list:                { []      }
     ;
 
 statement: match_stmt { $1 }
-    |      printmatch_stmt { $1 }
-    |      DUMMY SEMI      { "" }
+    |      printmatch_stmt { Print_match }
+    |      DUMMY SEMI      { Dummy }
     ;
 
-match_stmt: MATCH STRING SEMI { $2 }
+match_stmt: MATCH STRING SEMI { Match $2 }
     ;
 
 printmatch_stmt: PRINT_MATCH SEMI { "" }

@@ -1,6 +1,3 @@
-
-
-
 type match_result_t = string array array
 type selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
 
@@ -27,6 +24,13 @@ type commands_t =
   | Dummy
   | Setvar    of results_t
   | Showvar
+
+
+
+
+(* Parser( <parser-name>, <url-match-list>, commands-list> *)
+type parserdef_t = Parser of ( string * string list * commands_t list )
+
 
 
 (*
