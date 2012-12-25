@@ -49,4 +49,39 @@ end
 
 
 
-
+# (* Webpage -> ASX-Link -> ASX-Page -> MMS-Link *)
+# (* ------------------------------------------- *)
+# let web_asx_mms_get url =
+#   let suffix = ".asx" in
+# 
+#   (* get main-page via initial URL *)
+#   (* ----------------------------- *)
+#   let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
+# 
+#   (* extract the ASX-file-URL *)
+#   (* ------------------------ *)
+#   let asx_matcher str = Filename.check_suffix str suffix in (* matcht hier ".asx" file-suffix, könnte aber auch pcre-match sein... *)
+#   let asx_urls = get_href_from_webdoc_and_match doc ( fun str -> asx_matcher str ) in
+# 
+#   (* REBASE: prepend the baseurl if necessary *)
+#   let asx_urls = List.map ( fun asxurl -> prepend_baseurl_if_necessary url asxurl ) asx_urls in
+# 
+# 
+#   let all_hrefs = ref [] in
+#   List.iter ( fun asx_url ->
+#                               let asx_url = List.hd asx_urls in  (* select just the first one (easiest criterium) *)
+# 
+#                               (* get the ASX-file via ASX-URL *)
+#                               (* ---------------------------- *)
+#                               let xml_doc = get_document  asx_url  ["Could not retrieve the "; suffix; "-document via url "; asx_url; "\n"] Not_found in
+# 
+#                               (* extract the real URLs of the streams *)
+#                               (* ------------------------------------ *)
+#                               let xml_as_xml = Parsers.Xmlparse.parse_string xml_doc in
+#                               let href_list  = Parsers.xml_get_href xml_as_xml in
+#                               all_hrefs := List.append href_list !all_hrefs
+#             ) asx_urls;
+#   if List.length asx_urls = 0 then raise Not_found;
+#   !all_hrefs
+# 
+# 

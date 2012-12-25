@@ -365,7 +365,6 @@ let web_asx_mms_get url =
 
 
 let arte_get  url =
-
   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
 
   (* GET *)
@@ -443,7 +442,6 @@ let ard_mediathek_get_rtmp_mp4_url  url =
 
 
 let ard_mediathek_get_rtmp_mp4_url_version_2  url =
-
   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
   (* GET *)
   (* --- *)
@@ -459,8 +457,8 @@ let ard_mediathek_get_rtmp_mp4_url_version_2  url =
   links
 
 
-let ard_mediathek_get_rtmp_mp4_url_version_3  url =
 
+let ard_mediathek_get_rtmp_mp4_url_version_3  url =
   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
   (* GET *)
   (* --- *)
@@ -478,7 +476,6 @@ let ard_mediathek_get_rtmp_mp4_url_version_3  url =
 
 
 let ard_mediathek_get_rtmp_mp4_url_version_4 url =
-
   Printf.printf "NEU (probeweise Funktion fuer ARD) !!! url=%s\n" url;
   let commandlist = [ Get_url(url, "-");
                       Match( "(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"" );
@@ -579,14 +576,6 @@ let wdr_mediathek_get_rtmp_mp4_url  url =
    <a title="Video: Flashplayer ab Version 8.0 erforderlich" rel="base#/tv/monitor/codebase/video/" href="http://www.wdr.de/themen/global/flashplayer/fscreen.jhtml?dslSrc=rtmp://gffstream.fcod.llnwd.net/a792/e2/mediendb/monitor08/video/2012/0426/120426_monitor_web-l.mp4&amp"
 *)
 
-(* Sender-spezifische URL-Grabber *)
-(* ============================== *)
-let zdf_mediathek_get_mmsurl    = web_asx_mms_get
-let orf_mediathek_get_mmsurl    = web_asx_mms_get
-let arte_mediathek_get_rtmp_url = arte_get
-let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url_version_4
-let ndr_mediathek_get           = ndr_mediathek_get
-
 let _3sat_mediathek_get = ()
 (*
 1. suche hauptseite
@@ -610,6 +599,14 @@ enthält:
 *)
 
 
+(* Sender-spezifische URL-Grabber *)
+(* ============================== *)
+let zdf_mediathek_get_mmsurl    = web_asx_mms_get
+let orf_mediathek_get_mmsurl    = web_asx_mms_get
+let arte_mediathek_get_rtmp_url = arte_get
+let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url_version_4
+let ndr_mediathek_get           = ndr_mediathek_get
+
 
 (* the URL-grabber function is selected via getting the baseurl from the url *)
 (* ------------------------------------------------------------------------- *)
@@ -627,23 +624,6 @@ let select_url_grabber_via_url  url =
   in
     url_grabber
 
-
-
-(*
-let zdf_example   = "http://www.zdf.de/ZDFmediathek/beitrag/video/1577656/heute-show-vom-24.02.2012?bc=sts;stt&flash=off"
-let orf_example   = "http://tvthek.orf.at/programs/3619175-Joachim-Gauck-im-Gespraech/episodes/3619173-Joachim-Gauck-im-Gespraech"
-let arte_example  = "http://videos.arte.tv/de/videos/raetsel_burnout-6411716.html"
-let vimeo_example = "http://vimeo.com/3985019"
-let ard_example   = "http://www.ardmediathek.de/ard/servlet/content/3517136?documentId=9668526"
-
-
-
-
-let example_urls = [ zdf_example; orf_example ]
-let example_urls_2 = [ arte_example; ard_example ]
-
-let all_examples = List.append example_urls example_urls_2
-*)
 
 
 let do_old_any_dl () =
@@ -759,18 +739,13 @@ let _  =
                                            ) parserdef.urllist;
               ) tokenlist;
 
-    do_new_any_dl parserhash;
+    do_new_any_dl parserhash
 
+
+    (* just in case I need the old stuff ;-)
     print_endline "Now OLD stuff";
-
     do_old_any_dl ()
-
-  (*
-    List.iter ( fun parserdef -> match parserdef with (name,_,_) -> Hashtbl.add parserhash ) tokenlist;
-  *)
-  (* this was for testing purposes only!
-  evaluate_command_list example_commands
-  *)
+    *)
 
 
 

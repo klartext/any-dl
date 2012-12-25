@@ -1,6 +1,5 @@
 %token LPAREN RPAREN
 
-
 %token START END
 
 %token IF
@@ -72,25 +71,6 @@ exception Undefined_value of string
 %}
 
 
-            /*
-            parser "ard_mediathek_get":
-            urlmatches ("http://www.ardmediathek.de", "http://mediathek.daserste.de");
-            start
-              Match "(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"";
-              Print_match;
-
-              #Showvar;
-              #Select (fun x -> [|x.(0)|]);  (* muesste andere Syntax sein für das externe Script *)
-              #Print;
-              #Showvar;
-              #Setvar( Url_list [("http://www.first.in-berlin.de", "-"); ("http://www.google.de", "")]);
-              #Showvar;
-              #Get_urls;
-              Dummy
-            end
-            */
-
-
 
 
 %%
@@ -140,7 +120,6 @@ statement: statement_base SEMI { $1 } /* block ist eigentlich eine falsche bezei
     ;
 
 
-
 param_def: IDENTIFIER COLON IDENTIFIER{ ( $1, $3 ) }
     ;
 
@@ -177,8 +156,6 @@ string_list:                { [] (* eigentlich quatsch; macht leere Liste Sinn f
     | STRING                { [$1]    }
     | STRING COMMA string_list { $1 :: $3 }
     ;
-
-
 
 
 

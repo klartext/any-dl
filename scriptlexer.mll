@@ -7,30 +7,6 @@
   let _ =
     List.iter (fun (kwd, tok) -> Hashtbl.add keyword_table kwd tok)
                 [
-                  (* alles Spezialfaelle von function_call!
-                  ("hello",    HELLO);
-                  ("print",    PRINT);
-                  ("deparse",  DEPARSE);
-                  ("referrer", REFERRER);
-                  ("collect",  COLLECT);
-                  ("get",      GET);
-                  ("readline", READLINE);
-                  ("load",     LOAD);
-                  ("save",     SAVE);
-                  ("tagextract",  TAG_EXTRACT);
-                  ("linkextract",  LINK_EXTRACT);
-                  ("imageextract",  IMAGE_EXTRACT);
-
-                  ("sleep",    SLEEP);
-
-                  ("exit",     EXIT);
-                  *)
-
-                  ("if",       IF  );
-                  ("then",     THEN  );
-                  ("else",     ELSE  );
-                  ("endif",    ENDIF  );
-
                   ("parsername",  PARSERNAME  );
                   ("urlmatches",  URLMATCHES  );
                   ("start",       START  );
@@ -41,7 +17,6 @@
                   ("print",        PRINT  );
 
                   ("dummy",  DUMMY  );
-
                 ]
 
 
