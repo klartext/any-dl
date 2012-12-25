@@ -1,0 +1,15 @@
+
+
+ - Selection-Mechanism: rowselect(), colselect(), evtl. auch direkte Indizierung.
+   auch mir Regexp-Selection (oder soll sowas über nochmaliges Match gemacht werden?)
+
+ - Stringconcat()
+
+ - Programmaufruf-Definitionen
+
+ - system()-like ausführung von Programm-komandos
+
+ - set / get und variablennamen set($<varname>) => Beispiel  set( $second_url ); get( $first_url); print;
+
+
+
