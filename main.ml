@@ -1,3 +1,26 @@
+
+
+(*
+  any-dl:
+  -------
+  Media-Downloader for any kind of Online-Mediathek
+
+  already working:
+  ----------------
+    - ZDF
+    - ORF
+
+  planned for the future:
+  -----------------------
+    - ARTE
+    - VIMEO
+    - youtube
+
+    ...
+
+*)
+
+
 open Parsetreetypes
 
 
@@ -27,20 +50,12 @@ type url_t = { url: string; referrer: string }
 
 
 
-let command_to_string cmd = match cmd with
-  | Get_url     _      -> "Get_url"
-  | Match   _      -> "Match"
-  | Select  _      -> "Select"
-  | Print          -> "Print"
-  | Print_string _ -> "Print_string"
-  | Save         _ -> "Save"
-  | Dummy          -> "Dummy"
-  
-
 
 
 
 let print_warning str = prerr_string "WARNING: "; prerr_endline str
+
+
 
 
 
@@ -260,31 +275,6 @@ let evaluate_command_list cmdlst =
     command cmdlst Empty
 
 
-
-
-(*
-  any-dl:
-  -------
-  Media-Downloader for any kind of Online-Mediathek
-
-  already working:
-  ----------------
-    - ZDF
-    - ORF
-
-  planned for the future:
-  -----------------------
-    - ARTE
-    - VIMEO
-    - youtube
-
-    ...
-
-*)
-
-(*
-Module Neturl
-*)
 
 
 
@@ -639,6 +629,7 @@ let select_url_grabber_via_url  url =
 
 
 
+(*
 let zdf_example   = "http://www.zdf.de/ZDFmediathek/beitrag/video/1577656/heute-show-vom-24.02.2012?bc=sts;stt&flash=off"
 let orf_example   = "http://tvthek.orf.at/programs/3619175-Joachim-Gauck-im-Gespraech/episodes/3619173-Joachim-Gauck-im-Gespraech"
 let arte_example  = "http://videos.arte.tv/de/videos/raetsel_burnout-6411716.html"
@@ -652,10 +643,10 @@ let example_urls = [ zdf_example; orf_example ]
 let example_urls_2 = [ arte_example; ard_example ]
 
 let all_examples = List.append example_urls example_urls_2
+*)
 
 
 let do_old_any_dl () =
-
   let urls_from_argv = List.tl ( Array.to_list Sys.argv ) in
   List.iter ( fun url ->
                              print_endline "# --------------------";
@@ -670,9 +661,34 @@ let do_old_any_dl () =
 
 
 
+
+let do_new_any_dl parserhash =
+  let urls_from_argv = List.tl ( Array.to_list Sys.argv ) in
+  List.iter ( fun url ->
+                          let baseurl = Parsers.url_get_baseurl url in
+                          try
+                            let parserdef = Hashtbl.find parserhash baseurl in
+                            print_endline "# --------------------";
+
+                            evaluate_command_list ( Get_url(url, "-") :: parserdef.commands)
+                               (*
+                             let url_grabber = select_url_grabber_via_url url in
+
+                             let video_urls =
+                                              try url_grabber url
+                                              with Mainurl_error | Asx_error | Stream_error | Not_found -> prerr_endline "dl-error occured"; []
+                             in
+                               List.iter print_endline video_urls
+                               *)
+                          with Not_found -> prerr_endline ("No parser found for " ^ url)
+            ) urls_from_argv
+
+
+
+
 let scriptname = "script.adl"
 
-let start_parser filename_opt =
+let read_parser_definitions filename_opt =
   print_endline "Starting experimental parser!  \n";
   Printf.printf "Scriptname: %s" scriptname;
     let tokenlist = ref [] in
@@ -714,10 +730,43 @@ let start_parser filename_opt =
     List.rev !tokenlist
 
 
+
+let example_url =  "http://www.ardmediathek.de/das-erste/polizeiruf-110/eine-andere-welt-fsk-tgl-ab-20-uhr?documentId=12883434"
+
 let _  =
-    start_parser (Some scriptname);
+    let tokenlist = read_parser_definitions (Some scriptname)
+    in Printf.printf "Number of found parser definitions: %d\n" (List.length tokenlist);
+
+    List.iter ( fun parserdef -> 
+                                  Printf.printf "-------------------------\n";
+                                  Printf.printf "Parsername: %s\n" parserdef.parsername;
+                                  print_endline "matches on:";
+                                  List.iter (fun url -> Printf.printf "\t%s\n" url) parserdef.urllist; print_newline();
+                                  print_endline "Used commands\n";
+                                  List.iter ( fun cmd -> Printf.printf "\t%s\n" (command_to_string cmd) ) parserdef.commands;
+                                  print_newline()
+              ) tokenlist;
+
+
+    (* craeate and initialize the Parserdefinition-hash *)
+    (* ------------------------------------------------ *)
+    (* For looking up parserdefs by URL                 *)
+    (* ------------------------------------------------ *)
+    let parserhash = Hashtbl.create (List.length tokenlist) in
+    List.iter ( fun parserdef ->
+                                 List.iter ( fun url -> Hashtbl.add parserhash url parserdef;
+                                                        Printf.printf "Init: bound URL %-30s -> parser %s\n" url parserdef.parsername
+                                           ) parserdef.urllist;
+              ) tokenlist;
+
+    do_new_any_dl parserhash;
+
+    print_endline "Now OLD stuff";
+
     do_old_any_dl ()
+
   (*
+    List.iter ( fun parserdef -> match parserdef with (name,_,_) -> Hashtbl.add parserhash ) tokenlist;
   *)
   (* this was for testing purposes only!
   evaluate_command_list example_commands
@@ -732,12 +781,9 @@ let _  =
  ======================
 
 rtmp / rtmpt:
-
   rtmpdump --resume  -r rtmp://.... -y mp4:....  -o outfile.ext
 
-
 mms:
-
   mplayer -dumpstream mms://example.com/Globalplayers/GP_14.wmv -dumpfile ./download/test.wmv 
 
  ------------------------------------------------------------------------------------------------------------- *)

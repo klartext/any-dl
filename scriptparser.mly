@@ -19,9 +19,10 @@
 
 
 %token PARSERNAME
-%token MATCH
 %token URLMATCHES
+%token MATCH
 %token PRINT_MATCH
+%token PRINT
 %token DUMMY
 
 
@@ -93,7 +94,7 @@ exception Undefined_value of string
 
 
 %%
-main: parsername urlmatches START parser_script END { Parser ($1, $2, $4) }
+main: parsername urlmatches START parser_script END { { parsername = $1; urllist = $2; commands= $4 } }
     | EOF        { (*print_stringlist_endlinehash variable_hash;*) raise End_of_file }
     ;
 
@@ -114,15 +115,19 @@ statement_list:                { []      }
     | statement statement_list { $1 :: $2 }
     ;
 
-statement: match_stmt { $1 }
-    |      printmatch_stmt { Print_match }
-    |      DUMMY SEMI      { Dummy }
+statement: match_stmt           { $1 }
+    |      print_stmt           { Print  }
+    |      printmatch_stmt      { Print_match }
+    |      DUMMY SEMI           { Dummy }
     ;
 
 match_stmt: MATCH STRING SEMI { Match $2 }
     ;
 
-printmatch_stmt: PRINT_MATCH SEMI { "" }
+print_stmt: PRINT SEMI { Print }
+    ;
+
+printmatch_stmt: PRINT_MATCH SEMI { Print_match }
     ;
 
 

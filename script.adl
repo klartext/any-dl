@@ -1,13 +1,12 @@
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
-  match "lalala";
-  match "lalala";
-  match "lalala";
   match "(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"";
-  print_match;
+  print;
 
   #showvar;
   #select (fun x -> [|x.(0)|]);  (* muesste andere Syntax sein für das externe Script *)
+  #   colselect( 4 )
+  #   rowselect (2)
   #print;
   #showvar;
   #setvar( Url_list [("http://www.first.in-berlin.de", "-"); ("http://www.google.de", "")]);
@@ -15,6 +14,14 @@ start
   #get_urls;
   dummy;
 end
+
+
+
+parsername "ndr_mediathek_get": ( "http://www.ndr.de" )
+start
+  dummy;
+end
+
 
 
 # parsername "ndr_mediathek_get": ( "http://www.ndr.de" )
