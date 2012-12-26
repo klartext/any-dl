@@ -778,6 +778,9 @@ let _  =
                                            ) parserdef.urllist;
               ) tokenlist;
 
+
+    flush stdout; (* all init-stuff should be flushed, before evaluation stage is entered! *)
+
     do_new_any_dl parserhash
 
 
