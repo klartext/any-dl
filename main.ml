@@ -223,12 +223,49 @@ let evaluate_command_list cmdlst =
                                                        end
                                                          
 
+                       (*   BOT READY, is Print-command so far !!! *)
+                       | ColSelect   index            ->
+                                                       (*
+                                                       begin
+                                                         match tmpvar with
+                                                           | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
+                                                                                                        print_newline() ) mres
+                                                           | _ -> print_warning "HSELECT: wrong type!!!"
+                                                       end;
+                                                       *)
+                                                       assert(false);
+                                                       raise NOT_IMPLEMENTED_SO_FAR; 
+                                                       print_endline "HSelect";
+                                                       command tl tmpvar
+
+                       (*   BOT READY, is Print-command so far !!! *)
+                       | RowSelect   index            ->
+                                                       let res = ref Empty in
+                                                       print_endline "VSelect";
+                                                       begin
+                                                         match tmpvar with
+                                                           | Match_result mres ->
+                                                                                  begin
+                                                                                  if index >= 0 && index < Array.length ( mres ) - 1
+                                                                                  then
+                                                                                    res := Result_selection ( mres.(index) )
+                                                                                  else
+                                                                                    begin
+                                                                                      print_warning "VSelect: index clipped to 0";
+                                                                                      res := Result_selection ( mres.(0) )
+                                                                                    end
+                                                                                  end
+                                                           | _ -> print_warning "VSELECT: wrong type!!!"
+                                                       end;
+                                                       command tl !res
+
                        | Print                      ->
                                                        begin
                                                          match tmpvar with
                                                            | Document doc      -> print_endline doc
                                                            | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
                                                                                                         print_newline() ) mres
+                                                           | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
                                                            | _ -> print_warning "Print-command found non-printable type"
                                                        end;
                                                        command tl tmpvar
@@ -717,6 +754,7 @@ let _  =
     let tokenlist = read_parser_definitions (Some scriptname)
     in Printf.printf "Number of found parser definitions: %d\n" (List.length tokenlist);
 
+    (* DEVEL/DEBBUG
     List.iter ( fun parserdef -> 
                                   Printf.printf "-------------------------\n";
                                   Printf.printf "Parsername: %s\n" parserdef.parsername;
@@ -726,6 +764,7 @@ let _  =
                                   List.iter ( fun cmd -> Printf.printf "\t%s\n" (command_to_string cmd) ) parserdef.commands;
                                   print_newline()
               ) tokenlist;
+    *)
 
 
     (* craeate and initialize the Parserdefinition-hash *)
@@ -735,7 +774,7 @@ let _  =
     let parserhash = Hashtbl.create (List.length tokenlist) in
     List.iter ( fun parserdef ->
                                  List.iter ( fun url -> Hashtbl.add parserhash url parserdef;
-                                                        Printf.printf "Init: bound URL %-30s -> parser %s\n" url parserdef.parsername
+                                                        Printf.printf "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
                                            ) parserdef.urllist;
               ) tokenlist;
 

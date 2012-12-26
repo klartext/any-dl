@@ -12,4 +12,5 @@
  - set / get und variablennamen set($<varname>) => Beispiel  set( $second_url ); get( $first_url); print;
 
 
+ - Parserdefinitionen wenigstens für ARD, ZDF, ORF, NDR, besser auch gleich für ARTE (siehe arte-dl)
 

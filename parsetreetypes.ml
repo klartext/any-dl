@@ -1,3 +1,4 @@
+type row_t          = string array     (* Hselect as well as VSelec are represented the same way - late think of it as a row *)
 type match_result_t = string array array
 type selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
 
@@ -7,7 +8,8 @@ type results_t =
   | Url      of string * string  (* needed for Get-command *)
   | Url_list of (string * string) list
   | Dummy_result
-  | Match_result of match_result_t
+  | Match_result      of match_result_t
+  | Result_selection  of row_t
   | Empty
 
 
@@ -23,6 +25,8 @@ type commands_t =
   | Save      of string * string
   | Setvar    of results_t
   | Showvar
+  | ColSelect  of int  (* horizontal selection of a matrix (match-result) *)
+  | RowSelect  of int  (* vertical   selection of a matrix (match-result) *)
   | Dummy
 
 

@@ -24,6 +24,12 @@
 %token PRINT
 %token DUMMY
 
+%token COLSELECT
+%token ROWSELECT
+
+%token PRINT_STRING
+
+
 
 %token <string> IDENTIFIER
 %token <int>    INT_NUM
@@ -98,16 +104,26 @@ statement_list:                { []      }
 statement: match_stmt           { $1 }
     |      print_stmt           { Print  }
     |      printmatch_stmt      { Print_match }
+    |      print_string         { $1 }
+    |      selection            { $1 }
     |      DUMMY SEMI           { Dummy }
     ;
 
 match_stmt: MATCH STRING SEMI { Match $2 }
     ;
 
-print_stmt: PRINT SEMI { Print }
+print_stmt: PRINT LPAREN RPAREN SEMI  { Print }
     ;
 
 printmatch_stmt: PRINT_MATCH SEMI { Print_match }
+    ;
+
+print_string: PRINT_STRING LPAREN STRING RPAREN SEMI { Print_string $3 }
+    ;
+
+
+selection: COLSELECT LPAREN   INT_NUM   RPAREN SEMI { ColSelect $3 }
+    |      ROWSELECT LPAREN   INT_NUM   RPAREN SEMI { RowSelect $3 }
     ;
 
 
