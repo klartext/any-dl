@@ -17,3 +17,6 @@
  - Parserdefinitionen wenigstens für ARD, ZDF, ORF, NDR, besser auch gleich für ARTE (siehe arte-dl)
 
  - evtl. grep-Kommando, das zeilenweise arbeitet.... für die handhabung von href's
+
+ - Rebase - automatisch nach linkextract?!
+

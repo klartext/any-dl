@@ -111,11 +111,11 @@ statement: match_stmt           { $1 }
     |      printmatch_stmt      { Print_match }
     |      print_string         { $1 }
     |      selection            { $1 }
-    |      GET              SEMI    { Get }
-    |      LINKEXTRACT      SEMI    { Link_extract }
-    |      LINKEXTRACT_XML  SEMI    { Link_extract_xml }
-    |      SHOWTYPE      SEMI    { Showtype }
-    |      DUMMY        SEMI   { Dummy }
+    |      get_stmt         SEMI   { $1 }
+    |      LINKEXTRACT      SEMI   { Link_extract }
+    |      LINKEXTRACT_XML  SEMI   { Link_extract_xml }
+    |      SHOWTYPE         SEMI   { Showtype }
+    |      DUMMY            SEMI   { Dummy }
     ;
 
 match_stmt: MATCH STRING SEMI { Match $2 }
@@ -130,6 +130,9 @@ printmatch_stmt: PRINT_MATCH SEMI { Print_match }
 print_string: PRINT_STRING LPAREN STRING RPAREN SEMI { Print_string $3 }
     ;
 
+get_stmt: GET                           { Get }
+    |     GET LPAREN get_args   RPAREN  { $3 }
+    ;
 
 selection: COLSELECT LPAREN   INT_NUM   RPAREN SEMI { ColSelect $3 }
     |      ROWSELECT LPAREN   INT_NUM   RPAREN SEMI { RowSelect $3 }
@@ -188,5 +191,10 @@ selection_list: INT_NUM                        { [ $1 ] }
     |           INT_NUM COMMA selection_list   {  $1 :: $3 }
     ;
 
+
+
+get_args:  STRING               { Get_url ($1, "") }
+    |      STRING COMMA STRING  { Get_url ($1, $3) }
+    ;
 
 %%
