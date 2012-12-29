@@ -337,3 +337,12 @@ let imageextract = parse_html ~tagmatch:"img" ~subtag:(Some "src")
 let xml_get_href  = Xmlparse.get_href_from_asx
 
 
+
+(* --------------------------------------------------------------------------- *)
+(* parses xml out of a flat string and afterwards parses hrefs out of the xml  *)
+(* --------------------------------------------------------------------------- *)
+(* or in short: feed in xml-document as plain string, and get out list of href *)
+(* --------------------------------------------------------------------------- *)
+let xml_get_href_from_string  str = Xmlparse.get_href_from_asx ( Xmlparse.parse_string str )
+
+

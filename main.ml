@@ -60,6 +60,21 @@ type url_t = { url: string; referrer: string }
 *)
 
 
+(* ------------------------------------------------ *)
+(* select those items from the row_items, which are *)
+(* indexed by the values in the index_list          *)
+(* ------------------------------------------------ *)
+let item_selection row_items index_list =
+  let res_len = List.length index_list in
+  let res     = Array.make res_len row_items.(0) in
+  let index_arr = Array.of_list index_list in
+
+  for res_index = 0 to Array.length index_arr - 1
+  do
+    res.(res_index) <- row_items.(index_arr.(res_index))
+  done;
+  res
+
 
 let print_warning str = prerr_string "WARNING: "; prerr_endline str
 
@@ -74,7 +89,7 @@ let evaluate_command_list cmdlst =
                                                      begin
                                                        match document with
                                                          | Some doc -> command tl (Document doc)
-                                                         | None -> raise No_document_found       
+                                                         | None     -> raise No_document_found       
                                                      end
 
 
@@ -110,12 +125,22 @@ let evaluate_command_list cmdlst =
                                                        command tl (Match_result matched)
 
 
+                       (*
                        | Select selfunc             -> 
                                                        begin
                                                          match tmpvar with
                                                            | Match_result matchres -> command tl (Match_result (selfunc matchres))
                                                            | _           -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                        end
+                       *)
+
+                       | Select index_list          -> 
+                                                       begin
+                                                         match tmpvar with
+                                                           | Row rowitems -> command tl (Row(item_selection rowitems index_list))
+                                                           | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                       end
+
                                                          
 
                        (*   BOT READY, is Print-command so far !!! *)
@@ -151,14 +176,28 @@ let evaluate_command_list cmdlst =
                                                        end;
                                                        command tl !res
 
+                       | Link_extract               ->
+                                                       begin
+                                                         match tmpvar with
+                                                           | Document doc      -> command tl (Col (Array.of_list (Parsers.linkextract doc)))
+                                                           | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
+                                                       end
+
+                       | Link_extract_xml           ->
+                                                       begin
+                                                         match tmpvar with
+                                                           | Document doc      -> command tl (Col (Array.of_list (Parsers.xml_get_href_from_string doc)))
+                                                           | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
+                                                       end
+
                        | Print                      ->
                                                        begin
                                                          match tmpvar with
                                                            | Document doc      -> print_endline doc
                                                            | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
                                                                                                         print_newline() ) mres
-                                                           | Row              str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
-                                                           | Col              str_arr -> print_string "||| "; Array.iter ( fun str -> Printf.printf "\"%s\" ||| " str) str_arr
+                                                           | Row              str_arr -> Array.iter print_endline str_arr
+                                                           | Col              str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n " str) str_arr
                                                            (*
                                                            | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
                                                            *)
@@ -177,10 +216,6 @@ let evaluate_command_list cmdlst =
                                                                                             do
                                                                                               Printf.printf "%2d: \"%s\" \n" index x.(index)
                                                                                             done;
-                                                                                            (*
-                                                                                            List.iter ( fun y -> Printf.printf "\"%s\" ||| " y) matched_groups;
-                                                                                            *)
-                                                                                            ;
                                                                                             print_newline()
                                                                                  ) mres
                                                            | _ -> raise Wrong_argument_type
@@ -200,7 +235,7 @@ let evaluate_command_list cmdlst =
 
                        | Setvar var                 -> command tl var (* sets the argument of setvar as new tmpvar *)
 
-                       | Showvar                    -> begin
+                       | Showtype                   -> begin
                                                          match tmpvar with
                                                            | Document          _ -> print_endline "TMPVAR contains a document"
                                                            | Url               _ -> print_endline "TMPVAR contains a Url"
@@ -213,6 +248,7 @@ let evaluate_command_list cmdlst =
                                                            | Result_selection  _ -> print_endline "TMPVAR contains Match_result"
                                                            *)
                                                            | Empty               -> print_endline "TMPVAR contains EMPTY"
+                                                           | _                   -> print_endline "OOOOPS Unknown Type!"; raise Not_found
                                                        end;
                                                        command tl tmpvar
                    end

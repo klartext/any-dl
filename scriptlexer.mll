@@ -12,13 +12,21 @@
                   ("start",       START  );
                   ("end",         END  );
 
-                  ("showvar",      SHOWVAR  );
+                  ("showtype",      SHOWTYPE  );
                   ("match",        MATCH  );
                   ("print_match",  PRINT_MATCH  );
                   ("print",        PRINT  );
                   ("print_string", PRINT_STRING  );
 
+                  ("linkextract",      LINKEXTRACT  );
+                  ("linkextract_xml",  LINKEXTRACT_XML  );
+
+
+                  ("get",            GET  );
+
                   ("rowselect",      ROWSELECT  );
+                  ("select",         SELECT     );
+
                   ("colselect",      COLSELECT  );
 
                   ("dummy",  DUMMY  );

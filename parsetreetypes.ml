@@ -23,13 +23,18 @@ type commands_t =
   | Get_urls                                  (* get via tmpvar *)
   | Get                                       (* get ONE document via tmpvar (Url-type) *)
   | Match             of string               (* regexp-pattern-string *)
+  | Select            of int list             (* index-list for item-selection *) (* im Moment wie ColSelect *)
+  | Link_extract                              (* extracts html-href's from webpage *)
+  | Link_extract_xml                          (* extracts html-href's from (xml-formatted) webpage (e.g. asx-files) *)
+  (*
   | Select            of selector_t           (* acts as a filter *)
+  *)
   | Print
   | Print_match
   | Print_string of string
   | Save         of string * string
   | Setvar       of results_t
-  | Showvar
+  | Showtype
   | ColSelect  of int  (* horizontal selection of a matrix (match-result) *)
   | RowSelect  of int  (* vertical   selection of a matrix (match-result) *)
   | Dummy
@@ -47,7 +52,7 @@ let command_to_string cmd = match cmd with
   | Print_string   _ -> "Print_string"
   | Save           _ -> "Save"
   | Setvar         _ -> "Setvar"
-  | Showvar        _ -> "Showvar"
+  | Showtype       _ -> "Showtype"
   | Dummy            -> "Dummy"
   
 

@@ -22,11 +22,15 @@
 %token MATCH
 %token PRINT_MATCH
 %token PRINT
-%token SHOWVAR
+%token SHOWTYPE
+%token LINKEXTRACT
+%token LINKEXTRACT_XML
+%token GET
 %token DUMMY
 
 %token COLSELECT
 %token ROWSELECT
+%token SELECT
 
 %token PRINT_STRING
 
@@ -107,14 +111,17 @@ statement: match_stmt           { $1 }
     |      printmatch_stmt      { Print_match }
     |      print_string         { $1 }
     |      selection            { $1 }
-    |      SHOWVAR SEMI         { Showvar }
-    |      DUMMY SEMI           { Dummy }
+    |      GET              SEMI    { Get }
+    |      LINKEXTRACT      SEMI    { Link_extract }
+    |      LINKEXTRACT_XML  SEMI    { Link_extract_xml }
+    |      SHOWTYPE      SEMI    { Showtype }
+    |      DUMMY        SEMI   { Dummy }
     ;
 
 match_stmt: MATCH STRING SEMI { Match $2 }
     ;
 
-print_stmt: PRINT LPAREN RPAREN SEMI  { Print }
+print_stmt: PRINT               SEMI  { Print }
     ;
 
 printmatch_stmt: PRINT_MATCH SEMI { Print_match }
@@ -126,6 +133,7 @@ print_string: PRINT_STRING LPAREN STRING RPAREN SEMI { Print_string $3 }
 
 selection: COLSELECT LPAREN   INT_NUM   RPAREN SEMI { ColSelect $3 }
     |      ROWSELECT LPAREN   INT_NUM   RPAREN SEMI { RowSelect $3 }
+    |      SELECT    LPAREN   selection_list   RPAREN SEMI { Select    $3 }
     ;
 
 
@@ -176,6 +184,9 @@ string_list:                { [] (* eigentlich quatsch; macht leere Liste Sinn f
     ;
 
 
+selection_list: INT_NUM                        { [ $1 ] }
+    |           INT_NUM COMMA selection_list   {  $1 :: $3 }
+    ;
 
 
 %%
