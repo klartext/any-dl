@@ -1,3 +1,4 @@
+type col_t          = string array     (* Hselect as well as VSelec are represented the same way - late think of it as a row *)
 type row_t          = string array     (* Hselect as well as VSelec are represented the same way - late think of it as a row *)
 type match_result_t = string array array
 type selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
@@ -9,7 +10,11 @@ type results_t =
   | Url_list of (string * string) list
   | Dummy_result
   | Match_result      of match_result_t
+  | Col               of col_t
+  | Row               of row_t
+  (*
   | Result_selection  of row_t
+  *)
   | Empty
 
 
@@ -17,13 +22,13 @@ type commands_t =
   | Get_url       of string * string          (* url, referrer *)
   | Get_urls                                  (* get via tmpvar *)
   | Get                                       (* get ONE document via tmpvar (Url-type) *)
-  | Match     of string                       (* regexp-pattern-string *)
-  | Select    of selector_t                   (* acts as a filter *)
+  | Match             of string               (* regexp-pattern-string *)
+  | Select            of selector_t           (* acts as a filter *)
   | Print
   | Print_match
   | Print_string of string
-  | Save      of string * string
-  | Setvar    of results_t
+  | Save         of string * string
+  | Setvar       of results_t
   | Showvar
   | ColSelect  of int  (* horizontal selection of a matrix (match-result) *)
   | RowSelect  of int  (* vertical   selection of a matrix (match-result) *)
@@ -51,10 +56,6 @@ let command_to_string cmd = match cmd with
 
 (* Parser( <parser-name>, <url-match-list>, commands-list> *)
 (* ------------------------------------------------------- *)
-(*
-type parserdef_t = ( string * string list * commands_t list )
-*)
-type parserdef_t_old = ( string * string list * commands_t list )
 type parserdef_t = { parsername : string; urllist:  string list; commands:  commands_t list }
 
 

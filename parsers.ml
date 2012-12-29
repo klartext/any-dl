@@ -1,4 +1,5 @@
 open Nethtml
+open Parsetreetypes
 
 (* ------------------------------------------------------------------------ *)
 (* Sortiere String-Liste mit Reihenfolge von a nach z; case insensitive *)
@@ -6,11 +7,11 @@ let sort stringlist = List.sort ( fun a b -> let al = String.lowercase a and bl 
                                    in if al < bl then (-1) else if al = bl then 0 else 1)  stringlist
 
 
-(* ------------------------------------------------------------------------ *)
 
 
 
 
+(*
 let if_match_give_groups str regexp =
   if Pcre.pmatch ~rex:regexp str
   then
@@ -21,18 +22,10 @@ let if_match_give_groups str regexp =
   else
     None
 
+*)
 
 
-let if_match_give_group_of_groups str regexp =
-  if Pcre.pmatch ~rex:regexp str
-  then
-    begin
-      let substring_obj_arr = Pcre.exec_all ~rex:regexp str in
-      Some (Array.map (fun substring_obj -> Pcre.get_substrings substring_obj) substring_obj_arr )
-    end
-  else
-    None
-
+(*
 let if_match_give_group_of_groups_2 str regexp =
   if Pcre.pmatch ~rex:regexp str
   then
@@ -49,6 +42,24 @@ module Match =
   struct
     open Pcre
   end
+
+*)
+
+
+
+(* *)
+let if_match_give_group_of_groups str regexp =
+  if Pcre.pmatch ~rex:regexp str
+  then
+    begin
+      let substring_obj_arr = Pcre.exec_all ~rex:regexp str in
+      Some (Array.map (fun substring_obj -> Pcre.get_substrings substring_obj) substring_obj_arr )
+    end
+  else
+    None
+
+
+
 
 
 let urlmatcher url url_regexp =

@@ -12,6 +12,7 @@
                   ("start",       START  );
                   ("end",         END  );
 
+                  ("showvar",      SHOWVAR  );
                   ("match",        MATCH  );
                   ("print_match",  PRINT_MATCH  );
                   ("print",        PRINT  );

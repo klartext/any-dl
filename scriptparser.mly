@@ -22,6 +22,7 @@
 %token MATCH
 %token PRINT_MATCH
 %token PRINT
+%token SHOWVAR
 %token DUMMY
 
 %token COLSELECT
@@ -106,6 +107,7 @@ statement: match_stmt           { $1 }
     |      printmatch_stmt      { Print_match }
     |      print_string         { $1 }
     |      selection            { $1 }
+    |      SHOWVAR SEMI         { Showvar }
     |      DUMMY SEMI           { Dummy }
     ;
 

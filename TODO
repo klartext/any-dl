@@ -1,5 +1,7 @@
 
 
+ - Bug bei baseurl: wenn "/" am Ende, dann klappt es nicht...?!
+
  - Selection-Mechanism: rowselect(), colselect(), evtl. auch direkte Indizierung.
    auch mir Regexp-Selection (oder soll sowas über nochmaliges Match gemacht werden?)
 
