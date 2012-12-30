@@ -179,11 +179,21 @@ let evaluate_command_list cmdlst =
                        | Link_extract               ->
                                                        begin
                                                          match tmpvar with
-                                                           | Document (doc, url) ->  let urls   = Array.of_list (Parsers.linkextract doc) in
+                                                           | Document (doc, url) ->
+                                                                     let urls   = Array.of_list (Parsers.linkextract doc) in
 
-                                                                                     (* the url of the doecument will become the referrer of the extracted url! *)
-                                                                                     let links  = Url_array (Array.map ( fun lnk -> (lnk, url) ) urls) in
-                                                                                     command tl links
+                                                                     (* the url of the doecument will become the referrer of the extracted url! *)
+                                                                     let links  = Url_array (Array.map ( fun lnk ->
+                                                                                                           let base = Network.baseurl url in
+                                                                                                           let rebased = Parsers.rebase_aggregated lnk base in
+                                                                                                           (rebased, url)
+                                                                                                       ) urls) in
+
+
+                                                                     command tl links
+
+
+
                                                            | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
                                                        end
 
@@ -333,7 +343,7 @@ let do_new_any_dl parserhash url_list =
 
 
 
-let scriptname = "script.adl"
+let scriptname = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")
 
 let read_parser_definitions filename_opt =
   Printf.printf "Scriptname: %s" scriptname;

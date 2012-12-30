@@ -1,6 +1,47 @@
 
 
- - Bug bei baseurl: wenn "/" am Ende, dann klappt es nicht...?!
+BUGs:
+=====
+ - Bug bei baseurl: wenn "/" am Ende der match-URLs, dann klappt es nicht...!!!
+
+
+ - Rebase arbeitet och falsch. Beispiel:
+   ./any-dl  http://www.first.in-berlin.de/PROFIL.html
+
+    ergibt als Link-Printer:
+
+      http://www.first.in-berlin.de/software/tools/pftdbns/  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.linux-magazin.de/heft_abo/ausgaben/2005/04/brave_gnu_world  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/software/tools/mboxcleaner/  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.twk.tuebingen.mpg.de/twk07/index.php  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/software/tools/apalogretrieve/  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.blender.org/  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#signal_auswertung  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#produktions_testing  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#testtool  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#sw_tests  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#doku_messtech  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#db_mig  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#taskforce  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#wind  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#projekte  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#schwerpunkte  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      http://www.first.in-berlin.de/#allgemein  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
+      oliver@siouxsie:~/Programmierung/any-dl$ 
+
+
+
+FEATUREs:
+=========
+
+ - Special parsers (Match-all-URLS, oder MATCH-all-parsernames or special definitjons,
+   zusammen mit CLI-Kommando, um bestimmte Parser zu aktivieren.
+    Alternativ: spezielle Parser ZWANGSWEISE auswählen, also die Parser-Auswahl via
+    URL disablen und einen bestimmten Parser anwenden.
+    ist sinnvoll, wenn man z.B. einen Parser hat, der alle html-href-Links ausgibt,
+    und er grundsätzlich auf die Ausgabe angesetzt werden soll (statt nur auf bestimmte URLs).
+
+    => any-dl -s <parsername>
 
  - Selection-Mechanism: rowselect(), colselect(), evtl. auch direkte Indizierung.
    auch mir Regexp-Selection (oder soll sowas über nochmaliges Match gemacht werden?)
@@ -13,18 +54,11 @@
 
  - set / get und variablennamen set($<varname>) => Beispiel  set( $second_url ); get( $first_url); print;
 
-
  - Parserdefinitionen wenigstens für ARD, ZDF, ORF, NDR, besser auch gleich für ARTE (siehe arte-dl)
 
  - evtl. grep-Kommando, das zeilenweise arbeitet.... für die handhabung von href's
 
- - Rebase - automatisch nach linkextract?!
+ - CONCAT bei REBASE: mehrfache "/" werden nicht reduziert zu einfachem
 
- - Special parsers (Match-all-URLS, oder MATCH-all-parsernames or special definitjons,
-   zusammen mit CLI-Kommando, um bestimmte Parser zu aktivieren.
-    Alternativ: spezielle Parser ZWANGSWEISE auswählen, also die Parser-Auswahl via
-    URL disablen und einen bestimmten Parser anwenden.
-    ist sinnvoll, wenn man z.B. einen Parser hat, der alle html-href-Links ausgibt,
-    und er grundsätzlich auf die Ausgabe angesetzt werden soll (statt nur auf bestimmte URLs).
+ - configurable rc-file
 
-    => any-dl -s <parsername>

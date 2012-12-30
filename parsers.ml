@@ -135,7 +135,22 @@ let url_scheme url =
   Pcre.replace ~pat:"^([^:]+).*" ~itempl:(Pcre.subst "$+") url
 
 
-let rebase_aggregated extracted_list baseurl =
+
+let rebase_aggregated extracted baseurl =
+  begin
+    match detect_urlpath_type extracted with
+        Absolute_site   -> extracted
+      | Absolute_base   -> extracted
+      | Relative_root   -> Filename.concat (siteurl baseurl) extracted
+      | Same_protocoll  -> (url_scheme baseurl) ^ extracted
+      | Relative_local  -> Filename.concat (siteurl baseurl) extracted
+      | Base_url        -> baseurl
+      | Undetected      -> baseurl
+  end
+    
+
+
+let rebase_aggregated_lst extracted_list baseurl =
               List.map ( fun extracted ->
          let newextracteding = 
                                        match detect_urlpath_type extracted with
@@ -150,7 +165,6 @@ let rebase_aggregated extracted_list baseurl =
          newextracteding
                                      ) extracted_list
     
-
 
 
 

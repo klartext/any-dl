@@ -39,16 +39,23 @@ parsername "zdf_mediathek_get": ( "http://www.zdf.de" )
 start
   match "http://.*?asx";
   print;
-showtype;
-  rowselect(0);
-  select(0);
-showtype;
-  get("http://www.first.in-berlin.de/", "-");
-  showtype;
+
+#showtype;
+#  rowselect(0);
+#  select(0);
+#showtype;
+#  get("http://www.first.in-berlin.de/", "-");
+#  showtype;
+#  linkextract;
+#  print;
+end
+
+
+parsername "show_links": ("http://www.first.in-berlin.de")
+start
   linkextract;
   print;
 end
-
 
 
 parsername "dctp_mediathek_get": ( "http://www.dctp.tv/" )

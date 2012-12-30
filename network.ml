@@ -26,7 +26,7 @@ let urlmatcher url url_regexp =
     end
   else
     begin
-      prerr_endline "url-scheme for baseurl could not be matched";
+      prerr_endline ("url-scheme for baseurl could not be matched (" ^ url ^ ")");
       url
     end
 
