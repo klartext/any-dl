@@ -1,3 +1,11 @@
+parsername "autism_journal": ("http://link.springer.com")
+start
+  linkextract;
+  print;
+end
+
+
+
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
   linkextract;

@@ -157,6 +157,28 @@ let rebase_aggregated extracted_list baseurl =
 
 
 
+let rebase_aggregated_arr  extracted_list  baseurl =
+              Array.map ( fun extracted ->
+         let newextracteding = 
+                                       match detect_urlpath_type extracted with
+                                           Absolute_site   -> extracted
+                                         | Absolute_base   -> extracted
+                                         | Relative_root   -> Filename.concat (siteurl baseurl) extracted
+                                         | Same_protocoll  -> (url_scheme baseurl) ^ extracted
+                                         | Relative_local  -> Filename.concat (siteurl baseurl) extracted
+                                         | Base_url        -> baseurl
+                                         | Undetected      -> baseurl
+         in
+         newextracteding
+                                     ) extracted_list
+    
+
+
+
+
+
+
+
 
 
 

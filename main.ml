@@ -88,7 +88,7 @@ let evaluate_command_list cmdlst =
                        | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) in
                                                      begin
                                                        match document with
-                                                         | Some doc -> command tl (Document doc)
+                                                         | Some doc -> command tl (Document (doc, url))
                                                          | None     -> raise No_document_found       
                                                      end
 
@@ -110,7 +110,7 @@ let evaluate_command_list cmdlst =
                                                        let str =
                                                          begin
                                                            match tmpvar with
-                                                             | Document doc -> doc
+                                                             | Document (doc, url) -> doc
                                                              | _            -> raise No_Matchable_value_available
                                                          end
                                                        in
@@ -179,25 +179,36 @@ let evaluate_command_list cmdlst =
                        | Link_extract               ->
                                                        begin
                                                          match tmpvar with
-                                                           | Document doc      -> command tl (Col (Array.of_list (Parsers.linkextract doc)))
+                                                           | Document (doc, url) ->  let urls   = Array.of_list (Parsers.linkextract doc) in
+
+                                                                                     (* the url of the doecument will become the referrer of the extracted url! *)
+                                                                                     let links  = Url_array (Array.map ( fun lnk -> (lnk, url) ) urls) in
+                                                                                     command tl links
                                                            | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
                                                        end
+
 
                        | Link_extract_xml           ->
                                                        begin
                                                          match tmpvar with
-                                                           | Document doc      -> command tl (Col (Array.of_list (Parsers.xml_get_href_from_string doc)))
+                                                           | Document(doc, url)-> let urls   = Array.of_list (Parsers.xml_get_href_from_string doc) in
+                                                                                  (* the url of the doecument will become the referrer of the extracted url! *)
+                                                                                  let links  = Url_array (Array.map ( fun lnk -> (lnk, url) ) urls) in
+                                                                                  command tl links
                                                            | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
                                                        end
 
                        | Print                      ->
                                                        begin
                                                          match tmpvar with
-                                                           | Document doc      -> print_endline doc
+                                                           | Document(doc, url)-> print_endline doc  (* only print the document, without referrer *)
                                                            | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
                                                                                                         print_newline() ) mres
                                                            | Row              str_arr -> Array.iter print_endline str_arr
                                                            | Col              str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n " str) str_arr
+                                                           | Url (href, ref)   -> Printf.printf "%s   # Referrer:  %s\n" href ref
+                                                           | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
+                                                           | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
                                                            (*
                                                            | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
                                                            *)

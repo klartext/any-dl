@@ -5,9 +5,10 @@ type selector_t     = ( match_result_t -> match_result_t ) (* function, that has
 
 
 type results_t =
-  | Document of string (* hier könnte noch der Referrer ergänzt werden *)
-  | Url      of string * string  (* needed for Get-command *)
-  | Url_list of (string * string) list
+  | Document  of string * string              (* (document, url-of-doc) *)
+  | Url       of string * string              (* (url, referrer) needed for Get-command *)
+  | Url_list  of (string * string) list
+  | Url_array of (string * string) array
   | Dummy_result
   | Match_result      of match_result_t
   | Col               of col_t

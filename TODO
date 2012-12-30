@@ -20,3 +20,11 @@
 
  - Rebase - automatisch nach linkextract?!
 
+ - Special parsers (Match-all-URLS, oder MATCH-all-parsernames or special definitjons,
+   zusammen mit CLI-Kommando, um bestimmte Parser zu aktivieren.
+    Alternativ: spezielle Parser ZWANGSWEISE auswählen, also die Parser-Auswahl via
+    URL disablen und einen bestimmten Parser anwenden.
+    ist sinnvoll, wenn man z.B. einen Parser hat, der alle html-href-Links ausgibt,
+    und er grundsätzlich auf die Ausgabe angesetzt werden soll (statt nur auf bestimmte URLs).
+
+    => any-dl -s <parsername>
