@@ -4,6 +4,7 @@ BUGs:
 =====
  - Bug bei baseurl: wenn "/" am Ende der match-URLs, dann klappt es nicht...!!!
 
+ - CONCAT bei REBASE: mehrfache "/" werden nicht reduziert zu einfachem
 
  - Rebase arbeitet och falsch. Beispiel:
    ./any-dl  http://www.first.in-berlin.de/PROFIL.html
@@ -34,6 +35,8 @@ BUGs:
 FEATUREs:
 =========
 
+ - Input-URL: eigene Variable, unter der diese abzurufen ist.
+
  - Special parsers (Match-all-URLS, oder MATCH-all-parsernames or special definitjons,
    zusammen mit CLI-Kommando, um bestimmte Parser zu aktivieren.
     Alternativ: spezielle Parser ZWANGSWEISE auswählen, also die Parser-Auswahl via
@@ -41,7 +44,7 @@ FEATUREs:
     ist sinnvoll, wenn man z.B. einen Parser hat, der alle html-href-Links ausgibt,
     und er grundsätzlich auf die Ausgabe angesetzt werden soll (statt nur auf bestimmte URLs).
 
-    => any-dl -s <parsername>
+    => any-dl -p <parsername>
 
  - Selection-Mechanism: rowselect(), colselect(), evtl. auch direkte Indizierung.
    auch mir Regexp-Selection (oder soll sowas über nochmaliges Match gemacht werden?)
@@ -58,7 +61,14 @@ FEATUREs:
 
  - evtl. grep-Kommando, das zeilenweise arbeitet.... für die handhabung von href's
 
- - CONCAT bei REBASE: mehrfache "/" werden nicht reduziert zu einfachem
+ - configurable rc-file location
 
- - configurable rc-file
+ - CLI:
+     -p <parser>   select a certain parser-def for the URLs
+     -l            list aprsers
+     -r            rc-file name
+
+
+
+
 

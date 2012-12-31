@@ -24,6 +24,9 @@
 
                   ("get",            GET  );
 
+                  ("sto",            STO  );
+                  ("rcl",            RCL  );
+
                   ("rowselect",      ROWSELECT  );
                   ("select",         SELECT     );
 
@@ -38,7 +41,7 @@ let alpha = ['a'-'z' 'A'-'Z']+
 let alpha_ = ['a'-'z' 'A'-'Z' '_']+
 let blanks = [' ' '\t' '\n' '\r']+
 let digit  = [ '0' - '9' ]
-let identifier = ['a'-'z' 'A'-'Z' '_'] (alpha_ | digit)*
+let identifier = ['a'-'z' 'A'-'Z' ] (alpha_ | digit)*
 
 
 rule read_command = parse
@@ -47,6 +50,8 @@ rule read_command = parse
    | identifier as name { try Hashtbl.find keyword_table  name with Not_found -> IDENTIFIER (Lexing.lexeme lexbuf) }
    | digit+ as num  { INT_NUM (int_of_string num) }
    | '"'            { Buffer.clear stringbuf; read_string lexbuf }
+   | ">>>"          { Buffer.clear stringbuf; read_specialstring lexbuf }
+   | "_*_"          { Buffer.clear stringbuf; read_specialstring_2 lexbuf }
    | '.'            { DOT }
 
    | '>'            { GT }
@@ -68,9 +73,30 @@ and read_string = parse
    | [^ '"' '\n' '\\']+  { Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_string lexbuf }
    | '\n'           { incr linenum; Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_string lexbuf }
    | "\\n"          { Buffer.add_string stringbuf "\n"; read_string lexbuf }
+   | "\\n"          { Buffer.add_string stringbuf "\n"; read_string lexbuf }
+   | "\\("          { Buffer.add_string stringbuf "\\("; read_string lexbuf }
+   | "\\)"          { Buffer.add_string stringbuf "\\)"; read_string lexbuf }
+   | "\\."          { Buffer.add_string stringbuf "\\."; read_string lexbuf }
    | "\\\""         { Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_string lexbuf }
    | '"'            { STRING (Buffer.contents stringbuf) }
    | eof            { EOF }
+
+
+and read_specialstring = parse
+   | [^ '"' '\n' '<']+  { Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_specialstring lexbuf }
+   | _              { Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_specialstring lexbuf }
+   | "<<<"          { STRING (Buffer.contents stringbuf) }
+   | eof            { EOF }
+
+
+and read_specialstring_2 = parse
+   | [^ '\n' '_' '*']+  { Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_specialstring_2 lexbuf }
+   | _              { Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_specialstring_2 lexbuf }
+   | "_*_"          { STRING (Buffer.contents stringbuf) }
+   | eof            { EOF }
+
+
+
 
 
 and eat_up_line = parse

@@ -107,6 +107,7 @@ let evaluate_command_list cmdlst =
 
                        (* hmhh, str sollte doch aus der tmpvar besser entnommen werden !  !!!!!!!!!!!!!! *)
                        | Match   pattern            ->
+                                                       Printf.printf "MATCH-PATTER: \"%s\"\n" pattern;
                                                        let str =
                                                          begin
                                                            match tmpvar with
@@ -211,6 +212,7 @@ let evaluate_command_list cmdlst =
                        | Print                      ->
                                                        begin
                                                          match tmpvar with
+                                                           | String   str      -> print_endline str 
                                                            | Document(doc, url)-> print_endline doc  (* only print the document, without referrer *)
                                                            | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
                                                                                                         print_newline() ) mres
@@ -232,7 +234,7 @@ let evaluate_command_list cmdlst =
                                                          match tmpvar with
                                                            | Match_result mres -> let lines = Array.to_list mres in
                                                                       print_endline "print_match: match 0 is the whole match, all others are the groups\n";
-                                                                      Array.iter ( fun x -> let matched_groups = List.tl (Array.to_list x) in
+                                                                      Array.iter ( fun x -> 
                                                                                             for index = 0 to Array.length x -1
                                                                                             do
                                                                                               Printf.printf "%2d: \"%s\" \n" index x.(index)

@@ -26,6 +26,8 @@
 %token LINKEXTRACT
 %token LINKEXTRACT_XML
 %token GET
+%token STO
+%token RCL
 %token DUMMY
 
 %token COLSELECT
@@ -118,7 +120,7 @@ statement: match_stmt           { $1 }
     |      DUMMY            SEMI   { Dummy }
     ;
 
-match_stmt: MATCH STRING SEMI { Match $2 }
+match_stmt: MATCH LPAREN STRING RPAREN SEMI { Match $3 }
     ;
 
 print_stmt: PRINT               SEMI  { Print }
@@ -133,6 +135,15 @@ print_string: PRINT_STRING LPAREN STRING RPAREN SEMI { Print_string $3 }
 get_stmt: GET                           { Get }
     |     GET LPAREN get_args   RPAREN  { $3 }
     ;
+
+sto_stmt: STO LPAREN STRING   RPAREN    { $3 }
+    ;
+
+rcl_stmt: RCL LPAREN STRING   RPAREN    { $3 }
+    ;
+
+
+
 
 selection: COLSELECT LPAREN   INT_NUM   RPAREN SEMI { ColSelect $3 }
     |      ROWSELECT LPAREN   INT_NUM   RPAREN SEMI { RowSelect $3 }
