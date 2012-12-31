@@ -32,7 +32,7 @@
     | Select            of selector_t           (* acts as a filter *)
     *)
     | Print
-    | Print_match
+    | Show_match
     | Print_string of string
     | Save         of string * string
     | Setvar       of results_t
@@ -52,7 +52,7 @@ let command_to_string cmd = match cmd with
   | Link_extract     -> "Link_extract"
   | Link_extract_xml -> "Link_extract_xml"
   | Print            -> "Print"
-  | Print_match      -> "Print_match"
+  | Show_match      -> "Show_match"
   | Print_string   _ -> "Print_string"
   | Save           _ -> "Save"
   | Setvar         _ -> "Setvar"

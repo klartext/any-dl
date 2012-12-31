@@ -14,7 +14,7 @@
 
                   ("showtype",      SHOWTYPE  );
                   ("match",        MATCH  );
-                  ("print_match",  PRINT_MATCH  );
+                  ("print_match",  SHOW_MATCH  );
                   ("print",        PRINT  );
                   ("print_string", PRINT_STRING  );
 

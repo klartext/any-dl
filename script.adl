@@ -13,7 +13,7 @@ start
   print;
 
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"<<< );
-  print_match;
+  show_match;
 
 #showtype;
   rowselect(0);
@@ -58,7 +58,7 @@ start
     #match( "Download may be incomplete \([^)]+\), try resuming" );
     #match( "ERROR: ReadPacket, failed to read RTMP packet header" );
     #match( "carton_23h_..\.mp4" );
-  print_match;
+  show_match;
 
   # $M für match oder $S für Stack? $M für Mem?  ???
   # 

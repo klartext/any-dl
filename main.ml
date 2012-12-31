@@ -33,7 +33,7 @@ exception No_Matchresult_available  (* if Select is used, but there is no match-
 exception No_Matchable_value_available  (* if Match is used, but there is no matchabe tmpvar *)
 
 exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... without more detailed info *)
-exception Wrong_argument_type           (* e.g. Print_match on non-match *)
+exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 
 exception Invalid_Row_Index             (* indexing a row that does not exist *)
 
@@ -229,7 +229,7 @@ let evaluate_command_list cmdlst =
                                                        command tl tmpvar
 
 
-                       | Print_match                -> (* prints "real" matches only (and not the fullmatch with index = 0) *)
+                       | Show_match                -> (* prints "real" matches only (and not the fullmatch with index = 0) *)
                                                        begin
                                                          match tmpvar with
                                                            | Match_result mres -> let lines = Array.to_list mres in

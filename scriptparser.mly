@@ -20,7 +20,7 @@
 %token PARSERNAME
 %token URLMATCHES
 %token MATCH
-%token PRINT_MATCH
+%token SHOW_MATCH
 %token PRINT
 %token SHOWTYPE
 %token LINKEXTRACT
@@ -110,7 +110,7 @@ statement_list:                { []      }
 
 statement: match_stmt           { $1 }
     |      print_stmt           { Print  }
-    |      printmatch_stmt      { Print_match }
+    |      printmatch_stmt      { Show_match }
     |      print_string         { $1 }
     |      selection            { $1 }
     |      get_stmt         SEMI   { $1 }
@@ -126,7 +126,7 @@ match_stmt: MATCH LPAREN STRING RPAREN SEMI { Match $3 }
 print_stmt: PRINT               SEMI  { Print }
     ;
 
-printmatch_stmt: PRINT_MATCH SEMI { Print_match }
+printmatch_stmt: SHOW_MATCH SEMI { Show_match }
     ;
 
 print_string: PRINT_STRING LPAREN STRING RPAREN SEMI { Print_string $3 }
