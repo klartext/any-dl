@@ -1,0 +1,165 @@
+any-dl, a tool for downloading Mediathek files
+==============================================
+
+Overview
+---------
+
+  The too any-dl has it's name derived from tools like
+  youtoube-dl, arte-dl, dctp-dl, zdf-dl, ...
+  These tools are specialized downloader tools for downloading
+  movied from youtube as well as the german tv-broadcasters archives.
+  In germany, since some years, the broadcasting statiosn has to remove
+  the contents from the public access after one week, if not
+  certain conditions are met to allow them being online for longer.
+
+  As these different tools all are only allowing only access to certain
+  archives/servers, and keeping them up-to date (they are not
+  all part of a package managing system like *.deb / *.rpm of some
+  linux distributions, maintainance as user was a bit tidy.
+  Also, even all these tools do nearly the same task, just looking
+  at different servers and doing the html-/xml-parsing on different
+  URL's and documents, the main task is the same for all these tools.
+
+  They all look up a document, parse it's contents and then download
+  the video file. Or in some more complicated cases, one or more
+  other ressources must be downlkoaded in case of parsing, and then
+  create the video-urls from these paresd documents and then do the
+  download.
+  So, the oferall structure is: load one or more documents to get the
+  video-url and then download that video and save it to disk.
+  Thats the common between these tools.
+  The difference between these tools is: look at different palces
+  and do look for other stuff inside the docuemnts to get the video-url.
+
+  So a way to making this task more general, so that one tool could
+  do all the downloading operations for many platforms, is to make
+  a general / generic downlaod-parse-download tool, that is configurable
+  for the certain vidoe-archives that are in focus.
+
+  And this general / generic tool is any-dl.
+
+  For the purpose of this task, as a way of configuring the tool to do it's
+  tasks on any vdeo-archives of interest, an input language, that allows
+  the description of the download-parse-download process was developed.
+
+  Additionally, for handling the tool-options, command line arguments might
+  also be parsed to have switches for the over-all behaviour.
+! (At the moment no CLI-switches are implemented so far, but some are
+! already planned.)
+
+
+Parser-Definition Language:
+---------------------------
+
+Here is an example for the NDR-mediathek.
+The script shows how to grab the video-url and just print it:
+
+  parsername "ndr_mediathek_get": ( "http://www.ndr.de" )
+  start
+    match( "http://.*?mp4" );
+    print;
+  end
+
+
+This parser-definition doe sthe following:
+The resulting parser will be named "ndr_mediathek_get".
+Any URLs from the base-domain http://www.ndr.de  that
+any-dl should analyse will parsed with this parser.
+The parser definition for "ndr_mediathek_get" is
+then following between the keywords "start"
+and "end".
+
+The tool does then the following: the document, with the
+URL that is passed to any-dl (that any-dl gets as argument on the command line )
+will first be downloaded implicitly.
+As this task is necessary in any case, and for all mediathek-accesses,
+all parsers just do this first download implicitly.
+No cdommand is needed for this stage.
+Then the first user-defined command is following the "start" keyword.
+In this case it is
+    match( "http://.*?mp4" );
+and that does try to do a match with the regular expression on the downloaded
+document.
+If it does not find a match, this will be reported as a problem.
+If there is a match, then the next command of the parser definition
+will be executed.
+In this case, it is just a print-statement.
+The match will just be printed.
+Here also a download-command could be used to start the download.
+But this is just an example in an early stage of any-dl,
+where download commands as such are not already implemented.
+
+But this example shows you, what there is all about the input language.
+It's comparingly easy, and in this way it will be possible to have easy access
+to a lot of different video archives, all with the same tool.
+If something changes in the way a video url is presented on one of these
+video/archives / Mediatheken, then only the according parser-definition
+needs to be updated. The tool any-dl itself does not needed to be changed.
+
+
+
+Language Features:
+------------------
+
+Parser-Definitions:
+
+parsername "<parser-name>": ( <list-of-urls> )
+  start
+    <command_1>
+     ...
+    <command_n>
+  end
+
+Example: see above.
+
+<list-of-urls> is a comma-seperated list of strings.
+
+
+Commands all end with a semicolon ( ';' ).
+Commands / functions, that do not have parameters, will be used without
+parenatheses ( '(' and ')' ).
+Only when a command / function will need arguments,
+these will be passed inside parenatheses ( '(' and ')' )
+which follow the name of the command/function.
+
+Stringquoting at the moment has three dfferent styles:
+
+  String-Quoting:  "    "
+  String-Quoting:  >>>  <<<
+  String-Quoting:  _*_  _*_
+
+
+
+The language offers a stack of size 1.
+That means, that results from one command / function
+can be passed as input for the next command/function
+and this is default behaviour.
+Not all commands / functions do need the stack
+for input,a dn not all do leave something there
+as result (and input for following functions/commands).
+
+But if there is the need for transfering a result,
+normally no additional variables are needed.
+
+! But it is planned for more complicated parser-definitions,
+! that named variables can be stored in a seperate location
+! and also accessed via name.
+
+
+
+To store the current data from the default-stack
+under a certain name, the command
+  store("<variablename>");
+will be used.
+
+To copy the value of the named variable back to the default stack,
+the command 
+  recall("<variablename>");
+can be used.
+
+! Some syntactic sugar might also be provided later.
+
+(PLANNED FEATURE: Ausserdem $-Notation für den variablen-Abruf in bestimmten funktionen erlaubt.)
+(PLANNED FEATURE: Start-Url in eigener Variable abgelegt.)
+
+
