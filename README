@@ -1,5 +1,13 @@
-any-dl, a tool for downloading Mediathek files
-==============================================
+any-dl, a tool for downloading Mediathek video-files
+====================================================
+
+! This stuff is in early stage.
+! Some functionality already is working (like using matches on
+! downloaded pages and do print-command). Other things (like
+! named variables and such stuff are not implemented so far).
+! The parser-definition-language is not frozen so far
+! and may change in the future.
+
 
 Overview
 ---------
