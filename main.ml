@@ -355,40 +355,46 @@ let do_new_any_dl parserhash url_list =
 
 let scriptname = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")
 
+
+
+(* read the parser-definitions from the rc-file *)
+(* -------------------------------------------- *)
 let read_parser_definitions filename_opt =
-  Printf.printf "Scriptname: %s" scriptname;
-    let tokenlist = ref [] in
+  if Cli.opt.Cli.verbose then Printf.fprintf stderr "rc-filename: %s\n" scriptname;
 
-    let input_channel = match filename_opt with None -> stdin | Some filename -> open_in filename in
-    let lexer = Lexing.from_channel input_channel in
-    begin
-      try
-        while true do
-          let result = Scriptparser.main Scriptlexer.read_command lexer in
-          tokenlist := result :: !tokenlist
-        done
-      with End_of_file -> prerr_endline "Ende der Eingabe erreicht; Parser-Definitionen gelesen!"
+  let tokenlist = ref [] in
 
-           (*
-           | Not_found -> prerr_string "Variable not known in line ";
-                          prerr_int !Scriptlex.linenum;prerr_newline()
-                          (*
-                          exit 1
-                          *)
-           *)
+  let input_channel = match filename_opt with None -> stdin | Some filename -> open_in filename in
+  let lexer = Lexing.from_channel input_channel in
+  begin
+    try
+      while true do
+        let result = Scriptparser.main Scriptlexer.read_command lexer in
+        tokenlist := result :: !tokenlist
+      done
+    with End_of_file -> if Cli.opt.Cli.verbose
+                        then prerr_endline "End of rc-file reached; parser definitions were read."
 
-           | Parsing.Parse_error -> 
-                  prerr_string "Parse error in line ";
-                  prerr_int !Scriptlexer.linenum;
-                  (*
-                  *)
-                  prerr_newline();
-                  exit 1
+         (*
+         | Not_found -> prerr_string "Variable not known in line ";
+                        prerr_int !Scriptlex.linenum;prerr_newline()
+                        (*
+                        exit 1
+                        *)
+         *)
 
-    end
-    ;
-    close_in input_channel;
-    List.rev !tokenlist
+         | Parsing.Parse_error -> 
+                prerr_string "Parse error in line ";
+                prerr_int !Scriptlexer.linenum;
+                (*
+                *)
+                prerr_newline();
+                exit 1
+
+  end
+  ;
+  close_in input_channel;
+  List.rev !tokenlist
 
 
 
@@ -397,20 +403,27 @@ let read_parser_definitions filename_opt =
 let example_url =  "http://www.ardmediathek.de/das-erste/polizeiruf-110/eine-andere-welt-fsk-tgl-ab-20-uhr?documentId=12883434"
 
 let _  =
-    Cli.parse();
+    Cli.parse(); (* parse the command line *)
 
-    let tokenlist = read_parser_definitions (Some scriptname)
-    in Printf.printf "Number of found parser definitions: %d\n" (List.length tokenlist);
+    (* parse the parser-definitions *)
+    (* ---------------------------- *)
+    let tokenlist = read_parser_definitions (Some scriptname) in
+
+    (* if cli-switches ask for it, print number of parser-definitions *)
+    if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose then
+      Printf.fprintf stderr "Number of found parser definitions: %d\n" (List.length tokenlist);
 
 
-    (* craeate and initialize the Parserdefinition-hash *)
+    (* creaate and initialize the Parserdefinition-hash *)
     (* ------------------------------------------------ *)
     (* For looking up parserdefs by URL                 *)
     (* ------------------------------------------------ *)
     let parserhash = Hashtbl.create (List.length tokenlist) in
     List.iter ( fun parserdef ->
                                  List.iter ( fun url -> Hashtbl.add parserhash url parserdef;
-                                                        Printf.printf "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
+                                                        if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose
+                                                        then
+                                                          Printf.fprintf stderr "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
                                            ) parserdef.urllist;
               ) tokenlist;
 
