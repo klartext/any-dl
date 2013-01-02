@@ -1,11 +1,5 @@
-
-parsername "autism_journal": ("http://link.springer.com")
-start
-  linkextract;
-  print;
-end
-
-
+# Parser-Definitions for the Mediathek-Parsers
+# --------------------------------------------
 
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
@@ -98,13 +92,6 @@ start
 end
 
 
-parsername "show_links": ("http://www.first.in-berlin.de")
-start
-  linkextract;
-  print;
-end
-
-
 parsername "dctp_mediathek_get": ( "http://www.dctp.tv/" )
 start
   match( "(mp4:.*\")" );
@@ -112,11 +99,10 @@ start
 end
 
 
-# http://www.dctp.tv/filme/schoenheit-ist-weiblich/
 
-
-
-
+##################################################################################
+#### BELOW IS OLD (directly coded) STUFF, JUST AS REFERENCE FOR FUTURE PARSERS ###
+##################################################################################
 
 
 
