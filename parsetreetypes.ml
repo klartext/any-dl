@@ -1,3 +1,11 @@
+(*
+  any-dl:
+  -------
+  Generic Media-Downloader for any kind of Online-Mediathek.
+
+  Author / copyright: Oliver Bandel
+  Copyleft:           GNU GENERAL PUBLIC LICENSE  v3 (or higher)
+*)
   type col_t          = string array     (* Hselect as well as VSelec are represented the same way - late think of it as a row *)
   type row_t          = string array     (* Hselect as well as VSelec are represented the same way - late think of it as a row *)
   type match_result_t = string array array

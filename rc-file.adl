@@ -1,13 +1,23 @@
 # Parser-Definitions for the Mediathek-Parsers
 # --------------------------------------------
 
+#parsername "linkextract": ( Any )
+#start
+#  linkextract;
+#  print;
+#end
+
+
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
-  linkextract;
-  print;
+  #linkextract;
+  #print;
 
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"<<< );
   show_match;
+
+
+# The following is for experimenting with features and language.
 
 #showtype;
   rowselect(0);
@@ -23,6 +33,7 @@ showtype;
 # rtmpdump --resume  -r rtmp://.... -y mp4:....  -o outfile.ext
 
 end
+
 
 
 # ARTE

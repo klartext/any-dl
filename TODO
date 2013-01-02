@@ -35,6 +35,13 @@ BUGs:
 FEATUREs:
 =========
 
+ - other syntax/grammar:
+     - parser-Definitions only what to do, URLs not (or not necessarily?) at parser-definitoion.
+     - command for attaching parsers to URLs or vice versa.
+       something like:     attach parser "ard_mediathek_get" to ("http://...", "http://"...")
+                 or        attach_urls "ard_mediathek_get" ("http://...", "http://"...")
+
+
  - Input-URL: eigene Variable, unter der diese abzurufen ist.
 
  - Special parsers (Match-all-URLS, oder MATCH-all-parsernames or special definitjons,

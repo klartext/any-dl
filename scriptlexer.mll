@@ -1,3 +1,11 @@
+(*
+  any-dl:
+  -------
+  Generic Media-Downloader for any kind of Online-Mediathek.
+
+  Author / copyright: Oliver Bandel
+  Copyleft:           GNU GENERAL PUBLIC LICENSE  v3 (or higher)
+*)
 {
   open Scriptparser
   let linenum = ref 1

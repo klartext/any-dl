@@ -1,9 +1,15 @@
-
-
 (*
   any-dl:
   -------
-  Media-Downloader for any kind of Online-Mediathek
+  Generic Media-Downloader for any kind of Online-Mediathek.
+  Attempts to be the general tool, doing things like
+  youtube-dl, zdf-dl, arte-dl and so on.
+
+
+  Author / copyright: Oliver Bandel
+  Copyleft: GNU GENERAL PUBLIC LICENSE  v3 (or higher)
+
+
 
   already working:
   ----------------
