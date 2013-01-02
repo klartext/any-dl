@@ -333,6 +333,8 @@ exception Stream_error
 (* -------------------------------------------------------------- *)
 let do_new_any_dl parserhash url_list =
   List.iter ( fun url ->
+                          (* select parser by associated URLs *)
+                          (* -------------------------------- *)
                           let baseurl = Parsers.url_get_baseurl url in
                           try
 
@@ -395,6 +397,8 @@ let read_parser_definitions filename_opt =
 let example_url =  "http://www.ardmediathek.de/das-erste/polizeiruf-110/eine-andere-welt-fsk-tgl-ab-20-uhr?documentId=12883434"
 
 let _  =
+    Cli.parse();
+
     let tokenlist = read_parser_definitions (Some scriptname)
     in Printf.printf "Number of found parser definitions: %d\n" (List.length tokenlist);
 
@@ -413,7 +417,7 @@ let _  =
 
     flush stdout; (* all init-stuff should be flushed, before evaluation stage is entered! *)
 
-    do_new_any_dl  parserhash  (List.tl (Array.to_list Sys.argv) )
+    do_new_any_dl  parserhash  (List.rev Cli.opt.Cli.url_list)
 
 
 

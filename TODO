@@ -70,12 +70,3 @@ FEATUREs:
 
  - configurable rc-file location
 
- - CLI:
-     -p <parser>   select a certain parser-def for the URLs
-     -l            list aprsers
-     -r            rc-file name
-
-
-
-
-
