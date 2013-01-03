@@ -268,7 +268,10 @@ let evaluate_command_list cmdlst =
 
                        | Setvar var                 -> command tl var (* sets the argument of setvar as new tmpvar *)
 
-                       | Showtype                   -> begin
+                       | Showtype                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
+                                                       command tl tmpvar
+                                                        (*
+                                                        begin
                                                          match tmpvar with
                                                            | Document          _ -> print_endline "TMPVAR contains a document"
                                                            | Url               _ -> print_endline "TMPVAR contains a Url"
@@ -284,6 +287,7 @@ let evaluate_command_list cmdlst =
                                                            | _                   -> print_endline "OOOOPS Unknown Type!"; raise Not_found
                                                        end;
                                                        command tl tmpvar
+                                                        *)
                    end
 
 
