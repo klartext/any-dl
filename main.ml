@@ -45,26 +45,11 @@ exception Invalid_Row_Index             (* indexing a row that does not exist *)
 
 
 
-(*
-exception Could_not_find_mediafile_link of string
-exception Could_not_extract_ARTE_Ajax_url
-exception Could_not_get_ARTE_xml
-exception ARD_Rtmp_url_extraction_error
-exception ARD_Mp4_url_extraction_error
-exception ARD_mp4_url_extraction_error
-exception NDR_url_extraction_error
 
-exception Unknown_Base_Url
-
-
-type selected_t     = string array list
-*)
-(*
-type selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
-
-type url_t = { url: string; referrer: string }
-*)
-
+(* ------------------------------------------------ *)
+(* ------------------------------------------------ *)
+(* ------------------------------------------------ *)
+let print_warning str = prerr_string "WARNING: "; prerr_endline str
 
 (* ------------------------------------------------ *)
 (* select those items from the row_items, which are *)
@@ -82,10 +67,13 @@ let item_selection row_items index_list =
   res
 
 
-let print_warning str = prerr_string "WARNING: "; prerr_endline str
 
 
-
+(* ------------------------------------------------- *)
+(* This function evaluates the list of commands that *)
+(* a parser consists of.                             *)
+(* this function is doing the main work of any-dl.   *)
+(* ------------------------------------------------- *)
 let evaluate_command_list cmdlst =
   let rec command commandlist tmpvar = match commandlist with
     | []        -> ()
@@ -330,11 +318,6 @@ let get_href_from_webdoc_and_match  webdoc  matcher =
   List.filter (fun url -> matcher url ) urls
 
 
-exception Mainurl_error
-exception Asx_error
-exception Stream_error
-
-
 
 
 (* read the parser-definitions from the rc-file *)
@@ -366,8 +349,6 @@ let read_parser_definitions filename_opt =
          | Parsing.Parse_error -> 
                 prerr_string "Parse error in line ";
                 prerr_int !Scriptlexer.linenum;
-                (*
-                *)
                 prerr_newline();
                 exit 1
 
