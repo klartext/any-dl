@@ -1,11 +1,11 @@
 # Parser-Definitions for the Mediathek-Parsers
 # --------------------------------------------
 
-#parsername "linkextract": ( Any )
-#start
-#  linkextract;
-#  print;
-#end
+parsername "linkextract": ( "" )
+start
+  linkextract;
+  print;
+end
 
 
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")

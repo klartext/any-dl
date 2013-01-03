@@ -25,6 +25,7 @@
 %token EQUALS
 
 
+%token ANY
 %token PARSERNAME
 %token URLMATCHES
 %token MATCH
@@ -103,6 +104,7 @@ parsername: PARSERNAME STRING COLON { $2 }
     ;
 
 urlmatches: LPAREN string_list RPAREN { $2 }
+    |       LPAREN RPAREN             { [] }
     ;
 
 parser_script: statement_list { $1 }

@@ -159,11 +159,13 @@ let evaluate_command_list cmdlst =
                                                                                                         print_newline() ) mres
                                                            | _ -> print_warning "HSELECT: wrong type!!!"
                                                        end;
-                                                       *)
                                                        assert(false);
-                                                       raise NOT_IMPLEMENTED_SO_FAR; 
+                                                       *)
+                                                       raise NOT_IMPLEMENTED_SO_FAR
+                                                       (*
                                                        print_endline "ColSelect";
                                                        command tl tmpvar
+                                                       *)
 
                        (*   BOT READY, is Print-command so far !!! *)
                        | RowSelect   index            ->
@@ -238,7 +240,7 @@ let evaluate_command_list cmdlst =
                        | Show_match                -> (* prints "real" matches only (and not the fullmatch with index = 0) *)
                                                        begin
                                                          match tmpvar with
-                                                           | Match_result mres -> let lines = Array.to_list mres in
+                                                           | Match_result mres ->
                                                                       print_endline "print_match: match 0 is the whole match, all others are the groups\n";
                                                                       Array.iter ( fun x -> 
                                                                                             for index = 0 to Array.length x -1
@@ -256,8 +258,10 @@ let evaluate_command_list cmdlst =
                                                        command tl tmpvar
 
 
-                       | Save   _                   -> print_endline "Save detected"; raise NOT_IMPLEMENTED_SO_FAR;
+                       | Save   _                   -> print_endline "Save detected"; raise NOT_IMPLEMENTED_SO_FAR
+                                                       (*
                                                        command tl tmpvar
+                                                       *)
 
 
                        | Dummy                      -> command tl tmpvar (* does nothing; just a Dummy (NOP) *)
@@ -329,30 +333,6 @@ exception Stream_error
 
 
 
-(* for each URL do try to get the stuff and parse it and evaluate *)
-(* -------------------------------------------------------------- *)
-let do_new_any_dl parserhash url_list =
-  List.iter ( fun url ->
-                          (* select parser by associated URLs *)
-                          (* -------------------------------- *)
-                          let baseurl = Parsers.url_get_baseurl url in
-                          try
-
-                            let parserdef = Hashtbl.find parserhash baseurl in (* lookup the parser for the url *)
-                            print_endline "# --------------------";
-
-                            (* we evaluate the parse-tree, and start with a first, implicit get *)
-                            (* ---------------------------------------------------------------- *)
-                            evaluate_command_list ( Get_url(url, "-") :: parserdef.commands)
-
-                          with (* handle exceptions from the parse-tree-evaluation *)
-                            | Not_found         -> prerr_endline ("No parser found for " ^ url)
-                            | Invalid_Row_Index -> prerr_endline "Error in script! Invalid_Row_Index!!\n"
-            ) url_list
-
-
-
-
 let scriptname = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")
 
 
@@ -400,37 +380,70 @@ let read_parser_definitions filename_opt =
 
 
 
-let example_url =  "http://www.ardmediathek.de/das-erste/polizeiruf-110/eine-andere-welt-fsk-tgl-ab-20-uhr?documentId=12883434"
-
 let _  =
     Cli.parse(); (* parse the command line *)
 
     (* parse the parser-definitions *)
     (* ---------------------------- *)
-    let tokenlist = read_parser_definitions (Some scriptname) in
+    let parserlist = read_parser_definitions (Some scriptname) in
 
     (* if cli-switches ask for it, print number of parser-definitions *)
     if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose then
-      Printf.fprintf stderr "Number of found parser definitions: %d\n" (List.length tokenlist);
+      Printf.fprintf stderr "Number of found parser definitions: %d\n" (List.length parserlist);
 
 
-    (* creaate and initialize the Parserdefinition-hash *)
-    (* ------------------------------------------------ *)
-    (* For looking up parserdefs by URL                 *)
-    (* ------------------------------------------------ *)
-    let parserhash = Hashtbl.create (List.length tokenlist) in
+    (* create and initialize hashes for parser-lookup by name / url *)
+    (* ------------------------------------------------------------ *)
+    let parser_urlhash  = Hashtbl.create (List.length parserlist) in
+    let parser_namehash = Hashtbl.create (List.length parserlist) in
     List.iter ( fun parserdef ->
-                                 List.iter ( fun url -> Hashtbl.add parserhash url parserdef;
+                                 (* add the parsers to the parser_name-hash (for parser-lookup by name) *)
+                                 Hashtbl.add parser_namehash parserdef.parsername parserdef;
+
+                                 (* add the parsers to the parser_url-hash (for parser-lookup by url) *)
+                                 List.iter ( fun url -> Hashtbl.add parser_urlhash url parserdef;
                                                         if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose
                                                         then
                                                           Printf.fprintf stderr "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
                                            ) parserdef.urllist;
-              ) tokenlist;
+
+              ) parserlist;
 
 
     flush stdout; (* all init-stuff should be flushed, before evaluation stage is entered! *)
 
-    do_new_any_dl  parserhash  (List.rev Cli.opt.Cli.url_list)
+
+    (* for all the URLs from the command line, do the intended work :-) *)
+    (* ---------------------------------------------------------------- *)
+    List.iter ( fun url ->
+                            let parserdef =
+                              begin
+                                match Cli.opt.Cli.parser_selection with
+                                  | Some parsername -> Hashtbl.find parser_namehash parsername
+
+                                  | None            -> (* name derived from url *)
+                                                       let baseurl = Parsers.url_get_baseurl url in 
+                                                        Hashtbl.find parser_urlhash baseurl
+                               end
+                            in
+
+                            try
+                              print_endline "# --------------------";
+
+                              (* ---------------------------------------------------------------- *)
+                              (* we evaluate the parse-tree, and start with a first, implicit get *)
+                              (* with the url we got from the command line                        *)
+                              (* ---------------------------------------------------------------- *)
+                              evaluate_command_list (Get_url(url, "-") :: parserdef.commands)
+
+
+                            with (* handle exceptions from the parse-tree-evaluation *)
+                              | Not_found         -> prerr_endline ("No parser found for " ^ url)
+                              | Invalid_Row_Index -> prerr_endline "Error in script! Invalid_Row_Index!!\n"
+
+
+
+              ) (List.rev Cli.opt.Cli.url_list)
 
 
 

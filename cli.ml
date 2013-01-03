@@ -40,7 +40,7 @@ let parse () =
        (* => DEFAULT (hardcoded) !!!
        *)
               ]
-         ( fun str -> opt.url_list <- str :: opt.url_list;  )
+         ( fun str -> opt.url_list <- str :: opt.url_list  )
          "Use \"any-dl\" following options:"
 
 
