@@ -34,10 +34,6 @@ BUGs:
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
- - Selection of parsers is a bit weird:
-     - where should ANY-url-matches (planned feature) be introduced?
-     - Where should deliberate paresrs be introduced?
-
  - URL-analysis in network.ml is a mess
  - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
 
@@ -53,21 +49,12 @@ FEATUREs:
                  or        attach_urls "ard_mediathek_get" ("http://...", "http://"...")
 
 
- - Input-URL: eigene Variable, unter der diese abzurufen ist.
-
- - Special parsers (Match-all-URLS, oder MATCH-all-parsernames or special definitjons,
-   zusammen mit CLI-Kommando, um bestimmte Parser zu aktivieren.
-    Alternativ: spezielle Parser ZWANGSWEISE auswählen, also die Parser-Auswahl via
-    URL disablen und einen bestimmten Parser anwenden.
-    ist sinnvoll, wenn man z.B. einen Parser hat, der alle html-href-Links ausgibt,
-    und er grundsätzlich auf die Ausgabe angesetzt werden soll (statt nur auf bestimmte URLs).
-
-    => any-dl -p <parsername>
+ - Input-URL: eigene Variable, unter der diese abzurufen ist (from inside parser-def-lang)
 
  - Selection-Mechanism: rowselect(), colselect(), evtl. auch direkte Indizierung.
    auch mir Regexp-Selection (oder soll sowas über nochmaliges Match gemacht werden?)
 
- - Stringconcat()
+ - Stringconcat() => paste() ?
 
  - Programmaufruf-Definitionen
 

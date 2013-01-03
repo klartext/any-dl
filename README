@@ -69,7 +69,7 @@ The script shows how to grab the video-url and just print it:
   end
 
 
-This parser-definition doe sthe following:
+This parser-definition does the following:
 The resulting parser will be named "ndr_mediathek_get".
 Any URLs from the base-domain http://www.ndr.de  that
 any-dl should analyse will parsed with this parser.
@@ -170,4 +170,14 @@ can be used.
 (PLANNED FEATURE: Ausserdem $-Notation für den variablen-Abruf in bestimmten funktionen erlaubt.)
 (PLANNED FEATURE: Start-Url in eigener Variable abgelegt.)
 
+
+Command Line Options:
+---------------------
+
+ -l list parser-definitions and related URLs
+ -p <parsername>  selects a certain parser, to be used for all urls.
+                  The names that can be selected can be listed with
+                  the -l option, or one can look into the rc-file.
+ -f filename for rc-file
+ -v verbose output
 
