@@ -333,14 +333,10 @@ exception Stream_error
 
 
 
-let scriptname = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")
-
-
-
 (* read the parser-definitions from the rc-file *)
 (* -------------------------------------------- *)
 let read_parser_definitions filename_opt =
-  if Cli.opt.Cli.verbose then Printf.fprintf stderr "rc-filename: %s\n" scriptname;
+  if Cli.opt.Cli.verbose then Printf.fprintf stderr "rc-filename: %s\n" Cli.opt.Cli.rc_filename;
 
   let tokenlist = ref [] in
 
@@ -385,7 +381,7 @@ let _  =
 
     (* parse the parser-definitions *)
     (* ---------------------------- *)
-    let parserlist = read_parser_definitions (Some scriptname) in
+    let parserlist = read_parser_definitions (Some Cli.opt.Cli.rc_filename) in
 
     (* if cli-switches ask for it, print number of parser-definitions *)
     if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose then
@@ -416,6 +412,8 @@ let _  =
     (* for all the URLs from the command line, do the intended work :-) *)
     (* ---------------------------------------------------------------- *)
     List.iter ( fun url ->
+                            (* look up the right parser, either via *)
+                            (* ------------------------------------ *)
                             let parserdef =
                               begin
                                 match Cli.opt.Cli.parser_selection with
@@ -423,7 +421,7 @@ let _  =
 
                                   | None            -> (* name derived from url *)
                                                        let baseurl = Parsers.url_get_baseurl url in 
-                                                        Hashtbl.find parser_urlhash baseurl
+                                                       Hashtbl.find parser_urlhash baseurl
                                end
                             in
 
