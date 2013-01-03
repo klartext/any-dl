@@ -36,6 +36,7 @@ BETTER STRUCTURE, CLEANER CODE:
 
  - URL-analysis in network.ml is a mess
  - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
+ - SEMI in mly-file should be used at certain places - consitently
 
 
 

@@ -35,6 +35,8 @@
                   ("sto",            STO  );
                   ("rcl",            RCL  );
 
+                  ("paste",          PASTE  );
+
                   ("rowselect",      ROWSELECT  );
                   ("select",         SELECT     );
 

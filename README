@@ -181,3 +181,17 @@ Command Line Options:
  -f filename for rc-file
  -v verbose output
 
+
+
+Examples:
+---------
+
+1.: Print html-links of a webpage:
+
+  If you want to print the href-links of html,
+  use any-dl with the predefined parser for link-extraction:
+
+    $ any-dl -p linkextract   <url_list>
+
+
+

@@ -260,24 +260,11 @@ let evaluate_command_list cmdlst =
 
                        | Showtype                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
                                                        command tl tmpvar
-                                                        (*
-                                                        begin
-                                                         match tmpvar with
-                                                           | Document          _ -> print_endline "TMPVAR contains a document"
-                                                           | Url               _ -> print_endline "TMPVAR contains a Url"
-                                                           | Url_list          _ -> print_endline "TMPVAR contains an Url_list"
-                                                           | Dummy_result        -> print_endline "TMPVAR contains Dummy_result"
-                                                           | Match_result      _ -> print_endline "TMPVAR contains Match_result"
-                                                           | Row               _ -> print_endline "TMPVAR contains Row"
-                                                           | Col               _ -> print_endline "TMPVAR contains Col"
-                                                           (*
-                                                           | Result_selection  _ -> print_endline "TMPVAR contains Match_result"
-                                                           *)
-                                                           | Empty               -> print_endline "TMPVAR contains EMPTY"
-                                                           | _                   -> print_endline "OOOOPS Unknown Type!"; raise Not_found
-                                                       end;
+
+
+                       | Paste                      -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
                                                        command tl tmpvar
-                                                        *)
+
                    end
 
 
@@ -402,7 +389,6 @@ let _  =
                             (* look up the right parser, either via *)
                             (* ------------------------------------ *)
                             let parserdef =
-                              begin
                                 try
                                   begin
                                     match Cli.opt.Cli.parser_selection with
@@ -413,7 +399,6 @@ let _  =
                                                            Hashtbl.find parser_urlhash baseurl
                                    end
                                 with Not_found         -> prerr_endline ("No parser found for " ^ url); raise No_parser_found_for_this_url
-                              end
                             in
 
                             try

@@ -38,6 +38,7 @@ type commands_t =
   | Select            of int list             (* index-list for item-selection *) (* im Moment wie ColSelect *)
   | Link_extract                              (* extracts html-href's from webpage *)
   | Link_extract_xml                          (* extracts html-href's from (xml-formatted) webpage (e.g. asx-files) *)
+  | Paste                                     (* paste together strings *)
   (*
   | Select            of selector_t           (* acts as a filter *)
   *)
@@ -75,7 +76,7 @@ let command_to_string cmd = match cmd with
   | Link_extract     -> "Link_extract"
   | Link_extract_xml -> "Link_extract_xml"
   | Print            -> "Print"
-  | Show_match      -> "Show_match"
+  | Show_match       -> "Show_match"
   | Print_string   _ -> "Print_string"
   | Save           _ -> "Save"
   | Setvar         _ -> "Setvar"

@@ -15,13 +15,14 @@ start
 
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"<<< );
   show_match;
+  print;
 
 
 # The following is for experimenting with features and language.
 
-#showtype;
+showtype;
   rowselect(0);
-#showtype;
+showtype;
   print_string("------------------------");
   print;
   select(1,2);
@@ -107,6 +108,16 @@ parsername "dctp_mediathek_get": ( "http://www.dctp.tv/" )
 start
   match( "(mp4:.*\")" );
   print;
+end
+
+
+# http://tvthek.orf.at/topics/Asyl-Protest/5183121-heute-oesterreich/segments/5183161-Protest-der-Asylwerber
+parsername "orf_mediathek_get": ( "http://tvthek.orf.at" )
+start
+  linkextract;
+  print;
+  #match( "(mp4:.*\")" );
+  #print;
 end
 
 

@@ -37,6 +37,7 @@
 %token GET
 %token STO
 %token RCL
+%token PASTE
 %token DUMMY
 
 %token COLSELECT
@@ -150,6 +151,9 @@ sto_stmt: STO LPAREN STRING   RPAREN    { $3 }
     ;
 
 rcl_stmt: RCL LPAREN STRING   RPAREN    { $3 }
+    ;
+
+paste_stmt: PASTE LPAREN RPAREN    { Paste }
     ;
 
 
