@@ -43,6 +43,8 @@ exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 
 exception Invalid_Row_Index             (* indexing a row that does not exist *)
 
+exception No_parser_found_for_this_url (* *)
+
 
 
 
@@ -401,13 +403,17 @@ let _  =
                             (* ------------------------------------ *)
                             let parserdef =
                               begin
-                                match Cli.opt.Cli.parser_selection with
-                                  | Some parsername -> Hashtbl.find parser_namehash parsername
+                                try
+                                  begin
+                                    match Cli.opt.Cli.parser_selection with
+                                      | Some parsername -> Hashtbl.find parser_namehash parsername
 
-                                  | None            -> (* name derived from url *)
-                                                       let baseurl = Parsers.url_get_baseurl url in 
-                                                       Hashtbl.find parser_urlhash baseurl
-                               end
+                                      | None            -> (* name derived from url *)
+                                                           let baseurl = Parsers.url_get_baseurl url in 
+                                                           Hashtbl.find parser_urlhash baseurl
+                                   end
+                                with Not_found         -> prerr_endline ("No parser found for " ^ url); raise No_parser_found_for_this_url
+                              end
                             in
 
                             try
@@ -421,7 +427,6 @@ let _  =
 
 
                             with (* handle exceptions from the parse-tree-evaluation *)
-                              | Not_found         -> prerr_endline ("No parser found for " ^ url)
                               | Invalid_Row_Index -> prerr_endline "Error in script! Invalid_Row_Index!!\n"
 
 
