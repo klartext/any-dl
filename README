@@ -195,3 +195,30 @@ Examples:
 
 
 
+
+
+List of Commands:
+-----------------
+
+
+
+  exitparse;
+
+  linkextract;
+  match("Regexp-String");
+
+  print;
+  print_string("String");
+
+  show_match;
+  showtype;
+  show_variables;
+
+
+  store("varname");
+  recall("varname");
+
+  rowselect(0);
+  select(1,2);
+
+

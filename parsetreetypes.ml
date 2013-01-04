@@ -40,6 +40,7 @@ type commands_t =
   | Link_extract_xml                          (* extracts html-href's from (xml-formatted) webpage (e.g. asx-files) *)
   | Paste                                     (* paste together strings *)
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
+  | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)
   | Show_variables                            (* print all named variables *)
   (*
   | Select            of selector_t           (* acts as a filter *)

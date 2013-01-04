@@ -33,7 +33,7 @@
                   ("get",            GET  );
 
                   ("store",          STORE  );
-                  ("rcl",            RCL  );
+                  ("recall",         RECALL  );
                   ("show_variables",   SHOW_VARIABLES  );
 
                   ("paste",          PASTE  );

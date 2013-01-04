@@ -36,7 +36,7 @@
 %token LINKEXTRACT_XML
 %token GET
 %token STORE
-%token RCL
+%token RECALL
 %token SHOW_VARIABLES
 %token PASTE
 %token EXITPARSE
@@ -129,6 +129,7 @@ statement: match_stmt          SEMI   { $1 }
     |      selection           SEMI   { $1 }
     |      get_stmt            SEMI   { $1 }
     |      store_stmt          SEMI   { $1 }
+    |      recall_stmt         SEMI   { $1 }
     |      show_variables_stmt SEMI   { $1 }
     |      LINKEXTRACT         SEMI   { Link_extract }
     |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
@@ -155,7 +156,7 @@ get_stmt: GET                           { Get }
 store_stmt: STORE LPAREN STRING  RPAREN { Store $3 }
     ;
 
-rcl_stmt: RCL LPAREN STRING   RPAREN    { $3 }
+recall_stmt: RECALL LPAREN STRING   RPAREN    { Recall $3 }
     ;
 
 paste_stmt: PASTE LPAREN RPAREN         { Paste }

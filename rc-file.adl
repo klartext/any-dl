@@ -18,7 +18,7 @@ start
   print;
   store("myvar");
   show_variables;
-  exitparse;
+  #exitparse;
 
 
 # The following is for experimenting with features and language.
@@ -33,6 +33,9 @@ showtype;
   print_string("Selected Values:");
 showtype;
   print;
+  print_string("########################################################");
+  recall("myvar");
+  showtype;
 
 # rtmpdump --resume  -r rtmp://.... -y mp4:....  -o outfile.ext
 

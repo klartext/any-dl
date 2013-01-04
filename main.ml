@@ -253,9 +253,25 @@ let evaluate_command_list cmdlst =
                                                        (*
                                                        command tl tmpvar varmap
                                                        *)
+
                        | Setvar var                 -> command tl var varmap (* sets the argument of setvar as new tmpvar *)
 
-                       | Store  varname             -> command tl tmpvar (Varmap.add varname tmpvar varmap) (* sets the argument of setvar as new tmpvar *)
+
+
+
+                       | Store  varname             -> command tl tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
+
+
+                       | Recall varname             ->
+                                                       begin
+                                                       try command tl (Varmap.find varname varmap) varmap (* sets tmpvar to value of named variable *)
+                                                       with Not_found -> Printf.fprintf stderr "Could not find variable \"%s\" -> will exit parse.\n" varname;
+                                                                         flush stderr;
+                                                                         command [Exit_parse] Empty varmap
+                                                       end
+
+
+
 
                        | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "\"%s\": " varname; command [Print] value varmap ) varmap;
                                                        command tl tmpvar varmap
