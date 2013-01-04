@@ -39,6 +39,8 @@ type commands_t =
   | Link_extract                              (* extracts html-href's from webpage *)
   | Link_extract_xml                          (* extracts html-href's from (xml-formatted) webpage (e.g. asx-files) *)
   | Paste                                     (* paste together strings *)
+  | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
+  | Show_variables                            (* print all named variables *)
   (*
   | Select            of selector_t           (* acts as a filter *)
   *)
@@ -50,6 +52,7 @@ type commands_t =
   | Showtype
   | ColSelect  of int  (* horizontal selection of a matrix (match-result) *)
   | RowSelect  of int  (* vertical   selection of a matrix (match-result) *)
+  | Exit_parse
   | Dummy
 
 

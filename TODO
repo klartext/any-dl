@@ -61,11 +61,15 @@ FEATUREs:
 
  - system()-like ausführung von Programm-komandos
 
- - set / get und variablennamen set($<varname>) => Beispiel  set( $second_url ); get( $first_url); print;
-
  - Parserdefinitionen wenigstens für ARD, ZDF, ORF, NDR, besser auch gleich für ARTE (siehe arte-dl)
 
  - evtl. grep-Kommando, das zeilenweise arbeitet.... für die handhabung von href's
 
  - configurable rc-file location
+
+ - interactive selection of e.g. matches (e.g.: which video to download, high-res, midres or lowres?)
+
+ - matches and assignments -> each match-group one varname... like   (url,vidname,foobar) = match("^(.*)xyz(lala).*?(foobar)")
+
+
 

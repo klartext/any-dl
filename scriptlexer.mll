@@ -32,8 +32,9 @@
 
                   ("get",            GET  );
 
-                  ("sto",            STO  );
+                  ("store",          STORE  );
                   ("rcl",            RCL  );
+                  ("show_variables",   SHOW_VARIABLES  );
 
                   ("paste",          PASTE  );
 
@@ -42,6 +43,7 @@
 
                   ("colselect",      COLSELECT  );
 
+                  ("exitparse",      EXITPARSE  );
                   ("dummy",  DUMMY  );
                 ]
 

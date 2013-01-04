@@ -35,9 +35,11 @@
 %token LINKEXTRACT
 %token LINKEXTRACT_XML
 %token GET
-%token STO
+%token STORE
 %token RCL
+%token SHOW_VARIABLES
 %token PASTE
+%token EXITPARSE
 %token DUMMY
 
 %token COLSELECT
@@ -119,49 +121,55 @@ statement_list:                { []      }
     | statement statement_list { $1 :: $2 }
     ;
 
-statement: match_stmt           { $1 }
-    |      print_stmt           { Print  }
-    |      printmatch_stmt      { Show_match }
-    |      print_string         { $1 }
-    |      selection            { $1 }
-    |      get_stmt         SEMI   { $1 }
-    |      LINKEXTRACT      SEMI   { Link_extract }
-    |      LINKEXTRACT_XML  SEMI   { Link_extract_xml }
-    |      SHOWTYPE         SEMI   { Showtype }
-    |      DUMMY            SEMI   { Dummy }
+statement: match_stmt          SEMI   { $1 }
+    |      print_stmt          SEMI   { Print  }
+    |      printmatch_stmt     SEMI   { Show_match }
+    |      print_string        SEMI   { $1 }
+    |      EXITPARSE           SEMI   { Exit_parse }
+    |      selection           SEMI   { $1 }
+    |      get_stmt            SEMI   { $1 }
+    |      store_stmt          SEMI   { $1 }
+    |      show_variables_stmt SEMI   { $1 }
+    |      LINKEXTRACT         SEMI   { Link_extract }
+    |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
+    |      SHOWTYPE            SEMI   { Showtype }
+    |      DUMMY               SEMI   { Dummy }
     ;
 
-match_stmt: MATCH LPAREN STRING RPAREN SEMI { Match $3 }
+match_stmt: MATCH LPAREN STRING RPAREN { Match $3 }
     ;
 
-print_stmt: PRINT               SEMI  { Print }
+print_stmt: PRINT               { Print }
     ;
 
-printmatch_stmt: SHOW_MATCH SEMI { Show_match }
+printmatch_stmt: SHOW_MATCH { Show_match }
     ;
 
-print_string: PRINT_STRING LPAREN STRING RPAREN SEMI { Print_string $3 }
+print_string: PRINT_STRING LPAREN STRING RPAREN { Print_string $3 }
     ;
 
 get_stmt: GET                           { Get }
     |     GET LPAREN get_args   RPAREN  { $3 }
     ;
 
-sto_stmt: STO LPAREN STRING   RPAREN    { $3 }
+store_stmt: STORE LPAREN STRING  RPAREN { Store $3 }
     ;
 
 rcl_stmt: RCL LPAREN STRING   RPAREN    { $3 }
     ;
 
-paste_stmt: PASTE LPAREN RPAREN    { Paste }
+paste_stmt: PASTE LPAREN RPAREN         { Paste }
+    ;
+
+show_variables_stmt: SHOW_VARIABLES     { Show_variables }
     ;
 
 
 
 
-selection: COLSELECT LPAREN   INT_NUM   RPAREN SEMI { ColSelect $3 }
-    |      ROWSELECT LPAREN   INT_NUM   RPAREN SEMI { RowSelect $3 }
-    |      SELECT    LPAREN   selection_list   RPAREN SEMI { Select    $3 }
+selection: COLSELECT LPAREN   INT_NUM   RPAREN { ColSelect $3 }
+    |      ROWSELECT LPAREN   INT_NUM   RPAREN { RowSelect $3 }
+    |      SELECT    LPAREN   selection_list   RPAREN { Select    $3 }
     ;
 
 

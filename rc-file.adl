@@ -16,6 +16,9 @@ start
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"<<< );
   show_match;
   print;
+  store("myvar");
+  show_variables;
+  exitparse;
 
 
 # The following is for experimenting with features and language.

@@ -70,6 +70,7 @@ let item_selection row_items index_list =
 
 
 
+module Varmap = Map.Make( String )
 
 (* ------------------------------------------------- *)
 (* This function evaluates the list of commands that *)
@@ -77,20 +78,20 @@ let item_selection row_items index_list =
 (* this function is doing the main work of any-dl.   *)
 (* ------------------------------------------------- *)
 let evaluate_command_list cmdlst =
-  let rec command commandlist tmpvar = match commandlist with
+  let rec command commandlist tmpvar varmap = match commandlist with
     | []        -> ()
     | cmd::tl   -> begin
                      match cmd with
                        | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) in
                                                      begin
                                                        match document with
-                                                         | Some doc -> command tl (Document (doc, url))
+                                                         | Some doc -> command tl (Document (doc, url)) varmap
                                                          | None     -> raise No_document_found       
                                                      end
 
 
                        | Get             -> let (u,r) = begin match tmpvar with Url (u,r) -> u,r | _ -> raise Wrong_tmpvar_type end in
-                                            command (Get_url (u,r) :: tl) tmpvar
+                                            command (Get_url (u,r) :: tl) tmpvar varmap
 
 
                        | Get_urls        -> begin
@@ -119,14 +120,14 @@ let evaluate_command_list cmdlst =
                                                              | Some res -> res
                                                          end
                                                        in
-                                                       command tl (Match_result matched)
+                                                       command tl (Match_result matched) varmap
 
 
                        (*
                        | Select selfunc             -> 
                                                        begin
                                                          match tmpvar with
-                                                           | Match_result matchres -> command tl (Match_result (selfunc matchres))
+                                                           | Match_result matchres -> command tl (Match_result (selfunc matchres)) varmap
                                                            | _           -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                        end
                        *)
@@ -134,7 +135,7 @@ let evaluate_command_list cmdlst =
                        | Select index_list          -> 
                                                        begin
                                                          match tmpvar with
-                                                           | Row rowitems -> command tl (Row(item_selection rowitems index_list))
+                                                           | Row rowitems -> command tl (Row(item_selection rowitems index_list)) varmap
                                                            | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                        end
 
@@ -154,7 +155,7 @@ let evaluate_command_list cmdlst =
                                                        raise NOT_IMPLEMENTED_SO_FAR
                                                        (*
                                                        print_endline "ColSelect";
-                                                       command tl tmpvar
+                                                       command tl tmpvar varmap
                                                        *)
 
                        (*   BOT READY, is Print-command so far !!! *)
@@ -173,7 +174,7 @@ let evaluate_command_list cmdlst =
                                                                                   end
                                                            | _ -> print_warning "RowSelect: wrong type!!!"
                                                        end;
-                                                       command tl !res
+                                                       command tl !res varmap
 
                        | Link_extract               ->
                                                        begin
@@ -189,7 +190,7 @@ let evaluate_command_list cmdlst =
                                                                                                        ) urls) in
 
 
-                                                                     command tl links
+                                                                     command tl links varmap
 
 
 
@@ -203,7 +204,7 @@ let evaluate_command_list cmdlst =
                                                            | Document(doc, url)-> let urls   = Array.of_list (Parsers.xml_get_href_from_string doc) in
                                                                                   (* the url of the doecument will become the referrer of the extracted url! *)
                                                                                   let links  = Url_array (Array.map ( fun lnk -> (lnk, url) ) urls) in
-                                                                                  command tl links
+                                                                                  command tl links varmap
                                                            | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
                                                        end
 
@@ -224,7 +225,7 @@ let evaluate_command_list cmdlst =
                                                            *)
                                                            | _ -> print_warning "Print-command found non-printable type"
                                                        end;
-                                                       command tl tmpvar
+                                                       command tl tmpvar varmap
 
 
                        | Show_match                -> (* prints "real" matches only (and not the fullmatch with index = 0) *)
@@ -241,35 +242,41 @@ let evaluate_command_list cmdlst =
                                                                                  ) mres
                                                            | _ -> raise Wrong_argument_type
                                                        end;
-                                                       command tl tmpvar
+                                                       command tl tmpvar varmap
 
 
                        | Print_string str           -> print_endline str;
-                                                       command tl tmpvar
+                                                       command tl tmpvar varmap
 
 
                        | Save   _                   -> print_endline "Save detected"; raise NOT_IMPLEMENTED_SO_FAR
                                                        (*
-                                                       command tl tmpvar
+                                                       command tl tmpvar varmap
                                                        *)
+                       | Setvar var                 -> command tl var varmap (* sets the argument of setvar as new tmpvar *)
 
+                       | Store  varname             -> command tl tmpvar (Varmap.add varname tmpvar varmap) (* sets the argument of setvar as new tmpvar *)
 
-                       | Dummy                      -> command tl tmpvar (* does nothing; just a Dummy (NOP) *)
-
-                       | Setvar var                 -> command tl var (* sets the argument of setvar as new tmpvar *)
+                       | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "\"%s\": " varname; command [Print] value varmap ) varmap;
+                                                       command tl tmpvar varmap
 
                        | Showtype                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
-                                                       command tl tmpvar
+                                                       command tl tmpvar varmap
 
 
                        | Paste                      -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
-                                                       command tl tmpvar
+                                                       command tl tmpvar varmap
+
+
+                       | Exit_parse                 -> prerr_endline "Parse was exited."; command [] tmpvar varmap (* call again with nothing-left-to-do *)
+
+                       | Dummy                      -> command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *)
 
                    end
 
 
   in
-    command cmdlst Empty
+    command cmdlst Empty Varmap.empty
 
 
 
