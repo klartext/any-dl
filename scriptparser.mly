@@ -31,7 +31,7 @@
 %token MATCH
 %token SHOW_MATCH
 %token PRINT
-%token SHOWTYPE
+%token SHOW_TYPE
 %token LINKEXTRACT
 %token LINKEXTRACT_XML
 %token GET
@@ -133,7 +133,7 @@ statement: match_stmt          SEMI   { $1 }
     |      show_variables_stmt SEMI   { $1 }
     |      LINKEXTRACT         SEMI   { Link_extract }
     |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
-    |      SHOWTYPE            SEMI   { Showtype }
+    |      SHOW_TYPE           SEMI   { Show_type }
     |      DUMMY               SEMI   { Dummy }
     ;
 

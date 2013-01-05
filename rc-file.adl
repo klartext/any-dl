@@ -8,6 +8,7 @@ start
 end
 
 
+# Beispiel: http://www.ardmediathek.de/rbb-fernsehen/dokumentation-und-reportage/ostpreussens-zauberwald?documentId=12952042
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
   #linkextract;
@@ -16,26 +17,48 @@ start
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"<<< );
   show_match;
   print;
-  store("myvar");
-  show_variables;
+
+print_string(>>>________And now follows a row-select.________<<<);
+store("match");
+rowselect(0);
+print;
+
+print_string(>>>________And now follows another row-select.________<<<);
+recall("match");
+rowselect(1);
+print;
+
+print_string(>>>________And now follows another row-select.________<<<);
+recall("match");
+rowselect(2);
+print;
+
+print_string("------------------------");
+select(1);
+print;
+show_type;
+
+
+#  store("myvar");
+#  show_variables;
   #exitparse;
 
 
 # The following is for experimenting with features and language.
 
-showtype;
-  rowselect(0);
-showtype;
-  print_string("------------------------");
-  print;
-  select(1,2);
-  print_string("------------------------");
-  print_string("Selected Values:");
-showtype;
-  print;
-  print_string("########################################################");
-  recall("myvar");
-  showtype;
+#showtype;
+#  rowselect(0);
+#showtype;
+#  print_string("------------------------");
+#  print;
+#  select(1,2);
+#  print_string("------------------------");
+#  print_string("Selected Values:");
+#showtype;
+#  print;
+#  print_string("########################################################");
+#  recall("myvar");
+#  showtype;
 
 # rtmpdump --resume  -r rtmp://.... -y mp4:....  -o outfile.ext
 
@@ -63,14 +86,28 @@ end
 # 8. Downloade Datei
 
 
+# Beispiel-URL: http://videos.arte.tv/de/videos/joe-strummer--7161356.html
+
 parsername "arte_get": ( "http://videos.arte.tv" )
 start
   match( >>>class="vote .ajaxUrl:..?(/../do_delegate/videos/)([^,]+),view,ratingForm.html<<< );
+  show_match;
+  store("ajax");
+
+  print_string("select... ");
+  rowselect(0);
+show_type;
+  select(1,2);
+show_type;
+print;
+  #show_match;
+
+  #paste( "http://videos.arte.tv", match.group(1), match.group(2), ",view,strmVideoAsPlayerXml.xml" );
+
     #match( _*_<url quality="([^"]+)">([^<]+)<_*_ );
     #match( "Download may be incomplete \([^)]+\), try resuming" );
     #match( "ERROR: ReadPacket, failed to read RTMP packet header" );
     #match( "carton_23h_..\.mp4" );
-  show_match;
 
   # $M für match oder $S für Stack? $M für Mem?  ???
   # 
@@ -82,9 +119,10 @@ start
   # paste( "flvstreamer -r ", "http://videos.arte.tv", $M.(1), $M.(2), ",view,strmVideoAsPlayerXml.xml", "-e --flv ", "filename,mp4" )
   # system;
 
-
-
 end
+
+
+
 
 
 parsername "ndr_mediathek_get": ( "http://www.ndr.de" )

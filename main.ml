@@ -85,7 +85,7 @@ let evaluate_command_list cmdlst =
                        | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) in
                                                      begin
                                                        match document with
-                                                         | Some doc -> command tl (Document (doc, url)) varmap
+                                                         | Some doc -> command tl (Document (doc, url)) varmap (* $URL *)
                                                          | None     -> raise No_document_found       
                                                      end
 
@@ -104,12 +104,12 @@ let evaluate_command_list cmdlst =
 
                        (* hmhh, str sollte doch aus der tmpvar besser entnommen werden !  !!!!!!!!!!!!!! *)
                        | Match   pattern            ->
-                                                       Printf.printf "MATCH-PATTER: \"%s\"\n" pattern;
+                                                       Printf.fprintf stderr "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
                                                        let str =
                                                          begin
                                                            match tmpvar with
                                                              | Document (doc, url) -> doc
-                                                             | _            -> raise No_Matchable_value_available
+                                                             | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
                                                          end
                                                        in
                                                        let match_res = Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern) in
@@ -135,7 +135,7 @@ let evaluate_command_list cmdlst =
                        | Select index_list          -> 
                                                        begin
                                                          match tmpvar with
-                                                           | Row rowitems -> command tl (Row(item_selection rowitems index_list)) varmap
+                                                           | String_array rowitems -> command tl (String_array(item_selection rowitems index_list)) varmap
                                                            | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                        end
 
@@ -168,11 +168,11 @@ let evaluate_command_list cmdlst =
                                                                                   begin
                                                                                     if index >= 0 && index <= Array.length ( mres ) - 1
                                                                                     then
-                                                                                      res := Row ( mres.(index) )
+                                                                                      res := String_array ( mres.(index) )
                                                                                     else
                                                                                       raise Invalid_Row_Index
                                                                                   end
-                                                           | _ -> print_warning "RowSelect: wrong type!!!"
+                                                           | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
                                                        end;
                                                        command tl !res varmap
 
@@ -215,8 +215,7 @@ let evaluate_command_list cmdlst =
                                                            | Document(doc, url)-> print_endline doc  (* only print the document, without referrer *)
                                                            | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
                                                                                                         print_newline() ) mres
-                                                           | Row              str_arr -> Array.iter print_endline str_arr
-                                                           | Col              str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n " str) str_arr
+                                                           | String_array     str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n " str) str_arr
                                                            | Url (href, ref)   -> Printf.printf "%s   # Referrer:  %s\n" href ref
                                                            | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
                                                            | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
@@ -240,7 +239,7 @@ let evaluate_command_list cmdlst =
                                                                                             done;
                                                                                             print_newline()
                                                                                  ) mres
-                                                           | _ -> raise Wrong_argument_type
+                                                           | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
                                                        end;
                                                        command tl tmpvar varmap
 
@@ -262,7 +261,7 @@ let evaluate_command_list cmdlst =
                        | Store  varname             -> command tl tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
 
 
-                       | Recall varname             ->
+                       | Recall varname             -> (* TODO: needs an exception ?! *)
                                                        begin
                                                        try command tl (Varmap.find varname varmap) varmap (* sets tmpvar to value of named variable *)
                                                        with Not_found -> Printf.fprintf stderr "Could not find variable \"%s\" -> will exit parse.\n" varname;
@@ -276,7 +275,7 @@ let evaluate_command_list cmdlst =
                        | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "\"%s\": " varname; command [Print] value varmap ) varmap;
                                                        command tl tmpvar varmap
 
-                       | Showtype                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
+                       | Show_type                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
                                                        command tl tmpvar varmap
 
 

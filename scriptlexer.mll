@@ -20,7 +20,7 @@
                   ("start",       START  );
                   ("end",         END  );
 
-                  ("showtype",      SHOWTYPE  );
+                  ("show_type",    SHOW_TYPE  );
                   ("match",        MATCH  );
                   ("show_match",   SHOW_MATCH  );
                   ("print",        PRINT  );

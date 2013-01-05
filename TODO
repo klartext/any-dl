@@ -2,6 +2,9 @@
 
 BUGs:
 =====
+
+ - catch non-matches: "Fatal error: exception Main.No_Match" => catch exception earlier (should only affect current parse, not whole program)
+
  - Bug bei baseurl: wenn "/" am Ende der match-URLs, dann klappt es nicht...!!!
 
  - CONCAT bei REBASE: mehrfache "/" werden nicht reduziert zu einfachem
