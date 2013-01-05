@@ -208,7 +208,7 @@ List of Commands:
   print_string("String");
 
   show_match;
-  showtype;
+  show_type;
   show_variables;
 
 
