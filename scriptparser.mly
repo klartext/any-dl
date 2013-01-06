@@ -130,6 +130,7 @@ statement: match_stmt          SEMI   { $1 }
     |      get_stmt            SEMI   { $1 }
     |      store_stmt          SEMI   { $1 }
     |      recall_stmt         SEMI   { $1 }
+    |      paste_stmt          SEMI   { $1 }
     |      show_variables_stmt SEMI   { $1 }
     |      LINKEXTRACT         SEMI   { Link_extract }
     |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
@@ -159,10 +160,10 @@ store_stmt: STORE LPAREN STRING  RPAREN { Store $3 }
 recall_stmt: RECALL LPAREN STRING   RPAREN    { Recall $3 }
     ;
 
-paste_stmt: PASTE LPAREN RPAREN         { Paste }
+paste_stmt: PASTE LPAREN paste_list RPAREN    { Paste $3 }
     ;
 
-show_variables_stmt: SHOW_VARIABLES     { Show_variables }
+show_variables_stmt: SHOW_VARIABLES           { Show_variables }
     ;
 
 
@@ -194,8 +195,9 @@ condition: IF expression THEN statement_base ELSE statement_base ENDIF { Conditi
 
 assignment:  IDENTIFIER EQUALS expression { Assignment( $1, $3) }
     ;
-
 */
+
+
 
 
 
@@ -204,12 +206,12 @@ assignment:  IDENTIFIER EQUALS expression { Assignment( $1, $3) }
 /* also keine eigenen Sum-Types!               */
 /* ------------------------------------------- */
 
-/*
 identifier_list:            { [] (* empty list allowed *) }
     | IDENTIFIER COMMA identifier_list { $1 :: $3 }
     |            IDENTIFIER { [$1] }
     ;
 
+/*
 identifier_list: IDENTIFIER { [$1] }
     | IDENTIFIER COMMA identifier_list { $1 :: $3 }
     ;
@@ -230,5 +232,18 @@ selection_list: INT_NUM                        { [ $1 ] }
 get_args:  STRING               { Get_url ($1, "") }
     |      STRING COMMA STRING  { Get_url ($1, $3) }
     ;
+
+
+
+paste_list:                         { [] }
+    | paste_item                    { [$1] }
+    | paste_item  COMMA paste_list  { $1 :: $3 }
+    ;
+
+
+paste_item:   IDENTIFIER    { Varname $1 }
+    |         STRING        { String  $1 }
+    ;
+
 
 %%

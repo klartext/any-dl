@@ -15,6 +15,7 @@ type selector_t     = ( match_result_t -> match_result_t ) (* function, that has
 
 
 type results_t =
+  | Varname       of string                       (* name of a variable *)
   | String        of string                       (* general purpose string *)
   | String_array  of string array
   | Document      of  string * string             (* (document, url-of-doc) *)
@@ -28,18 +29,18 @@ type results_t =
 
 type commands_t =
   | Get_url       of string * string          (* url, referrer *)
-  | Get_urls                                  (* get via tmpvar *)                   (* can be removed maybe *)
+  | Get_urls  (* can be removed maybe *)      (* get via tmpvar *)
   | Get                                       (* get ONE document via tmpvar (Url-type) *)
   | Match             of string               (* regexp-pattern-string *)
   | Select            of int list             (* index-list for item-selection *) (* im Moment wie ColSelect *)
   | Link_extract                              (* extracts html-href's from webpage *)
   | Link_extract_xml                          (* extracts html-href's from (xml-formatted) webpage (e.g. asx-files) *)
-  | Paste                                     (* paste together strings *)
+  | Paste             of results_t list       (* paste together strings *)
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
   | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)
   | Show_variables                            (* print all named variables *)
   (*
-  | Select            of selector_t           (* acts as a filter *)
+  | Select            of selector_t           (* acts as a filter *) (* old ideas from other tool *)
   *)
   | Print
   | Show_match
@@ -55,6 +56,7 @@ type commands_t =
 
 
 let result_to_string res = match res with
+    | Varname        _ -> "Varname"
     | String         _ -> "String"
     | String_array   _ -> "String_array"
     | Document       _ -> "Document"
@@ -75,7 +77,7 @@ let command_to_string cmd = match cmd with
   | Select         _ -> "Select"
   | Link_extract     -> "Link_extract"
   | Link_extract_xml -> "Link_extract_xml"
-  | Paste            -> "Paste"
+  | Paste          _ -> "Paste"
   | Store          _ -> "Store"
   | Recall         _ -> "Recall"
   | Show_variables _ -> "Show_variables"

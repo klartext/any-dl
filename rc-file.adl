@@ -8,35 +8,50 @@ start
 end
 
 
-# Beispiel: http://www.ardmediathek.de/rbb-fernsehen/dokumentation-und-reportage/ostpreussens-zauberwald?documentId=12952042
+# Beispiel: http://www.ardmediathek.de/das-erste/polizeiruf-110/am-set-von-polizeiruf-110-interview-mit-charly-huebner?documentId=11177770
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
-  #linkextract;
-  #print;
-
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"<<< );
-  show_match;
+  store("match");
+  rowselect(2);
+  store("high");
+
+  show_type;
   print;
 
-print_string(>>>________And now follows a row-select.________<<<);
-store("match");
-rowselect(0);
+  select(1); store("rtmp");
+  recall("high");
+  select(2); store("mp4");
+
+
+paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o outfile.mp4" );
 print;
 
-print_string(>>>________And now follows another row-select.________<<<);
-recall("match");
-rowselect(1);
-print;
+exitparse; ############### ENDE #############
 
-print_string(>>>________And now follows another row-select.________<<<);
-recall("match");
-rowselect(2);
-print;
+#  rowselect(0);
+#  store("high");
+#
+#  print_string("------------------------");
+#  select(1,2);
+#  store("selection");
+#  print;
+#  show_type;
+#  print_string(" \n\n\n Now, paste will be called!!!\n");
+#  paste("lala", " hihihihi, ", "Schnulli ", $selection, " j");
+#  #paste( $match, "Hallo", "tri tra trullala", $match );
+#  #paste( "Hallo", " ", "Trulli!", $ma );
+#  print;
+#
+#
+#  print_string("\n\n\n");
+#  print_string("Ganz am Ende:\n");
+#  show_variables;
+#  print_string("\n\n\n");
 
-print_string("------------------------");
-select(1);
-print;
-show_type;
+
+
+
 
 
 #  store("myvar");

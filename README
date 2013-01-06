@@ -218,4 +218,5 @@ List of Commands:
   rowselect(0);
   select(1,2);
 
+  paste();
 

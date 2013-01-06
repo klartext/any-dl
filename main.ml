@@ -38,6 +38,7 @@ exception No_Match                  (* if a match was tried, but no match could 
 exception No_Matchresult_available  (* if Select is used, but there is no match-result available as tmpvar *)
 exception No_Matchable_value_available  (* if Match is used, but there is no matchabe tmpvar *)
 
+
 exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... without more detailed info *)
 exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 
@@ -45,13 +46,16 @@ exception Invalid_Row_Index             (* indexing a row that does not exist *)
 
 exception No_parser_found_for_this_url (* *)
 
+exception No_String_representation     (* To_string called on a value that has no way conversion so far *)
+
+exception Variable_not_found of string   (* a variable-name lookup in the Varname-map failed *)
 
 
 
 (* ------------------------------------------------ *)
 (* ------------------------------------------------ *)
 (* ------------------------------------------------ *)
-let print_warning str = prerr_string "WARNING: "; prerr_endline str
+let print_warning str = flush stdout; prerr_string "WARNING: "; prerr_endline str
 
 (* ------------------------------------------------ *)
 (* select those items from the row_items, which are *)
@@ -70,7 +74,52 @@ let item_selection row_items index_list =
 
 
 
-module Varmap = Map.Make( String )
+
+(* Module for Variables *)
+(* -------------------- *)
+module Varmap =
+  struct
+    module Varmap = Map.Make( String )
+
+    let empty = Varmap.empty
+    let add   = Varmap.add
+    let iter  = Varmap.iter
+
+    let find varname varmap =
+      try Varmap.find varname varmap with Not_found -> raise (Variable_not_found varname)
+
+  end
+
+
+
+exception Fuck_Match_result
+
+let rec  to_string  result_value varmap =
+  let str =
+    match result_value with
+      | Varname       varname     -> let res = (Varmap.find varname varmap) in
+                                     begin
+                                       match res with
+                                         | String str -> str
+                                         | _ as again -> to_string again varmap
+                                     end
+      | String        str         -> str 
+      | Document      (doc, url)  -> doc ^ url
+      | String_array  str_arr     -> Array.fold_left ( ^ ) "" str_arr
+      | Match_result  mres        -> raise Fuck_Match_result (* not implemented so far !! *)
+      | Url           (href, ref) -> Printf.sprintf "%s # referrer = %s" href ref
+      (*
+      | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
+      | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
+      | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
+      | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
+      | _ -> print_warning "to_string-function found non-convertable type"; raise Not_found
+      *)
+
+  in
+    str
+
+
 
 (* ------------------------------------------------- *)
 (* This function evaluates the list of commands that *)
@@ -78,8 +127,13 @@ module Varmap = Map.Make( String )
 (* this function is doing the main work of any-dl.   *)
 (* ------------------------------------------------- *)
 let evaluate_command_list cmdlst =
-  let rec command commandlist tmpvar varmap = match commandlist with
-    | []        -> ()
+  let rec command commandlist tmpvar varmap =
+  (*
+  Printf.printf "==========================> ENTER. evaluate_command_list() now!\n";
+  *)
+  flush_all();
+  match commandlist with
+    | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
     | cmd::tl   -> begin
                      match cmd with
                        | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) in
@@ -189,7 +243,6 @@ let evaluate_command_list cmdlst =
                                                                                                            (rebased, url)
                                                                                                        ) urls) in
 
-
                                                                      command tl links varmap
 
 
@@ -211,6 +264,11 @@ let evaluate_command_list cmdlst =
                        | Print                      ->
                                                        begin
                                                          match tmpvar with
+                                                           | Varname  varname  -> Printf.printf "\n\tVarname  varname => varname = \"%s\"\n" varname;
+                                                                                  command [Print] (Varmap.find varname varmap) varmap (* CHECK FUNCTIONALITY, PLEASE *)
+                                                           (*
+                                                           | Varname  varname  -> command [Print] (Varmap.find varname varmap) varmap (* CHECK FUNCTIONALITY, PLEASE *)
+                                                           *)
                                                            | String   str      -> print_endline str 
                                                            | Document(doc, url)-> print_endline doc  (* only print the document, without referrer *)
                                                            | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
@@ -244,7 +302,7 @@ let evaluate_command_list cmdlst =
                                                        command tl tmpvar varmap
 
 
-                       | Print_string str           -> print_endline str;
+                       | Print_string str           -> print_string str;
                                                        command tl tmpvar varmap
 
 
@@ -261,29 +319,55 @@ let evaluate_command_list cmdlst =
                        | Store  varname             -> command tl tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
 
 
-                       | Recall varname             -> (* TODO: needs an exception ?! *)
+                       | Recall varname             ->
+                                                       (* TODO: needs an exception ?! *)
+                                                       prerr_endline ("Recall: " ^ varname); flush stderr;
+                                                       let varcontents = Varmap.find varname varmap in
+                                                       command tl varcontents varmap
+                                                       (*
+                                                       command tl varcontents varmap
+                                                       *)
+
+
+                                                       (*
                                                        begin
                                                        try command tl (Varmap.find varname varmap) varmap (* sets tmpvar to value of named variable *)
                                                        with Not_found -> Printf.fprintf stderr "Could not find variable \"%s\" -> will exit parse.\n" varname;
+                                                                         command [ Show_variables ] tmpvar varmap; (* !!!!!!!!!! *)
+                                                                         flush stdout;
                                                                          flush stderr;
+                                                                         raise (Variable_not_found varname)
+                                                                         (*
                                                                          command [Exit_parse] Empty varmap
+                                                                         *)
                                                        end
+                                                       *)
 
 
 
 
-                       | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "\"%s\": " varname; command [Print] value varmap ) varmap;
+                       | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname; command [Print] value varmap ) varmap;
                                                        command tl tmpvar varmap
 
                        | Show_type                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
                                                        command tl tmpvar varmap
 
 
-                       | Paste                      -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
-                                                       command tl tmpvar varmap
+                       | Paste paste_list            ->
+                                                        (*
+                                                        List.iter ( fun x -> command [Show_type] x varmap ) paste_list; print_endline "paste: YYEEAAHH! ShowType done";
+                                                        List.iter ( fun x -> command [Print] x varmap ) paste_list; print_endline "paste: YYEEAAHH! Print done";
+                                                        *)
+
+                                                        let str_lst = List.map (fun item ->  to_string item varmap) paste_list in
+                                                        let res = List.fold_left ( ^ ) "" str_lst in
+                                                        Printf.fprintf stdout "***** Paste-result-String: ====================> %s\n" res;
+                                                        flush stdout;
+                                                        command tl (String res) varmap
 
 
-                       | Exit_parse                 -> prerr_endline "Parse was exited."; command [] tmpvar varmap (* call again with nothing-left-to-do *)
+
+                       | Exit_parse                 -> flush stdout; prerr_endline "Parse was exited."; command [] tmpvar varmap (* call again with nothing-left-to-do *)
 
                        | Dummy                      -> command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *)
 

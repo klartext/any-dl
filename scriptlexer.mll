@@ -66,6 +66,8 @@ rule read_command = parse
    | "_*_"          { Buffer.clear stringbuf; read_specialstring_2 lexbuf }
    | '.'            { DOT }
 
+   | '$'            { read_identifier lexbuf (* this is the beginning of a variable-name !!! *) }
+
    | '>'            { GT }
    | '<'            { ST }
    | '='            { EQUALS }
@@ -89,7 +91,10 @@ and read_string = parse
    | "\\("          { Buffer.add_string stringbuf "\\("; read_string lexbuf }
    | "\\)"          { Buffer.add_string stringbuf "\\)"; read_string lexbuf }
    | "\\."          { Buffer.add_string stringbuf "\\."; read_string lexbuf }
+   | "\\\""         { Buffer.add_char stringbuf '"'; read_string lexbuf }
+   (*
    | "\\\""         { Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_string lexbuf }
+   *)
    | '"'            { STRING (Buffer.contents stringbuf) }
    | eof            { EOF }
 
@@ -121,4 +126,8 @@ and read_int = parse
    | blanks    { read_int lexbuf }
    | digit+    { Some (int_of_string (Lexing.lexeme lexbuf)) }
    | eof       { raise End_of_file }
+
+and read_identifier = parse
+   | identifier as name { prerr_endline "VARIABLE FOUND in LEXER!"; IDENTIFIER (Lexing.lexeme lexbuf) }
+
 

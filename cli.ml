@@ -33,7 +33,7 @@ let opt =  {
 (* ------------------------------------------- *)
 let parse () = 
     Arg.parse [
-         ("-p",   Arg.String (fun parser_name -> opt.parser_selection <- Some parser_name ),  "    select a mandatorry parser by name (give name here)" );
+         ("-p",   Arg.String (fun parser_name -> opt.parser_selection <- Some parser_name ),  "    select a mandatory parser by name (give name here)" );
          ("-l",   Arg.Unit   (fun ()          -> opt.list_parsers     <- true ),              "    list parsers" );
          ("-f",   Arg.String (fun rcfilename  -> opt.rc_filename      <- rcfilename ),        "    rc-file-name" );
          ("-v",   Arg.Unit   (fun ()          -> opt.verbose          <- true       ),        "    verbose     " );
