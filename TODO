@@ -50,6 +50,12 @@ BETTER STRUCTURE, CLEANER CODE:
 FEATUREs:
 =========
 
+ - syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
+
+ - matches and assignments -> each match-group one varname... like   (url,vidname,foobar) = match("^(.*)xyz(lala).*?(foobar)")
+
+
+
  - other syntax/grammar:
      - parser-Definitions only what to do, URLs not (or not necessarily?) at parser-definitoion.
      - command for attaching parsers to URLs or vice versa.
@@ -66,17 +72,12 @@ FEATUREs:
 
  - Programmaufruf-Definitionen
 
- - system()-like ausführung von Programm-komandos
-
  - Parserdefinitionen wenigstens für ARD, ZDF, ORF, NDR, besser auch gleich für ARTE (siehe arte-dl)
 
  - evtl. grep-Kommando, das zeilenweise arbeitet.... für die handhabung von href's
 
- - configurable rc-file location
-
  - interactive selection of e.g. matches (e.g.: which video to download, high-res, midres or lowres?)
 
- - matches and assignments -> each match-group one varname... like   (url,vidname,foobar) = match("^(.*)xyz(lala).*?(foobar)")
 
 
 
