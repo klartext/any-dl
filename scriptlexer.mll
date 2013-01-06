@@ -31,6 +31,7 @@
 
 
                   ("get",            GET  );
+                  ("makeurl",        MAKE_URL  );
 
                   ("store",          STORE  );
                   ("recall",         RECALL  );

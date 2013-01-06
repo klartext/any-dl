@@ -156,6 +156,11 @@ let evaluate_command_list cmdlst =
                                             end
 
 
+                         (* creates url and puts it into tmpvar *)
+                       | Make_url (u,r)  -> let (url, referrer) = (to_string u varmap, to_string r varmap) in
+                                            command tl (Url( url, referrer)) varmap
+
+
                        (* hmhh, str sollte doch aus der tmpvar besser entnommen werden !  !!!!!!!!!!!!!! *)
                        | Match   pattern            ->
                                                        Printf.fprintf stderr "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)

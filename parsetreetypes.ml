@@ -31,6 +31,7 @@ type commands_t =
   | Get_url       of string * string          (* url, referrer *)
   | Get_urls  (* can be removed maybe *)      (* get via tmpvar *)
   | Get                                       (* get ONE document via tmpvar (Url-type) *)
+  | Make_url      of (results_t * results_t)  (* create URL-Type-Var *)
   | Match             of string               (* regexp-pattern-string *)
   | Select            of int list             (* index-list for item-selection *) (* im Moment wie ColSelect *)
   | Link_extract                              (* extracts html-href's from webpage *)

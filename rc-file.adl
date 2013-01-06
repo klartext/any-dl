@@ -63,14 +63,45 @@ parsername "arte_get": ( "http://videos.arte.tv" )
 start
   match( >>>class="vote .ajaxUrl:..?(/../do_delegate/videos/)([^,]+),view,ratingForm.html<<< );
   show_match;
+
+  rowselect(0);
+
   store("ajax");
 
-  print_string("select... ");
-  rowselect(0);
-show_type;
-  select(1,2);
-show_type;
-print;
+  select(1); store("group_1");
+  recall("ajax");
+  select(2); store("group_2");
+
+  paste("http://videos.arte.tv", $group_1, $group_2, ",view,strmVideoAsPlayerXml.xml");
+  print;
+  store("url");
+  makeurl($url);
+  get;
+  match(_*_<url quality="([^"]+)">([^<]+)<_*_);
+  show_type;
+
+
+#<urls>
+#<url quality="sd">rtmp://artestras.fcod.llnwd.net/a3903/o35/mp4:geo/videothek/ALL/arteprod/A7_SGT_ENC_02_045368-000-A_PG_MQ_DE?h=656b8b0ff570b6280be8acd0b47495bf</url>
+#<url quality="hd">rtmp://artestras.fcod.llnwd.net/a3903/o35/mp4:geo/videothek/ALL/arteprod/A7_SGT_ENC_04_045368-000-A_PG_HQ_DE?h=1b67e74cf4313d1a3979fe670187146d</url>
+#</urls>
+
+  show_match;
+
+  rowselect(1);
+  select(2);
+  store("rtmp");
+
+  print;
+
+  #paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o outfile.mp4" );
+  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o Joe-Strummer.mp4" );
+  system;
+  #paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o outfile.mp4" );
+
+
+  #get($url); # geht nicht: wie bekomme ich aus einem String eine URL gebaut?
+
   #show_match;
 
   #paste( "http://videos.arte.tv", match.group(1), match.group(2), ",view,strmVideoAsPlayerXml.xml" );

@@ -35,6 +35,7 @@
 %token LINKEXTRACT
 %token LINKEXTRACT_XML
 %token GET
+%token MAKE_URL
 %token STORE
 %token RECALL
 %token SHOW_VARIABLES
@@ -129,6 +130,7 @@ statement: match_stmt          SEMI   { $1 }
     |      EXITPARSE           SEMI   { Exit_parse }
     |      selection           SEMI   { $1 }
     |      get_stmt            SEMI   { $1 }
+    |      make_url_stmt       SEMI   { $1 }
     |      store_stmt          SEMI   { $1 }
     |      recall_stmt         SEMI   { $1 }
     |      paste_stmt          SEMI   { $1 }
@@ -162,12 +164,15 @@ store_stmt: STORE LPAREN STRING  RPAREN { Store $3 }
 recall_stmt: RECALL LPAREN STRING   RPAREN    { Recall $3 }
     ;
 
-paste_stmt: PASTE LPAREN paste_list RPAREN    { Paste $3 }
+paste_stmt: PASTE LPAREN argument_list RPAREN    { Paste $3 }
     ;
 
 show_variables_stmt: SHOW_VARIABLES           { Show_variables }
     ;
 
+make_url_stmt: MAKE_URL LPAREN argument_item RPAREN             { Make_url( $3, String "") }
+    | MAKE_URL LPAREN argument_item COMMA argument_item RPAREN  { Make_url( $3, $5) }
+    ;
 
 
 
@@ -237,14 +242,14 @@ get_args:  STRING               { Get_url ($1, "") }
 
 
 
-paste_list:                         { [] }
-    | paste_item                    { [$1] }
-    | paste_item  COMMA paste_list  { $1 :: $3 }
+argument_list:                      { [] }
+    | argument_item                    { [$1] }
+    | argument_item  COMMA argument_list  { $1 :: $3 }
     ;
 
 
-paste_item:   IDENTIFIER    { Varname $1 }
-    |         STRING        { String  $1 }
+argument_item:    IDENTIFIER    { Varname $1 }
+    |             STRING        { String  $1 }
     ;
 
 
