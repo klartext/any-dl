@@ -80,7 +80,6 @@ start
   match(_*_<url quality="([^"]+)">([^<]+)<_*_);
   show_type;
 
-
 #<urls>
 #<url quality="sd">rtmp://artestras.fcod.llnwd.net/a3903/o35/mp4:geo/videothek/ALL/arteprod/A7_SGT_ENC_02_045368-000-A_PG_MQ_DE?h=656b8b0ff570b6280be8acd0b47495bf</url>
 #<url quality="hd">rtmp://artestras.fcod.llnwd.net/a3903/o35/mp4:geo/videothek/ALL/arteprod/A7_SGT_ENC_04_045368-000-A_PG_HQ_DE?h=1b67e74cf4313d1a3979fe670187146d</url>
@@ -94,32 +93,8 @@ start
 
   print;
 
-  #paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o outfile.mp4" );
-  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o Joe-Strummer.mp4" );
+  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o outfile.mp4" );
   system;
-  #paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o outfile.mp4" );
-
-
-  #get($url); # geht nicht: wie bekomme ich aus einem String eine URL gebaut?
-
-  #show_match;
-
-  #paste( "http://videos.arte.tv", match.group(1), match.group(2), ",view,strmVideoAsPlayerXml.xml" );
-
-    #match( _*_<url quality="([^"]+)">([^<]+)<_*_ );
-    #match( "Download may be incomplete \([^)]+\), try resuming" );
-    #match( "ERROR: ReadPacket, failed to read RTMP packet header" );
-    #match( "carton_23h_..\.mp4" );
-
-  # $M für match oder $S für Stack? $M für Mem?  ???
-  # 
-  # paste( "http://videos.arte.tv", $M.(1), $M.(2), ",view,strmVideoAsPlayerXml.xml")
-  # urlify;
-  # 
-  #  alternativ:
-  # 
-  # paste( "flvstreamer -r ", "http://videos.arte.tv", $M.(1), $M.(2), ",view,strmVideoAsPlayerXml.xml", "-e --flv ", "filename,mp4" )
-  # system;
 
 end
 
