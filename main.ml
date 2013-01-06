@@ -367,6 +367,9 @@ let evaluate_command_list cmdlst =
 
 
 
+                       | System                     -> begin match tmpvar with String syscmd -> Sys.command syscmd end;
+                                                       command tl tmpvar varmap
+
                        | Exit_parse                 -> flush stdout; prerr_endline "Parse was exited."; command [] tmpvar varmap (* call again with nothing-left-to-do *)
 
                        | Dummy                      -> command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *)
@@ -519,6 +522,7 @@ let _  =
 
                             with (* handle exceptions from the parse-tree-evaluation *)
                               | Invalid_Row_Index -> prerr_endline "Error in script! Invalid_Row_Index!!\n"
+                              | Variable_not_found name -> Printf.fprintf stderr "Variable_not_found: \"%s\"\t This parse exited.\n" name
 
 
 

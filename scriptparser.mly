@@ -39,6 +39,7 @@
 %token RECALL
 %token SHOW_VARIABLES
 %token PASTE
+%token SYSTEM
 %token EXITPARSE
 %token DUMMY
 
@@ -132,6 +133,7 @@ statement: match_stmt          SEMI   { $1 }
     |      recall_stmt         SEMI   { $1 }
     |      paste_stmt          SEMI   { $1 }
     |      show_variables_stmt SEMI   { $1 }
+    |      SYSTEM              SEMI   { System }
     |      LINKEXTRACT         SEMI   { Link_extract }
     |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
     |      SHOW_TYPE           SEMI   { Show_type }

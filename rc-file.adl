@@ -9,8 +9,12 @@ end
 
 
 # Beispiel: http://www.ardmediathek.de/das-erste/polizeiruf-110/am-set-von-polizeiruf-110-interview-mit-charly-huebner?documentId=11177770
+# =================================
+# ARD - complete download works :-)
+# =================================
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
+
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"<<< );
   store("match");
   rowselect(2);
@@ -23,59 +27,11 @@ start
   recall("high");
   select(2); store("mp4");
 
-
-paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o outfile.mp4" );
-print;
-
-exitparse; ############### ENDE #############
-
-#  rowselect(0);
-#  store("high");
-#
-#  print_string("------------------------");
-#  select(1,2);
-#  store("selection");
-#  print;
-#  show_type;
-#  print_string(" \n\n\n Now, paste will be called!!!\n");
-#  paste("lala", " hihihihi, ", "Schnulli ", $selection, " j");
-#  #paste( $match, "Hallo", "tri tra trullala", $match );
-#  #paste( "Hallo", " ", "Trulli!", $ma );
-#  print;
-#
-#
-#  print_string("\n\n\n");
-#  print_string("Ganz am Ende:\n");
-#  show_variables;
-#  print_string("\n\n\n");
-
-
-
-
-
-
-#  store("myvar");
-#  show_variables;
-  #exitparse;
-
-
-# The following is for experimenting with features and language.
-
-#showtype;
-#  rowselect(0);
-#showtype;
-#  print_string("------------------------");
-#  print;
-#  select(1,2);
-#  print_string("------------------------");
-#  print_string("Selected Values:");
-#showtype;
-#  print;
-#  print_string("########################################################");
-#  recall("myvar");
-#  showtype;
-
-# rtmpdump --resume  -r rtmp://.... -y mp4:....  -o outfile.ext
+  # "outfile.mp4" is bad; better use a name, derived from the URL 
+  # --------------------------------------------------------------
+  paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o outfile.mp4" );
+  print;
+  system;
 
 end
 
