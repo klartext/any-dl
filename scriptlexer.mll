@@ -130,6 +130,6 @@ and read_int = parse
    | eof       { raise End_of_file }
 
 and read_identifier = parse
-   | identifier as name { prerr_endline "VARIABLE FOUND in LEXER!"; IDENTIFIER (Lexing.lexeme lexbuf) }
+   | identifier as name { IDENTIFIER (Lexing.lexeme lexbuf) }
 
 
