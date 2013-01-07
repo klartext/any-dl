@@ -78,6 +78,6 @@ FEATUREs:
 
  - interactive selection of e.g. matches (e.g.: which video to download, high-res, midres or lowres?)
 
-
+ - subst() command (Regexp)
 
 
