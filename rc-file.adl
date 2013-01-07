@@ -73,31 +73,23 @@ start
   select(2); store("group_2");
 
   paste("http://videos.arte.tv", $group_1, $group_2, ",view,strmVideoAsPlayerXml.xml");
-  print;
-  store("url");
-  makeurl($url);
+  makeurl;
   get;
   match(_*_<url quality="([^"]+)">([^<]+)<_*_);
-  show_type;
 
 #<urls>
 #<url quality="sd">rtmp://artestras.fcod.llnwd.net/a3903/o35/mp4:geo/videothek/ALL/arteprod/A7_SGT_ENC_02_045368-000-A_PG_MQ_DE?h=656b8b0ff570b6280be8acd0b47495bf</url>
 #<url quality="hd">rtmp://artestras.fcod.llnwd.net/a3903/o35/mp4:geo/videothek/ALL/arteprod/A7_SGT_ENC_04_045368-000-A_PG_HQ_DE?h=1b67e74cf4313d1a3979fe670187146d</url>
 #</urls>
 
-  show_match;
-
   rowselect(1);
   select(2);
   store("rtmp");
-
-  print;
 
   paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o outfile.mp4" );
   system;
 
 end
-
 
 
 
@@ -108,29 +100,45 @@ start
   match( "http://.*?mp4" );
   rowselect(0);
   store("url");
-  makeurl($url);
   paste("wget ",  $url );
   system;
 end
 
 
-# http://www.zdf.de/ZDFmediathek/beitrag/video/1800218/Robin-Hood---Rebell-der-Herzen?bc=sts;stt&flash=off
+# (* Webpage -> ASX-Link -> ASX-Page -> MMS-Link *)
+# http://www.zdf.de/ZDFmediathek/beitrag/video/1800812/Das-Adlon.-Eine-Familiensaga-%25281%2529?bc=sts;stt&flash=off
 parsername "zdf_mediathek_get": ( "http://www.zdf.de" )
 start
   match( "http://.*?asx" );
-  print;
-
+show_type;
+print;
+  rowselect(0);
+  select(0);
+show_type;
+print;
   # get the ASX-file (URL should be grabbed from last action... so this is a workaround here *)
-  get("http://wstreaming.zdf.de/zdf/veryhigh/121229_robin_hood_doku_dok.asx");
+  makeurl;
+  get;
   linkextract_xml;
-  print;
-
-# mplayer -dumpstream mms://example.com/Globalplayers/GP_14.wmv -dumpfile ./download/test.wmv
+show_type;
+print;
+select(0);
+  store("mms");
+show_type;
+print;
+  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile zdf_outfile.mp4" );
+  system;
 
 end
 
 
-parsername "dctp_mediathek_get": ( "http://www.dctp.tv/" )
+
+##################
+### NOT TESTED ###
+##################
+
+
+parsername "dctp_mediathek_get": ( "http://www.dctp.tv" )
 start
   match( "(mp4:.*\")" );
   print;
@@ -157,44 +165,6 @@ end
 
 
 
-# (* Webpage -> ASX-Link -> ASX-Page -> MMS-Link *)
-# (* ------------------------------------------- *)
-# let web_asx_mms_get url =
-#   let suffix = ".asx" in
-# 
-#   (* get main-page via initial URL *)
-#   (* ----------------------------- *)
-#   let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
-# 
-#   (* extract the ASX-file-URL *)
-#   (* ------------------------ *)
-#   let asx_matcher str = Filename.check_suffix str suffix in (* matcht hier ".asx" file-suffix, könnte aber auch pcre-match sein... *)
-#   let asx_urls = get_href_from_webdoc_and_match doc ( fun str -> asx_matcher str ) in
-# 
-#   (* REBASE: prepend the baseurl if necessary *)
-#   let asx_urls = List.map ( fun asxurl -> prepend_baseurl_if_necessary url asxurl ) asx_urls in
-# 
-# 
-#   let all_hrefs = ref [] in
-#   List.iter ( fun asx_url ->
-#                               let asx_url = List.hd asx_urls in  (* select just the first one (easiest criterium) *)
-# 
-#                               (* get the ASX-file via ASX-URL *)
-#                               (* ---------------------------- *)
-#                               let xml_doc = get_document  asx_url  ["Could not retrieve the "; suffix; "-document via url "; asx_url; "\n"] Not_found in
-# 
-#                               (* extract the real URLs of the streams *)
-#                               (* ------------------------------------ *)
-#                               let xml_as_xml = Parsers.Xmlparse.parse_string xml_doc in
-#                               let href_list  = Parsers.xml_get_href xml_as_xml in
-#                               all_hrefs := List.append href_list !all_hrefs
-#             ) asx_urls;
-#   if List.length asx_urls = 0 then raise Not_found;
-#   !all_hrefs
-# 
-# 
-# 
-# 
 # (*
 #   Pro-Sieben:
 # 
@@ -292,136 +262,6 @@ end
 # 
 # 
 # 
-# let arte_get  url =
-#   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
-# 
-#   (* GET *)
-#   (* --- *)
-#   let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
-#   (* EXTRACT *)
-#   (* ------- *)
-#   (* the URL-regexps, needed for handling ARTE *)
-# 
-#   let arte_xmlurl_re    = Pcre.regexp "ajaxUrl:.?(/../do_delegate/videos/)([^,]+),view,ratingForm.html" in
-#   (* extracting the stuff *)
-#   let xml_match_opt   = Parsers.if_match_give_groups  doc  arte_xmlurl_re in
-#   let xml_submatch    = extract_some_with_exit_if_none  xml_match_opt  ["xml_submatch"] Could_not_extract_ARTE_Ajax_url in
-#   flush stdout;
-# 
-#   let xml_url         = Printf.sprintf "http://videos.arte.tv%s%s,view,asPlayerXml.xml" xml_submatch.(1) xml_submatch.(2) in
-# 
-# 
-#   (* GET *)
-#   (* --- *)
-#   let xml_doc = get_document xml_url [ "Could not retrieve ARTE xml-file" ] Could_not_get_ARTE_xml in
-# 
-#   (* EXTRACT *)
-#   (* ------- *)
-#   let arte_video_url_re = Pcre.regexp "<url quality=\"([^\"]+)\">([^<]+)<"                                in
-#   let urls_array_opt = Parsers.if_match_give_group_of_groups xml_doc arte_video_url_re in
-#   let urls_array     = extract_some_with_exit_if_none urls_array_opt ["urls_array_opt: error"] Not_found in
-# 
-#   let res = ref [] in
-#   Array.iter ( fun arr -> res := arr.(1) :: arr.(2) :: !res ) urls_array;
-# 
-#   !res
-# 
-# 
-# (* für ARD
-# rtmpdump -y mp4:ard/mediendb/weltweit/video/2012/0228/120228_weltweit_web-m.mp4 -r rtmp://gffstream.fcod.llnwd.net/a792/e2/   -o out_l.flv
-# 
-# Das funktioniert auch:
-# 
-# rtmpdump -r rtmp://gffstream.fcod.llnwd.net/a792/e2/mp4:ard/mediendb/weltweit/video/2012/0228/120228_weltweit_web-m.mp4   -o out_l.flv
-# *)
-# 
-# let ard_mediathek_get_rtmp_mp4_url  url =
-# 
-#   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
-#   (* GET *)
-#   (* --- *)
-#   let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
-# 
-#   (* EXTRACT *)
-#   (* ------- *)
-# (*
-#   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "http://[^\"]+?mp4\"") in
-#   let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_Mp4_url_extraction_error in
-# *)
-# 
-#   let rtmp_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "rtmpt{0,1}://[^\"]+") in
-#   let rtmp_urls     = extract_some_with_exit_if_none rtmp_urls_opt [] ARD_Rtmp_url_extraction_error in
-#   (*
-#   *)
-# 
-#   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "mp4:[^\"]+") in
-#   let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_mp4_url_extraction_error in
-#   (*
-#   *)
-# 
-#   (* zipping *)
-#   let links = List.map2 ( fun rtmp_arr mp4_arr -> rtmp_arr.(0) ^ "   " ^ mp4_arr.(0)  )  rtmp_urls mp4_urls in
-#   (*
-#   let links = List.map ( fun mp4_arr ->  mp4_arr.(0)  )  mp4_urls in
-#   *)
-# 
-#   links
-# 
-# 
-# 
-# let ard_mediathek_get_rtmp_mp4_url_version_2  url =
-#   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
-#   (* GET *)
-#   (* --- *)
-#   let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
-# 
-#   (* EXTRACT *)
-#   (* ------- *)
-#   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "http://[^\"]+?mp4\"") in
-#   let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_Mp4_url_extraction_error in
-# 
-#   let links = List.map ( fun mp4_arr ->  mp4_arr.(0)  )  mp4_urls in
-# 
-#   links
-# 
-# 
-# 
-# let ard_mediathek_get_rtmp_mp4_url_version_3  url =
-#   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
-#   (* GET *)
-#   (* --- *)
-#   let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
-# 
-#   (* EXTRACT *)
-#   (* ------- *)
-#   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "(rtmpt{0,1}://[^\"])(.*?)(mp4:[^\"]+)\"") in
-#   let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] ARD_Mp4_url_extraction_error in
-# 
-#   let links = List.map ( fun mp4_arr ->  mp4_arr.(0)  )  mp4_urls in
-# 
-#   links
-# 
-# 
-# 
-# let ard_mediathek_get_rtmp_mp4_url_version_4 url =
-#   Printf.printf "NEU (probeweise Funktion fuer ARD) !!! url=%s\n" url;
-#   let commandlist = [ Get_url(url, "-");
-#                       Match( "(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"" );
-#                       (*
-#                       Select( Selector.select_first_match );
-#                       *)
-#                       Print_match;
-#                       Dummy
-#                     ]
-#   in
-#   evaluate_command_list commandlist;
-#   [""]
-# 
-# 
-# 
-# 
-# 
-# 
 # (* http://www.ndr.de/fernsehen/sendungen/45_min/videos/minuten393.html
 # 
 # <div id="flash_player_audio_gallery_minuten393">
@@ -431,21 +271,6 @@ end
 # </div>
 # *)
 # 
-# 
-# let ndr_mediathek_get  url =
-#   (* hier geht es los mit dem Download des Haupt-Dokumentes von der Mediathek *)
-# 
-#   (* GET *)
-#   (* --- *)
-#   let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
-# 
-#   (* mp4-url extrahieren *)
-#   let mp4_urls_opt = Parsers.if_match_give_group_of_groups_2  doc (Pcre.regexp "http://.*?mp4") in
-#   let mp4_urls     = extract_some_with_exit_if_none mp4_urls_opt [] NDR_url_extraction_error in
-# 
-#   let links = List.map ( fun mp4_arr -> mp4_arr.(0)  )  mp4_urls in
-# 
-#   links
 # 
 # 
 # 

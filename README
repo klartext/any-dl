@@ -216,7 +216,8 @@ List of Commands:
   recall("varname");
 
   rowselect(0);
-  select(1,2);
+  select(1);
+  mselect(1,2);
 
   paste();
 

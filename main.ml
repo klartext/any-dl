@@ -107,8 +107,9 @@ let rec  to_string  result_value varmap =
       | Document      (doc, url)  -> doc ^ url
       | String_array  str_arr     -> Array.fold_left ( ^ ) "" str_arr
       | Match_result  mres        -> raise Fuck_Match_result (* not implemented so far !! *)
-      | Url           (href, ref) -> Printf.sprintf "%s # referrer = %s" href ref
+      | Url           (href, ref) -> href
       (*
+      | Url           (href, ref) -> Printf.sprintf "%s # referrer = %s" href ref
       | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
       | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
       | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
@@ -157,6 +158,9 @@ let evaluate_command_list cmdlst =
 
 
                          (* creates url and puts it into tmpvar *)
+                       | Make_url_tmpvar -> let (url, referrer) = (to_string tmpvar varmap, "-") in
+                                            command tl (Url( url, referrer)) varmap
+
                        | Make_url (u,r)  -> let (url, referrer) = (to_string u varmap, to_string r varmap) in
                                             command tl (Url( url, referrer)) varmap
 
@@ -191,10 +195,18 @@ let evaluate_command_list cmdlst =
                                                        end
                        *)
 
-                       | Select index_list          -> 
+                       | Select index               -> 
+                                                       begin
+                                                         match tmpvar with
+                                                           | String_array rowitems -> command tl (String(rowitems.(index))) varmap
+                                                           | Url_array    rowitems -> command tl (Url( fst(rowitems.(index)), snd(rowitems.(index)))) varmap
+                                                           | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                       end
+                       | MSelect index_list         -> 
                                                        begin
                                                          match tmpvar with
                                                            | String_array rowitems -> command tl (String_array(item_selection rowitems index_list)) varmap
+                                                           | Url_array    rowitems -> command tl (Url_array(item_selection rowitems index_list)) varmap
                                                            | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                        end
 

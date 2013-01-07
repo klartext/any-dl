@@ -41,6 +41,7 @@
 
                   ("rowselect",      ROWSELECT  );
                   ("select",         SELECT     );
+                  ("mselect",        MSELECT     );
 
                   ("colselect",      COLSELECT  );
 

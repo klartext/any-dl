@@ -35,6 +35,22 @@ BUGs:
       http://www.first.in-berlin.de/#allgemein  # Referrer:  http://www.first.in-berlin.de/PROFIL.html
       oliver@siouxsie:~/Programmierung/any-dl$ 
 
+ -  PROBLEM:
+    parsername "ndr_mediathek_get": ( "http://www.ndr.de" )
+    start
+      match( "http://.*?mp4" );
+      print;
+      show_type;
+      rowselect(0);
+      store("url");
+      makeurl($url);
+      print;
+      show_type;
+      get;
+    end
+
+    possibly get works fine, but save() must be implemented !!
+
 
 
 
@@ -79,5 +95,7 @@ FEATUREs:
  - interactive selection of e.g. matches (e.g.: which video to download, high-res, midres or lowres?)
 
  - subst() command (Regexp)
+
+
 
 

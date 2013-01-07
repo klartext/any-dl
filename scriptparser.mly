@@ -47,6 +47,7 @@
 %token COLSELECT
 %token ROWSELECT
 %token SELECT
+%token MSELECT
 
 %token PRINT_STRING
 
@@ -170,15 +171,17 @@ paste_stmt: PASTE LPAREN argument_list RPAREN    { Paste $3 }
 show_variables_stmt: SHOW_VARIABLES           { Show_variables }
     ;
 
-make_url_stmt: MAKE_URL LPAREN argument_item RPAREN             { Make_url( $3, String "") }
+make_url_stmt: MAKE_URL LPAREN argument_item RPAREN             { Make_url( $3, String "-") }
     | MAKE_URL LPAREN argument_item COMMA argument_item RPAREN  { Make_url( $3, $5) }
+    | MAKE_URL                                                  { Make_url_tmpvar }
     ;
 
 
 
 selection: COLSELECT LPAREN   INT_NUM   RPAREN { ColSelect $3 }
     |      ROWSELECT LPAREN   INT_NUM   RPAREN { RowSelect $3 }
-    |      SELECT    LPAREN   selection_list   RPAREN { Select    $3 }
+    |      SELECT    LPAREN   INT_NUM   RPAREN { Select    $3 }
+    |      MSELECT   LPAREN   selection_list   RPAREN { MSelect   $3 }
     ;
 
 
