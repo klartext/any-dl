@@ -102,10 +102,15 @@ end
 
 
 
+# Example: http://www.ndr.de/fernsehen/sendungen/mein_nachmittag/videos/wochenserie361.html
 parsername "ndr_mediathek_get": ( "http://www.ndr.de" )
 start
   match( "http://.*?mp4" );
-  print;
+  rowselect(0);
+  store("url");
+  makeurl($url);
+  paste("wget ",  $url );
+  system;
 end
 
 
