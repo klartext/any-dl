@@ -202,10 +202,11 @@ List of Commands:
   exitparse;
 
   linkextract;
+  linkextract_xml;
   match("Regexp-String");
 
   print;
-  print_string("String");
+  print_string("My string");
 
   show_match;
   show_type;
@@ -219,5 +220,9 @@ List of Commands:
   select(1);
   mselect(1,2);
 
-  paste();
+  paste("litareal string", $varname);
+
+  basename;
+  to_string;
+
 

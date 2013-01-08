@@ -39,13 +39,6 @@ end
 
 # ARTE
 #
-# id_re = re.compile('class="vote .ajaxUrl:..?(/../do_delegate/videos/)([^,]+),view,ratingForm.html')
-# url_re = re.compile('<url quality="([^"]+)">([^<]+)<')
-# retry_re = re.compile('Download may be incomplete \([^)]+\), try resuming')
-# packerr_re = re.compile('ERROR: ReadPacket, failed to read RTMP packet header')
-# restricted_re = re.compile('carton_23h_..\.mp4')
-# fallback_re = re.compile('fallback_..\.mp4')
-#
 # 1. Hauptseite ziehen
 # 2. Matche id_re = re.compile('class="vote .ajaxUrl:..?(/../do_delegate/videos/)([^,]+),view,ratingForm.html')
 # 3. Xml-Url erzeugen aus: xmlurl = 'http://videos.arte.tv%s%s,view,strmVideoAsPlayerXml.xml' % (match.group(1), match.group(2))
@@ -91,6 +84,8 @@ start
   basename;
   store("filename");
 
+  # download the video
+  # ------------------
   paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $filename );
   system;
 
@@ -105,6 +100,9 @@ start
   match( "http://.*?mp4" );
   rowselect(0);
   store("url");
+
+  # download the video
+  # ------------------
   paste("wget ",  $url );
   system;
 end
@@ -115,20 +113,16 @@ end
 parsername "zdf_mediathek_get": ( "http://www.zdf.de" )
 start
   match( "http://.*?asx" );
-#show_type;
-#print;
   rowselect(0);
   select(0);
-#show_type;
-#print;
+
   # get the ASX-file (URL should be grabbed from last action... so this is a workaround here *)
   makeurl;
   get;
   print_string("ASX-file downloaded.\n");
 
   linkextract_xml;
-#show_type;
-#print;
+
   select(0);
   store("mms");
 
@@ -137,6 +131,8 @@ start
   basename;
   store("filename");
 
+  # download the video
+  # ------------------
   paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
   system;
 
@@ -153,7 +149,6 @@ start
   linkextract_xml;
   select(0);
   store("mms");
-print;
 
   # create filename
   to_string;
@@ -256,44 +251,10 @@ end
 # let ndr_mediathek_get           = ndr_mediathek_get
 # 
 # 
-# (* Webpage -> ASX-Link -> ASX-Page -> MMS-Link *)
-# (* ------------------------------------------- *)
-# let web_asx_mms_get url =
-#   let suffix = ".asx" in
-# 
-#   (* get main-page via initial URL *)
-#   (* ----------------------------- *)
-#   let doc = get_document url ["Could not retrieve the url "; url; "\n" ] Mainurl_error in
-# 
-#   (* extract the ASX-file-URL *)
-#   (* ------------------------ *)
-#   let asx_matcher str = Filename.check_suffix str suffix in (* matcht hier ".asx" file-suffix, könnte aber auch pcre-match sein... *)
-#   let asx_urls = get_href_from_webdoc_and_match doc ( fun str -> asx_matcher str ) in
-# 
-#   (* REBASE: prepend the baseurl if necessary *)
-#   let asx_urls = List.map ( fun asxurl -> prepend_baseurl_if_necessary url asxurl ) asx_urls in
-# 
-# 
-#   let all_hrefs = ref [] in
-#   List.iter ( fun asx_url ->
-#                               let asx_url = List.hd asx_urls in  (* select just the first one (easiest criterium) *)
-# 
-#                               (* get the ASX-file via ASX-URL *)
-#                               (* ---------------------------- *)
-#                               let xml_doc = get_document  asx_url  ["Could not retrieve the "; suffix; "-document via url "; asx_url; "\n"] Not_found in
-# 
-#                               (* extract the real URLs of the streams *)
-#                               (* ------------------------------------ *)
-#                               let xml_as_xml = Parsers.Xmlparse.parse_string xml_doc in
-#                               let href_list  = Parsers.xml_get_href xml_as_xml in
-#                               all_hrefs := List.append href_list !all_hrefs
-#             ) asx_urls;
-#   if List.length asx_urls = 0 then raise Not_found;
-#   !all_hrefs
-# 
-# 
-# 
-# 
+# --------------------------------------------------------------------------------------
+#
+#
+#
 # (* http://www.ndr.de/fernsehen/sendungen/45_min/videos/minuten393.html
 # 
 # <div id="flash_player_audio_gallery_minuten393">
