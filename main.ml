@@ -114,8 +114,8 @@ let rec  to_string  result_value varmap =
       | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
       | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
       | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
-      | _ -> print_warning "to_string-function found non-convertable type"; raise Not_found
       *)
+      | _ -> print_warning "to_string-function found non-convertable type"; raise Fuck_Match_result
 
   in
     str
@@ -167,7 +167,11 @@ let evaluate_command_list cmdlst =
 
                        (* hmhh, str sollte doch aus der tmpvar besser entnommen werden !  !!!!!!!!!!!!!! *)
                        | Match   pattern            ->
-                                                       Printf.fprintf stderr "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
+                                                       if
+                                                        Cli.opt.Cli.verbose
+                                                       then
+                                                         Printf.fprintf stderr "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
+
                                                        let str =
                                                          begin
                                                            match tmpvar with
@@ -232,7 +236,6 @@ let evaluate_command_list cmdlst =
                        (*   BOT READY, is Print-command so far !!! *)
                        | RowSelect   index            ->
                                                        let res = ref Empty in
-                                                       print_endline "RowSelect";
                                                        begin
                                                          match tmpvar with
                                                            | Match_result mres ->
@@ -378,11 +381,22 @@ let evaluate_command_list cmdlst =
 
                                                         let str_lst = List.map (fun item ->  to_string item varmap) paste_list in
                                                         let res = List.fold_left ( ^ ) "" str_lst in
+                                                        (*
                                                         Printf.fprintf stdout "***** Paste-result-String: ====================> %s\n" res;
+                                                        *)
                                                         flush stdout;
                                                         command tl (String res) varmap
 
 
+
+                       | Basename                   -> begin
+                                                         match tmpvar with
+                                                           | String filename -> command tl (String(Filename.basename filename)) varmap
+                                                           | _ -> raise Wrong_argument_type
+                                                       end
+
+
+                       | To_string                  -> command tl (String (to_string tmpvar varmap)) varmap
 
                        | System                     -> begin match tmpvar with String syscmd -> Sys.command syscmd end;
                                                        command tl tmpvar varmap

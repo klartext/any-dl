@@ -86,7 +86,12 @@ start
   select(2);
   store("rtmp");
 
-  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o outfile.mp4" );
+  # create filename
+  to_string;
+  basename;
+  store("filename");
+
+  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $filename );
   system;
 
 end
@@ -110,27 +115,54 @@ end
 parsername "zdf_mediathek_get": ( "http://www.zdf.de" )
 start
   match( "http://.*?asx" );
-show_type;
-print;
+#show_type;
+#print;
   rowselect(0);
   select(0);
-show_type;
-print;
+#show_type;
+#print;
   # get the ASX-file (URL should be grabbed from last action... so this is a workaround here *)
   makeurl;
   get;
+  print_string("ASX-file downloaded.\n");
+
   linkextract_xml;
-show_type;
-print;
-select(0);
+#show_type;
+#print;
+  select(0);
   store("mms");
-show_type;
-print;
-  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile zdf_outfile.mp4" );
+
+  # create filename
+  to_string;
+  basename;
+  store("filename");
+
+  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
   system;
 
 end
 
+
+
+
+# http://wstreaming.zdf.de/zdf/veryhigh/130106_teileins_fs_adl.asx
+# ZDF-Mediathek, mit dem asx-file ("Windows Media Player")
+# ----------------------------------------------------------------
+parsername "zdf_mediathek_asx": ( "http://wstreaming.zdf.de")
+start
+  linkextract_xml;
+  select(0);
+  store("mms");
+print;
+
+  # create filename
+  to_string;
+  basename;
+  store("filename");
+
+  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile zdf_outfile.wmv" );
+  system;
+end
 
 
 ##################

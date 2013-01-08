@@ -54,6 +54,8 @@ type commands_t =
   | ColSelect  of int  (* horizontal selection of a matrix (match-result) *)
   | RowSelect  of int  (* vertical   selection of a matrix (match-result) *)
   | System
+  | Basename                                  (* get the basename of a file or url *)
+  | To_string                                 (* convert to string *)
   | Exit_parse
   | Dummy
 
