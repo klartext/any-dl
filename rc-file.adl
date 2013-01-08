@@ -1,11 +1,27 @@
-# Parser-Definitions for the Mediathek-Parsers
-# --------------------------------------------
+# ==============================================
+# Parser-Definitions for the Mediathek-Parsers #
+# ==============================================
 
+
+
+# General Parsers, not specific to Mediathek-Archives 
+# ===================================================
 parsername "linkextract": ( "" )
 start
   linkextract;
   print;
 end
+
+
+parsername "linkextract_xml": ( "" )
+start
+  linkextract_xml;
+  print;
+end
+
+
+
+
 
 
 # Beispiel: http://www.ardmediathek.de/das-erste/polizeiruf-110/am-set-von-polizeiruf-110-interview-mit-charly-huebner?documentId=11177770
@@ -27,9 +43,14 @@ start
   recall("high");
   select(2); store("mp4");
 
+  # create filename
+  to_string;
+  basename;
+  store("filename");
+print;
   # "outfile.mp4" is bad; better use a name, derived from the URL 
   # --------------------------------------------------------------
-  paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o outfile.mp4" );
+  paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o ", $filename);
   print;
   system;
 
@@ -155,7 +176,7 @@ start
   basename;
   store("filename");
 
-  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile zdf_outfile.wmv" );
+  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
   system;
 end
 

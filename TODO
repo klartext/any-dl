@@ -66,6 +66,11 @@ BETTER STRUCTURE, CLEANER CODE:
 FEATUREs:
 =========
 
+ - filename-changer or subst command, so that ugly filenames can be changed,
+   especially for downloader-calls via system-call (shell-expansion ...).
+
+ - subst() command (Regexp)
+
  - syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
 
  - matches and assignments -> each match-group one varname... like   (url,vidname,foobar) = match("^(.*)xyz(lala).*?(foobar)")
@@ -94,7 +99,6 @@ FEATUREs:
 
  - interactive selection of e.g. matches (e.g.: which video to download, high-res, midres or lowres?)
 
- - subst() command (Regexp)
 
 
 

@@ -94,6 +94,12 @@ module Varmap =
 
 exception Fuck_Match_result
 
+(* ---------------------------------------------- *)
+(* functional, not thorough nifty-details printer *)
+(* intended to make basic functionality working   *)
+(* more fancy converters for other purposes might *)
+(* elsewehere be defined                          *)
+(* ---------------------------------------------- *)
 let rec  to_string  result_value varmap =
   let str =
     match result_value with
@@ -335,35 +341,12 @@ let evaluate_command_list cmdlst =
 
 
 
-
                        | Store  varname             -> command tl tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
 
 
-                       | Recall varname             ->
-                                                       (* TODO: needs an exception ?! *)
-                                                       prerr_endline ("Recall: " ^ varname); flush stderr;
+                       | Recall varname             -> if Cli.opt.Cli.verbose then prerr_endline ("Recall: " ^ varname); flush stderr;
                                                        let varcontents = Varmap.find varname varmap in
                                                        command tl varcontents varmap
-                                                       (*
-                                                       command tl varcontents varmap
-                                                       *)
-
-
-                                                       (*
-                                                       begin
-                                                       try command tl (Varmap.find varname varmap) varmap (* sets tmpvar to value of named variable *)
-                                                       with Not_found -> Printf.fprintf stderr "Could not find variable \"%s\" -> will exit parse.\n" varname;
-                                                                         command [ Show_variables ] tmpvar varmap; (* !!!!!!!!!! *)
-                                                                         flush stdout;
-                                                                         flush stderr;
-                                                                         raise (Variable_not_found varname)
-                                                                         (*
-                                                                         command [Exit_parse] Empty varmap
-                                                                         *)
-                                                       end
-                                                       *)
-
-
 
 
                        | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname; command [Print] value varmap ) varmap;
