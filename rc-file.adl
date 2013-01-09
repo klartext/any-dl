@@ -1,11 +1,6 @@
-# ==============================================
-# Parser-Definitions for the Mediathek-Parsers #
-# ==============================================
-
-
-
-# General Parsers, not specific to Mediathek-Archives 
-# ===================================================
+# =====================================================
+# General Parsers, not specific to Mediathek-Archives #
+# =====================================================
 parsername "linkextract": ( "" )
 start
   linkextract;
@@ -23,10 +18,17 @@ end
 
 
 
+# ==============================================
+# Parser-Definitions for the Mediathek-Parsers #
+# ==============================================
 
-# Beispiel: http://www.ardmediathek.de/das-erste/polizeiruf-110/am-set-von-polizeiruf-110-interview-mit-charly-huebner?documentId=11177770
-# =================================
-# ARD - complete download works :-)
+
+
+
+# ---------------------------------
+# ARD 
+# ---------------------------------
+# Example: http://www.ardmediathek.de/das-erste/polizeiruf-110/am-set-von-polizeiruf-110-interview-mit-charly-huebner?documentId=11177770
 # =================================
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
@@ -58,8 +60,11 @@ end
 
 
 
+
+
+# ---------------------------------
 # ARTE
-#
+# ---------------------------------
 # 1. Hauptseite ziehen
 # 2. Matche id_re = re.compile('class="vote .ajaxUrl:..?(/../do_delegate/videos/)([^,]+),view,ratingForm.html')
 # 3. Xml-Url erzeugen aus: xmlurl = 'http://videos.arte.tv%s%s,view,strmVideoAsPlayerXml.xml' % (match.group(1), match.group(2))
@@ -69,10 +74,9 @@ end
 # 6. selektiere die / eine Qualitätsstufe und entnehme dort die RTMP-Url (2. Group)
 # 7. Kreiere Download-String
 # 8. Downloade Datei
-
-
-# Beispiel-URL: http://videos.arte.tv/de/videos/joe-strummer--7161356.html
-
+# ---------------------------------
+# Example-URL: http://videos.arte.tv/de/videos/joe-strummer--7161356.html
+# =================================
 parsername "arte_get": ( "http://videos.arte.tv" )
 start
   match( >>>class="vote .ajaxUrl:..?(/../do_delegate/videos/)([^,]+),view,ratingForm.html<<< );
@@ -115,7 +119,11 @@ end
 
 
 
+# ---------------------------------
+# NDR 
+# ---------------------------------
 # Example: http://www.ndr.de/fernsehen/sendungen/mein_nachmittag/videos/wochenserie361.html
+# =================================
 parsername "ndr_mediathek_get": ( "http://www.ndr.de" )
 start
   match( "http://.*?mp4" );
@@ -129,8 +137,13 @@ start
 end
 
 
+# ---------------------------------
+# ZDF 
+# ---------------------------------
 # (* Webpage -> ASX-Link -> ASX-Page -> MMS-Link *)
-# http://www.zdf.de/ZDFmediathek/beitrag/video/1800812/Das-Adlon.-Eine-Familiensaga-%25281%2529?bc=sts;stt&flash=off
+# ---------------------------------
+# Example: http://www.zdf.de/ZDFmediathek/beitrag/video/1800812/Das-Adlon.-Eine-Familiensaga-%25281%2529?bc=sts;stt&flash=off
+# =================================
 parsername "zdf_mediathek_get": ( "http://www.zdf.de" )
 start
   match( "http://.*?asx" );
@@ -162,9 +175,12 @@ end
 
 
 
-# http://wstreaming.zdf.de/zdf/veryhigh/130106_teileins_fs_adl.asx
-# ZDF-Mediathek, mit dem asx-file ("Windows Media Player")
 # ----------------------------------------------------------------
+# ---------------------------------
+# ZDF 
+# ---------------------------------
+# Example: http://wstreaming.zdf.de/zdf/veryhigh/130106_teileins_fs_adl.asx
+# =================================
 parsername "zdf_mediathek_asx": ( "http://wstreaming.zdf.de")
 start
   linkextract_xml;
@@ -179,6 +195,9 @@ start
   paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
   system;
 end
+
+
+
 
 
 ##################
