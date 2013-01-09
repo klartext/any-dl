@@ -3,108 +3,189 @@ any-dl, a tool for downloading Mediathek video-files
 
 ! This stuff is in early stage.
 ! The parser-definition-language is not frozen so far
-! and may change in the future.
+! and may change in the future!
 
 
 Overview
----------
+========
 
-  The too any-dl has it's name derived from tools like
+  The tool any-dl is inspired by, and has it's name derived from tools like
   youtoube-dl, arte-dl, dctp-dl, zdf-dl, ...
-  These tools are specialized downloader tools for downloading
-  movied from youtube as well as the german tv-broadcasters archives.
-  In germany, since some years, the broadcasting statiosn has to remove
-  the contents from the public access after one week, if not
-  certain conditions are met to allow them being online for longer.
 
-  As these different tools all are only allowing only access to certain
-  archives/servers, and keeping them up-to date (they are not
-  all part of a package managing system like *.deb / *.rpm of some
-  linux distributions, maintainance as user was a bit tidy.
-  Also, even all these tools do nearly the same task, just looking
-  at different servers and doing the html-/xml-parsing on different
-  URL's and documents, the main task is the same for all these tools.
+  These tools are specialized downloading tools for videos
+  of youtube, as well as tv-broadcasting companies.
 
-  They all look up a document, parse it's contents and then download
-  the video file. Or in some more complicated cases, one or more
-  other ressources must be downlkoaded in case of parsing, and then
-  create the video-urls from these paresd documents and then do the
-  download.
-  So, the oferall structure is: load one or more documents to get the
-  video-url and then download that video and save it to disk.
-  Thats the common between these tools.
-  The difference between these tools is: look at different palces
-  and do look for other stuff inside the docuemnts to get the video-url.
+  All these tools do download video files, and for accomplishing this task,
+  they need to download and analyze webpages, via which thos cvideos are
+  presented to the viewer.
 
-  So a way to making this task more general, so that one tool could
-  do all the downloading operations for many platforms, is to make
-  a general / generic downlaod-parse-download tool, that is configurable
-  for the certain vidoe-archives that are in focus.
+  All these small tools are only programmed to work with certain video archives,
+  and a lot of work is going into these kind of tools.
 
-  And this general / generic tool is any-dl.
+  any-dl is intended to be generic enough to allow downloads of videos from all
+  these platforms, and for this case, probviding a Domain Specific Langage
+  (DSL) which defines how the videos of a certain server can be downloaded.
 
-  For the purpose of this task, as a way of configuring the tool to do it's
-  tasks on any vdeo-archives of interest, an input language, that allows
-  the description of the download-parse-download process was developed.
+  The DSL is designed to allow defining parsers, which say, how to scrape
+  the archives.
 
-  Additionally, for handling the tool-options, command line arguments might
-  also be parsed to have switches for the over-all behaviour.
-! (At the moment no CLI-switches are implemented so far, but some are
-! already planned.)
+  This language will explained below.
 
 
-Parser-Definition Language:
----------------------------
 
-Here is an example for the NDR-mediathek.
-The script shows how to grab the video-url and just print it:
+Parser-Definition Language: Intro
+=================================
 
+Here is a simple parser definition, that allows to pick out all
+html-hyper-references from a webpage and print them.
+
+
+parsername "linkextract": ( "" )
+start
+  linkextract;
+  print;
+end
+
+As you can see, the definition allows to give a parsername
+to the definition of the parser, an inbetween of "start" and "end"
+the commands that define the parser, are listed.
+
+A get-command that downloads the url
+(which is given via the command line) is done
+implicitly.
+
+Then the commands "linkextract" and "print"
+are executed.
+So, all links from the document, referred to by the URL
+are printed.
+
+
+
+The part with the parantehses and quoting-symbols allows to bind certain
+URL's to this parser, so that a parser can be selected automatically
+via the URL. So, a parser, dedicated to a certain URL will be invoked
+to work on the document, that has a certain URL.
+
+Via command line arguments, it is possible, to select a different parser,
+to do it differently than using the defaults.
+
+
+As an example see at the parser, that does look-up for the
+video-files of the NDR-TV-broadcaster in germany:
+
+  # Example-URL: http://www.ndr.de/fernsehen/sendungen/mein_nachmittag/videos/wochenserie361.html
+  #
   parsername "ndr_mediathek_get": ( "http://www.ndr.de" )
   start
     match( "http://.*?mp4" );
-    print;
+    rowselect(0);
+    store("url");
+
+    # download the video
+    # ------------------
+    paste("wget ",  $url );
+    system;
   end
 
+There you can see, that the parser-name is set to
+"ndr_mediathek_get", and the URL, to which this parser is bound by
+default is "http://www.ndr.de".
+This does mean, that any URLs, that start with "http://www.ndr.de"
+will be parsed with the "ndr_mediathek_get" parser.
 
-This parser-definition does the following:
-The resulting parser will be named "ndr_mediathek_get".
-Any URLs from the base-domain http://www.ndr.de  that
-any-dl should analyse will parsed with this parser.
-The parser definition for "ndr_mediathek_get" is
-then following between the keywords "start"
-and "end".
+If you give an URL like the one in the example (shown above the parser)
+as command line argument to any-dl, then the parser "ndr_mediathek_get"
+is invoked to look for the video file.
 
-The tool does then the following: the document, with the
-URL that is passed to any-dl (that any-dl gets as argument on the command line )
-will first be downloaded implicitly.
-As this task is necessary in any case, and for all mediathek-accesses,
-all parsers just do this first download implicitly.
-No cdommand is needed for this stage.
-Then the first user-defined command is following the "start" keyword.
-In this case it is
-    match( "http://.*?mp4" );
-and that does try to do a match with the regular expression on the downloaded
-document.
-If it does not find a match, this will be reported as a problem.
-If there is a match, then the next command of the parser definition
-will be executed.
-In this case, it is just a print-statement.
-The match will just be printed.
-Here also a download-command could be used to start the download.
-But this is just an example in an early stage of any-dl,
-where download commands as such are not already implemented.
+Again, an implicit get is invoked.
+Because the first doeument must be downloaded in any case,
+the first get is done implicitly.
+It's obvious that the first document must be downloaded,
+and it makes writing the parsers easier.
 
-But this example shows you, what there is all about the input language.
-It's comparingly easy, and in this way it will be possible to have easy access
+Stack and named variables
+-------------------------
+
+This language is somehow special, that uses a mix of
+a stack-based language and one that allows named variables.
+The stack has a size of one value.
+Most functions use the stack. They can get their argument from there,
+as well as puttin gtheir reults to the stack.
+A one-value-stack, which is used to read arguments from and save
+results to, does behave like a pipe in unix-environment.
+Something is written to a pipe by someone, and the same thing is read from a pipe by someone.
+So, the stack emulates something like a pipe.
+
+Because this behaviour sometimes is not providing enough complexity,
+any-dl also allows to store data/results in named variables.
+
+The NDR-example explained
+-------------------------
+
+The first command does a MATCH with regular expressions
+on the contents of the first document.
+It does the match on the document, which was downloaded by the implicit
+GET-command. This document was put onto the 1-valued-stack.
+The match command reads the argument (the document) from the stack,
+tries to match for the certain regular expression, and puts the result
+onto the stack.
+
+Then from the result (a match is a 2D-matrix, meaning an array of an array",
+the first row (index == 0) is selected with ROWSELECT.
+The resulting selection holds an array.
+This selection-result is put to the 1-valued-stack.
+The stack-value (selection-result) is stored in the named variable "url" for later use
+via the STORE-command.
+
+  To come back to the pipe-analogy, it's like a pipe that would look like this
+  (pseudocode):
+    GET(<start-url>) | MATCH(<regular_expression>) | ROWSELECT( <index> ) | STORE( <varname> ) | ....
+
+
+The paste-command pastes the literal string and the contents of the named variable "url"
+together, and places the  reult on the 1-valued stack.
+The system command tries to use the system() command (which you may know
+from other programming languages, the shell or the system-API)
+and as argument uses the value from the stack.
+
+So, if the variable "url" contanins the video-url,
+the system()-call would look like this one:
+
+    system("wget <video-url>");
+
+
+
+That is the parser language explained by example.
+
+
+
+I hope, this example shows you, what there is all about the input language
+(parser definition language).
+
+It's comparingly easy (IMHO), and in this way it will be possible to have easy access
 to a lot of different video archives, all with the same tool.
+So, it is not necessary to look for tool-updates, when some URLs and how they
+are connected together, on a video-archive-page, do change.
+
 If something changes in the way a video url is presented on one of these
 video/archives / Mediatheken, then only the according parser-definition
 needs to be updated. The tool any-dl itself does not needed to be changed.
 
+Also, all the different tools that provide video-download-functionality,
+with all
+their seperated effort of the programmer (many programmers), done to make only
+certain archive be accessed, can be freed to make just the basic analyzing of
+the webpages that provide the videos, and save effort to program a tool.
+So, one tool and many archives, instead of many tools for some archives.
+
+So, I think the advantage may be obvious to you.
+
+Now, details about the language wil follow.
+
 
 
 Language Features:
-------------------
+==================
 
 Parser-Definitions:
 
@@ -127,6 +208,11 @@ Only when a command / function will need arguments,
 these will be passed inside parenatheses ( '(' and ')' )
 which follow the name of the command/function.
 
+Some commands are available with and without parantheses.
+An example is the print-command/function.
+
+
+
 Stringquoting at the moment has three dfferent styles:
 
   String-Quoting:  "    "
@@ -145,27 +231,35 @@ as result (and input for following functions/commands).
 
 But if there is the need for transfering a result,
 normally no additional variables are needed.
+Most often, the data can be transferred from one function7command
+to the next one via the 1-valued-stack.
 
-! But it is planned for more complicated parser-definitions,
-! that named variables can be stored in a seperate location
-! and also accessed via name.
-
-
+But in certain cases, this is not enough.
+For these cases there are named variables also.
 
 To store the current data from the default-stack
 under a certain name, the command
   store("<variablename>");
 will be used.
 
-To copy the value of the named variable back to the default stack,
+To copy (restore/recall) the value of the named variable back to the default stack,
 the command 
   recall("<variablename>");
 can be used.
 
-! Some syntactic sugar might also be provided later.
+In the paste()-command/function, it is possible, to access
+named variables via the $-notation, that you might know from
+other programming languages, like Perl for example.
 
-(PLANNED FEATURE: Ausserdem $-Notation für den variablen-Abruf in bestimmten funktionen erlaubt.)
-(PLANNED FEATURE: Start-Url in eigener Variable abgelegt.)
+In the NDR-parser, it looks like this:
+    paste("wget ",  $url );
+
+This does paste together the literal string "wget "
+and the contents of the named variable "url".
+The result of paste is stored at the one-valued stack.
+And the system-command uses this value as it's argument
+(and therefore downloads a file with the wget-tool).
+
 
 
 Command Line Options:
@@ -194,8 +288,8 @@ Examples:
 
 
 
-List of Commands:
------------------
+List of Commands (not carved in stone so far)
+=============================================
 
 
 
