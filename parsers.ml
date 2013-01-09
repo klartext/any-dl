@@ -200,6 +200,13 @@ let rebase_aggregated_arr  extracted_list  baseurl =
 
 
 
+(* mainurl is the baseurl including potential path; suburl is either basurl, or rel-url *)
+(* if suburl is rel-ur, then grab baseurl from mainurl and prepend it to suburl         *)
+(* ------------------------------------------------------------------------------------ *)
+let prepend_baseurl_if_necessary  mainurl  suburl =
+  if url_is_rel_root suburl then url_get_baseurl mainurl ^ suburl else suburl
+
+
 
 
 

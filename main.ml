@@ -8,22 +8,6 @@
 
   Author / copyright: Oliver Bandel
   Copyleft: GNU GENERAL PUBLIC LICENSE  v3 (or higher)
-
-
-
-  already working:
-  ----------------
-    - ZDF
-    - ORF
-
-  planned for the future:
-  -----------------------
-    - ARTE
-    - VIMEO
-    - youtube
-
-    ...
-
 *)
 
 
@@ -111,6 +95,7 @@ let rec  to_string  result_value varmap =
       | String        str          -> str 
       | Document      (doc, url)   -> doc ^ url
       | String_array  str_arr      -> Array.fold_left ( ^ ) "" str_arr
+      | Match_result  mres         -> raise Wrong_argument_type (* match-res => arr of arr -> recursion on String_array ! *)
       | Url           (href, ref)  -> href
       | Url_list      url_list     -> List.fold_right ( fun a sofar -> "\"" ^ (fst a) ^ "\" " ^ sofar ) url_list ""
                                       (* concat all urls, but all href's are quoted inside '"' *)
@@ -121,7 +106,6 @@ let rec  to_string  result_value varmap =
       | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
       | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
       *)
-      | Match_result  mres         -> raise Wrong_argument_type
       | _ -> print_warning "to_string-function found non-convertable type"; raise Wrong_argument_type
 
   in
@@ -416,13 +400,6 @@ let get_document url message_list exc =
   extract_some_with_exit_if_none  main_doc_opt  message_list  exc
 
 
-(* mainurl is the baseurl including potential path; suburl is either basurl, or rel-url *)
-(* if suburl is rel-ur, then grab baseurl from mainurl and prepend it to suburl         *)
-(* ------------------------------------------------------------------------------------ *)
-let prepend_baseurl_if_necessary  mainurl  suburl =
-  if Parsers.url_is_rel_root suburl then Parsers.url_get_baseurl mainurl ^ suburl else suburl
-
-
 
 (* result: list of string-matching href hyperlinks *)
 (* ----------------------------------------------- *)
@@ -536,7 +513,7 @@ let _  =
 
 
                             with (* handle exceptions from the parse-tree-evaluation *)
-                              | Invalid_Row_Index -> prerr_endline "Error in script! Invalid_Row_Index!!\n"
+                              | Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!!\n"
                               | Variable_not_found name -> Printf.fprintf stderr "Variable_not_found: \"%s\"\t This parse exited.\n" name
 
 

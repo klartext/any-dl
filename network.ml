@@ -64,10 +64,10 @@ type urlpath_t =   Absolute_site     (* http://...  http://.../ *)
 (* ------------------------------------------- *)
 let re_abs_url_site = Pcre.regexp "^https{0,1}://[^/]+/{0,1}$"
 let re_abs_url_base = Pcre.regexp "^https{0,1}://[^/]+/[^/]+"
-let re_rel_root   = Pcre.regexp "^/[^/]"
-let re_rel_root2  = Pcre.regexp "^//"
-let re_rel_misc1  = Pcre.regexp "^[.]{1,2}/"
-let re_rel_misc2  = Pcre.regexp "^[^/.]"
+let re_rel_root     = Pcre.regexp "^/[^/]"
+let re_rel_root2    = Pcre.regexp "^//"
+let re_rel_misc1    = Pcre.regexp "^[.]{1,2}/"
+let re_rel_misc2    = Pcre.regexp "^[^/.]"
 
 let detect_urlpath_type str =
   let res = ref Undetected in
