@@ -92,7 +92,6 @@ module Varmap =
 
 
 
-exception Fuck_Match_result
 
 (* ---------------------------------------------- *)
 (* functional, not thorough nifty-details printer *)
@@ -103,25 +102,27 @@ exception Fuck_Match_result
 let rec  to_string  result_value varmap =
   let str =
     match result_value with
-      | Varname       varname     -> let res = (Varmap.find varname varmap) in
-                                     begin
-                                       match res with
-                                         | String str -> str
-                                         | _ as again -> to_string again varmap
-                                     end
-      | String        str         -> str 
-      | Document      (doc, url)  -> doc ^ url
-      | String_array  str_arr     -> Array.fold_left ( ^ ) "" str_arr
-      | Match_result  mres        -> raise Fuck_Match_result (* not implemented so far !! *)
-      | Url           (href, ref) -> href
+      | Varname       varname      -> let res = (Varmap.find varname varmap) in
+                                      begin
+                                        match res with
+                                          | String str -> str
+                                          | _ as again -> to_string again varmap
+                                      end
+      | String        str          -> str 
+      | Document      (doc, url)   -> doc ^ url
+      | String_array  str_arr      -> Array.fold_left ( ^ ) "" str_arr
+      | Url           (href, ref)  -> href
+      | Url_list      url_list     -> List.fold_right ( fun a sofar -> "\"" ^ (fst a) ^ "\" " ^ sofar ) url_list ""
+                                      (* concat all urls, but all href's are quoted inside '"' *)
+
       (*
-      | Url           (href, ref) -> Printf.sprintf "%s # referrer = %s" href ref
       | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
       | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
       | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
       | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
       *)
-      | _ -> print_warning "to_string-function found non-convertable type"; raise Fuck_Match_result
+      | Match_result  mres         -> raise Wrong_argument_type
+      | _ -> print_warning "to_string-function found non-convertable type"; raise Wrong_argument_type
 
   in
     str
