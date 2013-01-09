@@ -89,8 +89,6 @@ FEATUREs:
  - Selection-Mechanism: rowselect(), colselect(), evtl. auch direkte Indizierung.
    auch mir Regexp-Selection (oder soll sowas über nochmaliges Match gemacht werden?)
 
- - Stringconcat() => paste() ?
-
  - Programmaufruf-Definitionen
 
  - Parserdefinitionen wenigstens für ARD, ZDF, ORF, NDR, besser auch gleich für ARTE (siehe arte-dl)
