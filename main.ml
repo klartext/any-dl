@@ -385,30 +385,6 @@ let evaluate_command_list cmdlst =
 
 
 
-(* of data option get content if Some data was there, otherwise throw exception *)
-(* ---------------------------------------------------------------------------- *)
-let extract_some_with_exit_if_none  value messages exc = match value with
-  | None       -> List.iter prerr_endline messages; raise exc
-  | Some stuff -> stuff
-
-
-
-(* try to get web-document, otherwise print err-msg and throw exception *)
-(* -------------------------------------------------------------------- *)
-let get_document url message_list exc =
-  let main_doc_opt = Network.Curly.get url None in
-  extract_some_with_exit_if_none  main_doc_opt  message_list  exc
-
-
-
-(* result: list of string-matching href hyperlinks *)
-(* ----------------------------------------------- *)
-let get_href_from_webdoc_and_match  webdoc  matcher =
-  let urls = Parsers.linkextract webdoc in
-  List.filter (fun url -> matcher url ) urls
-
-
-
 
 (* read the parser-definitions from the rc-file *)
 (* -------------------------------------------- *)
