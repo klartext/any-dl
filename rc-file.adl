@@ -209,6 +209,33 @@ end
 
 
 
+#parsername "wdr_mediathek": ( "http://www.wdr.de/mediathek/" )
+parsername "wdr_mediathek": ( "http://www.wdr.de" )
+start
+  match("rtmp://.*?mp4");
+  show_match;
+
+#  dslSrc=rtmp://gffstream.fcod.llnwd.net/a792/e1/media/video/2013/01/09/20130109_huh_309287_web-m.mp4&amp;isdnSrc=rtmp://gffstream.fcod.llnwd.net/a792/e1/media/video/2013/01/09/20130109_huh_309287_web-s.mp4&amp;mediaDuration=839',
+
+  rowselect(0); # quality selection !!!
+  #show_type;
+
+  to_string;
+  store("rtmp");
+  #show_type;
+
+  basename;
+  store("filename");
+  #print;
+
+  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $filename );
+  print;
+  system;
+end
+
+
+
+
 ##################
 ### NOT TESTED ###
 ##################
