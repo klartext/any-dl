@@ -1,9 +1,12 @@
 any-dl, a tool for downloading Mediathek video-files
 ====================================================
 
-! This stuff is in early stage.
-! The parser-definition-language is not frozen so far
+! This stuff is in a more or less early stage (but already works).
+! Be aware, that the parser-definition-language is not frozen so far
 ! and may change in the future!
+!
+! For users who just want to use any-dl, without caring about
+! the internals of it or it's parser-defs, this does not matter.
 
 
 Overview
@@ -31,6 +34,68 @@ Overview
 
   This language will explained below.
 
+  But as normal user, you normally will not need to know this parser definition
+  language.
+  You just need to know how t use any-dl, and this is pretty simple.
+  So, before the parser definition language will be explained,
+  the usage of any-dl will be explained.
+
+
+Usage
+=====
+
+  You need to provide the url from the video archive,
+  and give it to any-dl as a command line argument.
+  Very often you have to quote the url inside of " and "
+  so that certain symbols are not interpreted by the shell,
+  from which you start any-dl.
+
+  For example on ARTE mediathek, there is
+  a telecast "Frankreichs mythische Orte", and the URL
+  of it is:
+    http://videos.arte.tv/de/videos/frankreichs-mythische-orte--7167432.html
+
+  If you want  to download the video of it, at the shell it will look like this:
+
+  $ any-dl "http://videos.arte.tv/de/videos/frankreichs-mythische-orte--7167432.html"
+
+  Then any-dl would download the video. :-)
+  That's all :-)
+
+  The same principle holds true for any other archives, for which
+  a parser definition already is provided.
+  If there is no such parser defined, any-dl will tell you with an
+  exception-message.
+
+  You then may ask, if there already is a parser for it available,
+  written by the author of any-dl, or by any other persons.
+  Or you could learn the parser definition language and program your
+  own parser for that archive.
+  If you send the parser you wrote to the author of any-dl,
+  then in a newer release of any-dl, other people could use it also.
+
+  By the way: there are already also some parser definitions, that are not
+  focussed on certain video archives.
+  There is the parser "linkextract" as well as "linkextract_xml".
+  You can use them to pick out html-hyperreferences (typically called "links"
+  or "references") or links in xml-files.
+
+  To pick a certain parser can be done with the command-line switch "p":
+
+  $ any-dl -p linkextract "http://videos.arte.tv/de/videos/frankreichs-mythische-orte--7167432.html"
+
+  will print out all href's of the document (and they should all appear as absolute URLs).
+
+  The names of all defined/available parsers can be displayed with the "l"-switch:
+
+  $ any-dl -l
+
+  If a parser as URLs, on which it will be invoked as default (when not using -p)
+  it is also displayed with -l as switch.
+
+  That's enough for an introduction.
+
+  And here now follows a brief introduction into the parser definition language.
 
 
 Parser-Definition Language: Intro

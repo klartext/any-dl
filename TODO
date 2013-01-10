@@ -41,6 +41,8 @@ BETTER STRUCTURE, CLEANER CODE:
 FEATUREs:
 =========
 
+ - automatic lookup for rc-file also in other places (/etc/skel or something like that?) ???
+
  - filename-changer or subst command, so that ugly filenames can be changed,
    especially for downloader-calls via system-call (shell-expansion ...).
 
