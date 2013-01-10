@@ -314,6 +314,11 @@ end
 
 
 
+# ---------------------------------
+# DCTP
+# ---------------------------------
+# Example: 
+# =================================
 parsername "dctp_mediathek_get": ( "http://www.dctp.tv" )
 start
   match( "(mp4:.*\")" );
@@ -321,50 +326,26 @@ start
 end
 
 
-# http://tvthek.orf.at/topics/Asyl-Protest/5183121-heute-oesterreich/segments/5183161-Protest-der-Asylwerber
+# ---------------------------------
+# ORF
+# ---------------------------------
+# Example: 
+# http://tvthek.orf.at/topics/Wehrpflicht%20oder%20Berufsheer/5219477-Zeit-im-Bild/segments/5219513-Zivildienst-fuer-Frauen
+# =================================
 parsername "orf_mediathek_get": ( "http://tvthek.orf.at" )
 start
-  linkextract;
-  print;
-  #match( "(mp4:.*\")" );
+  #linkextract;
   #print;
+  match( "(mp4:.*?mp4)|(rtmp.*?\")" );
+  show_match;
 end
 
 
 
 ##################################################################################
-#### BELOW IS OLD (directly coded) STUFF, JUST AS REFERENCE FOR FUTURE PARSERS ###
+#### BELOW IS OLD STUFF, some infos that might be helpful for parser-devel.
 ##################################################################################
 
-
-
-
-
-
-
-# 
-# let _3sat_mediathek_get = ()
-# (*
-# 1. suche hauptseite
-# 2. get &mode=play - Seite
-# 3. get smil-Datei
-# 4. ...
-# 
-# 120308_japan_scobel.smil
-# *)
-# 
-# (*
-#  Beispiel: "Just Ballet"
-#    http://www.3sat.de/mediathek/?display=1&mode=play&obj=30650
-# 
-# enthält:
-#    (...)
-#    playerBottomFlashvars.mediaURL = "http://fstreaming.zdf.de/3sat/veryhigh/120427_justballet_ganzesendung1neu_musik.smil";
-#    (...)
-# 
-# 
-# *)
-# 
 # 
 # (* Sender-spezifische URL-Grabber *)
 # (* ============================== *)
