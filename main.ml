@@ -249,8 +249,7 @@ let evaluate_command_list cmdlst =
 
                                                                      (* the url of the doecument will become the referrer of the extracted url! *)
                                                                      let links  = Url_array (Array.map ( fun lnk ->
-                                                                                                           let base = Network.baseurl url in
-                                                                                                           let rebased = Parsers.rebase_aggregated lnk base in
+                                                                                                           let rebased = Parsers.Rebase.rebase_url url lnk in
                                                                                                            (rebased, url)
                                                                                                        ) urls) in
 

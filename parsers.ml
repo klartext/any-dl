@@ -86,128 +86,30 @@ let urlmatcher url url_regexp =
 
 
 
-
-(* BASE-URL: alles ab einschliesslich "?" weg schnippeln *)
-let re_http_base = Pcre.regexp "https{0,1}://[^?#]+"
-let re_http_site = Pcre.regexp "https{0,1}://[^?#/]+/{0,1}"
-
-let baseurl url = urlmatcher url re_http_base
-let siteurl url = urlmatcher url re_http_site
-
-
-
-type urlpath_t =   Absolute_site     (* http://...  http://.../ *)
-                 | Absolute_base     (* http://.../...          *)
-                 | Relative_root     (* /...                    *)
-                 | Same_protocoll    (* //...                   *)
-                 | Relative_local    (* ./...   ...             *)
-                 | Base_url          (* ./...   ...             *)
-                 | Undetected        (* ./...   ...             *)
-
-(* is it a realative path, or an absolute one? *)
-(* ------------------------------------------- *)
-let re_abs_url_site = Pcre.regexp "^https{0,1}://[^/]+/{0,1}$"
-let re_abs_url_base = Pcre.regexp "^https{0,1}://[^/]+/[^/]+"
-let re_rel_root   = Pcre.regexp "^/[^/]"
-let re_rel_root2  = Pcre.regexp "^//"
-let re_rel_misc1  = Pcre.regexp "^[.]{1,2}/"
-let re_rel_misc2  = Pcre.regexp "^[^/.]"
-
-let detect_urlpath_type str =
-  let res = ref Undetected in
-  if Pcre.pmatch ~rex:re_abs_url_site str then res := Absolute_site;
-  if Pcre.pmatch ~rex:re_abs_url_base str then res := Absolute_base;
-  if Pcre.pmatch ~rex:re_rel_root  str then res := Relative_root;
-  if Pcre.pmatch ~rex:re_rel_root2 str then res := Same_protocoll ;
-  if Pcre.pmatch ~rex:re_rel_misc1 str then res := Relative_local;
-  if Pcre.pmatch ~rex:re_rel_misc2 str then res := Relative_root;
-  if Pcre.pmatch ~rex:re_http_site str then res := Absolute_site;
-  if Pcre.pmatch ~rex:re_http_base str then res := Absolute_base;
-  if "." = str then res := Base_url;
-  !res
-
-
-
-let re_url_scheme  = Pcre.regexp "^([a-zA-Z]+://[^/]+/{0,1})"
+(* this stuff can be done with Neturl-module also!!! *)
 let re_url_scheme  = Pcre.regexp "^([a-zA-Z]+://[^/]+)"
-
-let url_is_rel_root url   = if Pcre.pmatch ~rex:re_rel_root   url then true else false
-let url_has_scheme  url   = if Pcre.pmatch ~rex:re_url_scheme url then true else false
-
+(* this stuff can be done with Neturl-module also!!! *)
 let url_get_baseurl url = (Pcre.extract ~rex:re_url_scheme ~flags:[] url).(0)
+(* this stuff can be done with Neturl-module also!!! *)
 
 
 
 
-let url_scheme url =
-  Pcre.replace ~pat:"^([^:]+).*" ~itempl:(Pcre.subst "$+") url
+module Rebase =
+struct
+  open Neturl
 
+  let rebase_url  url  extracted_link =
+    let syntax = Hashtbl.find common_url_syntax "http" in
 
+    let neturl        = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  url in
+    let extracted_url = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  extracted_link in
+    let base          = remove_from_url ~path:true ~fragment:true neturl in
+    let absurl        = ensure_absolute_url ~base:neturl extracted_url in
 
-let rebase_aggregated extracted baseurl =
-  begin
-    match detect_urlpath_type extracted with
-        Absolute_site   -> extracted
-      | Absolute_base   -> extracted
-      | Relative_root   -> Filename.concat (siteurl baseurl) extracted
-      | Same_protocoll  -> (url_scheme baseurl) ^ extracted
-      | Relative_local  -> Filename.concat (siteurl baseurl) extracted
-      | Base_url        -> baseurl
-      | Undetected      -> baseurl
-  end
-    
+    string_of_url absurl
 
-
-let rebase_aggregated_lst extracted_list baseurl =
-              List.map ( fun extracted ->
-         let newextracteding = 
-                                       match detect_urlpath_type extracted with
-                                           Absolute_site   -> extracted
-                                         | Absolute_base   -> extracted
-                                         | Relative_root   -> Filename.concat (siteurl baseurl) extracted
-                                         | Same_protocoll  -> (url_scheme baseurl) ^ extracted
-                                         | Relative_local  -> Filename.concat (siteurl baseurl) extracted
-                                         | Base_url        -> baseurl
-                                         | Undetected      -> baseurl
-         in
-         newextracteding
-                                     ) extracted_list
-    
-
-
-
-
-
-
-let rebase_aggregated_arr  extracted_list  baseurl =
-              Array.map ( fun extracted ->
-         let newextracteding = 
-                                       match detect_urlpath_type extracted with
-                                           Absolute_site   -> extracted
-                                         | Absolute_base   -> extracted
-                                         | Relative_root   -> Filename.concat (siteurl baseurl) extracted
-                                         | Same_protocoll  -> (url_scheme baseurl) ^ extracted
-                                         | Relative_local  -> Filename.concat (siteurl baseurl) extracted
-                                         | Base_url        -> baseurl
-                                         | Undetected      -> baseurl
-         in
-         newextracteding
-                                     ) extracted_list
-    
-
-
-
-
-
-
-(* mainurl is the baseurl including potential path; suburl is either basurl, or rel-url *)
-(* if suburl is rel-ur, then grab baseurl from mainurl and prepend it to suburl         *)
-(* ------------------------------------------------------------------------------------ *)
-let prepend_baseurl_if_necessary  mainurl  suburl =
-  if url_is_rel_root suburl then url_get_baseurl mainurl ^ suburl else suburl
-
-
-
+end
 
 
 
