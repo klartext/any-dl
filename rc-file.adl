@@ -209,7 +209,11 @@ end
 
 
 
-#parsername "wdr_mediathek": ( "http://www.wdr.de/mediathek/" )
+# ---------------------------------
+# WDR 
+# ---------------------------------
+# Example: http://www.wdr.de/mediathek/html/regional/2013/01/09/hier-und-heute.xml
+# =================================
 parsername "wdr_mediathek": ( "http://www.wdr.de" )
 start
   match("rtmp://.*?mp4");
@@ -240,6 +244,75 @@ end
 ### NOT TESTED ###
 ##################
 
+# (*
+#   Pro-Sieben:
+# 
+#   Im Gulli-Board konnte ich folgenden Trick finden
+# 
+#   http://www.prosieben.de/dynamic/h264/h264map/?ClipID=<...>
+#   <...> durch die ID des Videos ersetzen
+# 
+#   Für dieses Video (www.prosieben.de/tv/galileo/videos/clip/288557-asperger-informatik-1.3122799) also
+#   http://www.prosieben.de/dynamic/h264/h264map/?ClipID=288557
+# 
+#   bei Aufruf erfolgt eine Weiterleitung zu
+#   http://video.sevenoneintermedia.de/clips/geo_d_at_ch/mp4-840 /288000/288557-840-553674.mp4?s=1&t=20120331
+# *)
+# ---------------------------------
+# PRO7
+# ---------------------------------
+# Example: ...
+# =================================
+parsername "pro7_mediathek_get": ( "http://www.prosieben.de" )
+start
+  store("url");
+  match( "(\".*?mp4.*?\")" );
+  show_match;
+
+  # und wie nun weiter?
+
+end
+
+
+
+
+# ---------------------------------
+# 3SAT
+# ---------------------------------
+# Example: http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34110
+# =================================
+parsername "3sat_mediathek_get": ( "http://www.3sat.de" )
+start
+  store("url");
+
+  # look out for smil-url
+  match( "\"(.*?smil.*?)\"" );
+  rowselect(0);
+  select(1);
+
+  print;
+
+  show_type;
+  makeurl;
+  get;
+  #print;
+
+#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_51k_p7v9.mp4" system-bitrate="62000">
+#<param name="quality" value="low" />
+#</video>
+#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_536k_p9v9.mp4" system-bitrate="700000">
+#<param name="quality" value="high" />
+#</video>
+#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_1596k_p13v9.mp4" system-bitrate="1700000">
+#<param name="quality" value="veryhigh" />
+
+  match( >>>(mp4:.*?)"|name="quality" value="(.*)"<<<);
+  show_match;
+
+end
+
+
+
 
 parsername "dctp_mediathek_get": ( "http://www.dctp.tv" )
 start
@@ -268,32 +341,7 @@ end
 
 
 
-# (*
-#   Pro-Sieben:
-# 
-# 
-#   Im Gulli-Board konnte ich folgenden Trick finden
-# 
-#   http://www.prosieben.de/dynamic/h264/h264map/?ClipID=<...>
-#   <...> durch die ID des Videos ersetzen
-# 
-#   Für dieses Video (www.prosieben.de/tv/galileo/videos/clip/288557-asperger-informatik-1.3122799) also
-#   http://www.prosieben.de/dynamic/h264/h264map/?ClipID=288557
-# 
-#   bei Aufruf erfolgt eine Weiterleitung zu
-# 
-#   http://video.sevenoneintermedia.de/clips/geo_d_at_ch/mp4-840 /288000/288557-840-553674.mp4?s=1&t=20120331
-# 
-#   werde mich bei Gelegenheit noch vorstellen
-# 
-#   [Aktualisiert am: Sa, 31 März 2012 22:50]
-# *)
-# 
-# (*
-#  WDR Monitor:
-# 
-#    <a title="Video: Flashplayer ab Version 8.0 erforderlich" rel="base#/tv/monitor/codebase/video/" href="http://www.wdr.de/themen/global/flashplayer/fscreen.jhtml?dslSrc=rtmp://gffstream.fcod.llnwd.net/a792/e2/mediendb/monitor08/video/2012/0426/120426_monitor_web-l.mp4&amp"
-# *)
+
 # 
 # let _3sat_mediathek_get = ()
 # (*
@@ -339,33 +387,4 @@ end
 # <div class="imgname invisible" data-value="/fernsehen/sendungen/45_min/hintergrund/paketsklaven133_v-contentgross.jpg"></div>
 # </div>
 # *)
-# 
-# 
-# 
-# 
-# (* W D R *)
-# (* ===== *)
-# 
-# (* WDR:
-# Stringmatch auf:
-#   rtmp://gffstream.fcod.llnwd.net/a792/e2/mediendb/markt/video/2012/0227/120227_markt_web-m.mp4&amp;overlay
-# 
-# WDR:
-# 
-# http://www.wdr.de/tv/quarks/sendungsbeitraege/2009/1222/003_arena_mannfrau.jsp?startMedium=122037&startPicture=/tv/fsstd-technik/codebase/img/default_startbild.jpg&dslSrc=rtmp://gffstream.fcod.llnwd.net/a792/e2/tv/quarks/091229_das_eyetracking_experiment_big.flv&overlayPic=/tv/quarks/codebase/img/overlay_video.png&offset=0&red=fsstd-tv%2Fquarks&base=/tv/quarks/codebase/video/&isdnSrc=rtmp://gffstream.fcod.llnwd.net/a792/e2/tv/quarks/091229_das_eyetracking_experiment_small.flv
-# 
-# Stringmatch auf:
-# dslSrc=rtmp://gffstream.fcod.llnwd.net/a792/e2/tv/quarks/091229_das_eyetracking_experiment_big.flv&
-# *)
-# let wdr_mediathek_get_rtmp_mp4_url  url =
-#   let commandlist = [ Get_url(url, "-");
-#                       Match( "(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"" );
-#                       Select( Selector.select_first_match );
-#                       Print_match;
-#                       Dummy
-#                     ]
-#   in
-#   evaluate_command_list commandlist;
-#   [""]
-# 
 # 
