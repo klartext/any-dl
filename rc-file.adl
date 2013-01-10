@@ -93,14 +93,21 @@ start
   paste("http://videos.arte.tv", $group_1, $group_2, ",view,strmVideoAsPlayerXml.xml");
   makeurl;
   get;
-  match(_*_<url quality="([^"]+)">([^<]+)<_*_);
 
+# quality is coded like this:
 #<urls>
 #<url quality="sd">rtmp://artestras.fcod.llnwd.net/a3903/o35/mp4:geo/videothek/ALL/arteprod/A7_SGT_ENC_02_045368-000-A_PG_MQ_DE?h=656b8b0ff570b6280be8acd0b47495bf</url>
 #<url quality="hd">rtmp://artestras.fcod.llnwd.net/a3903/o35/mp4:geo/videothek/ALL/arteprod/A7_SGT_ENC_04_045368-000-A_PG_HQ_DE?h=1b67e74cf4313d1a3979fe670187146d</url>
 #</urls>
 
-  rowselect(1);
+  match(_*_<url quality="([^"]+)">([^<]+)<_*_);
+  show_match;
+
+
+  rowselect(1); # QUALITY-SELECTION!!!
+  print_string("selected quality: ");
+  print;
+
   select(2);
   store("rtmp");
 
@@ -109,6 +116,8 @@ start
   basename;
   store("filename");
 
+  print_string("Filename: ");
+  print;
   # download the video
   # ------------------
   paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $filename );
