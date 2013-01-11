@@ -141,7 +141,7 @@ start
 
   # download the video
   # ------------------
-  paste("wget ",  $url );
+  paste("wget -c ",  $url );
   system;
 end
 
