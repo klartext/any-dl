@@ -16,7 +16,6 @@
     List.iter (fun (kwd, tok) -> Hashtbl.add keyword_table kwd tok)
                 [
                   ("parsername",  PARSERNAME  );
-                  ("urlmatches",  URLMATCHES  );
                   ("start",       START  );
                   ("end",         END  );
 

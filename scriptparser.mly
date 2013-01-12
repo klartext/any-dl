@@ -27,7 +27,6 @@
 
 %token ANY
 %token PARSERNAME
-%token URLMATCHES
 %token MATCH
 %token SHOW_MATCH
 %token PRINT
