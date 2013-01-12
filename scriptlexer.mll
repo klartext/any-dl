@@ -134,6 +134,6 @@ and read_int = parse
    | eof       { raise End_of_file }
 
 and read_identifier = parse
-   | identifier as name { IDENTIFIER (Lexing.lexeme lexbuf) }
+   | identifier { IDENTIFIER (Lexing.lexeme lexbuf) }
 
 
