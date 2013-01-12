@@ -12,6 +12,7 @@ type opt_t = {
                mutable list_parsers     :  bool;          (*  -l: print out the list of parsers *)
                mutable rc_filename      :  string;        (*  -f: select a rc-filename different to default *)
                mutable url_list         :  string list;   (* ./.: list of urls will be stored here *)
+               mutable show_commands    :  bool;          (*  -c: show all commands of the parser definition language *)
                mutable verbose          :  bool;          (*  -v: print some more details (be verbose) *)
              }
 
@@ -24,6 +25,7 @@ let opt =  {
              list_parsers     = false;
              rc_filename      = Filename.concat (Sys.getenv "HOME") (".any-dl.rc");
              url_list         = [];
+             show_commands    = false;
              verbose          = false
            }
 
@@ -36,6 +38,7 @@ let parse () =
          ("-p",   Arg.String (fun parser_name -> opt.parser_selection <- Some parser_name ),  "    select a mandatory parser by name (give name here)" );
          ("-l",   Arg.Unit   (fun ()          -> opt.list_parsers     <- true ),              "    list parsers" );
          ("-f",   Arg.String (fun rcfilename  -> opt.rc_filename      <- rcfilename ),        "    rc-file-name" );
+         ("-c",   Arg.Unit   (fun ()          -> opt.show_commands    <- true       ),        "    show commands of parserdef-language" );
          ("-v",   Arg.Unit   (fun ()          -> opt.verbose          <- true       ),        "    verbose     " );
        (* => DEFAULT (hardcoded) !!!
        *)

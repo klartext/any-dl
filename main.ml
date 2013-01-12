@@ -438,6 +438,18 @@ let _  =
       Printf.fprintf stderr "Number of found parser definitions: %d\n" (List.length parserlist);
 
 
+    (* if cli-switches ask for it, print number of all commands of the parser-definitions *)
+    (* They wll be printed in alphabetical order.                                         *)
+    (* ---------------------------------------------------------------------------------- *)
+    if Cli.opt.Cli.show_commands || Cli.opt.Cli.verbose then
+      begin
+        print_endline "Keywords of the parser-definition language:";
+        print_endline "-------------------------------------------";
+        let kwlist = Hashtbl.fold (fun key value sofar -> key :: sofar ) Scriptlexer.keyword_table [] in
+        List.iter ( fun kw -> Printf.printf "keyword   %s\n" kw) (List.sort compare kwlist)
+      end;
+
+
     (* create and initialize hashes for parser-lookup by name / url *)
     (* ------------------------------------------------------------ *)
     let parser_urlhash  = Hashtbl.create (List.length parserlist) in
