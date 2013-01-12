@@ -365,7 +365,11 @@ let evaluate_command_list cmdlst =
 
                        | To_string                  -> command tl (String (to_string tmpvar varmap)) varmap
 
-                       | System                     -> begin match tmpvar with String syscmd -> Sys.command syscmd end;
+                       | System                     -> begin
+                                                         match tmpvar with
+                                                           | String syscmd -> Sys.command syscmd
+                                                           | _ -> raise Wrong_argument_type
+                                                       end;
                                                        command tl tmpvar varmap
 
                        | Exit_parse                 -> flush stdout; prerr_endline "Parse was exited."; command [] tmpvar varmap (* call again with nothing-left-to-do *)
