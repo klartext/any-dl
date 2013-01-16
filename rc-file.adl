@@ -70,7 +70,7 @@ start
   match(>>><meta itemprop="name" content="([^\"]+)<<<);
   rowselect(0);
   select(1);
-  subst("[ -]+", "_");
+  subst("[ -!]+", "_");
   store("title");
 
   paste( $title, "_", $filename );
@@ -282,6 +282,44 @@ start
   print;
   system;
 end
+
+# ---------------------------------
+# ARD/HR 
+# ---------------------------------
+# Example: http://www.ardmediathek.de/hr-fernsehen/alle-wetter/mikroblockheizkraftwerke?documentId=13068860
+# =================================
+parsername "ard_hr": ( "http://www.ardmediathek.de/hr-fernsehen/" ) 
+start
+  store("doc");
+
+  match( "http://.*mp4" );
+  rowselect(0);
+  store("url");
+
+  # make a better outfilename with title
+  # ------------------------------------
+  recall("doc");
+  match(>>><meta itemprop="name" content="([^\"]+)<<<);
+
+  rowselect(0);
+  select(1);
+  subst("[! -]+", "_");
+  store("title");
+
+  paste($title, ".mp4");
+  subst("_\.", ".");
+  store("outfilename");
+
+
+  # download the video
+  # ------------------
+  paste( "wget -c ",  $url, " -O ", $outfilename );
+  system;
+end
+#
+#  paste( $title, "_", $filename );
+#  quote;
+#  store("filename");
 
 
 
