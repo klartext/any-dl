@@ -32,6 +32,8 @@ BUGs:
     possibly get works fine, but save() must be implemented !!
 
 
+- URL-selection does not work properly. Different selection-algorithm is needed:
+    max. string-match of the URL on the match-url
 
 
 BETTER STRUCTURE, CLEANER CODE:

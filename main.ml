@@ -442,6 +442,19 @@ let read_parser_definitions filename_opt =
 
 
 
+(* lookup parser-name via url *)
+(* -------------------------- *)
+let parsername_lookup_by_url url lookup_lst =
+  let rec aux liste = match liste with
+    | []       -> raise Not_found
+    | hd :: tl -> let parser_url  = fst hd in
+                  let parser_name = snd hd in
+                  if Cli.opt.Cli.verbose then
+                    Printf.printf "parser-lookup via url: %s\n\t%s  ->  %s\n--\n" url parser_url parser_name;
+                  if parser_url = String.sub url 0 (String.length parser_url) then parser_name else aux tl
+  in
+    aux lookup_lst
+
 
 
 let _  =
@@ -470,23 +483,37 @@ let _  =
 
     (* create and initialize hashes for parser-lookup by name / url *)
     (* ------------------------------------------------------------ *)
-    let parser_urlhash  = Hashtbl.create (List.length parserlist) in
     let parser_namehash = Hashtbl.create (List.length parserlist) in
+    let parser_urllist_raw  = ref [] in
     List.iter ( fun parserdef ->
                                  (* add the parsers to the parser_name-hash (for parser-lookup by name) *)
                                  Hashtbl.add parser_namehash parserdef.parsername parserdef;
 
-                                 (* add the parsers to the parser_url-hash (for parser-lookup by url) *)
-                                 List.iter ( fun url -> Hashtbl.add parser_urlhash url parserdef;
+                                 (* add the parsers to the parser_url-list (for parser-lookup by url) *)
+                                 List.iter ( fun url -> 
+                                                        parser_urllist_raw := (url, parserdef.parsername) :: !parser_urllist_raw;
+
                                                         if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose
                                                         then
                                                           Printf.fprintf stderr "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
+
                                            ) parserdef.urllist;
 
               ) parserlist;
 
-
     flush stdout; (* all init-stuff should be flushed, before evaluation stage is entered! *)
+
+
+    (* longest url-entry will become first entry *)
+    (* ----------------------------------------- *)
+    (*
+      The url -> parsername list is sorted by the length of the lookup-url,
+      because a longer URL means a more specific url, hence a less-specific
+      url would be a kind of fall-back to a non-match.
+      So, the first url-match will be the most-specific url,
+      and hence giving the name of the most-specific parser.
+    *)
+    let parser_urllist = List.sort ( fun elem1 elem2 -> String.length (fst elem2) - String.length (fst elem1) ) !parser_urllist_raw in
 
 
     (* for all the URLs from the command line, do the intended work :-) *)
@@ -500,9 +527,13 @@ let _  =
                                     match Cli.opt.Cli.parser_selection with
                                       | Some parsername -> Hashtbl.find parser_namehash parsername
 
-                                      | None            -> (* name derived from url *)
-                                                           let baseurl = Parsers.url_get_baseurl url in 
-                                                           Hashtbl.find parser_urlhash baseurl
+                                      | None            -> (* parsername looked up via from url *)
+
+                                                           (* comparing the url with the strings in the url-parsername-assoc-list *)
+                                                           (* ------------------------------------------------------------------- *)
+                                                           let parsername = parsername_lookup_by_url  url  parser_urllist in
+                                                           Hashtbl.find parser_namehash  parsername
+
                                    end
                                 with Not_found         -> prerr_endline ("No parser found for " ^ url); raise No_parser_found_for_this_url
                             in
