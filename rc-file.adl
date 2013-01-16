@@ -112,25 +112,28 @@ start
   show_match;
 
 
-  rowselect(1); # QUALITY-SELECTION!!!
+  # QUALITY-SELECTION!!!
+  # --------------------
+  rowselect(1);
   print_string("selected quality: ");
   print;
 
   select(2);
   store("rtmp");
 
+
   # create filename
+  # ---------------
   to_string;
   basename;
-  store("filename");
+  subst("$", ".mp4"); # append ".mp4" at end of the filename
+  store("filename");  # store filename
 
   print_string("Filename: ");
   print;
+
   # download the video
   # ------------------
-subst("$", ".mp4");
-print;
-exitparse;
   paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $filename );
   system;
 
