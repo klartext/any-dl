@@ -367,15 +367,19 @@ let evaluate_command_list cmdlst =
 
 
                        | Subst (from_re, to_re)     -> 
+                                                       let replacer instring = Pcre.replace ~pat:from_re ~templ:to_re instring in
                                                        begin
                                                        match tmpvar with
-                                                         | String str -> command tl (String (Pcre.replace ~pat:from_re ~templ:to_re str)) varmap
+                                                         | String str           -> command tl (String (replacer str)) varmap
+                                                         | String_array str_arr -> let replaced = Array.map replacer str_arr in
+                                                                                   command tl (String_array replaced) varmap
                                                          | _ -> raise Wrong_argument_type
                                                        end
-                                                       (*
-                                                       command tl (String (to_string tmpvar varmap)) varmap
-                                                       *)
 
+
+                       | Quote                      -> let str = to_string tmpvar varmap in
+                                                       let quoted = "\"" ^ str ^ "\"" in
+                                                       command tl (String (quoted)) varmap
 
                        | To_string                  -> command tl (String (to_string tmpvar varmap)) varmap
 

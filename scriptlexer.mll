@@ -46,6 +46,7 @@
 
                   ("basename",       BASENAME  );
                   ("subst",          SUBSTITUTE );
+                  ("quote",          QUOTE      );
                   ("to_string",      TO_STRING  );
 
                   ("system",         SYSTEM  );

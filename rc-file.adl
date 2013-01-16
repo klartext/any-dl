@@ -15,6 +15,7 @@ start
 end
 
 
+# this one is unmature stuff, experimental field.
 parsername "videonames": ( "" )
 start
   #match( "(*.mp4)|(*.flv)|(*.swf)|(*.jpg*)" );
@@ -41,26 +42,48 @@ end
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
 
+  store("doc");
+
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"<<< );
   store("match");
   rowselect(2);
   store("high");
 
-  show_type;
-  print;
+  #show_type;
+  #print;
 
-  select(1); store("rtmp");
+  select(1); quote;  store("rtmp");
   recall("high");
-  select(2); store("mp4");
+  select(2); quote; store("mp4");
 
   # create filename
+  # ---------------
   to_string;
   basename;
+  subst("[+?].*$", "");
   store("filename");
-print;
+  #print;
+
+  # create new filename from folename and the title of the video
+  # ------------------------------------------------------------
+  recall("doc");
+  match(>>><meta itemprop="name" content="([^\"]+)<<<);
+  rowselect(0);
+  select(1);
+  subst("[ -]+", "_");
+  store("title");
+
+  paste( $title, "_", $filename );
+  quote;
+  store("filename");
+
+#print;
+#exitparse;
+  # Titel:   <meta itemprop="name" content="Verkauft und versklavt - Gott und die Welt"/>
+
   # "outfile.mp4" is bad; better use a name, derived from the URL 
   # --------------------------------------------------------------
-  paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o ", $filename);
+  paste("rtmpdump --resume  -r ",  $rtmp, " -y ", $mp4, " -o ", $filename );
   print;
   system;
 
@@ -266,6 +289,9 @@ end
 ##################
 ### NOT TESTED ###
 ##################
+parsername "vimeo": ( "http://vimeo.com" )
+start
+end
 
 # (*
 #   Pro-Sieben:

@@ -41,6 +41,7 @@
 %token PASTE
 %token SYSTEM
 %token SUBSTITUTE
+%token QUOTE
 %token TO_STRING
 %token BASENAME
 %token EXITPARSE
@@ -139,6 +140,7 @@ statement: match_stmt          SEMI   { $1 }
     |      paste_stmt          SEMI   { $1 }
     |      show_variables_stmt SEMI   { $1 }
     |      subst_stmt          SEMI   { $1 }
+    |      QUOTE               SEMI   { Quote     }
     |      TO_STRING           SEMI   { To_string }
     |      BASENAME            SEMI   { Basename }
     |      SYSTEM              SEMI   { System }
