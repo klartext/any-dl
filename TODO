@@ -3,6 +3,10 @@
 BUGs:
 =====
 
+- Neturl.Malformed_URL will be thropwn at rebase of URL. Workaround is done
+  with try/with around the whole parser-evaluation. Better would be,
+  to use try/with around the Rebase-function, and ignore (with warning message)
+  those Link-Exztractions, hich are no valid URLs!
  - to-string: incomplete
 
  - catch non-matches: "Fatal error: exception Main.No_Match" => catch exception earlier (should only affect current parse, not whole program)
@@ -42,11 +46,6 @@ FEATUREs:
 =========
 
  - automatic lookup for rc-file also in other places (/etc/skel or something like that?) ???
-
- - filename-changer or subst command, so that ugly filenames can be changed,
-   especially for downloader-calls via system-call (shell-expansion ...).
-
- - subst() command (Regexp)
 
  - syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
 

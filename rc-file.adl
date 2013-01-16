@@ -15,6 +15,14 @@ start
 end
 
 
+parsername "videonames": ( "" )
+start
+  #match( "(*.mp4)|(*.flv)|(*.swf)|(*.jpg*)" );
+  match( "http://.*?youtube[^\"]+" );
+  print;
+end
+
+
 
 
 
@@ -120,6 +128,9 @@ start
   print;
   # download the video
   # ------------------
+subst("$", ".mp4");
+print;
+exitparse;
   paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $filename );
   system;
 
@@ -133,7 +144,7 @@ end
 # ---------------------------------
 # Example: http://www.ndr.de/fernsehen/sendungen/mein_nachmittag/videos/wochenserie361.html
 # =================================
-parsername "ndr_mediathek_get": ( "http://www.ndr.de" )
+parsername "ndr_mediathek_get": ( "http://www.ndr.de", "http://www.ardmediathek.de/ndr-fernsehen/" )
 start
   match( "http://.*?mp4" );
   rowselect(0);
@@ -181,6 +192,15 @@ start
 
 end
 
+# Sendungstitel:
+# http://www.zdf.de/ZDFmediathek/beitrag/video/1778740/Mars-Mega-Rover?flash=off
+# <title>Mars Mega Rover - ZDFinfo - ZDFmediathek - ZDF Mediathek</title>
+#
+# </div>  
+# <!-- EndeBreadcrumbNavigation --><!-- StartHeadlineDesBeitrags -->
+# <h1 class="beitragHeadline">Mars Mega Rover</h1>
+# <!-- EndeHeadlineDesBeitrags -->
+# <img src="/ZDFmediathek/contentblob/1778740/timg485x273blob/7360575" title="Curiosity" alt="Mars Mega Rover"/>
 
 
 

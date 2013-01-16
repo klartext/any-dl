@@ -249,6 +249,9 @@ let evaluate_command_list cmdlst =
 
                                                                      (* the url of the doecument will become the referrer of the extracted url! *)
                                                                      let links  = Url_array (Array.map ( fun lnk ->
+                                                                                                           (* here it might become ugly: rebase may throw
+                                                                                                              Neturl.Malformed_URL *)
+
                                                                                                            let rebased = Parsers.Rebase.rebase_url url lnk in
                                                                                                            (rebased, url)
                                                                                                        ) urls) in
@@ -361,6 +364,17 @@ let evaluate_command_list cmdlst =
                                                            | String filename -> command tl (String(Filename.basename filename)) varmap
                                                            | _ -> raise Wrong_argument_type
                                                        end
+
+
+                       | Subst (from_re, to_re)     -> 
+                                                       begin
+                                                       match tmpvar with
+                                                         | String str -> command tl (String (Pcre.replace ~pat:from_re ~templ:to_re str)) varmap
+                                                         | _ -> raise Wrong_argument_type
+                                                       end
+                                                       (*
+                                                       command tl (String (to_string tmpvar varmap)) varmap
+                                                       *)
 
 
                        | To_string                  -> command tl (String (to_string tmpvar varmap)) varmap
@@ -506,6 +520,7 @@ let _  =
                             with (* handle exceptions from the parse-tree-evaluation *)
                               | Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!!\n"
                               | Variable_not_found name -> Printf.fprintf stderr "Variable_not_found: \"%s\"\t This parse exited.\n" name
+                              | Neturl.Malformed_URL    -> Printf.fprintf stderr "Neturl.Malformed_URL !!! (%s)\n" url
 
 
 

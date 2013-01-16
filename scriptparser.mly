@@ -40,6 +40,7 @@
 %token SHOW_VARIABLES
 %token PASTE
 %token SYSTEM
+%token SUBSTITUTE
 %token TO_STRING
 %token BASENAME
 %token EXITPARSE
@@ -137,6 +138,7 @@ statement: match_stmt          SEMI   { $1 }
     |      recall_stmt         SEMI   { $1 }
     |      paste_stmt          SEMI   { $1 }
     |      show_variables_stmt SEMI   { $1 }
+    |      subst_stmt          SEMI   { $1 }
     |      TO_STRING           SEMI   { To_string }
     |      BASENAME            SEMI   { Basename }
     |      SYSTEM              SEMI   { System }
@@ -169,6 +171,9 @@ recall_stmt: RECALL LPAREN STRING   RPAREN    { Recall $3 }
     ;
 
 paste_stmt: PASTE LPAREN argument_list RPAREN    { Paste $3 }
+    ;
+
+subst_stmt: SUBSTITUTE LPAREN STRING COMMA STRING RPAREN { Subst( $3, $5 ) }
     ;
 
 show_variables_stmt: SHOW_VARIABLES           { Show_variables }

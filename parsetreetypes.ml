@@ -55,6 +55,7 @@ type commands_t =
   | RowSelect  of int  (* vertical   selection of a matrix (match-result) *)
   | System
   | Basename                                  (* get the basename of a file or url *)
+  | Subst      of string * string             (* substitution *)
   | To_string                                 (* convert to string *)
   | Exit_parse
   | Dummy
@@ -100,6 +101,7 @@ let command_to_string cmd = match cmd with
   | RowSelect       _ -> "RowSelect"
   | System          _ -> "System"
   | Basename        _ -> "Basename"
+  | Subst           _ -> "Subst"
   | To_string       _ -> "To_string"
   | Exit_parse      _ -> "Exit_parse"
   | Dummy             -> "Dummy"

@@ -45,6 +45,7 @@
                   ("colselect",      COLSELECT  );
 
                   ("basename",       BASENAME  );
+                  ("subst",          SUBSTITUTE );
                   ("to_string",      TO_STRING  );
 
                   ("system",         SYSTEM  );

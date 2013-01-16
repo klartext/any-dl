@@ -1,4 +1,5 @@
 
+#all: native-code
 all: byte-code
 #all: debug-code
 
