@@ -52,6 +52,8 @@
                   ("system",         SYSTEM  );
                   ("exitparse",      EXITPARSE  );
 
+                  ("dump",           DUMP  );
+
                   ("dummy",  DUMMY  );
                 ]
 

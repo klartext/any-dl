@@ -383,6 +383,14 @@ let evaluate_command_list cmdlst =
 
                        | To_string                  -> command tl (String (to_string tmpvar varmap)) varmap
 
+                       | Dump                       ->
+                                                       begin
+                                                       match tmpvar with
+                                                         | Document(doc, url)-> Parsers.Htmlparse.dump_html doc
+                                                         | _ -> raise Wrong_argument_type
+                                                       end;
+                                                       command tl tmpvar varmap
+
                        | System                     -> begin
                                                          match tmpvar with
                                                            | String syscmd -> Sys.command syscmd

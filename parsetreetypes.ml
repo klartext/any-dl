@@ -59,6 +59,7 @@ type commands_t =
   | To_string                                 (* convert to string *)
   | Quote                                     (* wraps '"' around the string in tmpvar *)
   | Exit_parse
+  | Dump                                      (* Dump html *)
   | Dummy
 
 
@@ -105,6 +106,7 @@ let command_to_string cmd = match cmd with
   | Subst           _ -> "Subst"
   | To_string       _ -> "To_string"
   | Exit_parse      _ -> "Exit_parse"
+  | Dump              -> "Dump"
   | Dummy             -> "Dummy"
   
 
