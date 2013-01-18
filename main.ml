@@ -245,18 +245,18 @@ let evaluate_command_list cmdlst =
                                                        begin
                                                          match tmpvar with
                                                            | Document (doc, url) ->
-                                                                     let urls   = Array.of_list (Parsers.linkextract doc) in
+                                                                     let urls   = Parsers.linkextract doc in
 
-                                                                     (* the url of the doecument will become the referrer of the extracted url! *)
-                                                                     let links  = Url_array (Array.map ( fun lnk ->
-                                                                                                           (* here it might become ugly: rebase may throw
-                                                                                                              Neturl.Malformed_URL *)
+                                                                     let rebased_urls =
+                                                                         List.fold_right ( fun lnk sofar -> match Parsers.Rebase.rebase_url url lnk with
+                                                                                                              | Some rebased -> (rebased, url) :: sofar
+                                                                                                              | None         -> sofar
+                                                                                         ) urls []
+                                                                     in
 
-                                                                                                           let rebased = Parsers.Rebase.rebase_url url lnk in
-                                                                                                           (rebased, url)
-                                                                                                       ) urls) in
-
-                                                                     command tl links varmap
+                                                                     let links  = Url_array ( Array.of_list rebased_urls )
+                                                                     in
+                                                                       command tl links varmap
 
 
 
@@ -561,9 +561,9 @@ let _  =
 
 
                             with (* handle exceptions from the parse-tree-evaluation *)
-                              | Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!!\n"
+                              | No_Match                -> prerr_endline "Parser problem: Could not match!\t Parse will be exited\n"
+                              | Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!\t Parse exited.\n"
                               | Variable_not_found name -> Printf.fprintf stderr "Variable_not_found: \"%s\"\t This parse exited.\n" name
-                              | Neturl.Malformed_URL    -> Printf.fprintf stderr "Neturl.Malformed_URL !!! (%s)\n" url
 
 
 

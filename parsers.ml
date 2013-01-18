@@ -102,12 +102,26 @@ struct
   let rebase_url  url  extracted_link =
     let syntax = Hashtbl.find common_url_syntax "http" in
 
-    let neturl        = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  url in
-    let extracted_url = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  extracted_link in
-    let base          = remove_from_url ~path:true ~fragment:true neturl in
-    let absurl        = ensure_absolute_url ~base:neturl extracted_url in
-
-    string_of_url absurl
+(*
+Printf.printf "url:            %s\n" (url);
+Printf.printf "extracted_link  %s\n" (extracted_link);
+print_endline "---------";
+*)
+    try
+      let neturl        = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  url in
+      let extracted_url = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  extracted_link in
+      let base          = remove_from_url ~path:true ~query:true ~fragment:true neturl in
+      let absurl        = ensure_absolute_url ~base:neturl extracted_url in
+(*
+Printf.printf "neturl:         %s\n" (string_of_url neturl);
+Printf.printf "extracted_url:  %s\n" (string_of_url extracted_url);
+Printf.printf "base:           %s\n" (string_of_url base);
+Printf.printf "absurl:         %s\n" (string_of_url absurl);
+print_endline "----------------------------------------------------";
+*)
+      Some (string_of_url absurl)
+    with
+      Neturl.Malformed_URL -> None
 
 end
 

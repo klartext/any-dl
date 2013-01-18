@@ -7,6 +7,10 @@ BUGs:
   with try/with around the whole parser-evaluation. Better would be,
   to use try/with around the Rebase-function, and ignore (with warning message)
   those Link-Exztractions, hich are no valid URLs!
+
+  => so, better cath the exception in Link_extract
+
+
  - to-string: incomplete
 
  - catch non-matches: "Fatal error: exception Main.No_Match" => catch exception earlier (should only affect current parse, not whole program)
