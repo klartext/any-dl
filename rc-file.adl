@@ -150,17 +150,20 @@ start
 
   # create filename
   # ---------------
-  to_string;
-  basename;
-  subst("$", ".mp4"); # append ".mp4" at end of the filename
-  store("filename");  # store filename
+  #to_string;
+  #basename;
+  #subst("$", ".mp4"); # append ".mp4" at end of the filename
+  #store("filename");  # store filename
 
-  print_string("Filename: ");
-  print;
+  recall("BASEDOC");
+  match("<title>(.*?)</title>");
+  rowselect(0); select(1);
+  subst("[ -:]+", "_");
+  store("title");
 
   # download the video
   # ------------------
-  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $filename );
+  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $title, ".mp4" );
   system;
 
 end
