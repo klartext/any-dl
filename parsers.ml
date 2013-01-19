@@ -17,44 +17,6 @@ let sort stringlist = List.sort ( fun a b -> let al = String.lowercase a and bl 
 
 
 
-
-
-(*
-let if_match_give_groups str regexp =
-  if Pcre.pmatch ~rex:regexp str
-  then
-    begin
-      let substring_obj = Pcre.exec ~rex:regexp str in
-      Some (Pcre.get_substrings substring_obj)
-    end
-  else
-    None
-
-*)
-
-
-(*
-let if_match_give_group_of_groups_2 str regexp =
-  if Pcre.pmatch ~rex:regexp str
-  then
-    begin
-      let substring_obj_arr = Pcre.exec_all ~rex:regexp str in
-      let lis = Array.to_list (Array.map (fun substring_obj -> Pcre.get_substrings substring_obj) substring_obj_arr ) in
-      Some lis
-    end
-  else
-    None
-
-
-module Match =
-  struct
-    open Pcre
-  end
-
-*)
-
-
-
 (* *)
 let if_match_give_group_of_groups str regexp =
   if Pcre.pmatch ~rex:regexp str

@@ -14,16 +14,7 @@ open Nethtml
 let sort stringlist = List.sort ( fun a b -> let al = String.lowercase a and bl = String.lowercase b
                                    in if al < bl then (-1) else if al = bl then 0 else 1)  stringlist
 
-
 (* ------------------------------------------------------------------------ *)
-
-
-
-
-module Match =
-  struct
-    open Pcre
-  end
 
 
 let urlmatcher url url_regexp =
@@ -38,81 +29,6 @@ let urlmatcher url url_regexp =
       prerr_endline ("url-scheme for baseurl could not be matched (" ^ url ^ ")");
       url
     end
-
-
-
-
-
-(* BASE-URL: alles ab einschliesslich "?" weg schnippeln *)
-let re_http_base = Pcre.regexp "https{0,1}://[^?#]+"
-let re_http_site = Pcre.regexp "https{0,1}://[^?#/]+/{0,1}"
-
-let baseurl url = urlmatcher url re_http_base
-let siteurl url = urlmatcher url re_http_site
-
-
-
-type urlpath_t =   Absolute_site     (* http://...  http://.../ *)
-                 | Absolute_base     (* http://.../...          *)
-                 | Relative_root     (* /...                    *)
-                 | Same_protocoll    (* //...                   *)
-                 | Relative_local    (* ./...   ...             *)
-                 | Base_url          (* ./...   ...             *)
-                 | Undetected        (* ./...   ...             *)
-
-(* is it a realative path, or an absolute one? *)
-(* ------------------------------------------- *)
-let re_abs_url_site = Pcre.regexp "^https{0,1}://[^/]+/{0,1}$"
-let re_abs_url_base = Pcre.regexp "^https{0,1}://[^/]+/[^/]+"
-let re_rel_root     = Pcre.regexp "^/[^/]"
-let re_rel_root2    = Pcre.regexp "^//"
-let re_rel_misc1    = Pcre.regexp "^[.]{1,2}/"
-let re_rel_misc2    = Pcre.regexp "^[^/.]"
-
-let detect_urlpath_type str =
-  let res = ref Undetected in
-  if Pcre.pmatch ~rex:re_abs_url_site str then res := Absolute_site;
-  if Pcre.pmatch ~rex:re_abs_url_base str then res := Absolute_base;
-  if Pcre.pmatch ~rex:re_rel_root  str then res := Relative_root;
-  if Pcre.pmatch ~rex:re_rel_root2 str then res := Same_protocoll ;
-  if Pcre.pmatch ~rex:re_rel_misc1 str then res := Relative_local;
-  if Pcre.pmatch ~rex:re_rel_misc2 str then res := Relative_root;
-  if Pcre.pmatch ~rex:re_http_site str then res := Absolute_site;
-  if Pcre.pmatch ~rex:re_http_base str then res := Absolute_base;
-  if "." = str then res := Base_url;
-  !res
-
-
-let url_scheme url =
-  Pcre.replace ~pat:"^([^:]+).*" ~itempl:(Pcre.subst "$+") url
-
-
-
-
-
-
-(* simple URL-to-Filename converter *)
-(* -------------------------------- *)
-let suffixes = [".jpg"; ".png"; ".txt"; ".pdf"; ".doc"; ".ps"; ".docx"; ".xls"; ".htm"; ".html"]
-
-let url_to_filename url_string =
-  let filename = String.copy url_string in
-  for idx = 0 to String.length filename - 1
-  do
-    match filename.[idx] with
-        'a'..'z' | 'A'..'Z' | '0'..'9' | '.' -> ()
-      | _ -> filename.[idx] <- '_'
-  done;
-  filename
-
-let url_to_filename_with_suffix_check  str =
-  let sel = List.filter ( fun suffix -> Filename.check_suffix str suffix ) suffixes in
-  match sel with
-    | []     -> url_to_filename str (* no suffix that must get specially saved: convert completely *)
-    | hd::tl -> let chopped = Filename.chop_suffix str hd in
-                url_to_filename chopped  ^  hd
-
-
 
 
 
@@ -188,11 +104,5 @@ module Curly =
     val get : string -> string option -> string option
   end
   )
-
-let print_times ?(scale=1) character times =
-  for idx = 1 to times * scale
-    do
-      print_char character
-    done
 
 
