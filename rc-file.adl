@@ -441,6 +441,8 @@ start
   print_string("_________________\n");
   print;
 
+  system;
+
 
 
 
