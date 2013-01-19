@@ -15,6 +15,7 @@ start
 end
 
 
+# html-deparse-dump
 parsername "dump": ( "" )
 start
   dump;
@@ -24,8 +25,7 @@ end
 # this one is unmature stuff, experimental field.
 parsername "videonames": ( "" )
 start
-  #match( "(*.mp4)|(*.flv)|(*.swf)|(*.jpg*)" );
-  match( "http://.*?youtube[^\"]+" );
+  match( "(*.mp4)|(*.flv)|(*.swf)|(*.mpg)|(*.m4v)" );
   print;
 end
 
@@ -47,9 +47,6 @@ end
 # =================================
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
-
-  store("doc");
-
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"<<< );
   store("match");
   rowselect(2);
@@ -72,7 +69,7 @@ start
 
   # create new filename from folename and the title of the video
   # ------------------------------------------------------------
-  recall("doc");
+  recall("BASEDOC");
   match(>>><meta itemprop="name" content="([^\"]+)<<<);
   rowselect(0);
   select(1);
@@ -179,6 +176,7 @@ end
 parsername "ndr_mediathek_get": ( "http://www.ndr.de", "http://www.ardmediathek.de/ndr-fernsehen/" )
 start
   match( "http://.*?mp4" );
+  show_match;
   rowselect(0);
   store("url");
 
@@ -296,15 +294,13 @@ end
 # =================================
 parsername "ard_hr": ( "http://www.ardmediathek.de/hr-fernsehen/" ) 
 start
-  store("doc");
-
   match( "http://.*mp4" );
   rowselect(0);
   store("url");
 
   # make a better outfilename with title
   # ------------------------------------
-  recall("doc");
+  recall("BASEDOC");
   match(>>><meta itemprop="name" content="([^\"]+)<<<);
 
   rowselect(0);
