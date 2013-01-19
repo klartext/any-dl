@@ -372,6 +372,7 @@ end
 # 3SAT
 # ---------------------------------
 # Example: http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34110
+# http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34191
 # =================================
 parsername "3sat_mediathek_get": ( "http://www.3sat.de" )
 start
@@ -387,6 +388,8 @@ start
   show_type;
   makeurl;
   get;
+
+  store("smil_file");
   #print;
 
 #<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_51k_p7v9.mp4" system-bitrate="62000">
@@ -398,8 +401,49 @@ start
 #<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_1596k_p13v9.mp4" system-bitrate="1700000">
 #<param name="quality" value="veryhigh" />
 
+# Beispiel: select VeryHigh quality
+# ---------------------------------
+
+  # ----
   match( >>>(mp4:.*?)"|name="quality" value="(.*)"<<<);
   show_match;
+
+  rowselect(4);
+  select(1);
+  store("mp4");
+  subst("mp4:", "");
+  store("mp4_simple");
+  print;
+  basename;
+  store("outname");
+  print;
+
+  # ----
+  recall("smil_file");
+  match( >>>param name="app" value="(.*?)"<<<);
+  show_match;
+
+  rowselect(0);
+  select(1);
+  print;
+  store("app");
+
+  # ----
+  recall("smil_file");
+  match( >>>param name="host" value="(.*?)"<<<);
+  show_match;
+  rowselect(0);
+  select(1);
+  store("rtmp_hostname");
+
+  paste(" rtmpdump --resume -r rtmp://", $rtmp_hostname, "/", $app, "/", $mp4_simple, " -o ", $outname );
+
+  print_string("_________________\n");
+  print;
+
+
+
+
 
 end
 
