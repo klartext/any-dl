@@ -138,10 +138,11 @@ start
   show_match;
 
 
+
   # QUALITY-SELECTION!!!
   # --------------------
   rowselect(1);
-  print_string("selected quality: ");
+  print("selected quality: ");
   print;
 
   select(2);
@@ -206,7 +207,7 @@ start
   # get the ASX-file (URL should be grabbed from last action... so this is a workaround here *)
   makeurl;
   get;
-  print_string("ASX-file downloaded.\n");
+  print("ASX-file downloaded.\n");
 
   linkextract_xml;
 
@@ -438,7 +439,7 @@ start
 
   paste(" rtmpdump --resume -r rtmp://", $rtmp_hostname, "/", $app, "/", $mp4_simple, " -o ", $outname );
 
-  print_string("_________________\n");
+  print("_________________\n");
   print;
 
   system;

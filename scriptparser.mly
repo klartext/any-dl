@@ -162,6 +162,7 @@ printmatch_stmt: SHOW_MATCH { Show_match }
     ;
 
 print_string: PRINT_STRING LPAREN STRING RPAREN { Print_string $3 }
+    |         PRINT        LPAREN STRING RPAREN { Print_string $3 }
     ;
 
 get_stmt: GET                           { Get }
