@@ -357,8 +357,8 @@ let evaluate_command_list cmdlst =
                                                        end
 
 
-                       | Subst (from_re, to_re)     -> 
-                                                       let replacer instring = Pcre.replace ~pat:from_re ~templ:to_re instring in
+                       | Subst (from_re, to_str)    -> 
+                                                       let replacer instring = Pcre.replace ~pat:from_re ~templ:to_str instring in
                                                        begin
                                                        match tmpvar with
                                                          | String str           -> command tl (String (replacer str)) varmap
