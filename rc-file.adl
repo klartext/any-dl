@@ -63,7 +63,8 @@ start
   # ---------------
   to_string;
   basename;
-  subst("[+?].*$", "");
+  #subst(>>>(["+?/%;&= ]+)|(%..)<<<, "_");
+  subst(>>>\?.*?$<<<, ""); # remove the ?-paramater stuff from the filename !
   store("filename");
   #print;
 
@@ -73,7 +74,8 @@ start
   match(>>><meta itemprop="name" content="([^\"]+)<<<);
   rowselect(0);
   select(1);
-  subst("[ -!]+", "_");
+
+  subst(>>>(["+?/%;&= ]+)|(%..)<<<, "_"); # remove all that crap from the title
   store("title");
 
   paste( $title, "_", $filename );
