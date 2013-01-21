@@ -129,9 +129,9 @@ statement_list:                { []      }
     ;
 
 statement: match_stmt          SEMI   { $1 }
-    |      print_stmt          SEMI   { Print  }
+    |      print_stmt_simple   SEMI   { Print  }
     |      printmatch_stmt     SEMI   { Show_match }
-    |      print_string        SEMI   { $1 }
+    |      print_stmt          SEMI   { $1 }
     |      EXITPARSE           SEMI   { Exit_parse }
     |      selection           SEMI   { $1 }
     |      get_stmt            SEMI   { $1 }
@@ -155,14 +155,14 @@ statement: match_stmt          SEMI   { $1 }
 match_stmt: MATCH LPAREN STRING RPAREN { Match $3 }
     ;
 
-print_stmt: PRINT               { Print }
+print_stmt_simple: PRINT               { Print }
     ;
 
 printmatch_stmt: SHOW_MATCH { Show_match }
     ;
 
-print_string: PRINT_STRING LPAREN STRING RPAREN { Print_string $3 }
-    |         PRINT        LPAREN STRING RPAREN { Print_string $3 }
+print_stmt: PRINT_STRING LPAREN STRING RPAREN { Print_string $3 }
+    |       PRINT        LPAREN STRING RPAREN { Print_string $3 }
     ;
 
 get_stmt: GET                           { Get }
