@@ -157,7 +157,7 @@ let evaluate_command_list cmdlst =
                                             command tl (Url( url, referrer)) varmap
 
 
-                       (* hmhh, str sollte doch aus der tmpvar besser entnommen werden !  !!!!!!!!!!!!!! *)
+
                        | Match   pattern            ->
                                                        if
                                                         Cli.opt.Cli.verbose
@@ -168,6 +168,7 @@ let evaluate_command_list cmdlst =
                                                          begin
                                                            match tmpvar with
                                                              | Document (doc, url) -> doc
+                                                             (* match also on other types?? Does matching an URL for example makes sense? *)
                                                              | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
                                                          end
                                                        in
@@ -182,15 +183,6 @@ let evaluate_command_list cmdlst =
                                                        command tl (Match_result matched) varmap
 
 
-                       (*
-                       | Select selfunc             -> 
-                                                       begin
-                                                         match tmpvar with
-                                                           | Match_result matchres -> command tl (Match_result (selfunc matchres)) varmap
-                                                           | _           -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
-                                                       end
-                       *)
-
                        | Select index               -> 
                                                        begin
                                                          match tmpvar with
@@ -198,6 +190,8 @@ let evaluate_command_list cmdlst =
                                                            | Url_array    rowitems -> command tl (Url( fst(rowitems.(index)), snd(rowitems.(index)))) varmap
                                                            | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                        end
+
+
                        | MSelect index_list         -> 
                                                        begin
                                                          match tmpvar with
@@ -284,11 +278,10 @@ let evaluate_command_list cmdlst =
                        | Print                      ->
                                                        begin
                                                          match tmpvar with
+                                                           (* does Varname makes sense at all here? *)
                                                            | Varname  varname  -> Printf.printf "\n\tVarname  varname => varname = \"%s\"\n" varname;
                                                                                   command [Print] (Varmap.find varname varmap) varmap (* CHECK FUNCTIONALITY, PLEASE *)
-                                                           (*
-                                                           | Varname  varname  -> command [Print] (Varmap.find varname varmap) varmap (* CHECK FUNCTIONALITY, PLEASE *)
-                                                           *)
+
                                                            | String   str      -> print_endline str 
                                                            | Document(doc, url)-> print_endline doc  (* only print the document, without referrer *)
                                                            | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
@@ -351,17 +344,8 @@ let evaluate_command_list cmdlst =
 
 
                        | Paste paste_list            ->
-                                                        (*
-                                                        List.iter ( fun x -> command [Show_type] x varmap ) paste_list; print_endline "paste: YYEEAAHH! ShowType done";
-                                                        List.iter ( fun x -> command [Print] x varmap ) paste_list; print_endline "paste: YYEEAAHH! Print done";
-                                                        *)
-
-                                                        let str_lst = List.map (fun item ->  to_string item varmap) paste_list in
-                                                        let res = List.fold_left ( ^ ) "" str_lst in
-                                                        (*
-                                                        Printf.fprintf stdout "***** Paste-result-String: ====================> %s\n" res;
-                                                        *)
-                                                        flush stdout;
+                                                        let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
+                                                        let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
                                                         command tl (String res) varmap
 
 
