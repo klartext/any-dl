@@ -330,6 +330,13 @@ Language Features:
   (and therefore downloads a file with the wget-tool).
 
 
+Startup-sequence:
+-----------------
+
+The document given via command line is loaded automatically.
+The document is saved as a named variable (name: "BASEDOC").
+
+
 
 Command Line Options:
 ---------------------

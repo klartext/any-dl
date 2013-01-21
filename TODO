@@ -45,11 +45,15 @@ BETTER STRUCTURE, CLEANER CODE:
 
  - URL-analysis in network.ml is a mess
  - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
+ - maybe remove print_string(), ebacsue print() does the same now.
 
 
 
 FEATUREs:
 =========
+
+ - !!!! XML-deparse -> get values from XML via name :-)
+
 
  - automatic lookup for rc-file also in other places (/etc/skel or something like that?) ???
 
@@ -68,9 +72,6 @@ FEATUREs:
 
  - Input-URL: eigene Variable, unter der diese abzurufen ist (from inside parser-def-lang)
 
- - Selection-Mechanism: rowselect(), colselect(), evtl. auch direkte Indizierung.
-   auch mir Regexp-Selection (oder soll sowas über nochmaliges Match gemacht werden?)
-
  - Programmaufruf-Definitionen
 
  - Parserdefinitionen wenigstens für ARD, ZDF, ORF, NDR, besser auch gleich für ARTE (siehe arte-dl)
@@ -80,6 +81,21 @@ FEATUREs:
  - interactive selection of e.g. matches (e.g.: which video to download, high-res, midres or lowres?)
 
 
+ - possibly switch to ulex instead of ocamllex:
+     http://alain.frisch.fr/soft.html#ulex
+     http://caml.inria.fr/pub/ml-archives/caml-list/2006/04/6d31ef03a5a1f9a182a9ed2422d266a4.en.html
 
+ - Macros or not?
+
+
+QUESTIONS:
+==========
+
+ - how detailed/verbose or how non-verbose should the commands be?
+   e.g.  should print; print onl ythe url or url and referrer?
+   Should there be more specific commands?
+   Or should print get parameters?
+   Or should there be something like
+      print with referrer;
 
 
