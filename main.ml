@@ -27,6 +27,7 @@ exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... 
 exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 
 exception Invalid_Row_Index             (* indexing a row that does not exist *)
+exception Invalid_Col_Index             (* indexing a col that does not exist *)
 
 exception No_parser_found_for_this_url (* *)
 
@@ -207,24 +208,30 @@ let evaluate_command_list cmdlst =
 
                                                          
 
-                       (*   BOT READY, is Print-command so far !!! *)
-                       | ColSelect   index            ->
-                                                       (*
+                       | ColSelect   col_index        ->
                                                        begin
                                                          match tmpvar with
-                                                           | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
-                                                                                                        print_newline() ) mres
-                                                           | _ -> print_warning "HSELECT: wrong type!!!"
-                                                       end;
-                                                       assert(false);
-                                                       *)
-                                                       raise NOT_IMPLEMENTED_SO_FAR
-                                                       (*
-                                                       print_endline "ColSelect";
-                                                       command tl tmpvar varmap
-                                                       *)
+                                                           | Match_result mres -> 
+                                                                                  let outer_maxidx = Array.length mres     - 1 in (* outer: row *)
+                                                                                  let inner_maxidx = Array.length mres.(0) - 1 in (* inner: col *)
+                                                                                  let res          = Array.make (Array.length mres) mres.(0).(0) in
+                                                                                  begin
+                                                                                    if col_index >= 0 && col_index <= inner_maxidx
+                                                                                    then
+                                                                                      begin
+                                                                                        for idx = 0 to outer_maxidx
+                                                                                        do
+                                                                                          res.(idx) <- mres.(idx).(col_index)
+                                                                                        done;
+                                                                                        command tl (String_array res) varmap
+                                                                                      end
+                                                                                    else
+                                                                                      raise Invalid_Col_Index
+                                                                                  end
+                                                           | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+                                                       end
 
-                       (*   BOT READY, is Print-command so far !!! *)
+
                        | RowSelect   index            ->
                                                        let res = ref Empty in
                                                        begin
