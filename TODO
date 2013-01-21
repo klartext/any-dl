@@ -61,7 +61,7 @@ FEATUREs:
 
  - matches and assignments -> each match-group one varname... like   (url,vidname,foobar) = match("^(.*)xyz(lala).*?(foobar)")
 
-
+ - grepmatch: grep a match-result: give back a row (or many rows?), where the grep-pattern matches.
 
  - other syntax/grammar:
      - parser-Definitions only what to do, URLs not (or not necessarily?) at parser-definitoion.

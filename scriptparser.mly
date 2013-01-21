@@ -52,6 +52,7 @@
 %token ROWSELECT
 %token SELECT
 %token MSELECT
+%token SELECT_MATCH
 
 %token PRINT_STRING
 
@@ -195,6 +196,7 @@ selection: COLSELECT LPAREN   INT_NUM   RPAREN { ColSelect $3 }
     |      ROWSELECT LPAREN   INT_NUM   RPAREN { RowSelect $3 }
     |      SELECT    LPAREN   INT_NUM   RPAREN { Select    $3 }
     |      MSELECT   LPAREN   selection_list   RPAREN { MSelect   $3 }
+    |      SELECT_MATCH  LPAREN   INT_NUM COMMA STRING   RPAREN { Select_match ( $3, $5) }
     ;
 
 

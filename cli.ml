@@ -14,6 +14,7 @@ type opt_t = {
                mutable url_list         :  string list;   (* ./.: list of urls will be stored here *)
                mutable show_commands    :  bool;          (*  -c: show all commands of the parser definition language *)
                mutable verbose          :  bool;          (*  -v: print some more details (be verbose) *)
+               mutable safe             :  bool;          (*  -s: safe behaviour: no download via system invoked *)
              }
 
 
@@ -26,7 +27,8 @@ let opt =  {
              rc_filename      = Filename.concat (Sys.getenv "HOME") (".any-dl.rc");
              url_list         = [];
              show_commands    = false;
-             verbose          = false
+             verbose          = false;
+             safe             = false
            }
 
 
@@ -40,6 +42,7 @@ let parse () =
          ("-f",   Arg.String (fun rcfilename  -> opt.rc_filename      <- rcfilename ),        "    rc-file-name" );
          ("-c",   Arg.Unit   (fun ()          -> opt.show_commands    <- true       ),        "    show commands of parserdef-language" );
          ("-v",   Arg.Unit   (fun ()          -> opt.verbose          <- true       ),        "    verbose     " );
+         ("-s",   Arg.Unit   (fun ()          -> opt.safe             <- true       ),        "    safe: no download via system invoked" );
        (* => DEFAULT (hardcoded) !!!
        *)
               ]

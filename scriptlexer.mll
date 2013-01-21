@@ -42,6 +42,8 @@
                   ("select",         SELECT     );
                   ("mselect",        MSELECT     );
 
+                  ("selectmatch",    SELECT_MATCH   );
+
                   ("colselect",      COLSELECT  );
 
                   ("basename",       BASENAME  );

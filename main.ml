@@ -35,6 +35,7 @@ exception No_String_representation     (* To_string called on a value that has n
 
 exception Variable_not_found of string   (* a variable-name lookup in the Varname-map failed *)
 
+exception Devel (* exception while developing / testing *)
 
 
 (* ------------------------------------------------ *)
@@ -242,6 +243,26 @@ let evaluate_command_list cmdlst =
                                                        end;
                                                        command tl !res varmap
 
+                       | Select_match ( col_idx, matchpat) -> (* select match is a row-select, where the index *)
+                                                              (* first match wins *)
+                                                               begin
+                                                                 match tmpvar with
+                                                                   | Match_result mres ->
+                                                                          let max_row_idx = Array.length ( mres ) - 1 in
+                                                                          let max_col_idx = Array.length ( mres.(0) ) - 1 in
+
+                                                                          let rows = Array.to_list mres in
+                                                                          let selected = List.filter ( fun item -> item.(col_idx) = matchpat ) rows in
+                                                                          if List.length selected = 0 then raise No_Match
+
+                                                                          Printf.printf "found: %d items \n" (List.length selected);
+                                                                          command tl (String_array (List.hd selected)) varmap
+
+                                                                   | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+                                                               end
+
+
+
                        | Link_extract               ->
                                                        begin
                                                          match tmpvar with
@@ -384,7 +405,11 @@ let evaluate_command_list cmdlst =
 
                        | System                     -> begin
                                                          match tmpvar with
-                                                           | String syscmd -> Sys.command syscmd
+                                                           | String syscmd -> if Cli.opt.Cli.safe = false
+                                                                              then
+                                                                                Sys.command syscmd
+                                                                              else
+                                                                                (Printf.fprintf stderr "*** Command not invoked: %s\n" syscmd; 0)
                                                            | _ -> raise Wrong_argument_type
                                                        end;
                                                        command tl tmpvar varmap
