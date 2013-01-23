@@ -140,6 +140,15 @@ start
   match(_*_<url quality="([^"]+)">([^<]+)<_*_);
   show_match;
 
+# EXPLORING interactive selection; trying around with colselect() first
+# to get some feeling of the task.
+store("quali");
+  colselect(1); # the string that is indicating the quality. It could be used for interactive selection!
+                # => iselectmatch( <colnum>, <default> );  ## only active. when "-i" is used? otherwise like selectmatch()???
+  print("_____________\n");
+  print;
+  print("_____________\n");
+recall("quali");
 
   # QUALITY-SELECTION!!!
   # --------------------
@@ -157,7 +166,7 @@ start
   recall("BASEDOC");
   match("<title>(.*?)</title>");
   rowselect(0); select(1);
-  subst("[ -:]+", "_");
+  subst("[ -:;]+", "_");
   store("title");
 
   # download the video
