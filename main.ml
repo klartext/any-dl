@@ -307,7 +307,7 @@ let evaluate_command_list cmdlst =
                                                            | Document(doc, url)-> print_endline doc  (* only print the document, without referrer *)
                                                            | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
                                                                                                         print_newline() ) mres
-                                                           | String_array     str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n " str) str_arr
+                                                           | String_array     str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr
                                                            | Url (href, ref)   -> Printf.printf "%s   # Referrer:  %s\n" href ref
                                                            | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
                                                            | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
