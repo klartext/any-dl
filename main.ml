@@ -272,7 +272,7 @@ let evaluate_command_list cmdlst =
                                                                           let rows     = Array.to_list mres in
 
                                                                           (* here is the selection: via string match of the lookup-pattern *)
-                                                                          let selected = List.filter ( fun item -> item.(col_idx) = matchpat ) rows in
+                                                                          let selected = List.filter ( fun item -> Pcre.pmatch ~pat:matchpat item.(col_idx)  ) rows in
                                                                           if List.length selected = 0 then raise No_Match;
 
                                                                           if Cli.opt.Cli.verbose = true
@@ -319,7 +319,7 @@ let evaluate_command_list cmdlst =
                                                                             else
                                                                               matchpat
                                                                             in
-                                                                              let selected = List.filter ( fun item -> item.(col_idx) = match_pattern ) rows in
+                                                                              let selected = List.filter ( fun item -> Pcre.pmatch ~pat:matchpat item.(col_idx)  ) rows in
                                                                               if List.length selected = 0 then raise No_Match;
 
                                                                               if Cli.opt.Cli.verbose = true
