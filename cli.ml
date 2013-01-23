@@ -15,6 +15,7 @@ type opt_t = {
                mutable show_commands    :  bool;          (*  -c: show all commands of the parser definition language *)
                mutable verbose          :  bool;          (*  -v: print some more details (be verbose) *)
                mutable safe             :  bool;          (*  -s: safe behaviour: no download via system invoked *)
+               mutable interactive      :  bool;          (*  -i: interactive features enabled (e.g. iselectmatch() *)
              }
 
 
@@ -28,7 +29,8 @@ let opt =  {
              url_list         = [];
              show_commands    = false;
              verbose          = false;
-             safe             = false
+             safe             = false;
+             interactive      = false
            }
 
 
@@ -43,6 +45,7 @@ let parse () =
          ("-c",   Arg.Unit   (fun ()          -> opt.show_commands    <- true       ),        "    show commands of parserdef-language" );
          ("-v",   Arg.Unit   (fun ()          -> opt.verbose          <- true       ),        "    verbose     " );
          ("-s",   Arg.Unit   (fun ()          -> opt.safe             <- true       ),        "    safe: no download via system invoked" );
+         ("-i",   Arg.Unit   (fun ()          -> opt.interactive      <- true       ),        "    interactive: interactive features enabled" );
        (* => DEFAULT (hardcoded) !!!
        *)
               ]
