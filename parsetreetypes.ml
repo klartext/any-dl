@@ -53,7 +53,8 @@ type commands_t =
   | Show_type
   | ColSelect  of int  (* horizontal selection of a matrix (match-result) *)
   | RowSelect  of int  (* vertical   selection of a matrix (match-result) *)
-  | Select_match  of int * string  (* selects a match from a match-result-matrix: args: row-index, match-pattern *)
+  | Select_match    of int * string  (* selects a match from a match-result-matrix: args: row-index, match-pattern *)
+  | I_Select_match  of int * string  (* interactive version of Select_match *)
   | System
   | Basename                                  (* get the basename of a file or url *)
   | Subst      of string * string             (* substitution *)

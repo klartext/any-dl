@@ -43,6 +43,7 @@
                   ("mselect",        MSELECT     );
 
                   ("selectmatch",    SELECT_MATCH   );
+                  ("iselectmatch",   ISELECT_MATCH   );
 
                   ("colselect",      COLSELECT  );
 

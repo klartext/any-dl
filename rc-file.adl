@@ -152,7 +152,7 @@ recall("quali");
 
   # QUALITY-SELECTION!!!
   # --------------------
-  selectmatch(1, "hd");
+  iselectmatch(1, "hd");
 
   print("selected quality:\n");
   print;

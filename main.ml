@@ -115,6 +115,24 @@ let rec  to_string  result_value varmap =
 
 
 
+(* Menue to select an item from a string-list; accepts only valid inputs *)
+(* The return value is the selected value itself (not an index)          *)
+(* --------------------------------------------------------------------- *)
+let interactive_string_select str_arr =
+  let rec loop str_arr = 
+    print_string "\n";
+    print_string "Please chose one option:\n\n";
+    Array.iteri ( fun idx str -> Printf.printf "  %2d.: %s\n" idx str ) str_arr;
+    print_string "\n   ===> ? ";
+    let value = int_of_string( read_line() ) in
+    if value >= 0 && value < Array.length str_arr
+    then str_arr.(value)
+    else loop str_arr
+  in
+    loop str_arr
+
+
+
 (* ------------------------------------------------- *)
 (* This function evaluates the list of commands that *)
 (* a parser consists of.                             *)
@@ -251,15 +269,65 @@ let evaluate_command_list cmdlst =
                                                                           let max_row_idx = Array.length ( mres ) - 1 in
                                                                           let max_col_idx = Array.length ( mres.(0) ) - 1 in
 
-                                                                          let rows = Array.to_list mres in
-                                                                          let selected = List.filter ( fun item -> item.(col_idx) = matchpat ) rows in
-                                                                          if List.length selected = 0 then raise No_Match
+                                                                          let rows     = Array.to_list mres in
 
-                                                                          Printf.printf "found: %d items \n" (List.length selected);
+                                                                          (* here is the selection: via string match of the lookup-pattern *)
+                                                                          let selected = List.filter ( fun item -> item.(col_idx) = matchpat ) rows in
+                                                                          if List.length selected = 0 then raise No_Match;
+
+                                                                          if Cli.opt.Cli.verbose = true
+                                                                          then Printf.printf "found: %d items \n" (List.length selected);
                                                                           command tl (String_array (List.hd selected)) varmap
 
                                                                    | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
                                                                end
+
+
+                       | I_Select_match ( col_idx, matchpat) -> (* select match is a row-select, where the index *)
+                                                                (* first match wins *)
+                                                                 begin
+                                                                   match tmpvar with
+                                                                     | Match_result mres ->
+                                                                            let max_row_idx = Array.length ( mres ) - 1 in
+                                                                            let max_col_idx = Array.length ( mres.(0) ) - 1 in
+  
+                                                                            let rows     = Array.to_list mres in
+
+                                                                            (* column selection from the match-result *)
+                                                                            (* -------------------------------------- *)
+                                                                            let col = Array.make (Array.length mres) mres.(0).(0) in
+                                                                            begin
+                                                                              if col_idx >= 0 && col_idx <= max_col_idx
+                                                                              then
+                                                                                begin
+                                                                                  for idx = 0 to max_row_idx
+                                                                                  do
+                                                                                    col.(idx) <- mres.(idx).(col_idx)
+                                                                                  done
+                                                                                end
+                                                                              else
+                                                                                raise Invalid_Col_Index
+                                                                            end;
+
+                                                                            (* select the match-pattern: either interactively, *)
+                                                                            (* or use the default from the parser-definition.  *)
+                                                                            (* ----------------------------------------------- *)
+                                                                            let match_pattern =
+                                                                            if Cli.opt.Cli.interactive = true
+                                                                            then
+                                                                              interactive_string_select col
+                                                                            else
+                                                                              matchpat
+                                                                            in
+                                                                              let selected = List.filter ( fun item -> item.(col_idx) = match_pattern ) rows in
+                                                                              if List.length selected = 0 then raise No_Match;
+
+                                                                              if Cli.opt.Cli.verbose = true
+                                                                              then Printf.printf "found: %d items \n" (List.length selected);
+                                                                              command tl (String_array (List.hd selected)) varmap
+  
+                                                                     | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+                                                                 end
 
 
 
