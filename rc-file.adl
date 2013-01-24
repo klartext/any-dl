@@ -140,15 +140,6 @@ start
   match(_*_<url quality="([^"]+)">([^<]+)<_*_);
   show_match;
 
-# EXPLORING interactive selection; trying around with colselect() first
-# to get some feeling of the task.
-store("quali");
-  colselect(1); # the string that is indicating the quality. It could be used for interactive selection!
-                # => iselectmatch( <colnum>, <default> );  ## only active. when "-i" is used? otherwise like selectmatch()???
-  print("_____________\n");
-  print;
-  print("_____________\n");
-recall("quali");
 
   # QUALITY-SELECTION!!!
   # --------------------
@@ -278,12 +269,12 @@ end
 # =================================
 parsername "wdr_mediathek": ( "http://www.wdr.de" )
 start
-  match("rtmp://.*?mp4");
+  match("(rtmp://.*?(web-.).mp4)");
   show_match;
 
-#  dslSrc=rtmp://gffstream.fcod.llnwd.net/a792/e1/media/video/2013/01/09/20130109_huh_309287_web-m.mp4&amp;isdnSrc=rtmp://gffstream.fcod.llnwd.net/a792/e1/media/video/2013/01/09/20130109_huh_309287_web-s.mp4&amp;mediaDuration=839',
+  iselectmatch(2,".*?web-m.mp4");
 
-  rowselect(0); # quality selection !!!
+  select(1); # use item with index 1 (rtmp-url)
   #show_type;
 
   to_string;
@@ -338,9 +329,109 @@ end
 
 
 
-##################
-### NOT TESTED ###
-##################
+
+# ---------------------------------
+# 3SAT
+# ---------------------------------
+# Example: http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34110
+# http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34191
+# =================================
+parsername "3sat_mediathek_get": ( "http://www.3sat.de" )
+start
+  store("url");
+
+  # look out for SMIL-file-url
+  # --------------------------
+  match( "\"(.*?smil.*?)\"" );
+  rowselect(0);
+  select(1);
+
+  print;
+
+  # get the SMIL-file
+  # -----------------
+  show_type;
+  makeurl;
+  get;
+
+
+  store("smil_file");
+  #print;
+
+#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_51k_p7v9.mp4" system-bitrate="62000">
+#<param name="quality" value="low" />
+#</video>
+#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_536k_p9v9.mp4" system-bitrate="700000">
+#<param name="quality" value="high" />
+#</video>
+#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_1596k_p13v9.mp4" system-bitrate="1700000">
+#<param name="quality" value="veryhigh" />
+
+# Beispiel: select VeryHigh quality
+# ---------------------------------
+
+  # match filename
+  #match( >>>(mp4:.*?)"|(name="quality" value="(.*))"<<<);
+  match( >>>(mp4:.*?)".*?\n.*?(name="quality" value="(.*))"<<<);
+  show_match;
+
+  # select quality here (default: high)
+  # -------------------
+  iselectmatch(3, "high");
+
+
+  # select the mp4-filename
+  # -----------------------
+  select(1);
+  store("mp4");
+  subst("mp4:", "");
+  store("mp4_simple");
+  print;
+  basename;
+  store("outname");
+  print;
+
+
+  # find out the app-name (which is part of the download-url)
+  # It's inside the SMIL-file
+  # ---------------------------------------------------------
+  recall("smil_file");
+  match( >>>param name="app" value="(.*?)"<<<);
+  show_match;
+
+  # select the real appname-value now
+  # ---------------------------------
+  rowselect(0);
+  select(1);
+  print;
+  store("app");
+
+  # look up host-part from SMIL-file
+  # --------------------------------
+  recall("smil_file");
+  match( >>>param name="host" value="(.*?)"<<<);
+  show_match;
+  rowselect(0);
+  select(1);
+  store("rtmp_hostname");
+
+  paste(" rtmpdump --resume -r rtmp://", $rtmp_hostname, "/", $app, "/", $mp4_simple, " -o ", $outname );
+
+  print("_________________\n");
+  print;
+
+  system;
+
+end
+
+
+
+
+
+#######################################################
+###      N   O   T       T   E   S   T   E   D      ###
+#######################################################
+
 parsername "vimeo": ( "http://vimeo.com" )
 start
 end
@@ -374,89 +465,6 @@ start
 
 end
 
-
-
-
-# ---------------------------------
-# 3SAT
-# ---------------------------------
-# Example: http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34110
-# http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34191
-# =================================
-parsername "3sat_mediathek_get": ( "http://www.3sat.de" )
-start
-  store("url");
-
-  # look out for smil-url
-  match( "\"(.*?smil.*?)\"" );
-  rowselect(0);
-  select(1);
-
-  print;
-
-  show_type;
-  makeurl;
-  get;
-
-  store("smil_file");
-  #print;
-
-#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_51k_p7v9.mp4" system-bitrate="62000">
-#<param name="quality" value="low" />
-#</video>
-#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_536k_p9v9.mp4" system-bitrate="700000">
-#<param name="quality" value="high" />
-#</video>
-#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_1596k_p13v9.mp4" system-bitrate="1700000">
-#<param name="quality" value="veryhigh" />
-
-# Beispiel: select VeryHigh quality
-# ---------------------------------
-
-  # ----
-  match( >>>(mp4:.*?)"|name="quality" value="(.*)"<<<);
-  show_match;
-
-  rowselect(4);
-  select(1);
-  store("mp4");
-  subst("mp4:", "");
-  store("mp4_simple");
-  print;
-  basename;
-  store("outname");
-  print;
-
-  # ----
-  recall("smil_file");
-  match( >>>param name="app" value="(.*?)"<<<);
-  show_match;
-
-  rowselect(0);
-  select(1);
-  print;
-  store("app");
-
-  # ----
-  recall("smil_file");
-  match( >>>param name="host" value="(.*?)"<<<);
-  show_match;
-  rowselect(0);
-  select(1);
-  store("rtmp_hostname");
-
-  paste(" rtmpdump --resume -r rtmp://", $rtmp_hostname, "/", $app, "/", $mp4_simple, " -o ", $outname );
-
-  print("_________________\n");
-  print;
-
-  system;
-
-
-
-
-
-end
 
 
 
@@ -498,14 +506,7 @@ end
 # (* ============================== *)
 # let zdf_mediathek_get_mmsurl    = web_asx_mms_get
 # let orf_mediathek_get_mmsurl    = web_asx_mms_get
-# let arte_mediathek_get_rtmp_url = arte_get
-# let ard_mediathek_get           = ard_mediathek_get_rtmp_mp4_url_version_4
-# let ndr_mediathek_get           = ndr_mediathek_get
-# 
-# 
 # --------------------------------------------------------------------------------------
-#
-#
 #
 # (* http://www.ndr.de/fernsehen/sendungen/45_min/videos/minuten393.html
 # 

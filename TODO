@@ -3,23 +3,11 @@
 BUGs:
 =====
 
-- Neturl.Malformed_URL will be thropwn at rebase of URL. Workaround is done
-  with try/with around the whole parser-evaluation. Better would be,
-  to use try/with around the Rebase-function, and ignore (with warning message)
-  those Link-Exztractions, hich are no valid URLs!
-
-  => so, better cath the exception in Link_extract
-
+ - the interactive loop for menue-item selection needs to catch excceptions for failing int_of_string !!
 
  - to-string: incomplete
 
- - catch non-matches: "Fatal error: exception Main.No_Match" => catch exception earlier (should only affect current parse, not whole program)
-
- - Bug bei baseurl: wenn "/" am Ende der match-URLs, dann klappt es nicht...!!!
-
- - CONCAT bei REBASE: mehrfache "/" werden nicht reduziert zu einfachem
-
- -  PROBLEM:
+ -  PROBLEM: ( ????? )
     parsername "ndr_mediathek_get": ( "http://www.ndr.de" )
     start
       match( "http://.*?mp4" );
@@ -36,14 +24,11 @@ BUGs:
     possibly get works fine, but save() must be implemented !!
 
 
-- URL-selection does not work properly. Different selection-algorithm is needed:
-    max. string-match of the URL on the match-url
 
 
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
- - URL-analysis in network.ml is a mess
  - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
  - maybe remove print_string(), ebacsue print() does the same now.
 
@@ -74,12 +59,7 @@ FEATUREs:
 
  - Programmaufruf-Definitionen
 
- - Parserdefinitionen wenigstens für ARD, ZDF, ORF, NDR, besser auch gleich für ARTE (siehe arte-dl)
-
  - evtl. grep-Kommando, das zeilenweise arbeitet.... für die handhabung von href's
-
- - interactive selection of e.g. matches (e.g.: which video to download, high-res, midres or lowres?)
-
 
  - possibly switch to ulex instead of ocamllex:
      http://alain.frisch.fr/soft.html#ulex

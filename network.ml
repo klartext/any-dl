@@ -17,6 +17,7 @@ let sort stringlist = List.sort ( fun a b -> let al = String.lowercase a and bl 
 (* ------------------------------------------------------------------------ *)
 
 
+(*
 let urlmatcher url url_regexp =
   if (Pcre.pmatch ~rex:url_regexp url)
   then
@@ -30,6 +31,7 @@ let urlmatcher url url_regexp =
       url
     end
 
+*)
 
 
 (* ------------------------ *)
