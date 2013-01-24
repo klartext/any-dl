@@ -319,7 +319,7 @@ let evaluate_command_list cmdlst =
                                                                             else
                                                                               matchpat
                                                                             in
-                                                                              let selected = List.filter ( fun item -> Pcre.pmatch ~pat:matchpat item.(col_idx)  ) rows in
+                                                                              let selected = List.filter ( fun item -> Pcre.pmatch ~pat:match_pattern item.(col_idx)  ) rows in
                                                                               if List.length selected = 0 then raise No_Match;
 
                                                                               if Cli.opt.Cli.verbose = true
