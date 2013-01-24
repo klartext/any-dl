@@ -364,11 +364,14 @@ Examples:
 
 
 
-List of Commands (not carved in stone so far)
-=============================================
+List of commands/keywords (not carved in stone so far) by example:
+==================================================================
 
+  parsername
+  start
+  end
 
-
+  dummy
   exitparse;
 
   linkextract;
@@ -376,23 +379,34 @@ List of Commands (not carved in stone so far)
   match("Regexp-String");
 
   print;
+  print("string");
   print_string("My string");
 
   show_match;
   show_type;
   show_variables;
+  dump
 
 
   store("varname");
   recall("varname");
 
   rowselect(0);
+  colselect(2);
   select(1);
   mselect(1,2);
 
-  paste("litareal string", $varname);
+  selectmatch
+  iselectmatch
+
+  paste( "literal string", $varname, "foo", $bar );
+  makeurl;
+  quote;
+  subst("pattern", "subst-string");
 
   basename;
   to_string;
 
+  get;
+  system;
 
