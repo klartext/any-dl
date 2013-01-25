@@ -47,7 +47,7 @@ end
 # =================================
 parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
 start
-  match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)\"<<< );
+  match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)"<<< );
   store("match");
   rowselect(2);
   store("high");
@@ -65,6 +65,7 @@ start
   basename;
   #subst(>>>(["+?/%;&= ]+)|(%..)<<<, "_");
   subst(>>>\?.*?$<<<, ""); # remove the ?-paramater stuff from the filename !
+  subst(>>>"<<<, "");      # remove double-quote, which may have survived until here
   store("filename");
   #print;
 
@@ -76,14 +77,13 @@ start
   select(1);
 
   subst(>>>(["+?/%;&= ]+)|(%..)<<<, "_"); # remove all that crap from the title
+  subst(>>>"<<<, ""); # remove quotings
   store("title");
 
   paste( $title, "_", $filename );
   quote;
   store("filename");
 
-#print;
-#exitparse;
   # Titel:   <meta itemprop="name" content="Verkauft und versklavt - Gott und die Welt"/>
 
   # "outfile.mp4" is bad; better use a name, derived from the URL 
