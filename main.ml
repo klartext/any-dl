@@ -118,16 +118,21 @@ let rec  to_string  result_value varmap =
 (* Menue to select an item from a string-list; accepts only valid inputs *)
 (* The return value is the selected value itself (not an index)          *)
 (* --------------------------------------------------------------------- *)
-let interactive_string_select str_arr =
+(* If selected option can't be converted to int, the default pattern is  *)
+(* selected as answer.                                                   *)
+(* --------------------------------------------------------------------- *)
+let interactive_string_select str_arr default_pattern =
   let rec loop str_arr = 
     print_string "\n";
     print_string "Please chose one option:\n\n";
     Array.iteri ( fun idx str -> Printf.printf "  %2d.: %s\n" idx str ) str_arr;
     print_string "\n   ===> ? ";
-    let value = int_of_string( read_line() ) in
-    if value >= 0 && value < Array.length str_arr
-    then str_arr.(value)
-    else loop str_arr
+    try
+      let value = int_of_string( read_line() ) in
+      if value >= 0 && value < Array.length str_arr
+      then str_arr.(value)
+      else loop str_arr
+    with _ -> default_pattern
   in
     loop str_arr
 
@@ -315,7 +320,7 @@ let evaluate_command_list cmdlst =
                                                                             let match_pattern =
                                                                             if Cli.opt.Cli.interactive = true
                                                                             then
-                                                                              interactive_string_select col
+                                                                              interactive_string_select col matchpat
                                                                             else
                                                                               matchpat
                                                                             in
