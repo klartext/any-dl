@@ -249,7 +249,7 @@ The NDR-example explained
 
   So, I think the advantage may be obvious to you.
 
-  Now, details about the language wil follow.
+  Now, details about the language will follow.
 
 
 
@@ -333,8 +333,8 @@ Language Features:
 Startup-sequence:
 -----------------
 
-The document given via command line is loaded automatically.
-The document is saved as a named variable (name: "BASEDOC").
+The document(-url) given via command line is loaded automatically.
+The loaded document is automatically saved as a named variable (name: "BASEDOC").
 
 
 
@@ -347,6 +347,13 @@ Command Line Options:
                     the -l option, or one can look into the rc-file.
    -f filename for rc-file
    -v verbose output
+   -c show commands of parserdef-language
+   -v verbose     
+   -s safe: no download via system invoked
+   -i interactive: interactive features enabled
+
+   -help  Display this list of options
+   --help  Display this list of options
 
 
 
@@ -371,7 +378,7 @@ List of commands/keywords (not carved in stone so far) by example:
   start
   end
 
-  dummy
+  dummy;
   exitparse;
 
   linkextract;
@@ -385,7 +392,7 @@ List of commands/keywords (not carved in stone so far) by example:
   show_match;
   show_type;
   show_variables;
-  dump
+  dump;
 
 
   store("varname");

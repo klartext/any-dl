@@ -39,10 +39,13 @@ FEATUREs:
 
  - !!!! XML-deparse -> get values from XML via name :-)
 
+ - ARD-Parser: make it quality-selection interactive!
 
  - automatic lookup for rc-file also in other places (/etc/skel or something like that?) ???
 
  - syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
+
+ - new command: astore("NAME");  (autostore() -> store current value like matrix -> NAME.(x).(y) or something like that
 
  - matches and assignments -> each match-group one varname... like   (url,vidname,foobar) = match("^(.*)xyz(lala).*?(foobar)")
 
@@ -67,6 +70,11 @@ FEATUREs:
 
  - Macros or not?
 
+ - setting variable STARTURL automatically (like BASEDOC for start-document?)  ( and rename BASEDOC to STARTDOC?)
+
+ - maybe add a more sophisticated program invocation (fork/exec or popen) ?
+
+
 
 QUESTIONS:
 ==========
@@ -79,3 +87,4 @@ QUESTIONS:
       print with referrer;
 
 
+ - rename sutomatic $BASEDOC to $STARTDOC? (and then also have a $STARTURL) ??
