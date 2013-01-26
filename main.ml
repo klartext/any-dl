@@ -452,6 +452,7 @@ let evaluate_command_list cmdlst =
 
 
                        | Subst (from_re, to_str)    -> 
+                                                       if Cli.opt.Cli.verbose then Printf.fprintf stderr "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
                                                        let replacer instring = Pcre.replace ~pat:from_re ~templ:to_str instring in
                                                        begin
                                                        match tmpvar with
