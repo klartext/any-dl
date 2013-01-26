@@ -157,7 +157,7 @@ start
   recall("BASEDOC");
   match("<title>(.*?)</title>");
   rowselect(0); select(1);
-  subst("[ -:;]+", "_");
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
 
   # download the video
