@@ -39,8 +39,6 @@ FEATUREs:
 
  - !!!! XML-deparse -> get values from XML via name :-)
 
- - ARD-Parser: make it quality-selection interactive!
-
  - automatic lookup for rc-file also in other places (/etc/skel or something like that?) ???
 
  - syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
@@ -58,8 +56,6 @@ FEATUREs:
                  or        attach_urls "ard_mediathek_get" ("http://...", "http://"...")
 
 
- - Input-URL: eigene Variable, unter der diese abzurufen ist (from inside parser-def-lang)
-
  - Programmaufruf-Definitionen
 
  - evtl. grep-Kommando, das zeilenweise arbeitet.... für die handhabung von href's
@@ -70,9 +66,11 @@ FEATUREs:
 
  - Macros or not?
 
- - setting variable STARTURL automatically (like BASEDOC for start-document?)  ( and rename BASEDOC to STARTDOC?)
-
  - maybe add a more sophisticated program invocation (fork/exec or popen) ?
+
+ - would it make sene to allow get also to read the streams?
+   Or should there be some other special commadn for it?
+   like "get_stream" ?
 
 
 
@@ -86,5 +84,3 @@ QUESTIONS:
    Or should there be something like
       print with referrer;
 
-
- - rename sutomatic $BASEDOC to $STARTDOC? (and then also have a $STARTURL) ??
