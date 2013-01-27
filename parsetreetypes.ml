@@ -46,6 +46,7 @@ type commands_t =
   | Select            of selector_t           (* acts as a filter *) (* old ideas from other tool *)
   *)
   | Print
+  | Print_args        of results_t list       (* printing the general args-list *)
   | Show_match
   | Print_string of string
   | Save         of string * string

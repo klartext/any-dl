@@ -163,8 +163,8 @@ print_stmt_simple: PRINT               { Print }
 showmatch_stmt: SHOW_MATCH { Show_match }
     ;
 
-print_stmt: PRINT_STRING LPAREN STRING RPAREN { Print_string $3 }
-    |       PRINT        LPAREN STRING RPAREN { Print_string $3 }
+print_stmt: PRINT_STRING LPAREN STRING        RPAREN { Print_string $3 }
+    |       PRINT        LPAREN argument_list RPAREN { Print_args $3   }
     ;
 
 get_stmt: GET                           { Get }

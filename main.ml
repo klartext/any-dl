@@ -369,6 +369,18 @@ let evaluate_command_list cmdlst =
                                                            | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
                                                        end
 
+
+                       | Paste paste_list            ->
+                                                        let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
+                                                        let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
+                                                        command tl (String res) varmap
+
+
+
+                       | Print_args prt_args         ->
+                                                        command [ Paste( prt_args ); Print ] Empty varmap; (* use the Pase-command and the print-command *)
+                                                        command tl tmpvar varmap (* just next command without changed tmpvar *)
+
                        | Print                      ->
                                                        begin
                                                          match tmpvar with
@@ -435,13 +447,6 @@ let evaluate_command_list cmdlst =
 
                        | Show_type                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
                                                        command tl tmpvar varmap
-
-
-                       | Paste paste_list            ->
-                                                        let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
-                                                        let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
-                                                        command tl (String res) varmap
-
 
 
                        | Basename                   -> begin

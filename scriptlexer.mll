@@ -100,7 +100,7 @@ and read_string = parse
    | [^ '"' '\n' '\\']+  { Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_string lexbuf }
    | '\n'           { incr linenum; Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_string lexbuf }
    | "\\n"          { Buffer.add_string stringbuf "\n"; read_string lexbuf }
-   | "\\n"          { Buffer.add_string stringbuf "\n"; read_string lexbuf }
+   | "\\t"          { Buffer.add_string stringbuf "\t"; read_string lexbuf }
    | "\\("          { Buffer.add_string stringbuf "\\("; read_string lexbuf }
    | "\\)"          { Buffer.add_string stringbuf "\\)"; read_string lexbuf }
    | "\\."          { Buffer.add_string stringbuf "\\."; read_string lexbuf }
