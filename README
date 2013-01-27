@@ -417,3 +417,174 @@ List of commands/keywords (not carved in stone so far) by example:
   get;
   system;
 
+
+
+
+List of commands/keywords and a short-escription of them:
+=========================================================
+
+
+  basename
+    creates the basename of an url or filename;
+    the leading filename or URL-path is removed
+
+
+  colselect
+    selects columns from a match-result
+
+
+  dummy
+    just a dummy command (something like a NOP of processors)
+
+
+  dump
+    dump a html-page: deparses the tags, prints tags and data
+    annotated; data is indented and an underline prepended.
+    The underline is a multitude (defaults to 2) of the deepness
+    of the nesting in the parse-tree.
+    Means: the deeper something is wrapped in tags, the higher the indentation.
+
+  end
+    end-keyword for the parser-definition
+
+
+  exitparse
+    exit's a parse of one parser.
+    This means, that the URL that is currently tried to be parsed and
+    worked on, will not be further investigated.
+    But if there are more than one URl given via command-line,
+    then the next url will be investigated.
+    This means: even if by accident your parser for one url is
+    exited (e.g. you are developing the parser for that URL),
+    the next one will be worked on.
+
+  get
+    gets a document like html or xml page.
+    Could also be a file, but not a stream so far.
+
+  selectmatch
+    allows to select a row from a match-result, by specifiying
+    a column-index and a string-mathching-pattern for this certain
+    element.
+    So, this is a more advanced rowselect() with additional matching capabilities.
+
+  iselectmatch
+    this is an interactive selectmatch. ("i" for interactive).
+    Without the "-i" switch on the command line, it behaves
+    like selectmatch().
+    But when the "-i" switch is set via command line,
+    then an interactive menue will be displayed, so that
+    the user can select an option; this option will allow
+    to select the row by the selected column-index interactively.
+    The user selects a number (beginning from 0).
+    The corresponding column of the selected number
+    will be used for selection of the row.
+    If the input is not valid, a default value will be used.
+    The default value is the value, that is the second arg of
+    iselectmatch(). It would be the same as a hard coded selection
+    of a selectmatch().
+    So, in most cases it would make sense to use iselectmatch()
+    instead of selectmatch().
+
+  linkextract
+    extracts href-links from html-pages;
+    relative links will tried to be converted into absolute links.
+
+  linkextract_xml
+    extracting href-items of an xml-document
+
+
+  makeurl
+    tries to make an url from a string
+
+  match
+    tries to match to the used pattern.
+    PCRE-matches are used.
+    The result is a matrix, containing of
+    rows-of-"column"-elements.
+
+  select
+    selects ONE ELEMENT (one "column") from a row.
+    The row must already have been selected.
+    select() does NOT allow matches on match-results (which are
+
+  mselect
+    a multiple-select, like select, but the result will be an array
+    of items (Strings or URls) not a single element.
+
+  parsername
+    this keywords starts the definition of a parser.
+
+  paste
+    the paste()-command creates a string from strings and variable-names (-notation).
+    paste() accepts a list of items, seperated by commas (",").
+
+  print
+    print invoked without parantheses prints the value on the one-val-stack.
+    print() with parantheses prints strings and variables (denoted by $-notatation),
+    which means it accepts the same parameters as paste() but does not change the
+    one-val-stack.
+
+
+  print_string
+    accepts only one string-argument and prnts it.
+
+
+  quote
+    wraps the one-val-stack value with '"' and '"'.
+    needed for arguments that are given to other tools,
+    which will be invoked bia system() (which is invoking
+    a shell).
+
+
+  recall
+    get a named value and store it on the one-val-stack.
+
+
+  rowselect
+    selects a certain row from a match-result.
+
+  show_match
+    shows a match-result in a certain way; this command is
+    intended to display matchese in a way, wher they can be read easily.
+    Most often will be used in parser-development.
+    But can of course also be used for informing the user
+    on the steps that any-dl has done (e.,g. just be verbose and
+    display the matches). But normally, rather developers
+    will be interested in these details.
+
+
+  show_type
+    just shows the "type" of the value in the one-val-stack.
+
+
+  show_variables
+    displays all named variables.
+
+
+  start
+    this keyword indicates the start of the keywords section
+    of a parser definition.
+
+
+  store
+    store the value from the one-val-stack as named variable.
+    (use recall() for getting it back to the one-val-stack, or
+     $-notation in some of the commnds that accept this notatiom).
+
+  subst
+    string-substiturion.
+    Uses Pcre.replace internally.
+
+
+  system
+    calls the system() command with the string that is hold in
+    the one-val-stack.
+
+
+  to_string
+    converts the value of the one-val-stack to a string-representation.
+
+
+
+__END__
