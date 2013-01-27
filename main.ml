@@ -652,7 +652,7 @@ let _  =
                               (* we evaluate the parse-tree, and start with a first, implicit get *)
                               (* with the url we got from the command line                        *)
                               (* ---------------------------------------------------------------- *)
-                              evaluate_command_list (Get_url(url, "-") :: Store("BASEDOC") :: parserdef.commands)
+                              evaluate_command_list (Setvar(Url(url,"-")) :: Store "STARTURL" :: Get_url(url, "-") :: Store("BASEDOC") :: parserdef.commands)
 
 
                             with (* handle exceptions from the parse-tree-evaluation *)
