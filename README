@@ -444,6 +444,7 @@ List of commands/keywords and a short-escription of them:
     of the nesting in the parse-tree.
     Means: the deeper something is wrapped in tags, the higher the indentation.
 
+
   end
     end-keyword for the parser-definition
 
@@ -458,15 +459,11 @@ List of commands/keywords and a short-escription of them:
     exited (e.g. you are developing the parser for that URL),
     the next one will be worked on.
 
+
   get
     gets a document like html or xml page.
     Could also be a file, but not a stream so far.
 
-  selectmatch
-    allows to select a row from a match-result, by specifiying
-    a column-index and a string-mathching-pattern for this certain
-    element.
-    So, this is a more advanced rowselect() with additional matching capabilities.
 
   iselectmatch
     this is an interactive selectmatch. ("i" for interactive).
@@ -486,9 +483,11 @@ List of commands/keywords and a short-escription of them:
     So, in most cases it would make sense to use iselectmatch()
     instead of selectmatch().
 
+
   linkextract
     extracts href-links from html-pages;
     relative links will tried to be converted into absolute links.
+
 
   linkextract_xml
     extracting href-items of an xml-document
@@ -508,6 +507,12 @@ List of commands/keywords and a short-escription of them:
     The row must already have been selected.
     select() does NOT allow matches on match-results (which are
 
+  selectmatch
+    allows to select a row from a match-result, by specifiying
+    a column-index and a string-mathching-pattern for this certain
+    element.
+    So, this is a more advanced rowselect() with additional matching capabilities.
+
   mselect
     a multiple-select, like select, but the result will be an array
     of items (Strings or URls) not a single element.
@@ -515,9 +520,11 @@ List of commands/keywords and a short-escription of them:
   parsername
     this keywords starts the definition of a parser.
 
+
   paste
     the paste()-command creates a string from strings and variable-names (-notation).
     paste() accepts a list of items, seperated by commas (",").
+
 
   print
     print invoked without parantheses prints the value on the one-val-stack.
