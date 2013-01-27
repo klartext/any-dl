@@ -308,7 +308,8 @@ start
 
   rowselect(0);
   select(1);
-  subst("[! -]+", "_");
+  #subst("[! -]+", "_");
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
 
   paste($title, ".mp4");
