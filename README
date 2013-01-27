@@ -586,5 +586,17 @@ List of commands/keywords and a short-escription of them:
     converts the value of the one-val-stack to a string-representation.
 
 
+Prefedined Variables:
+=====================
+
+  STARTURL
+    The URL that is given via cli and investigated by the corresponding
+    parser can access the url via this named variable.
+    (recall("STARTURL") or $STARTURL)
+
+  BASEDOC
+    The document, that is retrieved via $STARTURL is avaiable as
+    names variable BASEDOC.
+
 
 __END__
