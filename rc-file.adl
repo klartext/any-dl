@@ -322,10 +322,39 @@ start
   paste( "wget -c ",  $url, " -O ", $outfilename );
   system;
 end
-#
-#  paste( $title, "_", $filename );
-#  quote;
-#  store("filename");
+
+
+# ---------------------------------
+# ARD/WDR
+# ---------------------------------
+# Example: http://www.ardmediathek.de/wdr-fernsehen/bericht-aus-bruessel/sendung-vom-30-01-2013?documentId=13242946
+# =================================
+parsername "ard_wdr": ( "http://www.ardmediathek.de/wdr-fernsehen/" )
+start
+
+  match("(rtmp://.*?.mp4)");
+  #show_match;
+
+  iselectmatch(1,".*?web-m.mp4");
+
+  select(1); # use item with index 1 (rtmp-url)
+  subst(>>>", "<<<, "/");
+  #show_type;
+
+  store("rtmp");
+
+  basename;
+  store("filename");
+  #print;
+
+  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $filename );
+  print;
+  system;
+
+end
+
+
+
 
 
 
