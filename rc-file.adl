@@ -49,7 +49,7 @@ parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek
 start
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)"<<< );
   store("match");
-  rowselect(2);
+  iselectmatch(2, "hd");
   store("high");
 
   #show_type;
@@ -517,4 +517,25 @@ end
 # <div class="imgname invisible" data-value="/fernsehen/sendungen/45_min/hintergrund/paketsklaven133_v-contentgross.jpg"></div>
 # </div>
 # *)
+# 
+# ============================================================================
+# http://www.chip.de/artikel/Mediathek-Download-ARD-ZDF-Sat.1-Pro7-BR-ORF-MTV-Co._47670328.html
+# ============================================================================
+# 
+# www.ardmediathek.de
+# www.zdf.de/ZDFmediathek
+# www.rtl-now.de
+# www.rtl2.de
+# www.prosieben.de/video
+# www.sat1.de/video
+# www.kabeleins.de/videos
+# mediencenter.n24.de
+# http://mediathek-video.br.de.
+# www.ndr.de
+# ORF:  http://www.chip.de/artikel/ORF-Mediathek-Download_47276441.html
+# www.videoportal.sf.tv
+# http://www.3sat.de/mediathek
+# www.viva.tv/vivavideos
+# www.mdr.de/mediathek
+# www.swrmediathek.de
 # 
