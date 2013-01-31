@@ -83,6 +83,8 @@ FEATUREs:
 QUESTIONS:
 ==========
 
+ - Parsername as predefined named Variable also?  ( $PARSERNAME ?? ) 
+
  - how detailed/verbose or how non-verbose should the commands be?
    e.g.  should print; print onl ythe url or url and referrer?
    Should there be more specific commands?
