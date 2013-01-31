@@ -191,6 +191,37 @@ end
 
 
 # ---------------------------------
+# ARD / Nachtmagazin
+# ---------------------------------
+# Example: http://www.ardmediathek.de/das-erste/nachtmagazin/nachtmagazin?documentId=13244376
+# =================================
+parsername "ard_nachtmagazin": ( "http://www.ardmediathek.de/das-erste/nachtmagazin/" )
+start
+  match( "http://.*?mp4" );
+  show_match;
+
+  # select quality
+  # --------------
+  iselectmatch(0, "webm.h264.mp4");
+  store("url");
+
+  # build filename
+  # --------------
+  to_string;
+  basename;
+  store("filename");
+  paste("Nachtmagazin_", $filename);
+  store("filename");
+
+  # download the video
+  # ------------------
+  paste("wget -c ",  $url, " -O ", $filename );
+  print;
+  system;
+end
+
+
+# ---------------------------------
 # ZDF 
 # ---------------------------------
 # (* Webpage -> ASX-Link -> ASX-Page -> MMS-Link *)
