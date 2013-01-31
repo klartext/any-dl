@@ -23,6 +23,12 @@ BUGs:
 
     possibly get works fine, but save() must be implemented !!
 
+ - interactive selection menue: strangely, when just typing enter problems occur.
+   Non-match case occurs.
+   Must be checked, if there are not-correctly caught exceptions at the input part,
+   or if possibly giving back index instead of selection string would make
+   more sense. (possibly using index might makse sense, but can at some other
+   parts of the program become a bit more effort.
 
 
 
