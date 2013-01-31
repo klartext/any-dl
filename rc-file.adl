@@ -354,6 +354,43 @@ start
 end
 
 
+# ---------------------------------
+# ARD/RBB
+# ---------------------------------
+# Example: http://www.ardmediathek.de/rbb-fernsehen/klartext/personal-als-sicherheitsrisiko?documentId=13243418
+# =================================
+parsername "ard_rbb": ( "http://www.ardmediathek.de/rbb-fernsehen/" )
+start
+  match("(rtmp://.*?)\".*?\"(mp4:.*?mp4)");
+  show_match;
+
+  # select the right match, according to the wished quality
+  # -------------------------------------------------------
+  iselectmatch(2,".*.mp4");
+
+  # get the rtmp-part from the selected match
+  # -----------------------------------------
+  store("selected_match");
+  select(1); # use item with index 1 (rtmp-url)
+  store("rtmp");
+
+  # get the mp4-part from the selected match
+  # -----------------------------------------
+  recall("selected_match");
+  select(2); # use item with index 2 (mp4-url)
+  store("mp4");
+
+
+  # get the basename as filename
+  # ----------------------------
+  basename;
+  store("filename");
+
+  paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o ", $filename );
+  print;
+  system;
+
+end
 
 
 
