@@ -40,6 +40,20 @@ Overview
   So, before the parser definition language will be explained,
   the usage of any-dl will be explained.
 
+Setup
+=====
+
+The file "rc-file.adl" does contain needed parser-definitions
+for any-dl to work as expected.
+This file must be saved to the home-directory as file ".any-dl.rc".
+
+So, please copy it from ./rc-file.adl" to $HOME/.any-dl.rc 
+
+ $ cp rc-file.adl  $HOME/.any-dl.rc
+
+Alternatively you can use the "-f" option of any-dl
+to tell any-dl, which file contains the parser-definitions.
+
 
 Usage
 =====
