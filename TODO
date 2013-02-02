@@ -78,6 +78,8 @@ FEATUREs:
    Or should there be some other special commadn for it?
    like "get_stream" ?
 
+ - missing rc-file exception should be caught, and the problem explained
+   (like "copy rc-file.adl to ..." or "rc-file missing in default place, please give alternartiv rc-file via -f switch")
 
 
 QUESTIONS:
