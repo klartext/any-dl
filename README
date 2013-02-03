@@ -13,7 +13,7 @@ Overview
 ========
 
   The tool any-dl is inspired by, and has it's name derived from tools like
-  youtoube-dl, arte-dl, dctp-dl, zdf-dl, ...
+  youtube-dl, arte-dl, dctp-dl, zdf-dl, ...
 
   These tools are specialized downloading tools for videos
   of youtube, as well as tv-broadcasting companies.
@@ -43,44 +43,44 @@ Overview
 Compilation / Installation / Setup
 ==================================
 
-When you read this README file from within the directory
-you downloaded (via git or elsewhere), then you
-already have unpacked it.
+  When you read this README file from within the directory
+  you downloaded (via git or elsewhere), then you
+  already have unpacked it.
 
-You need to compile and install / setup the tool.
+  You need to compile and install / setup the tool.
 
-You will need to have OCaml installed, as well as
-ocamlnet-library, xml-light and pcre / pcre-ocaml.
+  You will need to have OCaml installed, as well as
+  ocamlnet-library, xml-light and pcre / pcre-ocaml.
 
-To compile any-dl, just type "make" at the shell then.
+  To compile any-dl, just type "make" at the shell then.
 
-  $  make
+    $  make
 
-The the file "any-dl" should be in the current directory.
-You can then copy it to $HOME/bin if your PATH-variable
-points to it.
-Or possible you may copy it to /usr/lovcal/bin or /usr/bin
-depending on the Linux-/Unix-system you are using, and
-the filesystem-standard it is using.
-
-
-The file "rc-file.adl" does contain needed parser-definitions
-for any-dl to work as expected.
-This file must be saved to the home-directory as file ".any-dl.rc".
-
-So, please copy it from the local dir "./rc-file.adl" to $HOME/.any-dl.rc 
-
-This command would do it:
-
- $ cp rc-file.adl  $HOME/.any-dl.rc
-
-Alternatively you can use the "-f" option of any-dl
-to tell any-dl, which file contains the parser-definitions.
+  The the file "any-dl" should be in the current directory.
+  You can then copy it to $HOME/bin if your PATH-variable
+  points to it.
+  Or possible you may copy it to /usr/lovcal/bin or /usr/bin
+  depending on the Linux-/Unix-system you are using, and
+  the filesystem-standard it is using.
 
 
-( For command-line-newbies:
-   The "$" symbol in the mentioned command lines, which you have to type
-   do represent the prompt of the shell; don't type it. )
+  The file "rc-file.adl" does contain needed parser-definitions
+  for any-dl to work as expected.
+  This file must be saved to the home-directory as file ".any-dl.rc".
+
+  So, please copy it from the local dir "./rc-file.adl" to $HOME/.any-dl.rc 
+
+  This command would do it:
+
+   $ cp rc-file.adl  $HOME/.any-dl.rc
+
+  Alternatively you can use the "-f" option of any-dl
+  to tell any-dl, which file contains the parser-definitions.
+
+
+  ( For command-line-newbies:
+     The "$" symbol in the mentioned command lines, which you have to type
+     do represent the prompt of the shell; don't type it. )
 
 
 Usage
@@ -99,7 +99,7 @@ Usage
 
   If you want  to download the video of it, at the shell it will look like this:
 
-  $ any-dl "http://videos.arte.tv/de/videos/frankreichs-mythische-orte--7167432.html"
+    $ any-dl "http://videos.arte.tv/de/videos/frankreichs-mythische-orte--7167432.html"
 
   Then any-dl would download the video. :-)
   That's all :-)
@@ -124,16 +124,24 @@ Usage
 
   To pick a certain parser can be done with the command-line switch "p":
 
-  $ any-dl -p linkextract "http://videos.arte.tv/de/videos/frankreichs-mythische-orte--7167432.html"
+    $ any-dl -p linkextract "http://videos.arte.tv/de/videos/frankreichs-mythische-orte--7167432.html"
 
   will print out all href's of the document (and they should all appear as absolute URLs).
 
   The names of all defined/available parsers can be displayed with the "l"-switch:
 
-  $ any-dl -l
+    $ any-dl -l
 
   If a parser as URLs, on which it will be invoked as default (when not using -p)
   it is also displayed with -l as switch.
+
+  If you want to write your own parser-definitions, you need the list of
+  commands. You can get it with the -c switch:
+
+    $ any-dl -c 
+
+  will print a list of all keywords that the lexer/scanner does accept.
+
 
   That's enough for an introduction.
 
