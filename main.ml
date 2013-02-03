@@ -564,7 +564,7 @@ let parsername_lookup_by_url url lookup_lst =
 
 
 
-let _  =
+let main()  =
     Cli.parse(); (* parse the command line *)
 
     (* parse the parser-definitions *)
@@ -665,6 +665,17 @@ let _  =
               ) (List.rev Cli.opt.Cli.url_list)
 
 
+let _ =
+  try
+    main()
+  with Sys_error msg -> if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
+                        then
+                          begin
+                            Printf.fprintf stderr "The config file is missing. Default place for it is $HOME/.any-dl.rc.";
+                            Printf.fprintf stderr " Please provide it there or use -f option\n"
+                          end
+                        else
+                          raise ( Sys_error msg )
 
 
 (* --------------------------------------------------------------------------------------------------------------
