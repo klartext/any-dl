@@ -40,19 +40,47 @@ Overview
   So, before the parser definition language will be explained,
   the usage of any-dl will be explained.
 
-Setup
-=====
+Compilation / Installation / Setup
+==================================
+
+When you read this README file from within the directory
+you downloaded (via git or elsewhere), then you
+already have unpacked it.
+
+You need to compile and install / setup the tool.
+
+You will need to have OCaml installed, as well as
+ocamlnet-library, xml-light and pcre / pcre-ocaml.
+
+To compile any-dl, just type "make" at the shell then.
+
+  $  make
+
+The the file "any-dl" should be in the current directory.
+You can then copy it to $HOME/bin if your PATH-variable
+points to it.
+Or possible you may copy it to /usr/lovcal/bin or /usr/bin
+depending on the Linux-/Unix-system you are using, and
+the filesystem-standard it is using.
+
 
 The file "rc-file.adl" does contain needed parser-definitions
 for any-dl to work as expected.
 This file must be saved to the home-directory as file ".any-dl.rc".
 
-So, please copy it from ./rc-file.adl" to $HOME/.any-dl.rc 
+So, please copy it from the local dir "./rc-file.adl" to $HOME/.any-dl.rc 
+
+This command would do it:
 
  $ cp rc-file.adl  $HOME/.any-dl.rc
 
 Alternatively you can use the "-f" option of any-dl
 to tell any-dl, which file contains the parser-definitions.
+
+
+( For command-line-newbies:
+   The "$" symbol in the mentioned command lines, which you have to type
+   do represent the prompt of the shell; don't type it. )
 
 
 Usage
