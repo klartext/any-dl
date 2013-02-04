@@ -556,11 +556,14 @@ let parsername_lookup_by_url url lookup_lst =
     | []       -> raise Not_found
     | hd :: tl -> let parser_url  = fst hd in
                   let parser_name = snd hd in
+
                   if Cli.opt.Cli.verbose then
                     Printf.printf "parser-lookup via url: %s\n\t%s  ->  %s\n--\n" url parser_url parser_name;
+
+                  let parser_url_len = String.length parser_url in
                   try
-                    if parser_url = String.sub url 0 (String.length parser_url) then parser_name else aux tl
-                  with Invalid_argument("String.sub") -> aux tl (* this happens if url is shorter than parser_url *)
+                    if parser_url_len > 0 && parser_url = String.sub url 0 parser_url_len then parser_name else aux tl
+                  with Invalid_argument("String.sub") -> print_endline "XX"; aux tl (* this happens if url is shorter than parser_url *)
   in
     aux lookup_lst
 
