@@ -4,7 +4,7 @@ all: byte-code
 #all: debug-code
 
 
-SOURCES :=  parsetreetypes.ml scriptparser.mly scriptlexer.mll parsers.ml network.ml cli.ml main.ml
+SOURCES :=  cli.ml parsetreetypes.ml scriptparser.mly scriptlexer.mll parsers.ml network.ml main.ml
 
 PACKS := pcre netstring netsys netclient curl xml-light
 

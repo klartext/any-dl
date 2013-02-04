@@ -75,6 +75,13 @@ module Curly =
             (*
             List.iter (fun s -> print_string "=========="; print_endline s) (conn#get_cookielist);
             *)
+            if Cli.opt.Cli.verbose
+            then
+              begin
+                print_endline "=====> COOOKIES:";
+                List.iter (fun s -> print_string "--> "; print_endline s) (conn#get_cookielist);
+                print_endline "<===== COOKIES"
+              end;
             conn#cleanup; (* CLEAN UP *)
 
             if http_code < 400
