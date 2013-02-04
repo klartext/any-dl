@@ -563,7 +563,7 @@ let parsername_lookup_by_url url lookup_lst =
                   let parser_url_len = String.length parser_url in
                   try
                     if parser_url_len > 0 && parser_url = String.sub url 0 parser_url_len then parser_name else aux tl
-                  with Invalid_argument("String.sub") -> print_endline "XX"; aux tl (* this happens if url is shorter than parser_url *)
+                  with Invalid_argument("String.sub") -> aux tl (* this happens if url is shorter than parser_url *)
   in
     aux lookup_lst
 
