@@ -46,6 +46,8 @@ BETTER STRUCTURE, CLEANER CODE:
 FEATUREs:
 =========
 
+ - Cookie-Support seems to be helpful (e.g. for vimeo?)
+
  - !!!! XML-deparse -> get values from XML via name :-)
 
  - automatic lookup for rc-file also in other places (/etc/skel or something like that?) ???
