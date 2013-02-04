@@ -40,6 +40,21 @@ Overview
   So, before the parser definition language will be explained,
   the usage of any-dl will be explained.
 
+  any-dl provides a program with a certain language,
+  that allows doing the parsing stuff of websites with
+  focus on video download.
+
+  If you miss a parser for a certain site or if you have written
+  one by your own, please let me know.
+
+  As any-dl does delegate the stream-downloads to certain tools,
+  it will make sense to have the following tools also installed:
+
+  - wget        (maybe later not necessary, but it is a nice tool, you should have)
+  - rtmpdump
+  - mplayer
+
+
 Compilation / Installation / Setup
 ==================================
 
@@ -50,7 +65,30 @@ Compilation / Installation / Setup
   You need to compile and install / setup the tool.
 
   You will need to have OCaml installed, as well as
-  ocamlnet-library, xml-light and pcre / pcre-ocaml.
+  some libraries.
+
+  For the libraries in use, under Debian
+  the following packages for each library are listed:
+
+  (I'm not a Debian package expert, so please send me
+  corrections, if necessary.)
+    
+      pcre:
+        libpcre-ocaml-dev
+        libpcre-ocaml
+
+      netstring, netsys, netclient:
+        libocamlnet-ocaml
+        libocamlnet-ocaml-bin
+        libocamlnet-ocaml-dev
+
+      curl:
+        libcurl-ocaml
+        libcurl-ocaml-dev
+
+      xml-light:
+        libxml-light-ocaml-dev
+
 
   To compile any-dl, just type "make" at the shell then.
 
@@ -81,7 +119,6 @@ Compilation / Installation / Setup
   ( For command-line-newbies:
      The "$" symbol in the mentioned command lines, which you have to type
      do represent the prompt of the shell; don't type it. )
-
 
 Usage
 =====
