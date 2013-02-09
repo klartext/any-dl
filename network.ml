@@ -61,11 +61,15 @@ module Curly =
       if Cli.opt.Cli.verbose then connection#set_verbose true; (* curl itself is verbose here, driven by cli *)
         (connection, buffer)
 
+
     let get_raw url referer cookies =
             let conn, buffer = new_curl_connection() in
             conn#set_url url;
             begin
               match referer with None -> () | Some ref -> conn#set_referer ref
+            end;
+            begin
+              match cookies with None -> () | Some cookies -> conn#set_cookielist cookies
             end;
             conn#set_sslverifypeer false; (* Zertifikate-Prüfung auschalten! *)
             conn#perform;                 (* loslegen: retrieve data *)
@@ -89,6 +93,7 @@ module Curly =
             then
               let result = Buffer.contents buffer in Some result
             else ( Printf.eprintf "http-returncode: %d (URL: %s)\n" http_code url; None)
+
 
     let get url referer cookies =
       let trial_numbers = 3 in
