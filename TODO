@@ -46,6 +46,9 @@ BETTER STRUCTURE, CLEANER CODE:
 FEATUREs:
 =========
 
+ - new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
+
+
  - Cookie-Support seems to be helpful (e.g. for vimeo?)
 
  - maybe title as a special keyword, which just grabs the title-tag, possibly writing it to
