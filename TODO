@@ -48,6 +48,14 @@ FEATUREs:
 
  - Cookie-Support seems to be helpful (e.g. for vimeo?)
 
+ - maybe title as a special keyword, which just grabs the title-tag, possibly writing it to
+   $TITLE, (instead of match-necessity)
+   Also maybe automatically saving the title to $TITLE for the BASEDOC...
+
+ - iselectmatch()  needs a thir parameter.
+   it is not that easy to make column-selection-index and row-default-index
+   being the same. This restriction makes the construction of the match-regexp rather complicated.
+
  - !!!! XML-deparse -> get values from XML via name :-)
 
  - automatic lookup for rc-file also in other places (/etc/skel or something like that?) ???
