@@ -1,6 +1,24 @@
 # =====================================================
 # General Parsers, not specific to Mediathek-Archives #
 # =====================================================
+
+
+
+# ---------------
+# Parser "empty":
+# ---------------
+# empty means something like "after implicit get do NOP"
+# the parser definition is emty and only for testing.
+# This can make sense in checking if the implicit get works+
+# (check if the start-url works at all).
+# also can be used together with "-v" option to get all
+# sorts of information without starting any download actions
+# and without injvoking any other ecreen-filling parsers like "dump".
+parsername "empty": ( "" )
+start
+end
+
+
 parsername "linkextract": ( "" )
 start
   linkextract;
