@@ -30,26 +30,6 @@ let if_match_give_group_of_groups str regexp =
 
 
 
-
-
-(*
-let urlmatcher url url_regexp =
-  if (Pcre.pmatch ~rex:url_regexp url)
-  then
-    begin
-      let substr_obj = Pcre.exec ~rex:url_regexp url in
-        Pcre.get_substring substr_obj 0
-    end
-  else
-    begin
-      prerr_endline "url-scheme for baseurl could not be matched";
-      url
-    end
-
-*)
-
-
-
 (* this stuff can be done with Neturl-module also!!! *)
 let re_url_scheme  = Pcre.regexp "^([a-zA-Z]+://[^/]+)"
 (* this stuff can be done with Neturl-module also!!! *)

@@ -17,22 +17,6 @@ let sort stringlist = List.sort ( fun a b -> let al = String.lowercase a and bl 
 (* ------------------------------------------------------------------------ *)
 
 
-(*
-let urlmatcher url url_regexp =
-  if (Pcre.pmatch ~rex:url_regexp url)
-  then
-    begin
-      let substr_obj = Pcre.exec ~rex:url_regexp url in
-        Pcre.get_substring substr_obj 0
-    end
-  else
-    begin
-      prerr_endline ("url-scheme for baseurl could not be matched (" ^ url ^ ")");
-      url
-    end
-
-*)
-
 
 (* ------------------------ *)
 (* networking with CURL-lib *)
