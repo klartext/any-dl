@@ -61,7 +61,7 @@ module Curly =
       if Cli.opt.Cli.verbose then connection#set_verbose true; (* curl itself is verbose here, driven by cli *)
         (connection, buffer)
 
-    let get_raw url referer =
+    let get_raw url referer cookies =
             let conn, buffer = new_curl_connection() in
             conn#set_url url;
             begin
@@ -90,12 +90,12 @@ module Curly =
               let result = Buffer.contents buffer in Some result
             else ( Printf.eprintf "http-returncode: %d (URL: %s)\n" http_code url; None)
 
-    let get url referer =
+    let get url referer cookies =
       let trial_numbers = 3 in
       let rec get_aux num =
         if num <= trial_numbers
         then
-          try get_raw url referer
+          try get_raw url referer cookies
           with
             | Curl.CurlException(curl_code, err_int, "CURLE_COULDNT_CONNECT") -> prerr_endline "Could not connect, try again"; get_aux (num+1)
             | Curl.CurlException(curl_code, err_int, "CURLE_OPERATION_TIMEOUTED") -> prerr_endline "Timed_out, try again"; get_aux (num+1)
@@ -111,7 +111,7 @@ module Curly =
 *)
    :
   sig
-    val get : string -> string option -> string option
+    val get : string -> string option -> string option -> string option
   end
   )
 

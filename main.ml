@@ -153,7 +153,7 @@ let evaluate_command_list cmdlst =
     | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
     | cmd::tl   -> begin
                      match cmd with
-                       | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) in
+                       | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) None in
                                                      begin
                                                        match document with
                                                          | Some doc -> command tl (Document (doc, url)) varmap (* $URL *)
