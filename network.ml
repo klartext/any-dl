@@ -58,6 +58,7 @@ module Curly =
         connection#set_connecttimeout Config.connect_timeout;
     *)
     (*  connection#set_verbose true;*)
+      if Cli.opt.Cli.verbose then connection#set_verbose true; (* curl itself is verbose here, driven by cli *)
         (connection, buffer)
 
     let get_raw url referer =
