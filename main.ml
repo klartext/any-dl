@@ -318,17 +318,20 @@ let evaluate_command_list cmdlst =
                                                                             (* or use the default from the parser-definition.  *)
                                                                             (* ----------------------------------------------- *)
                                                                             let match_pattern =
-                                                                            if Cli.opt.Cli.interactive = true
-                                                                            then
-                                                                              interactive_string_select col matchpat
-                                                                            else
-                                                                              matchpat
+                                                                              if
+                                                                                Cli.opt.Cli.interactive = true
+                                                                              then
+                                                                                interactive_string_select col matchpat
+                                                                              else
+                                                                                matchpat
                                                                             in
+                                                                              if Cli.opt.Cli.verbose = true then Printf.printf "selected pattern: \"%s\"\n" match_pattern;
+
                                                                               let selected = List.filter ( fun item -> Pcre.pmatch ~pat:match_pattern item.(col_idx)  ) rows in
                                                                               if List.length selected = 0 then raise No_Match;
 
-                                                                              if Cli.opt.Cli.verbose = true
-                                                                              then Printf.printf "found: %d items \n" (List.length selected);
+                                                                              if Cli.opt.Cli.verbose = true then Printf.printf "found: %d items \n" (List.length selected);
+
                                                                               command tl (String_array (List.hd selected)) varmap
   
                                                                      | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
