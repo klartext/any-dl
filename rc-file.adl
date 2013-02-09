@@ -25,7 +25,7 @@ end
 # this one is unmature stuff, experimental field.
 parsername "videonames": ( "" )
 start
-  match( "(*.mp4)|(*.flv)|(*.swf)|(*.mpg)|(*.m4v)" );
+  match( "(*.mp4)|(*.flv)|(*.swf)|(*.mpg)|(*.m4v)|(mp4:.*)|(rtmp.*)" );
   print;
 end
 
@@ -91,6 +91,54 @@ start
   paste("rtmpdump --resume  -r ",  $rtmp, " -y ", $mp4, " -o ", $filename );
   print;
   system;
+
+end
+
+
+
+# ---------------------------------
+# ARD / das erste
+# ---------------------------------
+# Example: http://www.ardmediathek.de/das-erste/satire-gipfel/die-sendung-vom-4-februar-2013?documentId=13300098
+# =================================
+parsername "ard_das-erste_get": ( "http://www.ardmediathek.de/das-erste/" )
+start
+  match( >>>(rtmp[^"]+)", "mp4:([^"]+)<<< );
+  show_match;
+
+  #iselectmatch(2, "(format[^.]+)");
+  rowselect(1); # shouldm be mid quality
+  #print; exitparse;
+
+  store("select");
+
+  select(1);
+  store("rtmp");
+
+  recall("select"); 
+  select(2);
+  store("mp4");
+
+  print("--***--");
+
+  paste( $rtmp, $mp4 );
+  quote;
+  store("URL");
+
+  # title
+  # -----
+  recall("BASEDOC");
+  match("<title>(.*?)</title>");
+  rowselect(0); select(1);
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+  paste("rtmpdump --resume  -r ",  $URL, " -o ", $title, ".mp4" );
+print("---------------------");
+
+  print;
+  system;
+
 
 end
 
@@ -530,8 +578,75 @@ end
 ###      N   O   T       T   E   S   T   E   D      ###
 #######################################################
 
-parsername "vimeo": ( "http://vimeo.com" )
+# ---------------------------------
+# Vimeo
+# ---------------------------------
+# Example: http://vimeo.com/58385453
+# ---------------------------------
+# ---------------------------------
+# Description of a way to get it:
+# http://www.jwz.org/blog/2012/06/vimeo-download-escalation/
+# =================================
+parsername "vimeo": ( "http://vimeo.com/" )
 start
+  match("<title>(.*?)</title>");
+  rowselect(0); select(1);
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+  print("Title: ", $title, "\n" );
+
+  # extracting the signature string
+  # -------------------------------
+  recall("BASEDOC");
+  match(>>>signature":"([^"]+)"<<<);
+  rowselect(0); select(1); # select the raw signature string
+  store("signature");
+
+  # extracting the timestamp
+  # ------------------------
+  recall("BASEDOC");
+  match(>>>timestamp":([^,]+),<<<);
+  rowselect(0); select(1); # select the raw signature string
+  store("timestamp");
+
+  print("Signature: ", $signature, "\nTimestamp: ", $timestamp);
+
+  # extract clip-name
+  # -----------------
+  recall("STARTURL");
+  to_string;
+  basename;
+  store("clip");
+  print;
+
+  # create cookie file
+  # ------------------
+  paste("cat > cookie.txt <<EOF\nhtml_player=1; clips=", $clip, "\nEOF\n");
+  print;
+  system;
+
+  # get the cookies from first page
+  # -------------------------------
+  paste(>>>wget --load-cookie=cookie.txt --save-cookie=xxx http://vimeo.com/<<<, $clip );
+  print;
+  system;
+
+  # create the vimeo-url
+  # --------------------
+  paste(>>>"http://player.vimeo.com/play_redirect?quality=hd&codecs=h264&clip_id=<<<,
+        $clip,
+        >>>&time=<<<, $timestamp,
+        >>>&sig=<<<, $signature,
+        >>>&type=html5_desktop_local"<<< );
+  store("vimeourl");
+  print;
+  paste("wget ", "--load-cookie=xxx ", $vimeourl, " -O ", $title);
+  system;
+
+  #paste(>>> wget --load-cookie=xxx "http://player.vimeo.com/play_redirect?quality=hd&codecs=h264&clip_id=$clip&time=$timestamp&sig=$signature&type=html5_desktop_local"<<< );
+  print;
+  #paste( wget --load-cookie=xxx "http://player.vimeo.com/play_redirect?quality=hd&codecs=h264&clip_id=$clip&time=$timestamp&sig=$signature&type=html5_desktop_local" )
+
 end
 
 # (*
