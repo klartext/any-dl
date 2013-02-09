@@ -77,22 +77,30 @@ module Curly =
             (* Ergebnis-Auswertung *)
             (* ------------------- *)
             let http_code = conn#get_responsecode in
-            (*
-            List.iter (fun s -> print_string "=========="; print_endline s) (conn#get_cookielist);
-            *)
-            if Cli.opt.Cli.verbose
-            then
-              begin
-                print_endline "=====> COOOKIES:";
-                List.iter (fun s -> print_string "--> "; print_endline s) (conn#get_cookielist);
-                print_endline "<===== COOKIES"
-              end;
-            conn#cleanup; (* CLEAN UP *)
 
+            (* if http-code is less than 400, give back result; else print a msg and give back None *)
+            (* ------------------------------------------------------------------------------------ *)
             if http_code < 400
             then
-              let result = Buffer.contents buffer in Some result
-            else ( Printf.eprintf "http-returncode: %d (URL: %s)\n" http_code url; None)
+              (* no http-error *)
+              begin
+                if Cli.opt.Cli.verbose
+                then
+                  begin
+                    print_endline "=====> COOOKIES:";
+                    List.iter (fun s -> print_string "--> "; print_endline s) (conn#get_cookielist);
+                    print_endline "<===== COOKIES"
+                  end;
+                  conn#cleanup; (* CLEAN UP CONNECTION *)
+
+                  (* give back result *)
+                  (* ---------------- *)
+                  let result = Buffer.contents buffer in Some result
+              end
+
+            (* http-error-case *)
+            else
+              ( Printf.eprintf "http-returncode: %d (URL: %s)\n" http_code url; None)
 
 
     let get url referer cookies =
