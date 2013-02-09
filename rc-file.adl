@@ -103,40 +103,41 @@ end
 # =================================
 parsername "ard_das-erste_get": ( "http://www.ardmediathek.de/das-erste/" )
 start
-  match( >>>(rtmp[^"]+)", "mp4:([^"]+)<<< );
+  match( >>>(rtmp[^"]+)", "mp4:(.*?for=(Web-.)&amp[^"]+)<<< );  # the inner group-match is col 3 -> iselectmatch
   show_match;
 
-  #iselectmatch(2, "(format[^.]+)");
-  rowselect(1); # shouldm be mid quality
-  #print; exitparse;
+  # Quality selection
+  # -----------------
+  iselectmatch(3, "Web-M"); # match on third column and default to middle quality
+  store("select"); # this is the selected quality and we need to save it for later
 
-  store("select");
-
+  # select the rtmp-part
+  # --------------------
   select(1);
   store("rtmp");
 
+  # select the mp4-part
+  # -------------------
   recall("select"); 
   select(2);
   store("mp4");
-
-  print("--***--");
 
   paste( $rtmp, $mp4 );
   quote;
   store("URL");
 
-  # title
-  # -----
+
+  # grab the title
+  # --------------
   recall("BASEDOC");
   match("<title>(.*?)</title>");
   rowselect(0); select(1);
   subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
 
+  # get the video
+  # -------------
   paste("rtmpdump --resume  -r ",  $URL, " -o ", $title, ".mp4" );
-print("---------------------");
-
-  print;
   system;
 
 
