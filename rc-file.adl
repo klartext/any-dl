@@ -48,6 +48,44 @@ start
 end
 
 
+# parser for testing cookies
+# ----------------------------------------------------
+# Some tests of cookies can be found here:
+#   http://winware.org/de/cookietest.php
+#
+# Used testpage for setting/reflecting a cookie:
+#   http://winware.org/de/cookietest.php?cookie=set
+# ----------------------------------------------------
+parsername "cookieecho": ( "" )
+start
+  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
+
+  print("Preparing cookies for get");
+  recall("COOKIES.RECEIVED");
+  store("COOKIES.SEND");
+
+  recall("STARTURL");
+  print;
+  get;
+
+  print("COOKIES.SEND: ", $COOKIES.SEND );
+  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
+
+
+  print("Preparing cookies for second get");
+  recall("COOKIES.RECEIVED");
+  store("COOKIES.SEND");
+
+  recall("STARTURL");
+  print;
+  get;
+
+  print("COOKIES.SEND: ", $COOKIES.SEND );
+  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
+end
+
+
+
 
 
 
