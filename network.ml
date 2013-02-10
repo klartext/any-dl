@@ -47,6 +47,10 @@ module Curly =
 
 
     let get_raw url referer cookies =
+            (*
+            if Cli.opt.Cli.verbose then Printf.printf "URL: %s\t Referrer: %s\n" url referer;
+            *)
+
             let conn, buffer = new_curl_connection() in
             conn#set_url url;
             begin
@@ -67,19 +71,20 @@ module Curly =
             if http_code < 400
             then
               (* no http-error *)
+              let cookies = conn#get_cookielist in
               begin
                 if Cli.opt.Cli.verbose
                 then
                   begin
                     print_endline "=====> COOOKIES:";
-                    List.iter (fun s -> print_string "--> "; print_endline s) (conn#get_cookielist);
+                    List.iter (fun s -> print_string "--> "; print_endline s) cookies;
                     print_endline "<===== COOKIES"
                   end;
                   conn#cleanup; (* CLEAN UP CONNECTION *)
 
                   (* give back result *)
                   (* ---------------- *)
-                  let result = Buffer.contents buffer in Some result
+                  let result = Buffer.contents buffer in Some (result, cookies)
               end
 
             (* http-error-case *)
@@ -108,7 +113,7 @@ module Curly =
 *)
    :
   sig
-    val get : string -> string option -> string option -> string option
+    val get : string -> string option -> string option -> (string * string list) option
   end
   )
 

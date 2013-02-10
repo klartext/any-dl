@@ -67,9 +67,10 @@ module Varmap =
   struct
     module Varmap = Map.Make( String )
 
-    let empty = Varmap.empty
-    let add   = Varmap.add
-    let iter  = Varmap.iter
+    let empty  = Varmap.empty
+    let add    = Varmap.add
+    let iter   = Varmap.iter
+    let exists = Varmap.mem
 
     let find varname varmap =
       try Varmap.find varname varmap with Not_found -> raise (Variable_not_found varname)
@@ -153,10 +154,20 @@ let evaluate_command_list cmdlst =
     | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
     | cmd::tl   -> begin
                      match cmd with
-                       | Get_url (url, referrer)  -> let document = Network.Curly.get url (Some referrer) None in
+                       | Get_url (url, referrer)  ->
+                                                     let send_cookie = if Varmap.exists "COOKIES.SEND" varmap
+                                                                       then
+                                                                         Some ( to_string(Varmap.find "COOKIES.SEND" varmap) varmap )
+                                                                       else
+                                                                         None
+                                                     in
+                                                     let document_and_cookies = Network.Curly.get url (Some referrer) send_cookie in
                                                      begin
-                                                       match document with
-                                                         | Some doc -> command tl (Document (doc, url)) varmap (* $URL *)
+                                                       match document_and_cookies with
+                                                         | Some (doc, cookies) -> let cook = String_array (Array.of_list cookies) in
+                                                                                  let new_varmap = (Varmap.add "COOKIES.RECEIVED" cook varmap) in
+                                                                                  command tl (Document (doc, url)) new_varmap (* $URL *)
+
                                                          | None     -> raise No_document_found       
                                                      end
 
@@ -381,7 +392,7 @@ let evaluate_command_list cmdlst =
 
 
                        | Print_args prt_args         ->
-                                                        command [ Paste( prt_args ); Print ] Empty varmap; (* use the Pase-command and the print-command *)
+                                                        command [ Paste( prt_args ); Print ] Empty varmap; (* use the Paste-command and the print-command *)
                                                         command tl tmpvar varmap (* just next command without changed tmpvar *)
 
                        | Print                      ->
@@ -445,7 +456,8 @@ let evaluate_command_list cmdlst =
                                                        command tl varcontents varmap
 
 
-                       | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname; command [Print] value varmap ) varmap;
+                       | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;
+                                                                                          command [Print; Print_string "\n"] value varmap ) varmap;
                                                        command tl tmpvar varmap
 
                        | Show_type                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
