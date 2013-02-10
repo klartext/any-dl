@@ -40,6 +40,18 @@ start
 end
 
 
+# ------------------------------------------
+# only prints data part of the html, no tags
+# acts like html-2-txt, but does not change
+# tags by their text-aequivalent. So, html2txt
+# would be overestimating it's functionality.
+# ------------------------------------------
+parsername "dumptext": ( "" )
+start
+  dump_data;
+end
+
+
 # this one is unmature stuff, experimental field.
 parsername "videonames": ( "" )
 start
