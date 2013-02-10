@@ -40,6 +40,8 @@ BETTER STRUCTURE, CLEANER CODE:
 
  - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
  - maybe remove print_string(), ebacsue print() does the same now.
+ - dump is rather a deparse; dump_data is dump-like or deparse-like too;
+   possibly better names should be used here
 
 
 

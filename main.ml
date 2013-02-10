@@ -497,6 +497,14 @@ let evaluate_command_list cmdlst =
                                                        end;
                                                        command tl tmpvar varmap
 
+                       | Dump_data                  ->
+                                                       begin
+                                                       match tmpvar with
+                                                         | Document(doc, url)-> Parsers.Htmlparse.dump_html_data doc
+                                                         | _ -> raise Wrong_argument_type
+                                                       end;
+                                                       command tl tmpvar varmap
+
                        | System                     -> begin
                                                          match tmpvar with
                                                            | String syscmd -> if Cli.opt.Cli.safe = false

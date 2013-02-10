@@ -532,6 +532,12 @@ List of commands/keywords and a short-escription of them:
     Means: the deeper something is wrapped in tags, the higher the indentation.
 
 
+  dump_data
+    dump a the data-part of a html-page: deparses the tags, prints data part,
+    and NOT the tags.
+    Works like un-tag html, or like a html-2-text.
+
+
   end
     end-keyword for the parser-definition
 

@@ -56,6 +56,7 @@
                   ("exitparse",      EXITPARSE  );
 
                   ("dump",           DUMP  );
+                  ("dump_data",      DUMP_DATA  );
 
                   ("dummy",  DUMMY  );
                 ]

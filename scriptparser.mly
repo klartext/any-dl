@@ -46,6 +46,7 @@
 %token BASENAME
 %token EXITPARSE
 %token DUMP
+%token DUMP_DATA
 %token DUMMY
 
 %token COLSELECT
@@ -151,6 +152,7 @@ statement: match_stmt          SEMI   { $1 }
     |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
     |      SHOW_TYPE           SEMI   { Show_type }
     |      DUMP                SEMI   { Dump }
+    |      DUMP_DATA           SEMI   { Dump_data }
     |      DUMMY               SEMI   { Dummy }
     ;
 

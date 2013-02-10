@@ -194,6 +194,26 @@ module Htmlparse =
 
 
 
+    let dump_html_data str =
+      let doclist = (Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)) in
+
+      let rec traverse_aux doclist depth =
+        
+        match doclist with
+        |  hd::tl ->
+            begin
+              match hd with
+                | Element (tag, arg, dl) -> traverse_aux dl (depth+1) (* ignore tags, just traverse deeper *)
+                | Data    data          -> print_endline data         (* print the data-part solely *)
+            end;
+            traverse_aux tl depth
+        | [] -> ()
+      in
+        traverse_aux doclist 0
+
+
+
+
     (* Analysing HTML *)
 
     let parse_html ?(datamatch="") ?(tagmatch="") ?(subtag=None) ?(matcher=fun (matcher:string) -> true) str =
