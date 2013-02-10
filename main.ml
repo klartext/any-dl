@@ -69,6 +69,7 @@ module Varmap =
 
     let empty  = Varmap.empty
     let add    = Varmap.add
+    let remove = Varmap.remove
     let iter   = Varmap.iter
     let exists = Varmap.mem
 
@@ -454,6 +455,8 @@ let evaluate_command_list cmdlst =
                        | Recall varname             -> if Cli.opt.Cli.verbose then prerr_endline ("Recall: " ^ varname); flush stderr;
                                                        let varcontents = Varmap.find varname varmap in
                                                        command tl varcontents varmap
+
+                       | Delete varname             -> command tl tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
 
 
                        | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;

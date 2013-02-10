@@ -37,6 +37,7 @@
 %token MAKE_URL
 %token STORE
 %token RECALL
+%token DELETE
 %token SHOW_VARIABLES
 %token PASTE
 %token SYSTEM
@@ -141,6 +142,7 @@ statement: match_stmt          SEMI   { $1 }
     |      make_url_stmt       SEMI   { $1 }
     |      store_stmt          SEMI   { $1 }
     |      recall_stmt         SEMI   { $1 }
+    |      delete_stmt         SEMI   { $1 }
     |      paste_stmt          SEMI   { $1 }
     |      show_variables_stmt SEMI   { $1 }
     |      subst_stmt          SEMI   { $1 }
@@ -177,6 +179,9 @@ store_stmt: STORE LPAREN STRING  RPAREN { Store $3 }
     ;
 
 recall_stmt: RECALL LPAREN STRING   RPAREN    { Recall $3 }
+    ;
+
+delete_stmt: DELETE LPAREN STRING   RPAREN    { Delete $3 }
     ;
 
 paste_stmt: PASTE LPAREN argument_list RPAREN    { Paste $3 }

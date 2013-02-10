@@ -41,6 +41,7 @@ type commands_t =
   | Paste             of results_t list       (* paste together strings *)
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
   | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)
+  | Delete            of string               (* Delete a named variable (remove it from the varmap *)
   | Show_variables                            (* print all named variables *)
   (*
   | Select            of selector_t           (* acts as a filter *) (* old ideas from other tool *)

@@ -520,6 +520,14 @@ List of commands/keywords and a short-escription of them:
     selects columns from a match-result
 
 
+  delete
+    deletes / removes a variable.
+    It is not accessible anymore then.
+    This means: accessing it can result in an error,
+    because it's like accessing a variable that was not
+    defined at all.
+
+
   dummy
     just a dummy command (something like a NOP of processors)
 
