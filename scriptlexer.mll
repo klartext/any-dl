@@ -63,7 +63,7 @@
 
 }
 let alpha = ['a'-'z' 'A'-'Z']+
-let alpha_ = ['a'-'z' 'A'-'Z' '_']+
+let alpha_ = ['a'-'z' 'A'-'Z' '_' '.']+
 let blanks = [' ' '\t' '\n' '\r']+
 let digit  = [ '0' - '9' ]
 let identifier = ['a'-'z' 'A'-'Z' ] (alpha_ | digit)*
