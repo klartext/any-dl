@@ -641,6 +641,30 @@ end
 
 
 
+# -----------------------------------------------------------
+# TED
+# -----------------------------------------------------------
+# Example: http://www.ted.com/talks/cesar_kuriyama_one_second_every_day.html
+# -----------------------------------------------------------
+# simple parser, just picks the easiesed way,
+# with no quality selection so far.
+# Just to have something handy right now.
+# ===========================================================
+parsername "ted": ( "http://www.ted.com/talks/" )
+start
+  linkextract;
+  grep("mp4");
+  makeurl;
+
+  store("url");
+  paste("wget -c -np ", $url);
+  system;
+end
+
+
+
+
+
 
 
 #######################################################
