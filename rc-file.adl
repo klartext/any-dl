@@ -508,7 +508,7 @@ end
 # ---------------------------------
 # Example: http://www.ardmediathek.de/rbb-fernsehen/klartext/personal-als-sicherheitsrisiko?documentId=13243418
 # =================================
-parsername "ard_rbb": ( "http://www.ardmediathek.de/rbb-fernsehen/" )
+parsername "ard_rbb_swr": ( "http://www.ardmediathek.de/rbb-fernsehen/", "http://www.ardmediathek.de/swr-fernsehen/" )
 start
   match("(rtmp://.*?)\".*?\"(mp4:.*?mp4)");
   show_match;
