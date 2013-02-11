@@ -10,6 +10,7 @@ source=(http://www.first.in-berlin.de/software/tools/any-dl/any-dl-0.9.4.b.tgz)
 md5sums=('770294eee890d2d801c204fb9aad1668')
 url="http://www.first.in-berlin.de/software/tools/any-dl/"
 depends=('ocaml' 'ocaml-pcre' 'ocaml-xml-light' 'ocamlnet' 'ocaml-curl')
+makedepends=('ocaml-findlib')
 options=(!makeflags)
 
 build() {
@@ -19,5 +20,6 @@ make
 
 
 package() {
-install -Dm 644 any-dl ${pkgdir}/usr/bin/   # install to Arch-Linux path
+cd ${srcdir}/${pkgname}-${pkgver}
+install -Dm 644 any-dl ${pkgdir}/usr/bin/any-dl   # install to Arch-Linux path
 }
