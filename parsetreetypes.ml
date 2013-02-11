@@ -91,6 +91,7 @@ let command_to_string cmd = match cmd with
   | Make_url        _ -> "Make_url"
   | Make_url_tmpvar _ -> "Make_url"
   | Match           _ -> "Match"
+  | Grep            _ -> "Grep"
   | Select          _ -> "Select"
   | MSelect         _ -> "MSelect"
   | Link_extract      -> "Link_extract"
@@ -98,8 +99,10 @@ let command_to_string cmd = match cmd with
   | Paste           _ -> "Paste"
   | Store           _ -> "Store"
   | Recall          _ -> "Recall"
+  | Delete          _ -> "Delete"
   | Show_variables  _ -> "Show_variables"
   | Print             -> "Print"
+  | Print_args      _ -> "Print_args"
   | Show_match        -> "Show_match"
   | Print_string    _ -> "Print_string"
   | Save            _ -> "Save"
@@ -116,8 +119,8 @@ let command_to_string cmd = match cmd with
   | Quote           _ -> "Quote"
   | Exit_parse      _ -> "Exit_parse"
   | Dump              -> "Dump"
+  | Dump_data         -> "Dump_data"
   | Dummy             -> "Dummy"
-  
 
 
 
