@@ -14,19 +14,20 @@
 # also can be used together with "-v" option to get all
 # sorts of information without starting any download actions
 # and without injvoking any other ecreen-filling parsers like "dump".
-parsername "empty": ( "" )
+parsername "empty": ()
 start
+  dummy;
 end
 
 
-parsername "linkextract": ( "" )
+parsername "linkextract": ( )
 start
   linkextract;
   print;
 end
 
 
-parsername "linkextract_xml": ( "" )
+parsername "linkextract_xml": ( )
 start
   linkextract_xml;
   print;
@@ -34,7 +35,7 @@ end
 
 
 # html-deparse-dump
-parsername "dump": ( "" )
+parsername "dump": ( )
 start
   dump;
 end
@@ -46,14 +47,14 @@ end
 # tags by their text-aequivalent. So, html2txt
 # would be overestimating it's functionality.
 # ------------------------------------------
-parsername "dumptext": ( "" )
+parsername "dumptext": ( )
 start
   dump_data;
 end
 
 
 # this one is unmature stuff, experimental field.
-parsername "videonames": ( "" )
+parsername "videonames": ( )
 start
   match( "(*.mp4)|(*.flv)|(*.swf)|(*.mpg)|(*.m4v)|(mp4:.*)|(rtmp.*)" );
   print;
@@ -68,7 +69,7 @@ end
 # Used testpage for setting/reflecting a cookie:
 #   http://winware.org/de/cookietest.php?cookie=set
 # ----------------------------------------------------
-parsername "cookieecho": ( "" )
+parsername "cookieecho": ( )
 start
   print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
 

@@ -119,7 +119,7 @@ parsername: PARSERNAME STRING COLON { $2 }
     ;
 
 urlmatches: LPAREN string_list RPAREN { $2 }
-    |       LPAREN RPAREN             { [] }
+    |                            { [] }
     ;
 
 parser_script: statement_list { $1 }
@@ -128,14 +128,13 @@ parser_script: statement_list { $1 }
 
 
 
-statement_list:                { []      }
-    | statement                { [$1]    }
-    | statement statement_list { $1 :: $2 }
+statement_list: statement         { [$1]    }
+    | statement statement_list    { $1 :: $2 }
     ;
 
 statement: match_stmt          SEMI   { $1 }
     |      print_stmt_simple   SEMI   { Print  }
-    |      showmatch_stmt     SEMI   { Show_match }
+    |      showmatch_stmt      SEMI   { Show_match }
     |      print_stmt          SEMI   { $1 }
     |      EXITPARSE           SEMI   { Exit_parse }
     |      selection           SEMI   { $1 }
@@ -211,47 +210,11 @@ selection: COLSELECT LPAREN   INT_NUM   RPAREN { ColSelect $3 }
     ;
 
 
-/*
-
-statement: statement_base SEMI { $1 } /* block ist eigentlich eine falsche bezeichnung MISNAMED */
-    /*
-    | error SEMI { prerr_string "Parse-Error! please try again! line: " }
-    */
-    ;
-
-
-param_def: IDENTIFIER COLON IDENTIFIER{ ( $1, $3 ) }
-    ;
-
-    /*
-condition: IF expression THEN statement_base ELSE statement_base ENDIF { Condition($2, $4, Some $6) }
-    | IF expression THEN statement_base ENDIF { Condition_s( $2, $4 ) }
-    ;
-
-
-assignment:  IDENTIFIER EQUALS expression { Assignment( $1, $3) }
-    ;
-*/
-
-
-
-
 
 /* ------------------------------------------- */
 /* hier unten sind die Typen noch native OCaml */
 /* also keine eigenen Sum-Types!               */
 /* ------------------------------------------- */
-
-identifier_list:            { [] (* empty list allowed *) }
-    | IDENTIFIER COMMA identifier_list { $1 :: $3 }
-    |            IDENTIFIER { [$1] }
-    ;
-
-/*
-identifier_list: IDENTIFIER { [$1] }
-    | IDENTIFIER COMMA identifier_list { $1 :: $3 }
-    ;
-*/
 
 string_list:                { [] (* eigentlich quatsch; macht leere Liste Sinn fuer development phase of a parser? *)     }
     | STRING                { [$1]    }
