@@ -34,6 +34,7 @@ type commands_t =
   | Make_url      of (results_t * results_t)  (* create URL-Type-Var from argument-strings *)
   | Make_url_tmpvar                           (* create URL-Type-Var from tmpvar (1-val-stack) *)
   | Match             of string               (* regexp-pattern-string *)
+  | Grep              of string               (* grep on the pattern-string *)
   | Select            of int                  (* index-list for item-selection *)
   | MSelect           of int list             (* index-list for MULTIPLE item-selection *)
   | Link_extract                              (* extracts html-href's from webpage *)

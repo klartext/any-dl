@@ -39,6 +39,7 @@
 
                   ("paste",          PASTE  );
 
+                  ("grep",           GREP  );
                   ("rowselect",      ROWSELECT  );
                   ("select",         SELECT     );
                   ("mselect",        MSELECT     );

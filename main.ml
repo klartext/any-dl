@@ -38,6 +38,14 @@ exception Variable_not_found of string   (* a variable-name lookup in the Varnam
 exception Devel (* exception while developing / testing *)
 
 
+module Array2 =
+  struct
+    include Array
+
+    let filter filt arr = Array.of_list ( List.filter filt (Array.to_list arr ))
+  end
+
+
 (* ------------------------------------------------ *)
 (* ------------------------------------------------ *)
 (* ------------------------------------------------ *)
@@ -102,11 +110,14 @@ let rec  to_string  result_value varmap =
       | Match_result  mres         -> raise Wrong_argument_type (* match-res => arr of arr -> recursion on String_array ! *)
       | Url           (href, ref)  -> href
       | Url_list      url_list     -> List.fold_right ( fun a sofar -> "\"" ^ (fst a) ^ "\" " ^ sofar ) url_list ""
+      | Url_array     url_arr      -> let elem = url_arr.(0) in to_string (Url (fst(elem), snd(elem))) varmap (* first Url used *)
+                                      (*
+                                      Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
+                                      *)
                                       (* concat all urls, but all href's are quoted inside '"' *)
 
       (*
       | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
-      | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
       | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
       | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
       *)
@@ -218,6 +229,21 @@ let evaluate_command_list cmdlst =
                                                        in
                                                        command tl (Match_result matched) varmap
 
+
+                       | Grep pattern               -> 
+                                                       (*
+                                                         if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
+                                                       *)
+                                                       let grepped = 
+                                                         begin
+                                                           match tmpvar with
+                                                             | String_array str_arr -> String_array( Array2.filter ( fun elem -> Pcre.pmatch ~pat:pattern elem ) str_arr)
+                                                             | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> Pcre.pmatch ~pat:pattern url ||
+                                                                                                                        Pcre.pmatch ~pat:pattern ref ) url_arr )
+                                                             | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                         end
+                                                       in
+                                                         command tl grepped varmap
 
                        | Select index               -> 
                                                        begin
