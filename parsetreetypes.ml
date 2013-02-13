@@ -39,6 +39,7 @@ type commands_t =
   | MSelect           of int list             (* index-list for MULTIPLE item-selection *)
   | Link_extract                              (* extracts html-href's from webpage *)
   | Link_extract_xml                          (* extracts html-href's from (xml-formatted) webpage (e.g. asx-files) *)
+  | Title_extract                             (* extracts the title-tag's text part *)
   | Paste             of results_t list       (* paste together strings *)
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
   | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)

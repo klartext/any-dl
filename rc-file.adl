@@ -199,8 +199,7 @@ start
   # grab the title
   # --------------
   recall("BASEDOC");
-  match("<title>(.*?)</title>");
-  rowselect(0); select(1);
+  titleextract;
   subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
 
@@ -273,8 +272,7 @@ start
   # create filename
   # ---------------
   recall("BASEDOC");
-  match("<title>(.*?)</title>");
-  rowselect(0); select(1);
+  titleextract;
   subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
 
@@ -306,8 +304,7 @@ start
   store("origname");
 
   recall("BASEDOC");
-  match("<title>(.*?)</title>");
-  rowselect(0); select(1);
+  titleextract;
   subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
   print("Title: ", $title);
@@ -670,6 +667,43 @@ start
 
   store("url");
   paste("wget -c -np ", $url);
+  system;
+end
+
+
+
+
+# -----------------------------------------------------------
+# ARD DW-TV
+# -----------------------------------------------------------
+# Example: http://www.ardmediathek.de/dw-tv/made-in-germany-das-wirtschaftsmagazin?documentId=13387934
+# -----------------------------------------------------------
+# 
+# ===========================================================
+parsername "ard_dw-tv": ( "http://www.ardmediathek.de/dw-tv/", "http://www.first.in-berlin.de/" )
+start
+
+  match( "http://tv-download.dw.de.*mp4" );
+  print;
+  show_match;
+  rowselect(0);
+  makeurl;
+  print;
+  store("url");
+
+  basename;
+  store("filename");
+
+  # create title
+  # -------------
+  recall("BASEDOC");
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+  print("URL: ", $url, "\nTitle: ", $title, "\nFilename: ", $filename);
+
+  paste("wget -c -np ", $url, " -O ", $title, "_", $filename );
   system;
 end
 

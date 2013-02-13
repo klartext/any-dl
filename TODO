@@ -50,8 +50,8 @@ FEATUREs:
 
  - new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
 
-
- - Cookie-Support seems to be helpful (e.g. for vimeo?)
+ - automatic working parser detection:
+     try available parsers on an url, to check if one will work fotr that url
 
  - maybe title as a special keyword, which just grabs the title-tag, possibly writing it to
    $TITLE, (instead of match-necessity)

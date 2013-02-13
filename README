@@ -694,6 +694,11 @@ List of commands/keywords and a short-escription of them:
     the one-val-stack.
 
 
+  titleextract
+    extracts the contents from the <title>-tag of a webpage
+    and puts the resutlt to the one-val-stack.
+
+
   to_string
     converts the value of the one-val-stack to a string-representation.
 

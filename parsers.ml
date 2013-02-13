@@ -173,6 +173,8 @@ module Htmlparse =
             begin
               match hd with
                 | Element (tag, arg, dl) ->
+                                           traverse_aux dl (depth+1);
+                                           print_times '_' depth ~scale:2;    Printf.printf "</%s>\n" tag;
                                                print_times '_' depth ~scale:2;
                                                Printf.printf "<%s> " tag;
                                                List.iter ( fun a ->
@@ -180,9 +182,7 @@ module Htmlparse =
                                                            print_times '*' depth;
                                                            *)
                                                            Printf.printf "%s=\"%s\"\t" (fst a) (snd a)
-                                                         ) arg;
-                                           traverse_aux dl (depth+1);
-                                           print_times '_' depth ~scale:2;    Printf.printf "</%s>\n" tag
+                                                         ) arg
 
                 | Data    data          -> print_newline();print_times '_' depth ~scale:2; Printf.printf "data: %s\n" data 
             end;
@@ -211,49 +211,54 @@ module Htmlparse =
       in
         traverse_aux doclist 0
 
+  
 
-
+let debug = false
 
     (* Analysing HTML *)
 
-    let parse_html ?(datamatch="") ?(tagmatch="") ?(subtag=None) ?(matcher=fun (matcher:string) -> true) str =
+    let parse_html ?(pickdata=false) ?(tagmatch="") ?(subtag=None) ?(matcher=fun (matcher:string) -> true) str =
+if debug then
+Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
+
       let doclist = (Nethtml.parse(new Netchannels.input_string str)) in
-      let collection = ref [] in (* string list that will be collected *)
-
-      let traverse doclist tagmatch subtag2 datamatch =
-
-        let rec traverse_aux doclist depth =
-
-          
+        let rec traverse_aux doclist depth collected pick_this_data =
           match doclist with
-          |  hd::tl ->
-              begin
-                match hd with
-                  | Element (tag, arg, dl) ->
-                                             traverse_aux dl (depth+1);
-                                                 if tag = tagmatch
-                                                 then
-                                                     List.iter ( fun a ->
-                                                                 let st_arg = fst a in
+            | []     -> collected (* collected data *)
+            | hd::tl ->
+                        (* first we work at the head *)
+                        (* ------------------------- *)
+                        let sample =
+                          begin
+                            match hd with
+                              | Element (tag, args, dl) ->
+                                                           if  debug then
+                                                           begin
+                                                           print_times '-' depth ~scale:4;
+                                                           Printf.printf "TAG: <%s>  \n" tag
+                                                           end;
 
-                                                                 match subtag with
-                                                                   | None    ->  collection := (snd a) :: !collection
-                                                                   | Some st -> if st_arg = st then collection := (snd a) :: !collection
-                                                                 
-                                                               ) arg
-                  | Data    data          -> if data = datamatch then ignore (data :: !collection)   (*pd();Printf.printf "traverse_aux: Data found: \"%s\"\n" data*)
-              end;
-              traverse_aux tl depth
-          | [] -> (*print_endline "=========================================";
-                  print_stringlist_endline (Strlist !collection);*)
-                  !collection
+                                                           let results_of_subdocs =
+                                                             match tag = tagmatch with
+                                                               | true  -> traverse_aux dl (depth+1) [] pickdata (* only next recursion step might be true *)
+                                                               | false -> traverse_aux dl (depth+1) [] false
+                                                           in
+                                                           results_of_subdocs
+
+                              | Data    data          ->
+                                                        if debug then
+                                                        Printf.printf "**** DATA: %s\n" data;
+                                                        if pick_this_data
+                                                        then [data]
+                                                        else []
+                          end
+                        in
+                        (* then we work at the tail *)
+                        (* ------------------------ *)
+                        if debug then List.iter (fun str -> Printf.printf "sample ===> %s\n" str) sample;
+                        traverse_aux tl (depth+0) (List.append sample  collected) false
         in
-          traverse_aux doclist 0
-
-      in
-
-      let parsed = traverse  doclist tagmatch subtag datamatch in (* calling the traverser *)
-      List.filter matcher parsed                                  (* filter the result     *)
+          traverse_aux doclist 0 [] pickdata
 
   end (* Htmlparse-Ende *)
 (* ========================================================================================================================= *)
@@ -261,8 +266,11 @@ module Htmlparse =
 
 open Htmlparse
 
-let linkextract  = parse_html ~tagmatch:"a" ~subtag:(Some "href")
-let imageextract = parse_html ~tagmatch:"img" ~subtag:(Some "src")
+let linkextract    doc = parse_html ~tagmatch:"a"   ~subtag:(Some "href") doc
+let imageextract   doc = parse_html ~tagmatch:"img" ~subtag:(Some "src")  doc
+let titleextract   doc = parse_html ~tagmatch:"title" ~pickdata:true      doc
+
+let tagextract tag doc = parse_html ~pickdata:true ~tagmatch:tag doc
 
 
 let xml_get_href  = Xmlparse.get_href_from_asx

@@ -407,7 +407,28 @@ let evaluate_command_list cmdlst =
                                                                                   (* the url of the doecument will become the referrer of the extracted url! *)
                                                                                   let links  = Url_array (Array.map ( fun lnk -> (lnk, url) ) urls) in
                                                                                   command tl links varmap
-                                                           | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
+                                                           | _ -> print_warning "Link_extract_xml found non-usable type"; raise Wrong_tmpvar_type
+                                                       end
+
+                         (*
+                         | Tag_extract  tagname ...   ->
+                                                         Printf.eprintf "Tag_extract  tagname: %s\n" tagname;
+                                                         begin
+                                                           match tmpvar with
+                                                             | Document (doc, url) ->
+                                                                       let result = Array.of_list (Parsers.tagextract tagname doc) in
+                                                                       command tl (String_array result) varmap
+                                                             | _ -> print_warning "Tag_extract found non-usable type"; raise Wrong_tmpvar_type
+                                                         end
+                         *)
+
+                         | Title_extract            ->
+                                                       begin
+                                                         match tmpvar with
+                                                           | Document (doc, url) ->
+                                                                     let result = Array.of_list (Parsers.titleextract doc) in
+                                                                     command (Subst ("\n", "") :: tl) (String_array result) varmap
+                                                           | _ -> print_warning "Tag_extract found non-usable type"; raise Wrong_tmpvar_type
                                                        end
 
 
@@ -496,6 +517,7 @@ let evaluate_command_list cmdlst =
                        | Basename                   -> begin
                                                          match tmpvar with
                                                            | String filename -> command tl (String(Filename.basename filename)) varmap
+                                                           | Url (href, ref) -> command tl (String(Filename.basename href)) varmap
                                                            | _ -> raise Wrong_argument_type
                                                        end
 

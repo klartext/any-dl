@@ -27,6 +27,7 @@
 
                   ("linkextract",      LINKEXTRACT  );
                   ("linkextract_xml",  LINKEXTRACT_XML  );
+                  ("titleextract",     TITLEEXTRACT  );
 
 
                   ("get",            GET  );

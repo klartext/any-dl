@@ -33,6 +33,8 @@
 %token SHOW_TYPE
 %token LINKEXTRACT
 %token LINKEXTRACT_XML
+%token TAGEXTRACT
+%token TITLEEXTRACT
 %token GET
 %token MAKE_URL
 %token STORE
@@ -152,6 +154,7 @@ statement: match_stmt          SEMI   { $1 }
     |      SYSTEM              SEMI   { System }
     |      LINKEXTRACT         SEMI   { Link_extract }
     |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
+    |      titleextract_stmt   SEMI   { Title_extract }
     |      SHOW_TYPE           SEMI   { Show_type }
     |      DUMP                SEMI   { Dump }
     |      DUMP_DATA           SEMI   { Dump_data }
@@ -209,6 +212,9 @@ selection: COLSELECT LPAREN   INT_NUM   RPAREN { ColSelect $3 }
     |      GREP      LPAREN   STRING RPAREN                      { Grep $3 }
     ;
 
+
+titleextract_stmt: TITLEEXTRACT   { Title_extract }
+    ;
 
 
 /* ------------------------------------------- */
