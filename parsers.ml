@@ -213,6 +213,15 @@ module Htmlparse =
 
   
 
+
+
+    let collect_subtags (args: (string*string)list) (subtag_select:string option) =
+      match subtag_select with
+        | None        -> List.map snd args
+        | Some subsel -> let selected_pairs = List.filter ( fun pair -> fst pair = subsel ) args in
+                         List.map snd selected_pairs
+
+
 let debug = false
 
     (* Analysing HTML *)
@@ -243,7 +252,10 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
                                                                | true  -> traverse_aux dl (depth+1) [] pickdata (* only next recursion step might be true *)
                                                                | false -> traverse_aux dl (depth+1) [] false
                                                            in
-                                                           results_of_subdocs
+
+                                                           let result_of_subtags = collect_subtags args subtag in
+
+                                                           List.append results_of_subdocs result_of_subtags
 
                               | Data    data          ->
                                                         if debug then
