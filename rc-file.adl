@@ -298,12 +298,23 @@ parsername "ndr_mediathek_get": ( "http://www.ndr.de", "http://www.ardmediathek.
 start
   match( "http://.*?mp4" );
   show_match;
-  rowselect(0);
+  iselectmatch(0, ".hi.mp4" );
+  select(0);
   store("url");
+
+  basename;
+  store("origname");
+
+  recall("BASEDOC");
+  match("<title>(.*?)</title>");
+  rowselect(0); select(1);
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+  print("Title: ", $title);
 
   # download the video
   # ------------------
-  paste("wget -c ",  $url );
+  paste("wget -c ",  $url, " -O ", $title, $origname );
   system;
 end
 
@@ -829,7 +840,6 @@ end
 # ============================================================================
 # 
 # www.ardmediathek.de
-# www.zdf.de/ZDFmediathek
 # www.rtl-now.de
 # www.rtl2.de
 # www.prosieben.de/video
