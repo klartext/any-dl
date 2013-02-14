@@ -173,8 +173,6 @@ module Htmlparse =
             begin
               match hd with
                 | Element (tag, arg, dl) ->
-                                           traverse_aux dl (depth+1);
-                                           print_times '_' depth ~scale:2;    Printf.printf "</%s>\n" tag;
                                                print_times '_' depth ~scale:2;
                                                Printf.printf "<%s> " tag;
                                                List.iter ( fun a ->
@@ -182,7 +180,10 @@ module Htmlparse =
                                                            print_times '*' depth;
                                                            *)
                                                            Printf.printf "%s=\"%s\"\t" (fst a) (snd a)
-                                                         ) arg
+                                                         ) arg;
+                                           traverse_aux dl (depth+1);
+                                           print_times '_' depth ~scale:2;
+                                           Printf.printf "</%s>\n" tag
 
                 | Data    data          -> print_newline();print_times '_' depth ~scale:2; Printf.printf "data: %s\n" data 
             end;
