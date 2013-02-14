@@ -233,7 +233,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
       let doclist = (Nethtml.parse(new Netchannels.input_string str)) in
 
-        let rec traverse_aux doclist depth collected pick_this_data cur_tag =
+        let rec traverse_aux doclist depth collected cur_tag =
           match doclist with
             | []     -> collected (* collected data *)
             | hd::tl ->
@@ -251,18 +251,17 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
                                                            let results_of_subdocs =
                                                              match tag = tagmatch with
-                                                               | true  -> traverse_aux dl (depth+1) [] false tag(* only next recursion step might be true *)
-                                                               | false -> traverse_aux dl (depth+1) [] false tag
+                                                               | true  -> traverse_aux dl (depth+1) [] tag(* only next recursion step might be true *)
+                                                               | false -> traverse_aux dl (depth+1) [] tag
                                                            in
 
                                                            let result_of_subtags = collect_subtags args subtag in
                                                            List.append results_of_subdocs result_of_subtags
 
                               | Data    data          ->
-                                                        if debug then Printf.printf "pick_this_data = %s\n" (if pick_this_data then "true" else "false");
                                                         if debug then Printf.printf "**** DATA: %s\n" data;
                                                         if debug then Printf.printf "cur_tag: %s\n"   cur_tag;
-                                                        if pick_this_data || cur_tag = tagmatch
+                                                        if pickdata || cur_tag = tagmatch
                                                         then [data]
                                                         else []
                           end
@@ -270,9 +269,9 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
                         (* then we work at the tail *)
                         (* ------------------------ *)
                         if debug then List.iter (fun str -> Printf.printf "sample ===> %s\n" str) sample;
-                        traverse_aux tl (depth+0) (List.append sample  collected) false cur_tag
+                        traverse_aux tl (depth+0) (List.append sample  collected) cur_tag
         in
-          traverse_aux doclist 0 [] pickdata ""
+          traverse_aux doclist 0 [] ""
 
   end (* Htmlparse-Ende *)
 (* ========================================================================================================================= *)

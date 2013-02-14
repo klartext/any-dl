@@ -101,6 +101,9 @@ FEATUREs:
 
  - Logfile for sucessful and failed downloads
 
+ - Testsuite would help a lot (example where helpful: linkextract problem in  commit c7f3c1ec98d9c3e88d47c93637a50879c0711d05 )
+     - tesing sites as qell as testing parsers would be needed.
+
 
 QUESTIONS:
 ==========
