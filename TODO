@@ -50,29 +50,27 @@ FEATUREs:
 =========
 
  - new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
+ - new command: astore("NAME");  (autostore() -> store current value like matrix -> NAME.(x).(y) or something like that
+ - syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
+
+ - !!!! XML-deparse -> get values from XML via name :-)
+
+
+ - maybe add a more sophisticated program invocation (fork/exec or popen) ?
 
  - automatic working parser detection:
      try available parsers on an url, to check if one will work fotr that url
 
- - maybe title as a special keyword, which just grabs the title-tag, possibly writing it to
-   $TITLE, (instead of match-necessity)
-   Also maybe automatically saving the title to $TITLE for the BASEDOC...
-
- - iselectmatch()  needs a thir parameter.
+ - iselectmatch()  needs a third parameter.
    it is not that easy to make column-selection-index and row-default-index
    being the same. This restriction makes the construction of the match-regexp rather complicated.
+   ( Not sure if this is the case; maybe better documentation of iselectmatch() would help ebven myself to
+     understand it ;-) )
 
- - !!!! XML-deparse -> get values from XML via name :-)
 
- - automatic lookup for rc-file also in other places (/etc/skel or something like that?) ???
-
- - syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
-
- - new command: astore("NAME");  (autostore() -> store current value like matrix -> NAME.(x).(y) or something like that
+ - automatic lookup for rc-file also in other places (/etc/FooBar or something like that?) ???
 
  - matches and assignments -> each match-group one varname... like   (url,vidname,foobar) = match("^(.*)xyz(lala).*?(foobar)")
-
- - grepmatch: grep a match-result: give back a row (or many rows?), where the grep-pattern matches.
 
  - other syntax/grammar:
      - parser-Definitions only what to do, URLs not (or not necessarily?) at parser-definitoion.
@@ -80,25 +78,17 @@ FEATUREs:
        something like:     attach parser "ard_mediathek_get" to ("http://...", "http://"...")
                  or        attach_urls "ard_mediathek_get" ("http://...", "http://"...")
 
-
- - Programmaufruf-Definitionen
-
- - evtl. grep-Kommando, das zeilenweise arbeitet.... für die handhabung von href's
-
  - possibly switch to ulex instead of ocamllex:
      http://alain.frisch.fr/soft.html#ulex
      http://caml.inria.fr/pub/ml-archives/caml-list/2006/04/6d31ef03a5a1f9a182a9ed2422d266a4.en.html
+    ... but ocamlnet uses ulex internally? I could just use ocamlnet for reading/parsing files maybe?
 
- - Macros or not?
 
- - maybe add a more sophisticated program invocation (fork/exec or popen) ?
-
- - would it make sene to allow get also to read the streams?
+ - would it make sense to allow get also to read the streams?
    Or should there be some other special commadn for it?
-   like "get_stream" ?
-
- - missing rc-file exception should be caught, and the problem explained
-   (like "copy rc-file.adl to ..." or "rc-file missing in default place, please give alternartiv rc-file via -f switch")
+   like "get_stream"?
+   (but how to achieve this? by using fork/exec to the tools used via system() at the moment?
+   Or using stream-reading libraries for this? Are there any such libs and/or OCaml bindings?)
 
  - Logfile for sucessful and failed downloads
 
@@ -118,3 +108,4 @@ QUESTIONS:
    Or should there be something like
       print with referrer;
 
+ - Implementing macros or not?
