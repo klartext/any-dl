@@ -30,9 +30,10 @@ BUGs:
    more sense. (possibly using index might makse sense, but can at some other
    parts of the program become a bit more effort.
 
+   (...hhmmhhh the function tested separately, does work! )
 
- - if 404 error (no doeument found), this should be caught in the parser-loops,
-   so that the next parser could be used nevertheless
+
+ - using linkextract on "file:///"-urls does not work.
 
 
 BETTER STRUCTURE, CLEANER CODE:

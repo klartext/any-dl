@@ -89,7 +89,10 @@ module Curly =
 
             (* http-error-case *)
             else
-              ( Printf.eprintf "http-returncode: %d (URL: %s)\n" http_code url; None)
+              begin
+                if Cli.opt.Cli.verbose then Printf.eprintf "http-returncode: %d (URL: %s)\n" http_code url;
+                None
+              end
 
 
     let get url referer cookies =

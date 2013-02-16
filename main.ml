@@ -737,7 +737,8 @@ let main()  =
                             with (* handle exceptions from the parse-tree-evaluation *)
                               | No_Match                -> prerr_endline "Parser problem: Could not match!\t Parse will be exited\n"
                               | Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!\t Parse exited.\n"
-                              | Variable_not_found name -> Printf.fprintf stderr "Variable_not_found: \"%s\"\t This parse exited.\n" name
+                              | Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name
+                              | No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url
 
 
 
