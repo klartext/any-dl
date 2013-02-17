@@ -219,7 +219,7 @@ module Htmlparse =
     let show_tags str =
       let doclist = (Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)) in
 
-      let rec traverse_aux doclist depth cur_tag =
+      let rec traverse_aux doclist depth =
         
         match doclist with
         |  hd::tl ->
@@ -228,10 +228,36 @@ module Htmlparse =
                 | Element (tag, arg, dl) ->
                                             if List.length arg = 0 then print_endline tag; (* if arg is given, tag will be printed anyway *)
                                             List.iter ( fun pair -> Printf.printf "%s.%s = \"%s\"\n" tag (fst pair) (snd pair)) arg;
-                                            traverse_aux dl (depth+1) cur_tag (* ignore tags, just traverse deeper *)
+                                            traverse_aux dl (depth+1) 
                 | Data    data           -> () (* Printf.printf "<DATA> = %s\n" data*)
             end;
-            traverse_aux tl depth cur_tag
+            traverse_aux tl depth
+        | [] -> ()
+      in
+        traverse_aux doclist 0
+
+  
+
+
+    (* SHOW TAG-Hierarchy *)
+    (* ------------------ *)
+    let show_tag_hierarchy str =
+      let doclist = (Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)) in
+
+      let rec traverse_aux doclist depth tag_hierarchy =
+        
+        match doclist with
+        |  hd::tl ->
+            begin
+              match hd with
+                | Element (tag, arg, dl) ->
+                                            let newtag = tag_hierarchy ^ "." ^ tag in
+                                            if List.length arg = 0 then print_endline newtag; (* if arg is given, tag will be printed anyway *)
+                                            List.iter ( fun pair -> Printf.printf "%s.%s = \"%s\"\n" newtag (fst pair) (snd pair)) arg;
+                                            traverse_aux dl (depth+1) newtag (* ignore tags, just traverse deeper *)
+                | Data    data           -> () (* Printf.printf "<DATA> = %s\n" data*)
+            end;
+            traverse_aux tl depth tag_hierarchy
         | [] -> ()
       in
         traverse_aux doclist 0 ""
