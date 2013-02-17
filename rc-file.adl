@@ -41,6 +41,14 @@ start
 end
 
 
+# show tags
+# ---------
+parsername "show_tags": ( )
+start
+  show_tags;
+end
+
+
 # ------------------------------------------
 # only prints data part of the html, no tags
 # acts like html-2-txt, but does not change
@@ -716,6 +724,26 @@ end
 #######################################################
 ###      N   O   T       T   E   S   T   E   D      ###
 #######################################################
+# -----------------------------------------------------------
+# YOUTUBE
+# -----------------------------------------------------------
+# Example: http://www.youtube.com/watch?v=vr1yzc_kI1E     MjamMjam :-)
+# -----------------------------------------------------------
+# 
+# ===========================================================
+parsername "youtube": ( "http://www.youtube.com/watch" )
+start
+
+  #linkextract;
+  #print;
+  #print("----------------------------");
+
+  recall("BASEDOC");
+  show_tags;
+
+
+
+end
 
 # ---------------------------------
 # Vimeo

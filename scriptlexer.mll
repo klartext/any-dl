@@ -60,6 +60,7 @@
 
                   ("dump",           DUMP  );
                   ("dump_data",      DUMP_DATA  );
+                  ("show_tags",      SHOW_TAGS  );
 
                   ("dummy",  DUMMY  );
                 ]

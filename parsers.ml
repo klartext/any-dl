@@ -212,6 +212,30 @@ module Htmlparse =
       in
         traverse_aux doclist 0
 
+
+
+    (* SHOW TAGS *)
+    (* --------- *)
+    let show_tags str =
+      let doclist = (Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)) in
+
+      let rec traverse_aux doclist depth cur_tag =
+        
+        match doclist with
+        |  hd::tl ->
+            begin
+              match hd with
+                | Element (tag, arg, dl) ->
+                                            if List.length arg = 0 then print_endline tag; (* if arg is given, tag will be printed anyway *)
+                                            List.iter ( fun pair -> Printf.printf "%s.%s = \"%s\"\n" tag (fst pair) (snd pair)) arg;
+                                            traverse_aux dl (depth+1) cur_tag (* ignore tags, just traverse deeper *)
+                | Data    data           -> () (* Printf.printf "<DATA> = %s\n" data*)
+            end;
+            traverse_aux tl depth cur_tag
+        | [] -> ()
+      in
+        traverse_aux doclist 0 ""
+
   
 
 

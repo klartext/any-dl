@@ -50,6 +50,7 @@
 %token EXITPARSE
 %token DUMP
 %token DUMP_DATA
+%token SHOW_TAGS
 %token DUMMY
 
 %token COLSELECT
@@ -158,6 +159,7 @@ statement: match_stmt          SEMI   { $1 }
     |      SHOW_TYPE           SEMI   { Show_type }
     |      DUMP                SEMI   { Dump }
     |      DUMP_DATA           SEMI   { Dump_data }
+    |      SHOW_TAGS           SEMI   { Show_tags }
     |      DUMMY               SEMI   { Dummy }
     ;
 

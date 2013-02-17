@@ -66,6 +66,7 @@ type commands_t =
   | Quote                                     (* wraps '"' around the string in tmpvar *)
   | Exit_parse
   | Dump                                      (* Dump html *)
+  | Show_tags                                 (* Show Tags *)
   | Dump_data                                 (* Dump only data-part if html, not the tags *)
   | Dummy
 
