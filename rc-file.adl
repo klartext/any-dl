@@ -647,7 +647,13 @@ start
   select(1);
   store("rtmp_hostname");
 
-  paste(" rtmpdump --resume -r rtmp://", $rtmp_hostname, "/", $app, "/", $mp4_simple, " -o ", $outname );
+  # get title and prepare it for prepending to "outname"
+  # ----------------------------------------------------
+  recall("BASEDOC"); titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+  paste(" rtmpdump --resume -r rtmp://", $rtmp_hostname, "/", $app, "/", $mp4_simple, " -o ", $title, "_", $outname );
 
   print("_________________\n");
   print;
