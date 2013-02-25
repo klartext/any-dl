@@ -44,6 +44,9 @@ BETTER STRUCTURE, CLEANER CODE:
  - dump is rather a deparse; dump_data is dump-like or deparse-like too;
    possibly better names should be used here
 
+ - in traversing HTML, possibly using a function, that gives back
+   contents of current document, and of the head of the subdocs.
+   Then (as recursion/fixpoint?) making the recursion complete??
 
 
 FEATUREs:
