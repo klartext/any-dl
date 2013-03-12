@@ -655,15 +655,6 @@ let parsername_lookup_by_url url lookup_lst =
 let main()  =
     Cli.parse(); (* parse the command line *)
 
-    (* parse the parser-definitions *)
-    (* ---------------------------- *)
-    let parserlist = read_parser_definitions (Some Cli.opt.Cli.rc_filename) in
-
-    (* if cli-switches ask for it, print number of parser-definitions *)
-    if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose then
-      Printf.fprintf stderr "Number of found parser definitions: %d\n" (List.length parserlist);
-
-
     (* if cli-switches ask for it, print number of all commands of the parser-definitions *)
     (* They wll be printed in alphabetical order.                                         *)
     (* ---------------------------------------------------------------------------------- *)
@@ -674,6 +665,16 @@ let main()  =
         let kwlist = Hashtbl.fold (fun key value sofar -> key :: sofar ) Scriptlexer.keyword_table [] in
         List.iter ( fun kw -> Printf.printf "keyword   %s\n" kw) (List.sort compare kwlist)
       end;
+      flush stdout;
+
+
+    (* parse the parser-definitions *)
+    (* ---------------------------- *)
+    let parserlist = read_parser_definitions (Some Cli.opt.Cli.rc_filename) in
+
+    (* if cli-switches ask for it, print number of parser-definitions *)
+    if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose then
+      Printf.fprintf stderr "Number of found parser definitions: %d\n" (List.length parserlist);
 
 
     (* create and initialize hashes for parser-lookup by name / url *)
