@@ -203,7 +203,7 @@ start
   quote;
   store("URL");
 
-  print($url"; exit_parse;
+  #print($url"); exit_parse;
 
 
   # grab the title
