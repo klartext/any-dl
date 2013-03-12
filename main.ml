@@ -560,7 +560,14 @@ let evaluate_command_list cmdlst =
 
                        | System                     -> begin
                                                          match tmpvar with
-                                                           | String syscmd -> if Cli.opt.Cli.safe = false
+                                                           | String syscmd -> (* verbosity-message *)
+                                                                              (* ----------------- *)
+                                                                              if Cli.opt.Cli.verbose
+                                                                              then (prerr_endline ("System-cmd: " ^ syscmd); flush stderr);
+
+                                                                              (* do the work *)
+                                                                              (* ----------- *)
+                                                                              if Cli.opt.Cli.safe = false
                                                                               then
                                                                                 Sys.command syscmd
                                                                               else
