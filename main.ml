@@ -464,14 +464,16 @@ let evaluate_command_list cmdlst =
                                                        begin
                                                          match tmpvar with
                                                            | Match_result mres ->
-                                                                      print_endline "print_match: match 0 is the whole match, all others are the groups\n";
-                                                                      Array.iter ( fun x -> 
-                                                                                            for index = 0 to Array.length x -1
-                                                                                            do
-                                                                                              Printf.printf "%2d: \"%s\" \n" index x.(index)
-                                                                                            done;
-                                                                                            print_newline()
-                                                                                 ) mres
+                                                                      print_endline "show_match: match 0 is the whole match, all others are the groups\n";
+                                                                      Array.iteri ( fun idx x -> 
+                                                                                             Printf.printf "Row %2d:\n" idx;
+                                                                                             Printf.printf "-------\n";
+                                                                                             for index = 0 to Array.length x -1
+                                                                                             do
+                                                                                               Printf.printf "  Col %2d: \"%s\" \n" index x.(index)
+                                                                                             done;
+                                                                                             print_newline()
+                                                                                  ) mres
                                                            | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
                                                        end;
                                                        command tl tmpvar varmap
