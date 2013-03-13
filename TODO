@@ -1,6 +1,3 @@
-Attention: please make iselectmatch get 3 parameters as next task!!!
-
-
 BUGs:
 =====
 
@@ -53,13 +50,6 @@ BETTER STRUCTURE, CLEANER CODE:
 FEATUREs:
 =========
 
-!!!!!!!!!!!!!!!!!
- - iselectmatch()  needs a third parameter.
-   it is not that easy to make column-selection-index and row-default-index
-   being the same. This restriction makes the construction of the match-regexp rather complicated.
-   ( Not sure if this is the case; maybe better documentation of iselectmatch() would help ebven myself to
-     understand it ;-) )
-!!!!!!!!!!!!!!!!!
 
  - new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
  - new command: astore("NAME");  (autostore() -> store current value like matrix -> NAME.(x).(y) or something like that
