@@ -1,3 +1,4 @@
+Attention: please make iselectmatch get 3 parameters as next task!!!
 
 
 BUGs:
@@ -52,6 +53,14 @@ BETTER STRUCTURE, CLEANER CODE:
 FEATUREs:
 =========
 
+!!!!!!!!!!!!!!!!!
+ - iselectmatch()  needs a third parameter.
+   it is not that easy to make column-selection-index and row-default-index
+   being the same. This restriction makes the construction of the match-regexp rather complicated.
+   ( Not sure if this is the case; maybe better documentation of iselectmatch() would help ebven myself to
+     understand it ;-) )
+!!!!!!!!!!!!!!!!!
+
  - new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
  - new command: astore("NAME");  (autostore() -> store current value like matrix -> NAME.(x).(y) or something like that
  - syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
@@ -63,12 +72,6 @@ FEATUREs:
 
  - automatic working parser detection:
      try available parsers on an url, to check if one will work fotr that url
-
- - iselectmatch()  needs a third parameter.
-   it is not that easy to make column-selection-index and row-default-index
-   being the same. This restriction makes the construction of the match-regexp rather complicated.
-   ( Not sure if this is the case; maybe better documentation of iselectmatch() would help ebven myself to
-     understand it ;-) )
 
 
  - automatic lookup for rc-file also in other places (/etc/FooBar or something like that?) ???
