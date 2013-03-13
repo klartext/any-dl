@@ -614,7 +614,7 @@ List of commands/keywords and a short-escription of them:
 
   selectmatch
     allows to select a row from a match-result, by specifiying
-    a column-index and a string-mathching-pattern for this certain
+    a column-index and a string-matching-pattern for this certain
     element.
     So, this is a more advanced rowselect() with additional matching capabilities.
 
