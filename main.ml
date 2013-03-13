@@ -38,6 +38,18 @@ exception Variable_not_found of string   (* a variable-name lookup in the Varnam
 exception Devel (* exception while developing / testing *)
 
 
+
+(* CLI-VERBOSE-dependent print functions ! *)
+(* --------------------------------------- *)
+let verbose_fprintf channel formatstr =
+  let frmt = format_of_string formatstr in
+  if Cli.opt.Cli.verbose then Printf.fprintf channel frmt else Printf.ifprintf channel frmt
+
+let verbose_printf  formatstr = verbose_fprintf stdout formatstr
+let verbose_eprintf formatstr = verbose_fprintf stderr formatstr
+
+
+
 module Array2 =
   struct
     include Array
@@ -200,10 +212,7 @@ let evaluate_command_list cmdlst =
 
 
                        | Match   pattern            ->
-                                                       if
-                                                        Cli.opt.Cli.verbose
-                                                       then
-                                                         Printf.fprintf stderr "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
+                                                       verbose_eprintf "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
 
                                                        let str =
                                                          begin
@@ -312,8 +321,7 @@ let evaluate_command_list cmdlst =
                                                                           let selected = List.filter ( fun item -> Pcre.pmatch ~pat:matchpat item.(col_idx)  ) rows in
                                                                           if List.length selected = 0 then raise No_Match;
 
-                                                                          if Cli.opt.Cli.verbose = true
-                                                                          then Printf.printf "found: %d items \n" (List.length selected);
+                                                                          verbose_printf "found: %d items \n" (List.length selected);
                                                                           command tl (String_array (List.hd selected)) varmap
 
                                                                    | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
@@ -357,12 +365,12 @@ let evaluate_command_list cmdlst =
                                                                               else
                                                                                 matchpat
                                                                             in
-                                                                              if Cli.opt.Cli.verbose = true then Printf.printf "selected pattern: \"%s\"\n" match_pattern;
+                                                                              verbose_printf "selected pattern: \"%s\"\n" match_pattern;
 
                                                                               let selected = List.filter ( fun item -> Pcre.pmatch ~pat:match_pattern item.(col_idx)  ) rows in
                                                                               if List.length selected = 0 then raise No_Match;
 
-                                                                              if Cli.opt.Cli.verbose = true then Printf.printf "found: %d items \n" (List.length selected);
+                                                                              verbose_printf "found: %d items \n" (List.length selected);
 
                                                                               command tl (String_array (List.hd selected)) varmap
   
@@ -495,7 +503,7 @@ let evaluate_command_list cmdlst =
                        | Store  varname             -> command tl tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
 
 
-                       | Recall varname             -> if Cli.opt.Cli.verbose then prerr_endline ("Recall: " ^ varname); flush stderr;
+                       | Recall varname             -> verbose_eprintf "Recall: %s" varname; flush stderr;
                                                        let varcontents = Varmap.find varname varmap in
                                                        command tl varcontents varmap
 
@@ -518,8 +526,7 @@ let evaluate_command_list cmdlst =
                                                        end
 
 
-                       | Subst (from_re, to_str)    -> 
-                                                       if Cli.opt.Cli.verbose then Printf.fprintf stderr "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
+                       | Subst (from_re, to_str)    -> verbose_fprintf stderr "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
                                                        let replacer instring = Pcre.replace ~pat:from_re ~templ:to_str instring in
                                                        begin
                                                        match tmpvar with
@@ -564,8 +571,7 @@ let evaluate_command_list cmdlst =
                                                          match tmpvar with
                                                            | String syscmd -> (* verbosity-message *)
                                                                               (* ----------------- *)
-                                                                              if Cli.opt.Cli.verbose
-                                                                              then (prerr_endline ("System-cmd: " ^ syscmd); flush stderr);
+                                                                              verbose_eprintf "System-cmd: %s" syscmd; flush stderr;
 
                                                                               (* do the work *)
                                                                               (* ----------- *)
@@ -598,7 +604,7 @@ let evaluate_command_list cmdlst =
 (* read the parser-definitions from the rc-file *)
 (* -------------------------------------------- *)
 let read_parser_definitions filename_opt =
-  if Cli.opt.Cli.verbose then Printf.fprintf stderr "rc-filename: %s\n" Cli.opt.Cli.rc_filename;
+  verbose_fprintf stderr "rc-filename: %s\n" Cli.opt.Cli.rc_filename;
 
   let tokenlist = ref [] in
 
@@ -610,8 +616,8 @@ let read_parser_definitions filename_opt =
         let result = Scriptparser.main Scriptlexer.read_command lexer in
         tokenlist := result :: !tokenlist
       done
-    with End_of_file -> if Cli.opt.Cli.verbose
-                        then prerr_endline "End of rc-file reached; parser definitions were read."
+    with End_of_file ->
+                        verbose_eprintf "End of rc-file reached; parser definitions were read."
 
          (*
          | Not_found -> prerr_string "Variable not known in line ";
@@ -642,8 +648,7 @@ let parsername_lookup_by_url url lookup_lst =
     | hd :: tl -> let parser_url  = fst hd in
                   let parser_name = snd hd in
 
-                  if Cli.opt.Cli.verbose then
-                    Printf.printf "parser-lookup via url: %s\n\t%s  ->  %s\n--\n" url parser_url parser_name;
+                  verbose_printf "parser-lookup via url: %s\n\t%s  ->  %s\n--\n" url parser_url parser_name;
 
                   let parser_url_len = String.length parser_url in
                   try
@@ -656,6 +661,7 @@ let parsername_lookup_by_url url lookup_lst =
 
 let main()  =
     Cli.parse(); (* parse the command line *)
+
 
     (* if cli-switches ask for it, print number of all commands of the parser-definitions *)
     (* They wll be printed in alphabetical order.                                         *)
