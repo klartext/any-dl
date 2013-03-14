@@ -332,7 +332,7 @@ end
 # ---------------------------------
 # Example: http://www.ardmediathek.de/das-erste/nachtmagazin/nachtmagazin?documentId=13244376
 # =================================
-parsername "ard_nachtmagazin": ( "http://www.ardmediathek.de/das-erste/nachtmagazin/" )
+parsername "ard_nachtmagazin": ( "http://www.ardmediathek.de/das-erste/nachtmagazin/", "http://www.ardmediathek.de/das-erste/brennpunkt/" )
 start
   match( "http://.*?mp4" );
   show_match;
