@@ -666,7 +666,58 @@ let parsername_lookup_by_url url lookup_lst =
 
 
 
-let main()  =
+
+
+(* this function looks up the right parser for a given url and invokes that parser *)
+(* =============================================================================== *)
+
+let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection =
+
+  (* look up the right parser, either via CLI-given parsername *)
+  (* or via hash-lookup for that url                           *)
+  (* --------------------------------------------------------- *)
+  let parserdef =
+      try
+        begin
+          match parser_selection with
+            | Some parsername -> Hashtbl.find parser_namehash parsername
+
+            | None            -> (* parsername looked up via from url *)
+
+                                 (* comparing the url with the strings in the url-parsername-assoc-list *)
+                                 (* ------------------------------------------------------------------- *)
+                                 let parsername = parsername_lookup_by_url  url  parser_urllist in
+                                 Hashtbl.find parser_namehash  parsername
+         end
+      with Not_found         -> prerr_endline ("No parser found for " ^ url); raise No_parser_found_for_this_url
+  in
+
+  try
+    print_endline "# --------------------";
+
+    (* ---------------------------------------------------------------- *)
+    (* we evaluate the parse-tree, and start with a first, implicit get *)
+    (* with the url we got from the command line                        *)
+    (* ---------------------------------------------------------------- *)
+    evaluate_command_list (Setvar(Url(url,"-")) :: Store "STARTURL" :: Get_url(url, "-") :: Store("BASEDOC") :: parserdef.commands)
+
+  with (* handle exceptions from the parse-tree-evaluation *)
+    | No_Match                -> prerr_endline "Parser problem: Could not match!\t Parse will be exited\n"
+    | Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!\t Parse exited.\n"
+    | Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name
+    | No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url
+
+
+
+
+
+
+(* ############## *)
+(*    M A I N     *)
+(* ############## *)
+
+
+let main ()  =
     Cli.parse(); (* parse the command line *)
 
 
@@ -729,45 +780,7 @@ let main()  =
 
     (* for all the URLs from the command line, do the intended work :-) *)
     (* ---------------------------------------------------------------- *)
-    List.iter ( fun url ->
-                            (* look up the right parser, either via *)
-                            (* ------------------------------------ *)
-                            let parserdef =
-                                try
-                                  begin
-                                    match Cli.opt.Cli.parser_selection with
-                                      | Some parsername -> Hashtbl.find parser_namehash parsername
-
-                                      | None            -> (* parsername looked up via from url *)
-
-                                                           (* comparing the url with the strings in the url-parsername-assoc-list *)
-                                                           (* ------------------------------------------------------------------- *)
-                                                           let parsername = parsername_lookup_by_url  url  parser_urllist in
-                                                           Hashtbl.find parser_namehash  parsername
-
-                                   end
-                                with Not_found         -> prerr_endline ("No parser found for " ^ url); raise No_parser_found_for_this_url
-                            in
-
-                            try
-                              print_endline "# --------------------";
-
-                              (* ---------------------------------------------------------------- *)
-                              (* we evaluate the parse-tree, and start with a first, implicit get *)
-                              (* with the url we got from the command line                        *)
-                              (* ---------------------------------------------------------------- *)
-                              evaluate_command_list (Setvar(Url(url,"-")) :: Store "STARTURL" :: Get_url(url, "-") :: Store("BASEDOC") :: parserdef.commands)
-
-
-                            with (* handle exceptions from the parse-tree-evaluation *)
-                              | No_Match                -> prerr_endline "Parser problem: Could not match!\t Parse will be exited\n"
-                              | Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!\t Parse exited.\n"
-                              | Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name
-                              | No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url
-
-
-
-              ) (List.rev Cli.opt.Cli.url_list)
+    List.iter ( fun url -> invoke_parser_on_url  url  parser_urllist  parser_namehash  Cli.opt.Cli.parser_selection ) (List.rev Cli.opt.Cli.url_list)
 
 
 let _ =
