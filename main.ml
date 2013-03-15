@@ -720,6 +720,11 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
 let main ()  =
     Cli.parse(); (* parse the command line *)
 
+    (* CLI-args plausibility checks *)
+    (* ---------------------------- *)
+    if Cli.opt.Cli.auto_try && Cli.opt.Cli.parser_selection != None
+    then begin prerr_endline "Option auto-try and parser selection together make no sense!"; exit 1 end;
+    (* ...other checks might follow here... *)
 
     (* if cli-switches ask for it, print number of all commands of the parser-definitions *)
     (* They wll be printed in alphabetical order.                                         *)
@@ -780,7 +785,28 @@ let main ()  =
 
     (* for all the URLs from the command line, do the intended work :-) *)
     (* ---------------------------------------------------------------- *)
-    List.iter ( fun url -> invoke_parser_on_url  url  parser_urllist  parser_namehash  Cli.opt.Cli.parser_selection ) (List.rev Cli.opt.Cli.url_list)
+    if Cli.opt.Cli.auto_try
+    then
+      begin
+        prerr_endline "option auto-try: would need to invoke all parsers now...";
+        (*
+        raise NOT_IMPLEMENTED_SO_FAR;
+        *)
+        let parsernames = Hashtbl.fold ( fun k v sofar -> k :: sofar) parser_namehash [] in
+        (* for each url try the work *)
+        (* ------------------------- *)
+        List.iter ( fun url ->
+                               (* for this url try all parsers *)
+                               
+                               List.iter ( fun parsername -> prerr_endline ("Parser: " ^ parsername);
+                                                             try
+                                                               invoke_parser_on_url  url  parser_urllist  parser_namehash  (Some parsername)
+                                                             with _ -> prerr_endline "Parser failed with exception!"
+                                         ) parsernames
+                  ) (List.rev Cli.opt.Cli.url_list)
+      end
+    else (* non-auto (normal mode) *)
+      List.iter ( fun url -> invoke_parser_on_url  url  parser_urllist  parser_namehash  Cli.opt.Cli.parser_selection ) (List.rev Cli.opt.Cli.url_list)
 
 
 let _ =
