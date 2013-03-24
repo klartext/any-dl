@@ -16,6 +16,7 @@ type opt_t = {
                mutable verbose          :  bool;          (*  -v: print some more details (be verbose) *)
                mutable safe             :  bool;          (*  -s: safe behaviour: no download via system invoked *)
                mutable interactive      :  bool;          (*  -i: interactive features enabled (e.g. iselectmatch() *)
+               mutable auto_try         :  bool;          (*  -a: auto-try: automatically try all parsers *)
              }
 
 
@@ -30,7 +31,8 @@ let opt =  {
              show_commands    = false;
              verbose          = false;
              safe             = false;
-             interactive      = false
+             interactive      = false;
+             auto_try         = false
            }
 
 
@@ -46,6 +48,7 @@ let parse () =
          ("-v",   Arg.Unit   (fun ()          -> opt.verbose          <- true       ),        "    verbose     " );
          ("-s",   Arg.Unit   (fun ()          -> opt.safe             <- true       ),        "    safe: no download via system invoked" );
          ("-i",   Arg.Unit   (fun ()          -> opt.interactive      <- true       ),        "    interactive: interactive features enabled" );
+         ("-a",   Arg.Unit   (fun ()          -> opt.auto_try         <- true       ),        "    auto-try: try all parsers" );
        (* => DEFAULT (hardcoded) !!!
        *)
               ]
