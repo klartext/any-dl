@@ -608,9 +608,9 @@ List of commands/keywords and a short-escription of them:
     rows-of-"column"-elements.
 
   select
-    selects ONE ELEMENT (one "column") from a row.
-    The row must already have been selected.
-    select() does NOT allow matches on match-results (which are
+    selects ONE ELEMENT from a row or a column.
+    The row/column must already have been selected with rowselect() or colselect().
+    select() does NOT allow matches on match-results (which are a matrix internally).
 
   selectmatch
     allows to select a row from a match-result, by specifiying
