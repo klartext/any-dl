@@ -69,10 +69,16 @@ FEATUREs:
  - matches and assignments -> each match-group one varname... like   (url,vidname,foobar) = match("^(.*)xyz(lala).*?(foobar)")
 
  - other syntax/grammar:
-     - parser-Definitions only what to do, URLs not (or not necessarily?) at parser-definitoion.
+     - parser-Definitions only what to do, URLs not (or not necessarily?) at parser-definition.
      - command for attaching parsers to URLs or vice versa.
        something like:     attach parser "ard_mediathek_get" to ("http://...", "http://"...")
                  or        attach_urls "ard_mediathek_get" ("http://...", "http://"...")
+
+ - call/use command, to call a different parser? ==>   parsername "parsefoobar": ( "url" ) begin call "ard_mediathek_get" end
+   This way, not only an URL can be added, but also a name, or a distinct parser that just calls another parser.
+   Not checked so far, how much effort for implementing this would be.
+   But it looks reasonable to invest that effort for this feature.
+
 
  - possibly switch to ulex instead of ocamllex:
      http://alain.frisch.fr/soft.html#ulex
