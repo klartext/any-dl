@@ -17,6 +17,9 @@ type opt_t = {
                mutable safe             :  bool;          (*  -s: safe behaviour: no download via system invoked *)
                mutable interactive      :  bool;          (*  -i: interactive features enabled (e.g. iselectmatch() *)
                mutable auto_try         :  bool;          (*  -a: auto-try: automatically try all parsers *)
+               (*
+               mutable user_agent       :  string;        (*  -u: user-agent: set name of the user-agent string *)
+               *)
              }
 
 
@@ -33,6 +36,9 @@ let opt =  {
              safe             = false;
              interactive      = false;
              auto_try         = false
+             (*
+             user_agent       = "any-dl"
+             *)
            }
 
 
@@ -49,6 +55,9 @@ let parse () =
          ("-s",   Arg.Unit   (fun ()          -> opt.safe             <- true       ),        "    safe: no download via system invoked" );
          ("-i",   Arg.Unit   (fun ()          -> opt.interactive      <- true       ),        "    interactive: interactive features enabled" );
          ("-a",   Arg.Unit   (fun ()          -> opt.auto_try         <- true       ),        "    auto-try: try all parsers" );
+         (*
+         ("-u",   Arg.String (fun useragent -> opt.user_agent <- Some useragent ),  "    set the user-agent-string manually" );
+         *)
        (* => DEFAULT (hardcoded) !!!
        *)
               ]
