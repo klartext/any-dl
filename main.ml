@@ -521,6 +521,9 @@ let evaluate_command_list cmdlst =
                                                                                           command [Print; Print_string "\n"] value varmap ) varmap;
                                                        command tl tmpvar varmap
 
+                       | List_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\"\n" varname ) varmap;
+                                                       command tl tmpvar varmap
+
                        | Show_type                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
                                                        command tl tmpvar varmap
 

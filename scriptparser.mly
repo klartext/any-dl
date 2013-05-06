@@ -41,6 +41,7 @@
 %token RECALL
 %token DELETE
 %token SHOW_VARIABLES
+%token LIST_VARIABLES
 %token PASTE
 %token SYSTEM
 %token SUBSTITUTE
@@ -148,6 +149,7 @@ statement: match_stmt          SEMI   { $1 }
     |      delete_stmt         SEMI   { $1 }
     |      paste_stmt          SEMI   { $1 }
     |      show_variables_stmt SEMI   { $1 }
+    |      list_variables_stmt SEMI   { $1 }
     |      subst_stmt          SEMI   { $1 }
     |      QUOTE               SEMI   { Quote     }
     |      TO_STRING           SEMI   { To_string }
@@ -196,6 +198,9 @@ subst_stmt: SUBSTITUTE LPAREN STRING COMMA STRING RPAREN { Subst( $3, $5 ) }
     ;
 
 show_variables_stmt: SHOW_VARIABLES           { Show_variables }
+    ;
+
+list_variables_stmt: LIST_VARIABLES           { List_variables }
     ;
 
 make_url_stmt: MAKE_URL LPAREN argument_item RPAREN             { Make_url( $3, String "-") }

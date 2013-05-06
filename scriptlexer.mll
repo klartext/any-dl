@@ -37,6 +37,7 @@
                   ("recall",         RECALL  );
                   ("delete",         DELETE  );
                   ("show_variables",   SHOW_VARIABLES  );
+                  ("list_variables",   LIST_VARIABLES  );
 
                   ("paste",          PASTE  );
 
