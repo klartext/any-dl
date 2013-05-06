@@ -757,14 +757,28 @@ let main ()  =
                                  Hashtbl.add parser_namehash parserdef.parsername parserdef;
 
                                  (* add the parsers to the parser_url-list (for parser-lookup by url) *)
-                                 List.iter ( fun url -> 
-                                                        parser_urllist_raw := (url, parserdef.parsername) :: !parser_urllist_raw;
+                                 (* and also print some information, if according CLI-args were set.  *)
+                                 (* ----------------------------------------------------------------- *)
+                                 if List.length parserdef.urllist > 0 then
+                                 begin
+                                   List.iter ( fun url -> 
+                                                          (* add entry to list *)
+                                                          (* ----------------- *)
+                                                          parser_urllist_raw := (url, parserdef.parsername) :: !parser_urllist_raw;
 
-                                                        if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose
-                                                        then
-                                                          Printf.fprintf stderr "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
+                                                          (* info to user, depending on CLI args *)
+                                                          if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose
+                                                          then
+                                                            Printf.fprintf stderr "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
 
-                                           ) parserdef.urllist;
+                                             ) parserdef.urllist;
+                                 end
+                                 else
+                                 begin
+                                    (* info to user, depending on CLI args *)
+                                    if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose then
+                                      Printf.fprintf stderr "Init: (unbound to URL)%-30s-> parser %s\n"   ""  parserdef.parsername
+                                 end
 
               ) parserlist;
 
