@@ -226,6 +226,61 @@ end
 
 
 
+
+# ---------------------------------
+# ARTE-FR
+# ---------------------------------
+# 1. Hauptseite ziehen
+# 2. Titel extrahieren und sichern
+# 3. Match auf arte_vp_url ( "ALL.json" )
+# 4. get ALL.json
+# 5. extrahiere Video-URL: http://artestrsmv.*?mp4 aus dem ALL.json
+# 6. Download video-file
+# ---------------------------------
+# Example-URL: http://videos.arte.tv/de/videos/joe-strummer--7161356.html
+# =================================
+parsername "arte-fr_get": ( "http://www.arte.tv/guide/fr/" )
+start
+
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+  recall("BASEDOC");
+
+  #select the JSON-URL ( e.g. http://org-www.arte.tv/papi/tvguide/videos/stream/player/F/044035-000_PLUS7-F/ALL/ALL.json )
+  # ------------------
+  match( >>>arte_vp_url="(.*)"<<< );
+  show_match;
+
+  rowselect(0);
+  select(1);
+
+  makeurl;
+  get;    # get file "ALL.json"
+
+  store("ALL.json"); # store it, just in case
+
+  # etract videofile-name
+  # ---------------------
+  match("http://artestrsmv.*?mp4");
+  rowselect(0);
+  select(0);
+
+  makeurl;
+  store("videourl");
+
+
+
+  #get; # geht so nicht. bekommt rtsp:// angeboten... ?! -> debugging wäre sinnvoll
+
+  paste(" wget -O ", $title, ".mp4 ", $videourl );
+
+  system;
+
+end
+
+
+
 # ---------------------------------
 # ARTE
 # ---------------------------------
@@ -294,6 +349,10 @@ start
   system;
 
 end
+
+
+
+
 
 
 
