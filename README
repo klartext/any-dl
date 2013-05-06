@@ -1,7 +1,8 @@
 any-dl, a tool for downloading Mediathek video-files
 ====================================================
 
-! This stuff is in a more or less early stage (but already works).
+! This stuff is becoming more and a more mature, nevertheless
+! it is under development.
 ! Be aware, that the parser-definition-language is not frozen so far
 ! and may change in the future!
 !
@@ -598,6 +599,12 @@ List of commands/keywords and a short-escription of them:
     extracting href-items of an xml-document
 
 
+  list_variables
+    displays all named variables.
+    Prints variable-name only.
+    (show_variables does also print the contents of the variables)
+
+
   makeurl
     tries to make an url from a string
 
@@ -672,6 +679,8 @@ List of commands/keywords and a short-escription of them:
 
   show_variables
     displays all named variables.
+    Prints variable-name and contents of the variable.
+    (list_variables does only print the names of the variables)
 
 
   start
