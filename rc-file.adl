@@ -217,6 +217,7 @@ start
   # get the video
   # -------------
   paste("rtmpdump --resume  -r ",  $URL, " -o ", $title, ".mp4" );
+  print;
   system;
 
 
@@ -274,7 +275,7 @@ start
   #get; # geht so nicht. bekommt rtsp:// angeboten... ?! -> debugging wäre sinnvoll
 
   paste(" wget -O ", $title, ".mp4 ", $videourl );
-
+  print;
   system;
 
 end
@@ -382,6 +383,7 @@ start
   # download the video
   # ------------------
   paste("wget -c ",  $url, " -O ", $title, $origname );
+  print;
   system;
 end
 
@@ -448,6 +450,7 @@ start
   # download the video
   # ------------------
   paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
+  print;
   system;
 
 end
@@ -482,6 +485,7 @@ start
   store("filename");
 
   paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
+  print;
   system;
 end
 
@@ -547,6 +551,7 @@ start
   # download the video
   # ------------------
   paste( "wget -c ",  $url, " -O ", $outfilename );
+  print;
   system;
 end
 
@@ -743,6 +748,7 @@ start
 
   store("url");
   paste("wget -c -np ", $url);
+  print;
   system;
 end
 
@@ -780,6 +786,7 @@ start
   print("URL: ", $url, "\nTitle: ", $title, "\nFilename: ", $filename);
 
   paste("wget -c -np ", $url, " -O ", $title, "_", $filename );
+  print;
   system;
 end
 
