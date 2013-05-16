@@ -526,10 +526,11 @@ end
 # ---------------------------------
 # Example: http://www.ardmediathek.de/hr-fernsehen/alle-wetter/mikroblockheizkraftwerke?documentId=13068860
 # =================================
-parsername "ard_hr": ( "http://www.ardmediathek.de/hr-fernsehen/" ) 
+parsername "ard__hr_wdr": ( "http://www.ardmediathek.de/hr-fernsehen/", "http://www.ardmediathek.de/wdr-fernsehen/hier-und-heute/" )
 start
   match( "http://.*mp4" );
-  rowselect(0);
+print;
+  rowselect(2);
   store("url");
 
   # make a better outfilename with title
