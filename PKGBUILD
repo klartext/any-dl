@@ -2,7 +2,7 @@
 
 pkgname=any-dl
 pkgver=0.9.6
-pkgrel=5
+pkgrel=6
 pkgdesc="Generic video downloader for principially any site."
 arch=('i686' 'x86_64')
 license=('GPL3')
