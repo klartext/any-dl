@@ -33,6 +33,8 @@ exception Invalid_Col_Index             (* indexing a col that does not exist *)
 
 exception No_parser_found_for_this_url (* *)
 
+exception AutoTry_success              (* in auto-try mode (switch -a), if successful, this exception will be thrown *)
+
 (* ???
 exception No_String_representation     (* To_string called on a value that has no way conversion so far *)
 *)
@@ -815,11 +817,17 @@ let main ()  =
         List.iter ( fun url ->
                                (* for this url try all parsers *)
                                
-                               List.iter ( fun parsername -> prerr_endline ("Parser: " ^ parsername);
-                                                             try
-                                                               invoke_parser_on_url  url  parser_urllist  parser_namehash  (Some parsername)
-                                                             with _ -> prerr_endline "Parser failed with exception!"
-                                         ) parsernames
+                               try
+                                 List.iter ( fun parsername -> prerr_endline ("Parser: " ^ parsername);
+                                                               try
+                                                                 invoke_parser_on_url  url  parser_urllist  parser_namehash  (Some parsername);
+                                                                 if Cli.opt.Cli.auto_try_stop then raise AutoTry_success
+                                                               with
+                                                                 | AutoTry_success -> raise AutoTry_success
+                                                                 | _               -> prerr_endline "Parser failed with exception!" (* eats exception *)
+                                           ) parsernames
+                               with AutoTry_success -> prerr_endline "Parser succeeded." (* catch only a success; any other exceptions igonre here *)
+
                   ) (List.rev Cli.opt.Cli.url_list)
       end
     else (* non-auto (normal mode) *)
