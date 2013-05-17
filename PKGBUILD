@@ -2,7 +2,7 @@
 
 pkgname=any-dl
 pkgver=0.9.6
-pkgrel=1
+pkgrel=2
 pkgdesc="Generic video downloader for principially any site."
 arch=('i686' 'x86_64')
 license=('GPL3')
@@ -21,6 +21,6 @@ make
 
 package() {
 cd ${srcdir}/${pkgname}-${pkgver}
-install -Dm 644 any-dl ${pkgdir}/usr/bin/any-dl   # install to Arch-Linux path
+install -Dm 755 any-dl ${pkgdir}/usr/bin/any-dl   # install to Arch-Linux path
 echo Please copy the file rc-file.adl to $HOME/.any-dl.rc but be sure not to overwrite your possibly exsiting own changes.
 }
