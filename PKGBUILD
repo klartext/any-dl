@@ -25,6 +25,6 @@ cd ${srcdir}/${pkgname}-${pkgver}
 
 install -Dm 755 any-dl ${pkgdir}/usr/bin/any-dl   # install to Arch-Linux path
 
-cp -avf $HOME/any-dl.rc HOME/any-dl.rc.bak         # backup of your any-dl-rc-file
+cp -avf $HOME/any-dl.rc $HOME/any-dl.rc.bak       # backup of your any-dl-rc-file
 install -Dm 644 rc-file.adl $HOME/any-dl.rc       # new any-dl-rc-file
 }
