@@ -163,11 +163,14 @@ module Xmlparse =
 module Htmlparse =
   struct
 
-    let dump_html str =
-      let doclist = (Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)) in
+    (* convert string html-document to nethtml-document list *)
+    (* ----------------------------------------------------- *)
+    let string_to_nethtml str =
+      Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)
 
+
+    let dump_html doclist =
       let rec traverse_aux doclist depth =
-        
         match doclist with
         |  hd::tl ->
             begin
@@ -195,9 +198,7 @@ module Htmlparse =
 
 
 
-    let dump_html_data str =
-      let doclist = (Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)) in
-
+    let dump_html_data doclist =
       let rec traverse_aux doclist depth =
         
         match doclist with
@@ -216,11 +217,8 @@ module Htmlparse =
 
     (* SHOW TAGS *)
     (* --------- *)
-    let show_tags str =
-      let doclist = (Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)) in
-
+    let show_tags doclist =
       let rec traverse_aux doclist depth =
-        
         match doclist with
         |  hd::tl ->
             begin
@@ -241,9 +239,7 @@ module Htmlparse =
 
     (* SHOW TAG-Hierarchy *)
     (* ------------------ *)
-    let show_tag_hierarchy str =
-      let doclist = (Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)) in
-
+    let show_tag_hierarchy doclist =
       let rec traverse_aux doclist depth tag_hierarchy =
         
         match doclist with
@@ -264,8 +260,6 @@ module Htmlparse =
 
   
 
-
-
     let collect_subtags (args: (string*string)list) (subtag_select:string option) =
       match subtag_select with
         | None        -> [] (*List.map snd args*)
@@ -277,11 +271,10 @@ let debug = false
 
     (* Analysing HTML *)
 
-    let parse_html ?(pickdata=false) ?(tagmatch="") ?(subtag=None) ?(matcher=fun (matcher:string) -> true) str =
+    let parse_html ?(pickdata=false) ?(tagmatch="") ?(subtag=None) ?(matcher=fun (matcher:string) -> true) doclist =
 if debug then
 Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
-      let doclist = (Nethtml.parse(new Netchannels.input_string str)) in
 
         let rec traverse_aux doclist depth collected cur_tag =
           match doclist with
@@ -323,17 +316,32 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         in
           traverse_aux doclist 0 [] ""
 
+
+
+
+    (* functions to call the HTML-parsers with string as argument *)
+    (* ---------------------------------------------------------- *)
+    let dump_html_from_string str          = dump_html ( string_to_nethtml str )
+    let dump_html_data_from_string str     = dump_html_data ( string_to_nethtml str )
+    let show_tags_from_string str          = show_tags (string_to_nethtml str)
+    let show_tag_hierarchy_from_string str = show_tag_hierarchy ( string_to_nethtml str )
+      
+
+
   end (* Htmlparse-Ende *)
 (* ========================================================================================================================= *)
 (* ========================================================================================================================= *)
 
 open Htmlparse
 
-let linkextract    doc = parse_html ~tagmatch:"a"   ~subtag:(Some "href") doc
-let imageextract   doc = parse_html ~tagmatch:"img" ~subtag:(Some "src")  doc
-let titleextract   doc = parse_html ~tagmatch:"title" ~pickdata:false      doc
 
-let tagextract tag doc = parse_html ~pickdata:true ~tagmatch:tag doc
+let conv_to_doclist str = Nethtml.parse(new Netchannels.input_string str)
+
+let linkextract    doc = parse_html ~tagmatch:"a"   ~subtag:(Some "href") (conv_to_doclist doc)
+let imageextract   doc = parse_html ~tagmatch:"img" ~subtag:(Some "src")  (conv_to_doclist doc)
+let titleextract   doc = parse_html ~tagmatch:"title" ~pickdata:false     (conv_to_doclist doc)
+
+let tagextract tag doc = parse_html ~pickdata:true ~tagmatch:tag (conv_to_doclist doc)
 
 
 let xml_get_href  = Xmlparse.get_href_from_asx

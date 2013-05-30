@@ -558,7 +558,7 @@ let evaluate_command_list cmdlst =
                        | Dump                       ->
                                                        begin
                                                        match tmpvar with
-                                                         | Document(doc, url)-> Parsers.Htmlparse.dump_html doc
+                                                         | Document(doc, url)-> Parsers.Htmlparse.dump_html_from_string doc
                                                          | _ -> raise Wrong_argument_type
                                                        end;
                                                        command tl tmpvar varmap
@@ -566,7 +566,7 @@ let evaluate_command_list cmdlst =
                        | Show_tags                  ->
                                                        begin
                                                        match tmpvar with
-                                                         | Document(doc, url)-> Parsers.Htmlparse.show_tags doc
+                                                         | Document(doc, url)-> Parsers.Htmlparse.show_tags_from_string doc
                                                          | _ -> raise Wrong_argument_type
                                                        end;
                                                        command tl tmpvar varmap
@@ -574,7 +574,7 @@ let evaluate_command_list cmdlst =
                        | Dump_data                  ->
                                                        begin
                                                        match tmpvar with
-                                                         | Document(doc, url)-> Parsers.Htmlparse.dump_html_data doc
+                                                         | Document(doc, url)-> Parsers.Htmlparse.dump_html_data_from_string doc
                                                          | _ -> raise Wrong_argument_type
                                                        end;
                                                        command tl tmpvar varmap
