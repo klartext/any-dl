@@ -526,7 +526,7 @@ end
 # ---------------------------------
 # Example: http://www.ardmediathek.de/hr-fernsehen/alle-wetter/mikroblockheizkraftwerke?documentId=13068860
 # =================================
-parsername "ard__hr_wdr": ( "http://www.ardmediathek.de/hr-fernsehen/", "http://www.ardmediathek.de/wdr-fernsehen/hier-und-heute/" )
+parsername "ard__hr_wdr": ( "http://www.ardmediathek.de/hr-fernsehen/", "http://www.ardmediathek.de/wdr-fernsehen/hier-und-heute/", "http://www.ardmediathek.de/das-erste/anne-will/" )
 start
   match( "http://.*mp4" );
 print;
@@ -793,6 +793,25 @@ end
 
 
 
+
+# ---------------------------------
+# wdr.de/tv
+# ---------------------------------
+# Example: http://www.wdr.de/tv/westart/sonntag/sendungsbeitraege/2013/0602/index.jsp
+# =>: rtmp://gffstream.fcod.llnwd.net/a792/e2/CMS2010/mdb/15/153162/westarttalkdahabenwirwasangerichtetfoerderntafelndiearmut_1512942.mp4
+# =================================
+parsername "wdr_de_tv_westart": ( "http://www.wdr.de/tv/westart/sonntag/sendungsbeitraege" )
+start
+  match( "(rtmp:.*?mp4)" );
+  rowselect(0);
+  select(0);
+  store("rtmp_url");
+  basename;
+  store("filename");
+  print;
+  paste("rtmpdump --resume  -r ",  $rtmp_url, " -o ", $filename );
+  print;
+end
 
 
 
