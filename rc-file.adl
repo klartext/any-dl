@@ -49,6 +49,17 @@ start
 end
 
 
+# show URL and title
+# ---------
+parsername "pageinfo": ( )
+start
+  print_string("\n"); # blank line
+  titleextract;
+  print;
+  print( "   ", $STARTURL, "\n" );
+end
+
+
 # ------------------------------------------
 # only prints data part of the html, no tags
 # acts like html-2-txt, but does not change
