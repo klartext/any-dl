@@ -643,10 +643,15 @@ List of commands/keywords and a short-escription of them:
     print() with parantheses prints strings and variables (denoted by $-notatation),
     which means it accepts the same parameters as paste() but does not change the
     one-val-stack.
+    print() used on an empty string does end the line automatically.
+    This means, a new line will be used for further commands.
+    If you wish to print only a certain string, without line-endlings added,
+    you need to use print_string()
 
 
   print_string
-    accepts only one string-argument and prnts it.
+    accepts only one string-argument and prints it.
+    It prints the plain string, and does not add line-ending automatically.
 
 
   quote
