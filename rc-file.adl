@@ -235,6 +235,18 @@ start
 end
 
 
+parsername "ard_tagesthemen": ( "http://www.ardmediathek.de/das-erste/tagesthemen" )
+start
+  match( >>>http://(.*?).mp4<<< );  # the inner group-match is col 3 -> iselectmatch
+  rowselect(0);
+  select(0);
+  store("mp4url");
+  basename;
+  store("basename");
+ 
+  paste(" wget -O tagesthemen_", $basename, " ", $mp4url );
+  system;
+end
 
 
 
