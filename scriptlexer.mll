@@ -62,6 +62,7 @@
                   ("dump",           DUMP  );
                   ("dump_data",      DUMP_DATA  );
                   ("show_tags",      SHOW_TAGS  );
+                  ("show_tags_fullpath",  SHOW_TAGS_FULLPATH  );
 
                   ("dummy",  DUMMY  );
                 ]

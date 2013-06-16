@@ -571,6 +571,14 @@ let evaluate_command_list cmdlst =
                                                        end;
                                                        command tl tmpvar varmap
 
+                       | Show_tags_fullpath         ->
+                                                       begin
+                                                       match tmpvar with
+                                                         | Document(doc, url)-> Parsers.Htmlparse.show_tags_fullpath_from_string doc
+                                                         | _ -> raise Wrong_argument_type
+                                                       end;
+                                                       command tl tmpvar varmap
+
                        | Dump_data                  ->
                                                        begin
                                                        match tmpvar with

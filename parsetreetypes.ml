@@ -68,6 +68,7 @@ type commands_t =
   | Exit_parse
   | Dump                                      (* Dump html *)
   | Show_tags                                 (* Show Tags *)
+  | Show_tags_fullpath                        (* Show Tags with full tag-path *)
   | Dump_data                                 (* Dump only data-part if html, not the tags *)
   | Dummy
 
@@ -99,6 +100,7 @@ let command_to_string cmd = match cmd with
   | MSelect         _ -> "MSelect"
   | Link_extract      -> "Link_extract"
   | Link_extract_xml  -> "Link_extract_xml"
+  | Title_extract     -> "Title_extract"
   | Paste           _ -> "Paste"
   | Store           _ -> "Store"
   | Recall          _ -> "Recall"
@@ -123,6 +125,8 @@ let command_to_string cmd = match cmd with
   | Quote           _ -> "Quote"
   | Exit_parse      _ -> "Exit_parse"
   | Dump              -> "Dump"
+  | Show_tags         -> "Show_tags"
+  | Show_tags_fullpath -> "Show_tags_fullpath"
   | Dump_data         -> "Dump_data"
   | Dummy             -> "Dummy"
 

@@ -49,6 +49,14 @@ start
 end
 
 
+# show tags with complete html-path
+# ---------------------------------
+parsername "show_tags_full": ( )
+start
+  show_tags_fullpath;
+end
+
+
 # show URL and title
 # ---------
 parsername "pageinfo": ( )
@@ -235,6 +243,12 @@ start
 end
 
 
+# ---------------------------------
+# ARD Tagesthemen
+# ---------------------------------
+# other possuble source (RSS/XML) would be:
+# http://www.tagesschau.de/export/video-podcast/tagesthemen/
+# ---------------------------------
 parsername "ard_tagesthemen": ( "http://www.ardmediathek.de/das-erste/tagesthemen" )
 start
   match( >>>http://(.*?).mp4<<< );

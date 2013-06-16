@@ -217,7 +217,7 @@ module Htmlparse =
 
     (* SHOW TAGS *)
     (* --------- *)
-    let show_tags doclist =
+    let show_tags  doclist =
       let rec traverse_aux doclist depth =
         match doclist with
         |  hd::tl ->
@@ -233,6 +233,35 @@ module Htmlparse =
         | [] -> ()
       in
         traverse_aux doclist 0
+
+  
+
+(* REFACTOR: "show_tags_full_path" can be fusioned with show_tags via optional argument to select full-path printing *)
+    (* SHOW TAGS *)
+    (* --------- *)
+    let show_tags_full_path  doclist =
+      let print_tagpath tp = (* function to print path of tags *)
+        List.iter ( fun str -> print_string str; print_char '.' ) (List.rev tp)
+      in
+
+      let rec traverse_aux doclist depth tagpath =
+        match doclist with
+        |  hd::tl ->
+            begin
+              match hd with
+                | Element (tag, arg, dl) ->
+                                            (* if arg is given, tag will be printed anyway *)
+                                            if List.length arg = 0 then (print_tagpath tagpath; print_endline tag);
+                                            List.iter ( fun pair -> print_tagpath tagpath;
+                                                                    Printf.printf "%s.%s = \"%s\"\n" tag (fst pair) (snd pair)
+                                                      ) arg;
+                                            traverse_aux dl (depth+1) (tag :: tagpath)
+                | Data    data           -> print_tagpath tagpath; Printf.printf "<DATA> = %s\n" data
+            end;
+            traverse_aux tl depth tagpath
+        | [] -> ()
+      in
+        traverse_aux doclist 0 []
 
   
 
@@ -324,6 +353,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     let dump_html_from_string str          = dump_html ( string_to_nethtml str )
     let dump_html_data_from_string str     = dump_html_data ( string_to_nethtml str )
     let show_tags_from_string str          = show_tags (string_to_nethtml str)
+    let show_tags_fullpath_from_string str = show_tags_full_path (string_to_nethtml str)
     let show_tag_hierarchy_from_string str = show_tag_hierarchy ( string_to_nethtml str )
       
 
