@@ -1010,7 +1010,7 @@ end
 
 
 
-(* working, but too simple, you could use wget instead ;-) It's just for testing purposes *)
+# working, but too simple, you could use wget instead ;-) It's just for testing purposes
 parsername "save": ( )
 start
   save;
