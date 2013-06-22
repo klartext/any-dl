@@ -1009,6 +1009,14 @@ end
 
 
 
+
+(* working, but too simple, you could use wget instead ;-) It's just for testing purposes *)
+parsername "save": ( )
+start
+  save;
+end
+
+
 ##################################################################################
 #### BELOW IS OLD STUFF, some infos that might be helpful for parser-devel.
 ##################################################################################
