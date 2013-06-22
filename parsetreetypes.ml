@@ -15,15 +15,16 @@ type selector_t     = ( match_result_t -> match_result_t ) (* function, that has
 
 
 type results_t =
-  | Varname       of string                       (* name of a variable *)
-  | String        of string                       (* general purpose string *)
-  | String_array  of string array
-  | Document      of  string * string             (* (document, url-of-doc) *)
-  | Url           of  string * string             (* (url, referrer) needed for Get-command *)
-  | Url_list      of (string * string) list
-  | Url_array     of (string * string) array
+  | Varname         of string                       (* name of a variable *)
+  | String          of string                       (* general purpose string *)
+  | String_array    of string array
+  | Document        of  string * string             (* (document, url-of-doc) *)
+  | Document_array  of (string * string) array      (* (document, url-of-doc) array *)
+  | Url             of  string * string             (* (url, referrer) needed for Get-command *)
+  | Url_list        of (string * string) list
+  | Url_array       of (string * string) array
   | Dummy_result
-  | Match_result  of match_result_t
+  | Match_result    of match_result_t
   | Empty
 
 
