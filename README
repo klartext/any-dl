@@ -668,6 +668,12 @@ List of commands/keywords and a short-escription of them:
   rowselect
     selects a certain row from a match-result.
 
+  save
+    saves a document to a file.
+    The filename is derived from the url of the document.
+    The charcater set is shrinked down to a subset of ASCII.
+
+
   show_match
     shows a match-result in a certain way; this command is
     intended to display matchese in a way, wher they can be read easily.
