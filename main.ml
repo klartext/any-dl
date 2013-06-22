@@ -57,6 +57,14 @@ let verbose_eprintf formatstr = verbose_fprintf stderr formatstr
 *)
 
 
+(* save string to file *)
+(* ------------------- *)
+let save_string_to_file str filename =
+  let oc = open_out filename in
+  output_string oc str;
+  close_out oc
+
+
 
 module Array2 =
   struct
@@ -204,8 +212,10 @@ let evaluate_command_list cmdlst =
 
                        | Get_urls        -> begin
                                               match tmpvar with
-                                                | Url_list urllist -> prerr_endline "Should now get Documents!";
-                                                                      List.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urllist
+                                                | Url_list  urllist  -> prerr_endline "Should now get Documents!";
+                                                                        List.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urllist
+                                                | Url_array urlarray -> prerr_endline "Should now get Documents!";
+                                                                        Array.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urlarray
                                                 | _                -> raise Wrong_tmpvar_type
                                             end
 
@@ -500,10 +510,15 @@ let evaluate_command_list cmdlst =
                                                        command tl tmpvar varmap
 
 
-                       | Save   _                   -> print_endline "Save detected"; raise NOT_IMPLEMENTED_SO_FAR
-                                                       (*
+                       | Save                       -> (*print_endline "Save detected"; raise NOT_IMPLEMENTED_SO_FAR*)
+                                                       begin
+                                                         match tmpvar with
+                                                           | Document(doc, url)-> let fname = Parsers.url_to_filename url in
+                                                                                  save_string_to_file doc fname
+                                                           | _ -> raise Wrong_tmpvar_type
+                                                       end;
                                                        command tl tmpvar varmap
-                                                       *)
+
 
                        | Setvar var                 -> command tl var varmap (* sets the argument of setvar as new tmpvar *)
 

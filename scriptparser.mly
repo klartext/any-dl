@@ -31,6 +31,7 @@
 %token SHOW_MATCH
 %token PRINT
 %token SHOW_TYPE
+%token SAVE
 %token LINKEXTRACT
 %token LINKEXTRACT_XML
 %token TAGEXTRACT
@@ -160,6 +161,7 @@ statement: match_stmt          SEMI   { $1 }
     |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
     |      titleextract_stmt   SEMI   { Title_extract }
     |      SHOW_TYPE           SEMI   { Show_type }
+    |      SAVE                SEMI   { Save }
     |      DUMP                SEMI   { Dump }
     |      DUMP_DATA           SEMI   { Dump_data }
     |      SHOW_TAGS           SEMI   { Show_tags }

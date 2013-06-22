@@ -53,7 +53,7 @@ type commands_t =
   | Print_args        of results_t list       (* printing the general args-list *)
   | Show_match
   | Print_string of string
-  | Save         of string * string
+  | Save                                      (* save data *)
   | Setvar       of results_t
   | Show_type
   | ColSelect  of int  (* horizontal selection of a matrix (match-result) *)

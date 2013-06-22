@@ -25,6 +25,8 @@
                   ("print",        PRINT  );
                   ("print_string", PRINT_STRING  );
 
+                  ("save",  SAVE  );
+
                   ("linkextract",      LINKEXTRACT  );
                   ("linkextract_xml",  LINKEXTRACT_XML  );
                   ("titleextract",     TITLEEXTRACT  );
@@ -63,6 +65,7 @@
                   ("dump_data",      DUMP_DATA  );
                   ("show_tags",      SHOW_TAGS  );
                   ("show_tags_fullpath",  SHOW_TAGS_FULLPATH  );
+
 
                   ("dummy",  DUMMY  );
                 ]

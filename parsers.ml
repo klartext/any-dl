@@ -166,7 +166,11 @@ module Htmlparse =
     (* convert string html-document to nethtml-document list *)
     (* ----------------------------------------------------- *)
     let string_to_nethtml str =
-      Nethtml.parse ~return_declarations:true ~return_pis:true ~return_comments:true (new Netchannels.input_string str)
+      Nethtml.parse ~dtd:relaxed_html40_dtd
+                    ~return_declarations:true
+                    ~return_pis:true
+                    ~return_comments:true
+                    (new Netchannels.input_string str)
 
 
     let dump_html doclist =
