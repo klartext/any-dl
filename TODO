@@ -11,22 +11,6 @@ BUGs:
 
  - to-string: incomplete
 
- -  PROBLEM: ( ????? )
-    parsername "ndr_mediathek_get": ( "http://www.ndr.de" )
-    start
-      match( "http://.*?mp4" );
-      print;
-      show_type;
-      rowselect(0);
-      store("url");
-      makeurl($url);
-      print;
-      show_type;
-      get;
-    end
-
-    possibly get works fine, but save() must be implemented !!
-
  - interactive selection menue: strangely, when just typing enter problems occur.
    Non-match case occurs.
    Must be checked, if there are not-correctly caught exceptions at the input part,
@@ -44,7 +28,7 @@ BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
  - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
- - maybe remove print_string(), ebacsue print() does the same now.
+ - maybe remove print_string(), because print() does the same now.
  - dump is rather a deparse; dump_data is dump-like or deparse-like too;
    possibly better names should be used here
 
