@@ -199,6 +199,18 @@ let evaluate_command_list cmdlst =
     end
     
 
+  and get_document_list  urls_refs varmap =
+    let rec aux urllist vm result = match urllist with
+      | []        -> result
+      | (u,r)::tl -> begin
+                       match get_document u r varmap with
+                         | None                     -> Printf.eprintf "no document found for %s\n" u;
+                                                       aux tl vm result
+                         | Some ( doc, ref, varmap) -> aux tl varmap ((doc,ref)::result)
+                     end
+    in
+      aux urls_refs varmap []
+
   (* "command"-function is the main commands-parser/evaluator *)
   (* -------------------------------------------------------- *)
   and     command commandlist tmpvar varmap =
@@ -218,31 +230,25 @@ let evaluate_command_list cmdlst =
                          | Get             ->
                                               begin
                                                 match tmpvar with
-                                                  | Url (u,r) -> command (Get_url (u,r) :: tl) tmpvar varmap
-                                                  (*
-                                                  | Url (u,r) -> command ( [Get_url (u,r)] ) tmpvar varmap; command (tl) tmpvar varmap
-                                                  | Url_array urlarray ->  ????? Array.fold_left/right ????
-                                                                               Array.iter (  fun (u,r) -> command (Get_url (u,r) :: tl) tmpvar varmap ) urlarray
-                                                  *)
+                                                  | Url (u,r)          -> command (Get_url (u,r) :: tl) tmpvar varmap
+                                                  | Url_list  urllist  -> command (Get_urls :: tl) tmpvar varmap
+                                                  | Url_array urlarray -> command (Get_urls :: tl) tmpvar varmap
                                                   | _ -> raise Wrong_tmpvar_type
                                                 end
-                                                (*
-                                                  command cmdlst Empty Varmap.empty
-                                                *)
-                                              
-
-                         (*
-                         | Get             -> let (u,r) = begin match tmpvar with Url (u,r) -> u,r | _ -> raise Wrong_tmpvar_type end in
-                                              command (Get_url (u,r) :: tl) tmpvar varmap
-                         *)
 
 
                          | Get_urls        -> begin
                                                 match tmpvar with
                                                   | Url_list  urllist  -> prerr_endline "Should now get Documents!";
-                                                                          List.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urllist
+                                                                          let docs = get_document_list  urllist varmap in
+                                                                          command tl (Document_array (Array.of_list docs)) varmap
+                                                  | Url_array urlarray -> prerr_endline "Should now get Documents!";
+                                                                          let docs = get_document_list  (Array.to_list urlarray) varmap in
+                                                                          command tl (Document_array (Array.of_list docs)) varmap
+                                                  (*
                                                   | Url_array urlarray -> prerr_endline "Should now get Documents!";
                                                                           Array.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urlarray
+                                                  *)
                                                   | _                -> raise Wrong_tmpvar_type
                                               end
 
