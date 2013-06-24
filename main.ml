@@ -179,35 +179,62 @@ let interactive_string_select str_arr default_pattern =
 (* this function is doing the main work of any-dl.   *)
 (* ------------------------------------------------- *)
 let evaluate_command_list cmdlst =
-  let rec command commandlist tmpvar varmap =
-  (*
-  Printf.printf "==========================> ENTER. evaluate_command_list() now!\n";
-  *)
+
+  (* "get_document"-function, is used by some of the Get_... commands from "command"-function *)
+  (* ---------------------------------------------------------------------------------------- *)
+  let rec get_document  url referrer varmap =
+    let send_cookie = if Varmap.exists "COOKIES.SEND" varmap
+                     then
+                       Some ( to_string(Varmap.find "COOKIES.SEND" varmap) varmap )
+                     else
+                       None
+    in
+    let document_and_cookies = Network.Curly.get url (Some referrer) send_cookie in
+    begin
+     match document_and_cookies with
+       | None                -> None
+       | Some (doc, cookies) -> let cook = String_array (Array.of_list cookies) in
+                                let new_varmap = (Varmap.add "COOKIES.RECEIVED" cook varmap) in (* what, if COOKIES.RECEIVED is set and needs to be ADDED? *)
+                                Some (doc, url, new_varmap)
+    end
+    
+
+  (* "command"-function is the main commands-parser/evaluator *)
+  (* -------------------------------------------------------- *)
+  and     command commandlist tmpvar varmap =
   flush_all();
   match commandlist with
     | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
     | cmd::tl   -> begin
                      match cmd with
                        | Get_url (url, referrer)  ->
-                                                     let send_cookie = if Varmap.exists "COOKIES.SEND" varmap
-                                                                       then
-                                                                         Some ( to_string(Varmap.find "COOKIES.SEND" varmap) varmap )
-                                                                       else
-                                                                         None
-                                                     in
-                                                     let document_and_cookies = Network.Curly.get url (Some referrer) send_cookie in
                                                      begin
-                                                       match document_and_cookies with
-                                                         | Some (doc, cookies) -> let cook = String_array (Array.of_list cookies) in
-                                                                                  let new_varmap = (Varmap.add "COOKIES.RECEIVED" cook varmap) in
-                                                                                  command tl (Document (doc, url)) new_varmap (* $URL *)
-
-                                                         | None     -> raise No_document_found       
+                                                     match get_document  url referrer varmap with
+                                                       | Some ( doc, url, new_varmap ) -> command tl (Document (doc, url)) new_varmap (* $URL *)
+                                                       | None                          -> raise No_document_found
                                                      end
 
 
+                       | Get             ->
+                                            begin
+                                              match tmpvar with
+                                                | Url (u,r) -> command (Get_url (u,r) :: tl) tmpvar varmap
+                                                (*
+                                                | Url (u,r) -> command ( [Get_url (u,r)] ) tmpvar varmap; command (tl) tmpvar varmap
+                                                | Url_array urlarray ->  ????? Array.fold_left/right ????
+                                                                             Array.iter (  fun (u,r) -> command (Get_url (u,r) :: tl) tmpvar varmap ) urlarray
+                                                *)
+                                                | _ -> raise Wrong_tmpvar_type
+                                              end
+                                              (*
+                                                command cmdlst Empty Varmap.empty
+                                              *)
+                                            
+
+                       (*
                        | Get             -> let (u,r) = begin match tmpvar with Url (u,r) -> u,r | _ -> raise Wrong_tmpvar_type end in
                                             command (Get_url (u,r) :: tl) tmpvar varmap
+                       *)
 
 
                        | Get_urls        -> begin
