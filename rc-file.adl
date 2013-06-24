@@ -1013,7 +1013,11 @@ end
 # working, but too simple, you could use wget instead ;-) It's just for testing purposes
 parsername "save": ( )
 start
-  save;
+  save; # save original document
+  linkextract; # grab links from the document
+  print; # print links/referers
+  get;   # get all documents, to which the extracted documents are linking
+  save;  # save all the retrieved documents, that wre elinked to via the main page
 end
 
 
