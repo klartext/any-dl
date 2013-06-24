@@ -202,463 +202,463 @@ let evaluate_command_list cmdlst =
   (* "command"-function is the main commands-parser/evaluator *)
   (* -------------------------------------------------------- *)
   and     command commandlist tmpvar varmap =
-  flush_all();
-  match commandlist with
-    | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
-    | cmd::tl   -> begin
-                     match cmd with
-                       | Get_url (url, referrer)  ->
-                                                     begin
-                                                     match get_document  url referrer varmap with
-                                                       | Some ( doc, url, new_varmap ) -> command tl (Document (doc, url)) new_varmap (* $URL *)
-                                                       | None                          -> raise No_document_found
-                                                     end
+    flush_all();
+    match commandlist with
+      | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
+      | cmd::tl   -> begin
+                       match cmd with
+                         | Get_url (url, referrer)  ->
+                                                       begin
+                                                       match get_document  url referrer varmap with
+                                                         | Some ( doc, url, new_varmap ) -> command tl (Document (doc, url)) new_varmap (* $URL *)
+                                                         | None                          -> raise No_document_found
+                                                       end
 
 
-                       | Get             ->
-                                            begin
-                                              match tmpvar with
-                                                | Url (u,r) -> command (Get_url (u,r) :: tl) tmpvar varmap
+                         | Get             ->
+                                              begin
+                                                match tmpvar with
+                                                  | Url (u,r) -> command (Get_url (u,r) :: tl) tmpvar varmap
+                                                  (*
+                                                  | Url (u,r) -> command ( [Get_url (u,r)] ) tmpvar varmap; command (tl) tmpvar varmap
+                                                  | Url_array urlarray ->  ????? Array.fold_left/right ????
+                                                                               Array.iter (  fun (u,r) -> command (Get_url (u,r) :: tl) tmpvar varmap ) urlarray
+                                                  *)
+                                                  | _ -> raise Wrong_tmpvar_type
+                                                end
                                                 (*
-                                                | Url (u,r) -> command ( [Get_url (u,r)] ) tmpvar varmap; command (tl) tmpvar varmap
-                                                | Url_array urlarray ->  ????? Array.fold_left/right ????
-                                                                             Array.iter (  fun (u,r) -> command (Get_url (u,r) :: tl) tmpvar varmap ) urlarray
+                                                  command cmdlst Empty Varmap.empty
                                                 *)
-                                                | _ -> raise Wrong_tmpvar_type
+                                              
+
+                         (*
+                         | Get             -> let (u,r) = begin match tmpvar with Url (u,r) -> u,r | _ -> raise Wrong_tmpvar_type end in
+                                              command (Get_url (u,r) :: tl) tmpvar varmap
+                         *)
+
+
+                         | Get_urls        -> begin
+                                                match tmpvar with
+                                                  | Url_list  urllist  -> prerr_endline "Should now get Documents!";
+                                                                          List.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urllist
+                                                  | Url_array urlarray -> prerr_endline "Should now get Documents!";
+                                                                          Array.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urlarray
+                                                  | _                -> raise Wrong_tmpvar_type
                                               end
-                                              (*
-                                                command cmdlst Empty Varmap.empty
-                                              *)
-                                            
-
-                       (*
-                       | Get             -> let (u,r) = begin match tmpvar with Url (u,r) -> u,r | _ -> raise Wrong_tmpvar_type end in
-                                            command (Get_url (u,r) :: tl) tmpvar varmap
-                       *)
 
 
-                       | Get_urls        -> begin
-                                              match tmpvar with
-                                                | Url_list  urllist  -> prerr_endline "Should now get Documents!";
-                                                                        List.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urllist
-                                                | Url_array urlarray -> prerr_endline "Should now get Documents!";
-                                                                        Array.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urlarray
-                                                | _                -> raise Wrong_tmpvar_type
-                                            end
+                           (* creates url and puts it into tmpvar *)
+                         | Make_url_tmpvar -> let (url, referrer) = (to_string tmpvar varmap, "-") in
+                                              command tl (Url( url, referrer)) varmap
 
-
-                         (* creates url and puts it into tmpvar *)
-                       | Make_url_tmpvar -> let (url, referrer) = (to_string tmpvar varmap, "-") in
-                                            command tl (Url( url, referrer)) varmap
-
-                       | Make_url (u,r)  -> let (url, referrer) = (to_string u varmap, to_string r varmap) in
-                                            command tl (Url( url, referrer)) varmap
+                         | Make_url (u,r)  -> let (url, referrer) = (to_string u varmap, to_string r varmap) in
+                                              command tl (Url( url, referrer)) varmap
 
 
 
-                       | Match   pattern            ->
-                                                       verbose_printf "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
+                         | Match   pattern            ->
+                                                         verbose_printf "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
 
-                                                       let str =
+                                                         let str =
+                                                           begin
+                                                             match tmpvar with
+                                                               | Document (doc, url) -> doc
+                                                               (* match also on other types?? Does matching an URL for example makes sense? *)
+                                                               | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
+                                                           end
+                                                         in
+                                                         let match_res = Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern (* flags here *)) in
+                                                         let matched =
+                                                           begin
+                                                             match match_res with
+                                                               | None   -> raise No_Match
+                                                               | Some res -> res
+                                                           end
+                                                         in
+                                                         command tl (Match_result matched) varmap
+
+
+                         | Grep pattern               -> 
+                                                         (*
+                                                           if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
+                                                         *)
+                                                         let grepped = 
+                                                           begin
+                                                             match tmpvar with
+                                                               | String_array str_arr -> String_array( Array2.filter ( fun elem -> Pcre.pmatch ~pat:pattern elem ) str_arr)
+                                                               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> Pcre.pmatch ~pat:pattern url ||
+                                                                                                                          Pcre.pmatch ~pat:pattern ref ) url_arr )
+                                                               | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                           end
+                                                         in
+                                                           command tl grepped varmap
+
+                         | Select index               -> 
                                                          begin
                                                            match tmpvar with
-                                                             | Document (doc, url) -> doc
-                                                             (* match also on other types?? Does matching an URL for example makes sense? *)
-                                                             | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
-                                                         end
-                                                       in
-                                                       let match_res = Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern (* flags here *)) in
-                                                       let matched =
-                                                         begin
-                                                           match match_res with
-                                                             | None   -> raise No_Match
-                                                             | Some res -> res
-                                                         end
-                                                       in
-                                                       command tl (Match_result matched) varmap
-
-
-                       | Grep pattern               -> 
-                                                       (*
-                                                         if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
-                                                       *)
-                                                       let grepped = 
-                                                         begin
-                                                           match tmpvar with
-                                                             | String_array str_arr -> String_array( Array2.filter ( fun elem -> Pcre.pmatch ~pat:pattern elem ) str_arr)
-                                                             | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> Pcre.pmatch ~pat:pattern url ||
-                                                                                                                        Pcre.pmatch ~pat:pattern ref ) url_arr )
+                                                             | String_array rowitems -> command tl (String(rowitems.(index))) varmap
+                                                             | Url_array    rowitems -> command tl (Url( fst(rowitems.(index)), snd(rowitems.(index)))) varmap
                                                              | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                          end
-                                                       in
-                                                         command tl grepped varmap
-
-                       | Select index               -> 
-                                                       begin
-                                                         match tmpvar with
-                                                           | String_array rowitems -> command tl (String(rowitems.(index))) varmap
-                                                           | Url_array    rowitems -> command tl (Url( fst(rowitems.(index)), snd(rowitems.(index)))) varmap
-                                                           | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
-                                                       end
 
 
-                       | MSelect index_list         -> 
-                                                       begin
-                                                         match tmpvar with
-                                                           | String_array rowitems -> command tl (String_array(item_selection rowitems index_list)) varmap
-                                                           | Url_array    rowitems -> command tl (Url_array(item_selection rowitems index_list)) varmap
-                                                           | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
-                                                       end
+                         | MSelect index_list         -> 
+                                                         begin
+                                                           match tmpvar with
+                                                             | String_array rowitems -> command tl (String_array(item_selection rowitems index_list)) varmap
+                                                             | Url_array    rowitems -> command tl (Url_array(item_selection rowitems index_list)) varmap
+                                                             | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                         end
 
-                                                         
+                                                           
 
-                       | ColSelect   col_index        ->
-                                                       begin
-                                                         match tmpvar with
-                                                           | Match_result mres -> 
-                                                                                  let outer_maxidx = Array.length mres     - 1 in (* outer: row *)
-                                                                                  let inner_maxidx = Array.length mres.(0) - 1 in (* inner: col *)
-                                                                                  let res          = Array.make (Array.length mres) mres.(0).(0) in
-                                                                                  begin
-                                                                                    if col_index >= 0 && col_index <= inner_maxidx
-                                                                                    then
-                                                                                      begin
-                                                                                        for idx = 0 to outer_maxidx
-                                                                                        do
-                                                                                          res.(idx) <- mres.(idx).(col_index)
-                                                                                        done;
-                                                                                        command tl (String_array res) varmap
-                                                                                      end
-                                                                                    else
-                                                                                      raise Invalid_Col_Index
-                                                                                  end
-                                                           | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
-                                                       end
-
-
-                       | RowSelect   index            ->
-                                                       let res = ref Empty in
-                                                       begin
-                                                         match tmpvar with
-                                                           | Match_result mres ->
-                                                                                  begin
-                                                                                    if index >= 0 && index <= Array.length ( mres ) - 1
-                                                                                    then
-                                                                                      res := String_array ( mres.(index) )
-                                                                                    else
-                                                                                      raise Invalid_Row_Index
-                                                                                  end
-                                                           | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
-                                                       end;
-                                                       command tl !res varmap
-
-                       | Select_match ( col_idx, matchpat) -> (* select match is a row-select, where the index *)
-                                                              (* first match wins *)
-                                                               begin
-                                                                 match tmpvar with
-                                                                   | Match_result mres ->
-
-                                                                          let max_row_idx = Array.length ( mres ) - 1 in
-                                                                          let max_col_idx = Array.length ( mres.(0) ) - 1 in
-
-                                                                          let rows     = Array.to_list mres in
-
-                                                                          (* here is the selection: via string match of the lookup-pattern *)
-                                                                          let selected = List.filter ( fun item -> Pcre.pmatch ~pat:matchpat item.(col_idx)  ) rows in
-                                                                          if List.length selected = 0 then raise No_Match;
-
-                                                                          verbose_printf "found: %d items \n" (List.length selected);
-                                                                          command tl (String_array (List.hd selected)) varmap (* first match wins *)
-
-                                                                   | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
-                                                               end
+                         | ColSelect   col_index        ->
+                                                         begin
+                                                           match tmpvar with
+                                                             | Match_result mres -> 
+                                                                                    let outer_maxidx = Array.length mres     - 1 in (* outer: row *)
+                                                                                    let inner_maxidx = Array.length mres.(0) - 1 in (* inner: col *)
+                                                                                    let res          = Array.make (Array.length mres) mres.(0).(0) in
+                                                                                    begin
+                                                                                      if col_index >= 0 && col_index <= inner_maxidx
+                                                                                      then
+                                                                                        begin
+                                                                                          for idx = 0 to outer_maxidx
+                                                                                          do
+                                                                                            res.(idx) <- mres.(idx).(col_index)
+                                                                                          done;
+                                                                                          command tl (String_array res) varmap
+                                                                                        end
+                                                                                      else
+                                                                                        raise Invalid_Col_Index
+                                                                                    end
+                                                             | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+                                                         end
 
 
-                       | I_Select_match ( col_idx, matchpat) -> (* select match is a row-select, where the index *)
+                         | RowSelect   index            ->
+                                                         let res = ref Empty in
+                                                         begin
+                                                           match tmpvar with
+                                                             | Match_result mres ->
+                                                                                    begin
+                                                                                      if index >= 0 && index <= Array.length ( mres ) - 1
+                                                                                      then
+                                                                                        res := String_array ( mres.(index) )
+                                                                                      else
+                                                                                        raise Invalid_Row_Index
+                                                                                    end
+                                                             | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+                                                         end;
+                                                         command tl !res varmap
+
+                         | Select_match ( col_idx, matchpat) -> (* select match is a row-select, where the index *)
                                                                 (* first match wins *)
                                                                  begin
                                                                    match tmpvar with
                                                                      | Match_result mres ->
+
                                                                             let max_row_idx = Array.length ( mres ) - 1 in
                                                                             let max_col_idx = Array.length ( mres.(0) ) - 1 in
-  
+
                                                                             let rows     = Array.to_list mres in
 
-                                                                            (* column selection from the match-result *)
-                                                                            (* -------------------------------------- *)
-                                                                            let col = Array.make (Array.length mres) mres.(0).(0) in
-                                                                            begin
-                                                                              if col_idx >= 0 && col_idx <= max_col_idx
-                                                                              then
-                                                                                begin
-                                                                                  for idx = 0 to max_row_idx
-                                                                                  do
-                                                                                    col.(idx) <- mres.(idx).(col_idx)
-                                                                                  done
-                                                                                end
-                                                                              else
-                                                                                raise Invalid_Col_Index
-                                                                            end;
+                                                                            (* here is the selection: via string match of the lookup-pattern *)
+                                                                            let selected = List.filter ( fun item -> Pcre.pmatch ~pat:matchpat item.(col_idx)  ) rows in
+                                                                            if List.length selected = 0 then raise No_Match;
 
-                                                                            (* select the match-pattern: either interactively, *)
-                                                                            (* or use the default from the parser-definition.  *)
-                                                                            (* ----------------------------------------------- *)
-                                                                            let match_pattern =
-                                                                              if
-                                                                                Cli.opt.Cli.interactive = true
-                                                                              then
-                                                                                interactive_string_select col matchpat
-                                                                              else
-                                                                                matchpat
-                                                                            in
-                                                                              verbose_printf "selected pattern: \"%s\"\n" match_pattern;
+                                                                            verbose_printf "found: %d items \n" (List.length selected);
+                                                                            command tl (String_array (List.hd selected)) varmap (* first match wins *)
 
-                                                                              let selected = List.filter ( fun item -> Pcre.pmatch ~pat:match_pattern item.(col_idx)  ) rows in
-                                                                              if List.length selected = 0 then raise No_Match;
-
-                                                                              verbose_printf "found: %d items \n" (List.length selected);
-
-                                                                              command tl (String_array (List.hd selected)) varmap (* first match wins *)
-  
                                                                      | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
                                                                  end
 
 
+                         | I_Select_match ( col_idx, matchpat) -> (* select match is a row-select, where the index *)
+                                                                  (* first match wins *)
+                                                                   begin
+                                                                     match tmpvar with
+                                                                       | Match_result mres ->
+                                                                              let max_row_idx = Array.length ( mres ) - 1 in
+                                                                              let max_col_idx = Array.length ( mres.(0) ) - 1 in
+    
+                                                                              let rows     = Array.to_list mres in
 
-                       | Link_extract               ->
-                                                       begin
-                                                         match tmpvar with
-                                                           | Document (doc, url) ->
-                                                                     let urls   = Parsers.linkextract doc in
+                                                                              (* column selection from the match-result *)
+                                                                              (* -------------------------------------- *)
+                                                                              let col = Array.make (Array.length mres) mres.(0).(0) in
+                                                                              begin
+                                                                                if col_idx >= 0 && col_idx <= max_col_idx
+                                                                                then
+                                                                                  begin
+                                                                                    for idx = 0 to max_row_idx
+                                                                                    do
+                                                                                      col.(idx) <- mres.(idx).(col_idx)
+                                                                                    done
+                                                                                  end
+                                                                                else
+                                                                                  raise Invalid_Col_Index
+                                                                              end;
 
-                                                                     let rebased_urls =
-                                                                         List.fold_right ( fun lnk sofar -> match Parsers.Rebase.rebase_url url lnk with
-                                                                                                              | Some rebased -> (rebased, url) :: sofar
-                                                                                                              | None         -> sofar
-                                                                                         ) urls []
-                                                                     in
+                                                                              (* select the match-pattern: either interactively, *)
+                                                                              (* or use the default from the parser-definition.  *)
+                                                                              (* ----------------------------------------------- *)
+                                                                              let match_pattern =
+                                                                                if
+                                                                                  Cli.opt.Cli.interactive = true
+                                                                                then
+                                                                                  interactive_string_select col matchpat
+                                                                                else
+                                                                                  matchpat
+                                                                              in
+                                                                                verbose_printf "selected pattern: \"%s\"\n" match_pattern;
 
-                                                                     let links  = Url_array ( Array.of_list rebased_urls )
-                                                                     in
-                                                                       command tl links varmap
+                                                                                let selected = List.filter ( fun item -> Pcre.pmatch ~pat:match_pattern item.(col_idx)  ) rows in
+                                                                                if List.length selected = 0 then raise No_Match;
+
+                                                                                verbose_printf "found: %d items \n" (List.length selected);
+
+                                                                                command tl (String_array (List.hd selected)) varmap (* first match wins *)
+    
+                                                                       | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+                                                                   end
 
 
 
-                                                           | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
-                                                       end
-
-
-                       | Link_extract_xml           ->
-                                                       begin
-                                                         match tmpvar with
-                                                           | Document(doc, url)-> let urls   = Array.of_list (Parsers.xml_get_href_from_string doc) in
-                                                                                  (* the url of the doecument will become the referrer of the extracted url! *)
-                                                                                  let links  = Url_array (Array.map ( fun lnk -> (lnk, url) ) urls) in
-                                                                                  command tl links varmap
-                                                           | _ -> print_warning "Link_extract_xml found non-usable type"; raise Wrong_tmpvar_type
-                                                       end
-
-                         (*
-                         | Tag_extract  tagname ...   ->
-                                                         Printf.eprintf "Tag_extract  tagname: %s\n" tagname;
+                         | Link_extract               ->
                                                          begin
                                                            match tmpvar with
                                                              | Document (doc, url) ->
-                                                                       let result = Array.of_list (Parsers.tagextract tagname doc) in
-                                                                       command tl (String_array result) varmap
+                                                                       let urls   = Parsers.linkextract doc in
+
+                                                                       let rebased_urls =
+                                                                           List.fold_right ( fun lnk sofar -> match Parsers.Rebase.rebase_url url lnk with
+                                                                                                                | Some rebased -> (rebased, url) :: sofar
+                                                                                                                | None         -> sofar
+                                                                                           ) urls []
+                                                                       in
+
+                                                                       let links  = Url_array ( Array.of_list rebased_urls )
+                                                                       in
+                                                                         command tl links varmap
+
+
+
+                                                             | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
+                                                         end
+
+
+                         | Link_extract_xml           ->
+                                                         begin
+                                                           match tmpvar with
+                                                             | Document(doc, url)-> let urls   = Array.of_list (Parsers.xml_get_href_from_string doc) in
+                                                                                    (* the url of the doecument will become the referrer of the extracted url! *)
+                                                                                    let links  = Url_array (Array.map ( fun lnk -> (lnk, url) ) urls) in
+                                                                                    command tl links varmap
+                                                             | _ -> print_warning "Link_extract_xml found non-usable type"; raise Wrong_tmpvar_type
+                                                         end
+
+                           (*
+                           | Tag_extract  tagname ...   ->
+                                                           Printf.eprintf "Tag_extract  tagname: %s\n" tagname;
+                                                           begin
+                                                             match tmpvar with
+                                                               | Document (doc, url) ->
+                                                                         let result = Array.of_list (Parsers.tagextract tagname doc) in
+                                                                         command tl (String_array result) varmap
+                                                               | _ -> print_warning "Tag_extract found non-usable type"; raise Wrong_tmpvar_type
+                                                           end
+                           *)
+
+                           | Title_extract            ->
+                                                         begin
+                                                           match tmpvar with
+                                                             | Document (doc, url) ->
+                                                                       let result = Array.of_list (Parsers.titleextract doc) in
+                                                                       command (Subst ("\n", "") :: tl) (String_array result) varmap
                                                              | _ -> print_warning "Tag_extract found non-usable type"; raise Wrong_tmpvar_type
                                                          end
-                         *)
 
-                         | Title_extract            ->
-                                                       begin
+
+                         | Paste paste_list            ->
+                                                          let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
+                                                          let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
+                                                          command tl (String res) varmap
+
+
+
+                         | Print_args prt_args         ->
+                                                          command [ Paste( prt_args ); Print ] Empty varmap; (* use the Paste-command and the print-command *)
+                                                          command tl tmpvar varmap (* just next command without changed tmpvar *)
+
+                         | Print                      ->
+                                                         begin
+                                                           match tmpvar with
+                                                             (* does Varname makes sense at all here? *)
+                                                             | Varname  varname  -> Printf.printf "\n\tVarname  varname => varname = \"%s\"\n" varname;
+                                                                                    command [Print] (Varmap.find varname varmap) varmap (* CHECK FUNCTIONALITY, PLEASE *)
+
+                                                             | String   str      -> print_endline str 
+                                                             | Document(doc, url)-> print_endline doc  (* only print the document, without referrer *)
+                                                             | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
+                                                                                                          print_newline() ) mres
+                                                             | String_array     str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr
+                                                             | Url (href, ref)   -> Printf.printf "%s   # Referrer:  %s\n" href ref
+                                                             | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
+                                                             | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
+                                                             (*
+                                                             | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
+                                                             *)
+                                                             | _ -> print_warning "Print-command found non-printable type"
+                                                         end;
+                                                         command tl tmpvar varmap
+
+
+                         | Show_match                -> (* prints "real" matches only (and not the fullmatch with index = 0) *)
+                                                         begin
+                                                           match tmpvar with
+                                                             | Match_result mres ->
+                                                                        print_endline "show_match: match 0 is the whole match, all others are the groups\n";
+                                                                        Array.iteri ( fun idx x -> 
+                                                                                               Printf.printf "Row %2d:\n" idx;
+                                                                                               Printf.printf "-------\n";
+                                                                                               for index = 0 to Array.length x -1
+                                                                                               do
+                                                                                                 Printf.printf "  Col %2d: \"%s\" \n" index x.(index)
+                                                                                               done;
+                                                                                               print_newline()
+                                                                                    ) mres
+                                                             | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
+                                                         end;
+                                                         command tl tmpvar varmap
+
+
+                         | Print_string str           -> print_string str;
+                                                         command tl tmpvar varmap
+
+
+                         | Save                       -> (*print_endline "Save detected"; raise NOT_IMPLEMENTED_SO_FAR*)
+                                                         let saver (doc, url) = let fname = Parsers.url_to_filename url in
+                                                                             save_string_to_file doc fname
+                                                         in
+
+                                                         begin
+                                                           match tmpvar with
+                                                             | Document(doc, url)       -> saver (doc, url)
+                                                             | Document_array doc_array -> Array.iter saver doc_array
+                                                             | _ -> raise Wrong_tmpvar_type
+                                                         end;
+                                                         command tl tmpvar varmap
+
+
+                         | Setvar var                 -> command tl var varmap (* sets the argument of setvar as new tmpvar *)
+
+
+
+                         | Store  varname             -> command tl tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
+
+
+                         | Recall varname             -> verbose_printf "Recall variable: \"%s\"\n" varname;
+                                                         let varcontents = Varmap.find varname varmap in
+                                                         command tl varcontents varmap
+
+                         | Delete varname             -> command tl tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
+
+
+                         | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;
+                                                                                            command [Print; Print_string "\n"] value varmap ) varmap;
+                                                         command tl tmpvar varmap
+
+                         | List_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\"\n" varname ) varmap;
+                                                         command tl tmpvar varmap
+
+                         | Show_type                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
+                                                         command tl tmpvar varmap
+
+
+                         | Basename                   -> begin
+                                                           match tmpvar with
+                                                             | String filename -> command tl (String(Filename.basename filename)) varmap
+                                                             | Url (href, ref) -> command tl (String(Filename.basename href)) varmap
+                                                             | _ -> raise Wrong_argument_type
+                                                         end
+
+
+                         | Subst (from_re, to_str)    -> verbose_printf "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
+                                                         let replacer instring = Pcre.replace ~pat:from_re ~templ:to_str instring in
+                                                         begin
                                                          match tmpvar with
-                                                           | Document (doc, url) ->
-                                                                     let result = Array.of_list (Parsers.titleextract doc) in
-                                                                     command (Subst ("\n", "") :: tl) (String_array result) varmap
-                                                           | _ -> print_warning "Tag_extract found non-usable type"; raise Wrong_tmpvar_type
-                                                       end
-
-
-                       | Paste paste_list            ->
-                                                        let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
-                                                        let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
-                                                        command tl (String res) varmap
-
-
-
-                       | Print_args prt_args         ->
-                                                        command [ Paste( prt_args ); Print ] Empty varmap; (* use the Paste-command and the print-command *)
-                                                        command tl tmpvar varmap (* just next command without changed tmpvar *)
-
-                       | Print                      ->
-                                                       begin
-                                                         match tmpvar with
-                                                           (* does Varname makes sense at all here? *)
-                                                           | Varname  varname  -> Printf.printf "\n\tVarname  varname => varname = \"%s\"\n" varname;
-                                                                                  command [Print] (Varmap.find varname varmap) varmap (* CHECK FUNCTIONALITY, PLEASE *)
-
-                                                           | String   str      -> print_endline str 
-                                                           | Document(doc, url)-> print_endline doc  (* only print the document, without referrer *)
-                                                           | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
-                                                                                                        print_newline() ) mres
-                                                           | String_array     str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr
-                                                           | Url (href, ref)   -> Printf.printf "%s   # Referrer:  %s\n" href ref
-                                                           | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
-                                                           | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
-                                                           (*
-                                                           | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
-                                                           *)
-                                                           | _ -> print_warning "Print-command found non-printable type"
-                                                       end;
-                                                       command tl tmpvar varmap
-
-
-                       | Show_match                -> (* prints "real" matches only (and not the fullmatch with index = 0) *)
-                                                       begin
-                                                         match tmpvar with
-                                                           | Match_result mres ->
-                                                                      print_endline "show_match: match 0 is the whole match, all others are the groups\n";
-                                                                      Array.iteri ( fun idx x -> 
-                                                                                             Printf.printf "Row %2d:\n" idx;
-                                                                                             Printf.printf "-------\n";
-                                                                                             for index = 0 to Array.length x -1
-                                                                                             do
-                                                                                               Printf.printf "  Col %2d: \"%s\" \n" index x.(index)
-                                                                                             done;
-                                                                                             print_newline()
-                                                                                  ) mres
-                                                           | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
-                                                       end;
-                                                       command tl tmpvar varmap
-
-
-                       | Print_string str           -> print_string str;
-                                                       command tl tmpvar varmap
-
-
-                       | Save                       -> (*print_endline "Save detected"; raise NOT_IMPLEMENTED_SO_FAR*)
-                                                       let saver (doc, url) = let fname = Parsers.url_to_filename url in
-                                                                           save_string_to_file doc fname
-                                                       in
-
-                                                       begin
-                                                         match tmpvar with
-                                                           | Document(doc, url)       -> saver (doc, url)
-                                                           | Document_array doc_array -> Array.iter saver doc_array
-                                                           | _ -> raise Wrong_tmpvar_type
-                                                       end;
-                                                       command tl tmpvar varmap
-
-
-                       | Setvar var                 -> command tl var varmap (* sets the argument of setvar as new tmpvar *)
-
-
-
-                       | Store  varname             -> command tl tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
-
-
-                       | Recall varname             -> verbose_printf "Recall variable: \"%s\"\n" varname;
-                                                       let varcontents = Varmap.find varname varmap in
-                                                       command tl varcontents varmap
-
-                       | Delete varname             -> command tl tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
-
-
-                       | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;
-                                                                                          command [Print; Print_string "\n"] value varmap ) varmap;
-                                                       command tl tmpvar varmap
-
-                       | List_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\"\n" varname ) varmap;
-                                                       command tl tmpvar varmap
-
-                       | Show_type                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
-                                                       command tl tmpvar varmap
-
-
-                       | Basename                   -> begin
-                                                         match tmpvar with
-                                                           | String filename -> command tl (String(Filename.basename filename)) varmap
-                                                           | Url (href, ref) -> command tl (String(Filename.basename href)) varmap
+                                                           | String str           -> command tl (String (replacer str)) varmap
+                                                           | String_array str_arr -> let replaced = Array.map replacer str_arr in
+                                                                                     command tl (String_array replaced) varmap
                                                            | _ -> raise Wrong_argument_type
-                                                       end
+                                                         end
 
 
-                       | Subst (from_re, to_str)    -> verbose_printf "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
-                                                       let replacer instring = Pcre.replace ~pat:from_re ~templ:to_str instring in
-                                                       begin
-                                                       match tmpvar with
-                                                         | String str           -> command tl (String (replacer str)) varmap
-                                                         | String_array str_arr -> let replaced = Array.map replacer str_arr in
-                                                                                   command tl (String_array replaced) varmap
-                                                         | _ -> raise Wrong_argument_type
-                                                       end
+                         | Quote                      -> let str = to_string tmpvar varmap in
+                                                         let quoted = "\"" ^ str ^ "\"" in
+                                                         command tl (String (quoted)) varmap
 
+                         | To_string                  -> command tl (String (to_string tmpvar varmap)) varmap
 
-                       | Quote                      -> let str = to_string tmpvar varmap in
-                                                       let quoted = "\"" ^ str ^ "\"" in
-                                                       command tl (String (quoted)) varmap
-
-                       | To_string                  -> command tl (String (to_string tmpvar varmap)) varmap
-
-                       | Dump                       ->
-                                                       begin
-                                                       match tmpvar with
-                                                         | Document(doc, url)-> Parsers.Htmlparse.dump_html_from_string doc
-                                                         | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       command tl tmpvar varmap
-
-                       | Show_tags                  ->
-                                                       begin
-                                                       match tmpvar with
-                                                         | Document(doc, url)-> Parsers.Htmlparse.show_tags_from_string doc
-                                                         | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       command tl tmpvar varmap
-
-                       | Show_tags_fullpath         ->
-                                                       begin
-                                                       match tmpvar with
-                                                         | Document(doc, url)-> Parsers.Htmlparse.show_tags_fullpath_from_string doc
-                                                         | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       command tl tmpvar varmap
-
-                       | Dump_data                  ->
-                                                       begin
-                                                       match tmpvar with
-                                                         | Document(doc, url)-> Parsers.Htmlparse.dump_html_data_from_string doc
-                                                         | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       command tl tmpvar varmap
-
-                       | System                     -> begin
+                         | Dump                       ->
+                                                         begin
                                                          match tmpvar with
-                                                           | String syscmd -> (* verbosity-message *)
-                                                                              (* ----------------- *)
-                                                                              verbose_printf "System-cmd: %s" syscmd;
-
-                                                                              (* do the work *)
-                                                                              (* ----------- *)
-                                                                              if Cli.opt.Cli.safe = false
-                                                                              then
-                                                                                Sys.command syscmd
-                                                                              else
-                                                                                (Printf.fprintf stderr "*** Command not invoked: %s\n" syscmd; 0)
+                                                           | Document(doc, url)-> Parsers.Htmlparse.dump_html_from_string doc
                                                            | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       command tl tmpvar varmap
+                                                         end;
+                                                         command tl tmpvar varmap
 
-                       | Exit_parse                 -> flush stdout; prerr_endline "Parse was exited."; command [] tmpvar varmap (* call again with nothing-left-to-do *)
+                         | Show_tags                  ->
+                                                         begin
+                                                         match tmpvar with
+                                                           | Document(doc, url)-> Parsers.Htmlparse.show_tags_from_string doc
+                                                           | _ -> raise Wrong_argument_type
+                                                         end;
+                                                         command tl tmpvar varmap
 
-                       | Dummy                      -> command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *)
+                         | Show_tags_fullpath         ->
+                                                         begin
+                                                         match tmpvar with
+                                                           | Document(doc, url)-> Parsers.Htmlparse.show_tags_fullpath_from_string doc
+                                                           | _ -> raise Wrong_argument_type
+                                                         end;
+                                                         command tl tmpvar varmap
 
-                   end
+                         | Dump_data                  ->
+                                                         begin
+                                                         match tmpvar with
+                                                           | Document(doc, url)-> Parsers.Htmlparse.dump_html_data_from_string doc
+                                                           | _ -> raise Wrong_argument_type
+                                                         end;
+                                                         command tl tmpvar varmap
+
+                         | System                     -> begin
+                                                           match tmpvar with
+                                                             | String syscmd -> (* verbosity-message *)
+                                                                                (* ----------------- *)
+                                                                                verbose_printf "System-cmd: %s" syscmd;
+
+                                                                                (* do the work *)
+                                                                                (* ----------- *)
+                                                                                if Cli.opt.Cli.safe = false
+                                                                                then
+                                                                                  Sys.command syscmd
+                                                                                else
+                                                                                  (Printf.fprintf stderr "*** Command not invoked: %s\n" syscmd; 0)
+                                                             | _ -> raise Wrong_argument_type
+                                                         end;
+                                                         command tl tmpvar varmap
+
+                         | Exit_parse                 -> flush stdout; prerr_endline "Parse was exited."; command [] tmpvar varmap (* call again with nothing-left-to-do *)
+
+                         | Dummy                      -> command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *)
+
+                     end
 
 
-  in
-    command cmdlst Empty Varmap.empty
+    in
+      command cmdlst Empty Varmap.empty
 
 
 
