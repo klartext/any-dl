@@ -199,17 +199,18 @@ let evaluate_command_list cmdlst =
     end
     
 
+  (* at the moment, varmap is not returned  updated *)
   and get_document_list  urls_refs varmap =
-    let rec aux urllist vm result = match urllist with
-      | []        -> result
+    let rec aux urllist (result, vmap) = match urllist with
+      | []        -> result, vmap
       | (u,r)::tl -> begin
-                       match get_document u r varmap with
-                         | None                     -> Printf.eprintf "no document found for %s\n" u;
-                                                       aux tl vm result
-                         | Some ( doc, ref, varmap) -> aux tl varmap ((doc,ref)::result)
+                       match get_document u r vmap with
+                         | None                  -> Printf.eprintf "no document found for %s\n" u;
+                                                    aux tl (result, vmap)
+                         | Some (doc, ref, new_varmap) -> aux tl ( (doc,ref)::result, new_varmap )
                      end
     in
-      aux urls_refs varmap []
+      aux urls_refs ([], varmap)
 
   (* "command"-function is the main commands-parser/evaluator *)
   (* -------------------------------------------------------- *)
@@ -240,11 +241,12 @@ let evaluate_command_list cmdlst =
                          | Get_urls        -> begin
                                                 match tmpvar with
                                                   | Url_list  urllist  -> prerr_endline "Should now get Documents!";
-                                                                          let docs = get_document_list  urllist varmap in
-                                                                          command tl (Document_array (Array.of_list docs)) varmap
+                                                                          let docs, vm = get_document_list  urllist varmap in
+                                                                          command tl (Document_array (Array.of_list docs)) vm
+
                                                   | Url_array urlarray -> prerr_endline "Should now get Documents!";
-                                                                          let docs = get_document_list  (Array.to_list urlarray) varmap in
-                                                                          command tl (Document_array (Array.of_list docs)) varmap
+                                                                          let docs, vm = get_document_list  (Array.to_list urlarray) varmap in
+                                                                          command tl (Document_array (Array.of_list docs)) vm
                                                   (*
                                                   | Url_array urlarray -> prerr_endline "Should now get Documents!";
                                                                           Array.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urlarray
