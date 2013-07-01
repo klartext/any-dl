@@ -271,6 +271,7 @@ let evaluate_command_list cmdlst =
                                                            begin
                                                              match tmpvar with
                                                                | Document (doc, url) -> doc
+                                                               | String    s         -> s
                                                                (* match also on other types?? Does matching an URL for example makes sense? *)
                                                                | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
                                                            end
