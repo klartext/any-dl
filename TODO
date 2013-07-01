@@ -41,6 +41,10 @@ FEATUREs:
 =========
 
 
+ - possibly a true stack ( push, pop, dup, exch, ...) might make sense,
+   enhancing the one-val-stack concept.
+
+
  - new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
  - new command: astore("NAME");  (autostore() -> store current value like matrix -> NAME.(x).(y) or something like that
  - syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
