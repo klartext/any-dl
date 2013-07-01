@@ -139,7 +139,7 @@ module Xmlparse =
 
     (* ggf. String-lowercase bei "href"-Vergleich einsetzen *)
     (* ---------------------------------------------------- *)
-    let get_href_from_asx xml = 
+    let get_href_from_xml xml = 
       let href_list = ref [] in
       let rec aux xml_elem = match xml_elem with
         | Element (tagname, attrl, chldl) -> (* only select ref *) (* IST DAS ALLGEMEINGUELTIG????? *)
@@ -378,7 +378,7 @@ let titleextract   doc = parse_html ~tagmatch:"title" ~pickdata:false     (conv_
 let tagextract tag doc = parse_html ~pickdata:true ~tagmatch:tag (conv_to_doclist doc)
 
 
-let xml_get_href  = Xmlparse.get_href_from_asx
+let xml_get_href  = Xmlparse.get_href_from_xml
 
 
 
@@ -387,6 +387,6 @@ let xml_get_href  = Xmlparse.get_href_from_asx
 (* --------------------------------------------------------------------------- *)
 (* or in short: feed in xml-document as plain string, and get out list of href *)
 (* --------------------------------------------------------------------------- *)
-let xml_get_href_from_string  str = Xmlparse.get_href_from_asx ( Xmlparse.parse_string str )
+let xml_get_href_from_string  str = Xmlparse.get_href_from_xml ( Xmlparse.parse_string str )
 
 
