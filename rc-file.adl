@@ -675,18 +675,70 @@ end
 # =================================
 parsername "3sat_mediathek_get": ( "http://www.3sat.de" )
 start
-  store("url");
+  get("http://vqm.zdf.de/conf/zdfplayer/1.2/3sat/vqm.xml");
+  print;
 
-  # look out for SMIL-file-url
-  # --------------------------
-  match( "\"(.*?smil.*?)\"" );
+  print("------------------");
+  print("STARTURL: ", $STARTURL);
+
+
+  # get the Object-ID from the STARTURL
+  # from the url: "http://..../......obj=<object-id>
+  # ------------------------------------------------
+  recall("STARTURL");
+  to_string;
+  subst(>>>(.*obj=)<<<, "");
+  store("object_id");
+
+  print("object_id:", $object_id);
+
+
+  # to get the name of the video, we have to look into the following file:
+  # ----------------------------------------------------------------------
+  paste("http://www.3sat.de/mediathek/xmlservice/web/trackingIVW?embeddedEdition=mediathek&beitragsId=", $object_id);
+  makeurl;
+  get;
+
+  #print("------------------");
+  #print;
+  #print("------------------");
+
+  # extract the smilname
+  # --------------------
+  # example of what we look for:  <value key="count">http://3sat.ivwbox.de/cgi-bin/ivw/CP/mediathek/play/ard;130630_adel_in_deutschland_ard/web</value>
+  match( >>>http:.*?;(.*?)/web</value<<< );
   rowselect(0);
   select(1);
-
+  store("smilname");
   print;
+
+  # Year and Month must be extracted from the smilname seperately
+  # -------------------------------------------------------------
+  match("^(..)(..)");
+  print;
+  rowselect(0);
+
+  # Year
+  store("tmp");
+  select(1);
+  store("YY"); # Year as YY
+
+  # Month
+  recall("tmp");
+  select(2);
+  store("MM"); # Month as MM
+
+
+  # The complete smil-url
+  # ---------------------
+  # Example:  http://fstreaming.zdf.de/3sat/veryhigh/13/06/130630_adel_in_deutschland_ard.smil
+  paste("http://fstreaming.zdf.de/3sat/veryhigh/", $YY, "/", $MM, "/", $smilname, ".smil" );
+  print;
+
 
   # get the SMIL-file
   # -----------------
+  #get("http://fstreaming.zdf.de/3sat/veryhigh/13/06/130630_adel_in_deutschland_ard.smil");
   show_type;
   makeurl;
   get;
