@@ -732,6 +732,9 @@ start
 # http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=30622
 # will link to  http://fstreaming.zdf.de/3sat/veryhigh/120514_gelenke_nano.smil
 # -> there is not Year and Month as part of the link!
+# Possibly the older pages (2012) don't use Year and month additionally in URL,
+# but that is new in 2013.
+# Nevertheless it must be coded somewhere, and should be possible to be parsed...
 
   # The complete smil-url
   # ---------------------

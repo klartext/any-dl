@@ -23,6 +23,8 @@ BUGs:
 
  - using linkextract on "file:///"-urls does not work.
 
+ - 3sat-Parser needs to be checked again. (See comments in rc-file, regarding Year / Month in URL)
+
 
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
@@ -40,6 +42,8 @@ BETTER STRUCTURE, CLEANER CODE:
 FEATUREs:
 =========
 
+
+ - if/then/else?  try/catch?
 
  - possibly a true stack ( push, pop, dup, exch, ...) might make sense,
    enhancing the one-val-stack concept.
