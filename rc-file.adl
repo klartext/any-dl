@@ -728,11 +728,16 @@ start
   select(2);
   store("MM"); # Month as MM
 
+# Problem:
+# http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=30622
+# will link to  http://fstreaming.zdf.de/3sat/veryhigh/120514_gelenke_nano.smil
+# -> there is not Year and Month as part of the link!
 
   # The complete smil-url
   # ---------------------
   # Example:  http://fstreaming.zdf.de/3sat/veryhigh/13/06/130630_adel_in_deutschland_ard.smil
-  paste("http://fstreaming.zdf.de/3sat/veryhigh/", $YY, "/", $MM, "/", $smilname, ".smil" );
+  #paste("http://fstreaming.zdf.de/3sat/veryhigh/", $YY, "/", $MM, "/", $smilname, ".smil" );
+  paste("http://fstreaming.zdf.de/3sat/veryhigh/", $smilname, ".smil" );
   print;
 
 
