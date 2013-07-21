@@ -436,21 +436,24 @@ let evaluate_command_list cmdlst =
 
                          | Link_extract               ->
                                                          begin
+
+                                                           let rebase_urls url_list  parent_url =
+                                                               List.fold_right ( fun lnk sofar -> match Parsers.Rebase.rebase_url parent_url lnk with
+                                                                                                    | Some rebased -> (rebased,  parent_url) :: sofar
+                                                                                                    | None         -> sofar
+                                                                               ) url_list []
+                                                           in
+
                                                            match tmpvar with
                                                              | Document (doc, url) ->
-                                                                       let urls   = Parsers.linkextract doc in
-
-                                                                       let rebased_urls =
-                                                                           List.fold_right ( fun lnk sofar -> match Parsers.Rebase.rebase_url url lnk with
-                                                                                                                | Some rebased -> (rebased, url) :: sofar
-                                                                                                                | None         -> sofar
-                                                                                           ) urls []
-                                                                       in
+                                                                       let extracted_urls = Parsers.linkextract doc in
+                                                                       let rebased_urls   = rebase_urls extracted_urls url in
 
                                                                        let links  = Url_array ( Array.of_list rebased_urls )
                                                                        in
                                                                          command tl links varmap
 
+                                                             | Document_array doc_url_array -> ()
 
 
                                                              | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
