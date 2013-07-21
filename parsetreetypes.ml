@@ -80,6 +80,7 @@ let result_to_string res = match res with
     | String         _ -> "String"
     | String_array   _ -> "String_array"
     | Document       _ -> "Document"
+    | Document_array _ -> "Document_array"
     | Url            _ -> "Url"
     | Url_list       _ -> "Url_list"
     | Url_array      _ -> "Url_array"
