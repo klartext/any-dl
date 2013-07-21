@@ -133,7 +133,7 @@ let rec  to_string  result_value varmap =
                                           | _ as again -> to_string again varmap
                                       end
       | String        str          -> str 
-      | Document      (doc, url)   -> doc ^ url
+      | Document      (doc, url)   -> url ^ ":" ^ doc
       | String_array  str_arr      -> Array.fold_left ( ^ ) "" str_arr
       | Match_result  mres         -> raise Wrong_argument_type (* match-res => arr of arr -> recursion on String_array ! *)
       | Url           (href, ref)  -> href
