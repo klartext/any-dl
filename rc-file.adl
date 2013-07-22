@@ -739,8 +739,8 @@ start
   # The complete smil-url
   # ---------------------
   # Example:  http://fstreaming.zdf.de/3sat/veryhigh/13/06/130630_adel_in_deutschland_ard.smil
-  #paste("http://fstreaming.zdf.de/3sat/veryhigh/", $YY, "/", $MM, "/", $smilname, ".smil" );
-  paste("http://fstreaming.zdf.de/3sat/veryhigh/", $smilname, ".smil" );
+  paste("http://fstreaming.zdf.de/3sat/veryhigh/", $YY, "/", $MM, "/", $smilname, ".smil" );
+  #paste("http://fstreaming.zdf.de/3sat/veryhigh/", $smilname, ".smil" );
   print;
 
 
@@ -1035,6 +1035,35 @@ start
 
   # und wie nun weiter?
 
+end
+
+
+
+
+# ---------------------------------
+# BR-Abendschau
+# ---------------------------------
+# Example: 
+# =================================
+parsername "br_abendschau": ( "http://www.br.de/fernsehen/bayerisches-fernsehen/sendungen/abendschau-der-sueden" )
+start
+  match( "http://.*?mp4" );
+  print;
+  #exitparse;
+  iselectmatch(0, ".*?A.mp4");
+  makeurl;
+  store("url");
+  basename;
+  store("url_name");
+
+  recall("BASEDOC");
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+  print;
+
+  paste("wget ", $url, " -O ", $title, "__", $url_name ); 
+  system;
 end
 
 
