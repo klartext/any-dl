@@ -28,3 +28,6 @@ install -Dm 755 any-dl ${pkgdir}/usr/bin/any-dl         # install to Arch-Linux 
 [ -f $HOME/.any-dl.rc  ] && cp -avf $HOME/.any-dl.rc $HOME/.any-dl.rc.bak           # backup of your any-dl-rc-file
 install -Dm 644 rc-file.adl ${pkgdir}$HOME/.any-dl.rc   # new any-dl-rc-file
 }
+  # new any-dl-rc-file
+install -Dm 644 rc-file.adl ${pkgdir}/usr/share/any-dl/any-dl.rc   # new any-dl-rc-file
+}
