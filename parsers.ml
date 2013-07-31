@@ -56,12 +56,12 @@ print_endline "---------";
       let extracted_url = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  extracted_link in
       let base          = remove_from_url ~path:true ~query:true ~fragment:true neturl in
       let absurl        = ensure_absolute_url ~base:neturl extracted_url in
-(*
 Printf.printf "neturl:         %s\n" (string_of_url neturl);
 Printf.printf "extracted_url:  %s\n" (string_of_url extracted_url);
 Printf.printf "base:           %s\n" (string_of_url base);
 Printf.printf "absurl:         %s\n" (string_of_url absurl);
 print_endline "----------------------------------------------------";
+(*
 *)
       Some (string_of_url absurl)
     with
@@ -332,18 +332,20 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
                                                            in
 
                                                            let result_of_subtags = collect_subtags args subtag in
+                                                           if debug then (List.iter ( fun x -> print_endline ("subtags:"^x)) result_of_subtags );
                                                            List.append results_of_subdocs result_of_subtags
 
                               | Data    data          ->
                                                         if debug then Printf.printf "**** DATA: %s\n" data;
                                                         if debug then Printf.printf "cur_tag: %s\n"   cur_tag;
-                                                        if pickdata || cur_tag = tagmatch
+                                                        if pickdata && cur_tag = tagmatch
                                                         then [data]
                                                         else []
                           end
                         in
                         (* then we work at the tail *)
                         (* ------------------------ *)
+                        if debug then Printf.printf "_work at TAIL now\n";
                         if debug then List.iter (fun str -> Printf.printf "sample ===> %s\n" str) sample;
                         traverse_aux tl (depth+0) (List.append sample  collected) cur_tag
         in
