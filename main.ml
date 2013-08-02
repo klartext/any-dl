@@ -134,6 +134,7 @@ let rec  to_string  result_value varmap =
                                       end
       | String        str          -> str 
       | Document      (doc, url)   -> url ^ ":" ^ doc
+      | Document_array  arr        -> let strarr = Array.map ( fun (d,u) -> to_string (Document (d,u)) varmap ) arr in to_string (String_array strarr) varmap
       | String_array  str_arr      -> Array.fold_left ( ^ ) "" str_arr
       | Match_result  mres         -> raise Wrong_argument_type (* match-res => arr of arr -> recursion on String_array ! *)
       | Url           (href, ref)  -> href
@@ -448,9 +449,12 @@ let evaluate_command_list cmdlst =
                                                            (* extract urls and rebase these extracted urls *)
                                                            let extract_and_rebase document url =
                                                                let extracted_urls = Parsers.linkextract document in
+                                                               if Cli.opt.Cli.verbose then List.iter (fun x -> verbose_fprintf stdout "---extracted url: %s\n" x) extracted_urls;
                                                                rebase_urls extracted_urls url
                                                            in
 
+
+                                                           verbose_printf "%s" "Link_extract\n";
 
                                                            match tmpvar with
                                                              | Document (doc, url) ->
@@ -767,6 +771,7 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
                                  (* comparing the url with the strings in the url-parsername-assoc-list *)
                                  (* ------------------------------------------------------------------- *)
                                  let parsername = parsername_lookup_by_url  url  parser_urllist in
+                                 verbose_printf "*** selected parser: %s\n" parsername;
                                  Hashtbl.find parser_namehash  parsername
          end
       with Not_found         -> prerr_endline ("No parser found for " ^ url); raise No_parser_found_for_this_url
@@ -782,7 +787,7 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
     evaluate_command_list (Setvar(Url(url,"-")) :: Store "STARTURL" :: Get_url(url, "-") :: Store("BASEDOC") :: parserdef.commands)
 
   with (* handle exceptions from the parse-tree-evaluation *)
-    | No_Match                -> prerr_endline "Parser problem: Could not match!\t Parse will be exited\n"
+    | No_Match                -> prerr_endline "Parser problem: Could not match to pattern!\t Parse will be exited\n"
     | Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!\t Parse exited.\n"
     | Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name
     | No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url
