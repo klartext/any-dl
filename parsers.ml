@@ -375,7 +375,7 @@ let conv_to_doclist str = Nethtml.parse(new Netchannels.input_string str)
 
 let linkextract    doc = parse_html ~tagmatch:"a"   ~subtag:(Some "href") (conv_to_doclist doc)
 let imageextract   doc = parse_html ~tagmatch:"img" ~subtag:(Some "src")  (conv_to_doclist doc)
-let titleextract   doc = parse_html ~tagmatch:"title" ~pickdata:false     (conv_to_doclist doc)
+let titleextract   doc = parse_html ~tagmatch:"title" ~pickdata:true     (conv_to_doclist doc)
 
 let tagextract tag doc = parse_html ~pickdata:true ~tagmatch:tag (conv_to_doclist doc)
 
