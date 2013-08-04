@@ -912,6 +912,23 @@ end
 
 
 
+#######################################################
+####                   R A D I O                    ###
+#######################################################
+parsername "wdr5_toene_texte_bilder": ( "http://www.wdr5.de/sendungen/toene-texte-bilder/" )
+start
+  match("dslSrc=(http://.*?mp3)");
+  rowselect(0);
+  select(1);
+  store("url");
+  print("mp3-URL: ", $url);
+  paste("wget ", $url);
+  system;
+end
+
+
+
+
 
 #######################################################
 ###      N   O   T       T   E   S   T   E   D      ###
