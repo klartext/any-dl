@@ -249,7 +249,7 @@ end
 # other possuble source (RSS/XML) would be:
 # http://www.tagesschau.de/export/video-podcast/tagesthemen/
 # ---------------------------------
-parsername "ard_tagesthemen": ( "http://www.ardmediathek.de/das-erste/tagesthemen" )
+parsername "ard_tagesthemen_quarks": ( "http://www.ardmediathek.de/das-erste/tagesthemen", "http://www.ardmediathek.de/wdr-fernsehen/quarks-und-co" )
 start
   match( >>>http://(.*?).mp4<<< );
   rowselect(0);
@@ -258,7 +258,7 @@ start
   basename;
   store("basename");
  
-  paste(" wget -O tagesthemen_", $basename, " ", $mp4url );
+  paste(" wget -O ", $basename, " ", $mp4url );
   system;
 end
 
@@ -563,7 +563,7 @@ end
 # ---------------------------------
 # Example: http://www.ardmediathek.de/hr-fernsehen/alle-wetter/mikroblockheizkraftwerke?documentId=13068860
 # =================================
-parsername "ard__hr_wdr": ( "http://www.ardmediathek.de/hr-fernsehen/", "http://www.ardmediathek.de/wdr-fernsehen/hier-und-heute/", "http://www.ardmediathek.de/das-erste/anne-will/" )
+parsername "ard__hr_wdr": ( "http://www.ardmediathek.de/hr-fernsehen/", "http://www.ardmediathek.de/wdr-fernsehen/hier-und-heute/", "http://www.ardmediathek.de/das-erste/anne-will/", "http://http://www.ardmediathek.de/wdr-fernsehen/" )
 start
   match( "http://.*mp4" );
 print;
