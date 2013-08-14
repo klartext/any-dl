@@ -249,7 +249,7 @@ end
 # other possuble source (RSS/XML) would be:
 # http://www.tagesschau.de/export/video-podcast/tagesthemen/
 # ---------------------------------
-parsername "ard_tagesthemen_quarks": ( "http://www.ardmediathek.de/das-erste/tagesthemen", "http://www.ardmediathek.de/wdr-fernsehen/quarks-und-co" )
+parsername "ard_tagesthemen": ( "http://www.ardmediathek.de/das-erste/tagesthemen" )
 start
   match( >>>http://(.*?).mp4<<< );
   rowselect(0);
@@ -629,7 +629,7 @@ end
 # ---------------------------------
 # Example: http://www.ardmediathek.de/rbb-fernsehen/klartext/personal-als-sicherheitsrisiko?documentId=13243418
 # =================================
-parsername "ard_rbb_swr": ( "http://www.ardmediathek.de/rbb-fernsehen/", "http://www.ardmediathek.de/swr-fernsehen/" )
+parsername "ard_rbb_swr": ( "http://www.ardmediathek.de/rbb-fernsehen/", "http://www.ardmediathek.de/swr-fernsehen/", "http://www.ardmediathek.de/wdr-fernsehen/quarks-und-co" )
 start
   match("(rtmp://.*?)\".*?\"(mp4:.*?mp4)");
   show_match;
