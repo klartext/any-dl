@@ -400,7 +400,8 @@ end
 # ---------------------------------
 # Example: http://www.ndr.de/fernsehen/sendungen/mein_nachmittag/videos/wochenserie361.html
 # =================================
-parsername "ndr_mediathek_get": ( "http://www.ndr.de", "http://www.ardmediathek.de/ndr-fernsehen/", "http://www.ardmediathek.de/das-erste/guenther-jauch/" )
+parsername "ndr_mediathek_get": ( "http://www.ndr.de", "http://www.ardmediathek.de/ndr-fernsehen/", "http://www.ardmediathek.de/das-erste/guenther-jauch/",
+"http://www.ardmediathek.de/wdr-fernsehen/die-story" )
 start
   match( "http://.*?mp4" );
   show_match;
