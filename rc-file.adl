@@ -682,13 +682,12 @@ start
  match("http.*3gp");
  show_match;
 
- iselectmatch(0,"http.*p5v11.*3gp");
+ iselectmatch(0,"http.*p5v11.*3gp"); # select the highest res.
  select(0);
- print;
+
  makeurl;
  get;
  save;
- #show_tags_fullpath;
 end
 
 
