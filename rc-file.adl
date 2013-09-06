@@ -665,6 +665,31 @@ end
 
 
 
+# ---------------------------------
+# 3SAT
+# ---------------------------------
+# Example: http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=37284
+# =================================
+parsername "3sat_mediathek_get": ( "http://www.3sat.de/mediathek/")
+start
+ match(".*(http.*xmlservice[^ ]+)");
+ # http://www.3sat.de/mediathek/xmlservice/web/beitragsDetails?ak=web&id=37284
+ rowselect(0);
+ select(1);
+ makeurl;
+ get;
+
+ match("http.*3gp");
+ show_match;
+
+ iselectmatch(0,"http.*p5v11.*3gp");
+ select(0);
+ print;
+ makeurl;
+ get;
+ save;
+ #show_tags_fullpath;
+end
 
 
 
@@ -674,7 +699,7 @@ end
 # Example: http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34110
 # http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34191
 # =================================
-parsername "3sat_mediathek_get": ( "http://www.3sat.de" )
+parsername "3sat_mediathek_get_old": ( "http://www.3sat.de" )
 start
   get("http://vqm.zdf.de/conf/zdfplayer/1.2/3sat/vqm.xml");
   print;
