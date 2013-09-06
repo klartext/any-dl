@@ -685,6 +685,7 @@ start
  iselectmatch(0,"http.*p5v11.*3gp"); # select the highest res.
  select(0);
 
+ print("Downloading video, please be patient.");
  makeurl;
  get;
  save;
