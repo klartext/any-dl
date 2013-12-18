@@ -249,7 +249,7 @@ end
 # other possuble source (RSS/XML) would be:
 # http://www.tagesschau.de/export/video-podcast/tagesthemen/
 # ---------------------------------
-parsername "ard_tagesthemen": ( "http://www.ardmediathek.de/das-erste/tagesthemen" )
+parsername "ard_tagesthemen": ( "http://www.ardmediathek.de/das-erste/tagesthemen", "http://mediathek.rbb-online.de/rbb-fernsehen/rbb-praxis/" )
 start
   match( >>>http://(.*?).mp4<<< );
   rowselect(0);
