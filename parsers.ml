@@ -56,12 +56,12 @@ print_endline "---------";
       let extracted_url = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  extracted_link in
       let base          = remove_from_url ~path:true ~query:true ~fragment:true neturl in
       let absurl        = ensure_absolute_url ~base:neturl extracted_url in
+(*
 Printf.printf "neturl:         %s\n" (string_of_url neturl);
 Printf.printf "extracted_url:  %s\n" (string_of_url extracted_url);
 Printf.printf "base:           %s\n" (string_of_url base);
 Printf.printf "absurl:         %s\n" (string_of_url absurl);
 print_endline "----------------------------------------------------";
-(*
 *)
       Some (string_of_url absurl)
     with
