@@ -57,6 +57,7 @@
                   ("subst",          SUBSTITUTE );
                   ("quote",          QUOTE      );
                   ("to_string",      TO_STRING  );
+                  ("to_matchres",    TO_MATCHRES  );
 
                   ("system",         SYSTEM  );
                   ("exitparse",      EXITPARSE  );

@@ -65,6 +65,7 @@ type commands_t =
   | Basename                                  (* get the basename of a file or url *)
   | Subst      of string * string             (* substitution *)
   | To_string                                 (* convert to string *)
+  | To_matchres                               (* convert to matchresult (array) *)
   | Quote                                     (* wraps '"' around the string in tmpvar *)
   | Exit_parse
   | Dump                                      (* Dump html *)
