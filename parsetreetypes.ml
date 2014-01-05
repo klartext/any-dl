@@ -125,6 +125,7 @@ let command_to_string cmd = match cmd with
   | Basename        _ -> "Basename"
   | Subst           _ -> "Subst"
   | To_string       _ -> "To_string"
+  | To_matchres       -> "To_matchres"
   | Quote           _ -> "Quote"
   | Exit_parse      _ -> "Exit_parse"
   | Dump              -> "Dump"
