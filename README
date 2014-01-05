@@ -501,6 +501,7 @@ List of commands/keywords (not carved in stone so far) by example:
 
   basename;
   to_string;
+  to_matchres;
 
   get;
   system;
@@ -721,6 +722,15 @@ List of commands/keywords and a short-escription of them:
 
   to_string
     converts the value of the one-val-stack to a string-representation.
+
+
+  to_matchres
+    converts the value of the one-val-stack to a value of the same type,
+    that a match-operation gives as result.
+    This is an a row-column "array" and show_match-command could show
+    details about it.
+    Useful for later selecting/rowselecting values from this matchres-typed
+    value.
 
 
 Prefedined Variables:
