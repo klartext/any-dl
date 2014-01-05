@@ -435,6 +435,34 @@ let evaluate_command_list cmdlst =
 
 
 
+                         | To_matchres                -> 
+                                                         let pair_to_arr pair = [| fst pair; snd pair |] in
+
+                                                         let new_var = 
+                                                         begin
+                                                           match tmpvar with
+                                                              (*
+                                                              | Varname         vn         -> Match_result [| [| vn |] |]
+                                                              *)
+
+                                                              | String          s          -> Match_result [| [| s |] |]
+                                                              | String_array    str_arr    -> Match_result [| str_arr |]
+                                                              | Document        (doc, url) -> Match_result [| [| doc; url |] |]
+                                                              | Document_array  doc_arr    -> Match_result (Array.map pair_to_arr doc_arr)
+                                                              | Url             (url, ref) -> Match_result [| [| url; ref  |] |]
+
+                                                              | Url_list        url_list   -> let url_array = Array.of_list url_list in
+                                                                                              Match_result (Array.map pair_to_arr url_array)
+
+                                                              | Url_array       url_array  -> Match_result (Array.map pair_to_arr url_array)
+                                                              | Dummy_result               -> Match_result [| [| "DUMMY_A"; "DUMMY_B" |]; [| "DUMMY_C"; "DUMMY_D"|] |]
+                                                              | Match_result    match_res  -> Match_result match_res  (* stays the same *)
+                                                              | Empty                      -> Match_result [| [| "" |] |]
+                                                              | _ -> raise Wrong_argument_type
+                                                         end;
+                                                         in
+                                                         command tl new_var varmap
+
                          | Link_extract               ->
                                                          begin
 
