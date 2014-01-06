@@ -530,6 +530,54 @@ end
 
 
 
+# ----------------------------------------------------------------
+# ---------------------------------
+# ZDF 
+# ---------------------------------
+# Example: http://wstreaming.zdf.de/zdf/veryhigh/130106_teileins_fs_adl.asx
+# =================================
+parsername "zdf_mediathek_mov": ( "http://www.zdf.de/ZDFmediathek/beitrag/" )
+start
+  linkextract;
+  print;
+  grep("mov");
+  print("---------------");
+  print;
+
+show_type;
+  to_matchres;
+  show_match;
+
+  print("---------------");
+  iselectmatch(0, "mov");
+  select(0);
+  makeurl;
+  print;
+  print(" now getting the mov-file: ");
+  get;
+  print;
+
+  match( "rtsp:.*" );
+  rowselect(0);
+  select(0);
+  store("rtsp_url");
+
+  recall("BASEDOC"); 
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+  paste("ffmpeg -i ", $rtsp_url, "vcodec copy -acodec copy zdf_", $title, ".mp4");
+
+  print(" this rtsp-stream now should be dumped. mplayer? ffmpeg?" );
+  print;
+  system;
+
+end
+
+
+
+
 
 # ---------------------------------
 # WDR 
