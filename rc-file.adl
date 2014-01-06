@@ -534,45 +534,45 @@ end
 # ---------------------------------
 # ZDF 
 # ---------------------------------
-# Example: http://wstreaming.zdf.de/zdf/veryhigh/130106_teileins_fs_adl.asx
 # =================================
-parsername "zdf_mediathek_mov": ( "http://www.zdf.de/ZDFmediathek/beitrag/" )
+# mp4: http://www.zdf.de/ZDFmediathek/beitrag/video/2060152/drehscheibe-am-3.-Januar-2014?bc=svp;sv1&ipad=true"
+# mov: http://www.zdf.de/ZDFmediathek/beitrag/video/2060152/drehscheibe-am-3.-Januar-2014?flash=off
+parsername "zdf_mediathek_new": ( "http://www.zdf.de/ZDFmediathek/beitrag/" )
 start
-  linkextract;
-  print;
-  grep("mov");
-  print("---------------");
-  print;
 
-show_type;
-  to_matchres;
-  show_match;
-
-  print("---------------");
-  iselectmatch(0, "mov");
-  select(0);
-  makeurl;
-  print;
-  print(" now getting the mov-file: ");
-  get;
-  print;
-
-  match( "rtsp:.*" );
-  rowselect(0);
-  select(0);
-  store("rtsp_url");
-
-  recall("BASEDOC"); 
   titleextract;
   subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
+  print("Title: ", $title, "\n");
 
-  paste("ffmpeg -i ", $rtsp_url, "vcodec copy -acodec copy zdf_", $title, ".mp4");
 
-  print(" this rtsp-stream now should be dumped. mplayer? ffmpeg?" );
+  # make sure, the URL is an iPAD-url, because then we get mp4-files
+  # ----------------------------------------------------------------
+  recall("STARTURL"); 
+  print("Starturl:             ", $STARTURL);
+
+  to_string;
+  subst(>>>\?.*$<<<, "?bc=svp;sv1&ipad=true"); # remove old ?-parameters, insert ipad-params
+
+  makeurl;
+  store("new_url");
+  print("Changed to this URL:  ", $new_url );
+  get; # get this document
+
+  # now match for the filenames
+  # ---------------------------
+  match("http:.*mp4");
+  iselectmatch(0, "http:.*mp4");
+  select(0);
+  makeurl;
+  store("url");
+
+  print;
+  basename;
+  store("basename");
+  paste( "wget -c ",  $url, " -O ", $title, "_", $basename );
   print;
   system;
-
 end
 
 
