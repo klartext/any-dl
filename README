@@ -54,6 +54,7 @@ Overview
   - wget        (maybe later not necessary, but it is a nice tool, you should have)
   - rtmpdump
   - mplayer
+  - ffmpeg      (for rtsp)
 
 
 Compilation / Installation / Setup
