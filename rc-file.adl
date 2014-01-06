@@ -537,7 +537,7 @@ end
 # =================================
 # mp4: http://www.zdf.de/ZDFmediathek/beitrag/video/2060152/drehscheibe-am-3.-Januar-2014?bc=svp;sv1&ipad=true"
 # mov: http://www.zdf.de/ZDFmediathek/beitrag/video/2060152/drehscheibe-am-3.-Januar-2014?flash=off
-parsername "zdf_mediathek_new": ( "http://www.zdf.de/ZDFmediathek/beitrag/" )
+parsername "zdf_mediathek_new": ( "http://www.zdf.de/ZDFmediathek/beitrag/", "http://www.tagesschau.de/sendung/tagesthemen/" )
 start
 
   titleextract;
