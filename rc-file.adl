@@ -290,7 +290,8 @@ start
   match( >>>arte_vp_url="(.*)"<<< );
   show_match;
 
-  rowselect(0);
+  #rowselect(0);
+  iselectmatch(1,"json");
   select(1);
 
   makeurl;
