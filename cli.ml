@@ -17,8 +17,9 @@ type opt_t = {
                mutable safe             :  bool;          (*  -s: safe behaviour: no download via system invoked *)
                mutable interactive      :  bool;          (*  -i: interactive features enabled (e.g. iselectmatch() *)
                mutable auto_try         :  bool;          (*  -a: auto-try: automatically try all parsers *)
-               mutable auto_try_stop    :  bool;          (*  -as: auto-try: automatically try all parsers; after success STOP *)
+               mutable auto_try_stop    :  bool;          (* -as: auto-try: automatically try all parsers; after success STOP *)
                mutable user_agent       :  string;        (*  -u: user-agent: set name of the user-agent string *)
+               mutable initial_referrer :  string;        (* -ir: initial referrer-string, set before any get-action *)
              }
 
 
@@ -36,7 +37,8 @@ let opt =  {
              interactive      = false;
              auto_try         = false;
              auto_try_stop    = false;
-             user_agent       = "any-dl"
+             user_agent       = "any-dl";
+             initial_referrer = "-"
            }
 
 
@@ -56,6 +58,7 @@ let parse () =
          ("-as",  Arg.Unit   (fun ()          -> opt.auto_try         <- true;
                                                  opt.auto_try_stop    <- true; prerr_endline "!!!"       ),        "   auto-try-stop: try all parsers; stop after first success" );
          ("-u",   Arg.String (fun useragent   -> opt.user_agent       <- useragent ),         "    set the user-agent-string manually" );
+         ("-ir",  Arg.String (fun init_ref    -> opt.initial_referrer <- init_ref ),          "    set the initial referrer from '-' to custom value " );
        (* => DEFAULT (hardcoded) !!!
        *)
               ]
