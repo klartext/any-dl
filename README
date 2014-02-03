@@ -430,19 +430,26 @@ The loaded document is automatically saved as a named variable (name: "BASEDOC")
 Command Line Options:
 ---------------------
 
-   -l list parser-definitions and related URLs
-   -p <parsername>  selects a certain parser, to be used for all urls.
-                    The names that can be selected can be listed with
-                    the -l option, or one can look into the rc-file.
-   -f filename for rc-file
-   -v verbose output
-   -c show commands of parserdef-language
-   -v verbose     
-   -s safe: no download via system invoked
-   -i interactive: interactive features enabled
+    -l list parser-definitions and related URLs
+    -p <parsername>  selects a certain parser, to be used for all urls.
+                     The names that can be selected can be listed with
+                     the -l option, or one can look into the rc-file.
+    -f filename for rc-file
+    -v verbose output
+    -c show commands of parserdef-language
+    -v verbose     
+    -s safe: no download via system invoked
+    -i interactive: interactive features enabled
 
-   -help  Display this list of options
-   --help  Display this list of options
+    -a     auto-try: try all parsers
+    -as    auto-try-stop: try all parsers; stop after first success
+
+    -u     set the user-agent-string manually
+    -ir    set the initial referrer from '-' to custom value 
+
+    -help  Display this list of options
+    --help  Display this list of options
+
 
 
 
