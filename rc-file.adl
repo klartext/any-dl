@@ -675,6 +675,54 @@ start
 end
 
 
+
+
+# ---------------------------------
+# ARD
+# ---------------------------------
+# Example: http://www.ardmediathek.de/das-erste/report-muenchen/50-jahre-muenchner-sicherheitskonferenz?documentId=19432422
+# =================================
+parsername "ard_report": ( "http://www.ardmediathek.de/das-erste/report-muenchen" )
+start
+
+  # extract the filename first
+  # --------------------------
+  titleextract;
+  subst(>>>([|":+?/%;&= ]+)|(%..)<<<, "_");
+  store("filename");
+
+  # now get the URL for the video
+  # -----------------------------
+  recall("BASEDOC");
+  match("(http://cdn-storage.br.de/.*?.mp4)");
+  print;
+  #match("(rtmp://.*?.mp4)");
+  #show_match;
+
+  iselectmatch(1,".*?B.mp4");  #   http://.*?B.mp4  is of acceptable size, so it's used as default
+print("=======================");
+print;
+
+  select(1); # use item with index 1
+
+print("=======================");
+print;
+  #subst(>>>", "<<<, "/");
+  #show_type;
+
+  print;
+
+  print("Downloading video, please be patient.");
+  makeurl;
+  print;
+  get;
+  save;
+  print("Filename should be: ", $filename); # as long as there is no option to save with filename-arg
+
+
+end
+
+
 # ---------------------------------
 # ARD/RBB
 # ---------------------------------
