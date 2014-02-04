@@ -1208,6 +1208,63 @@ start
 end
 
 
+# ---------------------------------
+# BR quer
+# ---------------------------------
+# ---------------------------------
+# Example: http://www.br.de/mediathek/video/sendungen/quer/140130-quer-schlaeger-100.html
+# =================================
+parsername "BR_quer": ( "http://www.br.de/mediathek/video/sendungen/quer" )
+start
+
+  # extract the URL for the xml-file
+  # --------------------------------
+  match( "dataURL:'(.*?.xml)" );
+  print;
+  rowselect(0);
+  select(1);
+  store("url");
+
+
+  recall("STARTURL");
+  paste("http://www.br.de/", $url );
+  makeurl;
+  print;
+
+  get;
+  match("<downloadUrl>(http.*?.mp4)");
+  # <downloadUrl>http://cdn-storage.br.de/MUJIuUOVBwQIbtC2uKJDM6OhuLnC_2rc5U1S/_-iS/_ykg_AN6/d41a6800-ff14-44e1-9e47-f8c742cd10f7_0.mp4
+  # http://cdn-storage.br.de/MUJIuUOVBwQIbtC2uKJDM6OhuLnC_2rc5U1S/_-iS/_ykg_AN6/d41a6800-ff14-44e1-9e47-f8c742cd10f7_B.mp4
+  iselectmatch(1, "http.*?B.mp4");
+  select(1);
+
+  print;
+
+  makeurl;
+  get;
+  save;
+
+
+exitparse;
+
+  linkextract_xml;
+
+  select(0);
+  store("mms");
+
+  # create filename
+  to_string;
+  basename;
+  store("filename");
+
+  # download the video
+  # ------------------
+  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
+  print;
+  system;
+
+end
+
 
 
 
