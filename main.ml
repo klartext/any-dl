@@ -19,6 +19,8 @@ exception NOT_IMPLEMENTED_SO_FAR (* for planned, but not already implemented fun
 exception Command_Sequence_error of string (* for sequences that are not allowed *)
 *)
 
+exception Value_conversion_unknown  (* type conversion, that can't handle this special item (similar to "Wrong_tmpvar_type") *)
+
 exception No_document_found         (* a dcoument could not be retrieved *)
 exception No_Match                  (* if a match was tried, but no match could be found *)
 exception No_Matchresult_available  (* if Select is used, but there is no match-result available as tmpvar *)
@@ -150,6 +152,40 @@ let rec  to_string  result_value varmap =
     str
 
 
+(* ---------------------------------------------- *)
+(* Convert to Urls/Url-arrays and so on.          *)
+(* Should replace "to_string", if Url is wanted.  *)
+(* ---------------------------------------------- *)
+let rec  urlify  result_value varmap =
+  let str =
+    match result_value with
+      | Varname       varname      -> let res = (Varmap.find varname varmap) in
+                                      begin
+                                        match res with
+                                          | String str -> Url(str, "-")
+                                          | _ as again -> urlify again varmap
+                                      end
+      | String        str          -> Url(str, "-")
+      | Document      (doc, url)   -> raise Value_conversion_unknown (* like Wrong_argument_type *)
+      | Document_array  arr        -> raise Value_conversion_unknown
+                      (*
+                      let strarr = Array.map ( fun (d,u) -> to_string (Document (d,u)) varmap ) arr in to_string (String_array strarr) varmap
+                      *)
+      | String_array  str_arr      -> Url_array( Array.map (fun str -> (str, "-") ) str_arr )
+      | Match_result  mres         -> raise Wrong_argument_type (* match-res => arr of arr -> recursion on String_array ! *)
+      | Url           (href, ref)  -> Url (href, ref)
+      | Url_list      url_list     -> Url_list      url_list
+      | Url_array     url_arr      -> Url_array     url_arr
+      | Empty                      -> raise Wrong_argument_type
+      | Dummy_result               -> raise Wrong_argument_type
+      (*
+      *)
+      | _ -> print_warning "to_string-function found non-convertable type"; raise Wrong_argument_type (* just in case more cases will be added *)
+
+  in
+    str
+
+
 
 (* Menue to select an item from a string-list; accepts only valid inputs *)
 (* The return value is the selected value itself (not an index)          *)
@@ -235,6 +271,8 @@ let evaluate_command_list cmdlst =
                                                   | Url (u,r)          -> command (Get_url (u,r) :: tl) tmpvar varmap
                                                   | Url_list  urllist  -> command (Get_urls :: tl) tmpvar varmap
                                                   | Url_array urlarray -> command (Get_urls :: tl) tmpvar varmap
+                                                  (* MATCHRES ???
+                                                  *)
                                                   | _ -> raise Wrong_tmpvar_type
                                                 end
 
