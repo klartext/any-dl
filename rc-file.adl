@@ -87,6 +87,25 @@ start
   print;
 end
 
+# get pdf-docs
+# ------------
+parsername "pdfs": ( )
+start
+  #match( >>>"(http[^"]+\.pdf)<<< );
+  linkextract;
+  grep( >>>(.*?\.pdf)<<< );
+  print;
+  to_matchres;
+  dropcol(1); # referrer removed!
+  show_match;
+  makeurl;
+  show_type;
+  print;
+  get;
+  save;
+
+end
+
 
 # parser for testing cookies
 # ----------------------------------------------------
