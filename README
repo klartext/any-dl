@@ -538,6 +538,14 @@ List of commands/keywords and a short-escription of them:
     defined at all.
 
 
+  dropcol
+    drops a column from a match-result
+
+
+  droprow
+    drops a row from a match-result
+
+
   dummy
     just a dummy command (something like a NOP of processors)
 
