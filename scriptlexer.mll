@@ -53,6 +53,9 @@
 
                   ("colselect",      COLSELECT  );
 
+                  ("dropcol",        DROPCOL  );
+                  ("droprow",        DROPROW  );
+
                   ("basename",       BASENAME  );
                   ("subst",          SUBSTITUTE );
                   ("quote",          QUOTE      );

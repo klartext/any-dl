@@ -59,6 +59,10 @@
 
 %token COLSELECT
 %token ROWSELECT
+
+%token DROPCOL
+%token DROPROW
+
 %token GREP
 %token SELECT
 %token MSELECT
@@ -145,6 +149,7 @@ statement: match_stmt          SEMI   { $1 }
     |      print_stmt          SEMI   { $1 }
     |      EXITPARSE           SEMI   { Exit_parse }
     |      selection           SEMI   { $1 }
+    |      drop                SEMI   { $1 }
     |      get_stmt            SEMI   { $1 }
     |      make_url_stmt       SEMI   { $1 }
     |      store_stmt          SEMI   { $1 }
@@ -225,6 +230,9 @@ selection: COLSELECT LPAREN   INT_NUM   RPAREN { ColSelect $3 }
     |      GREP      LPAREN   STRING RPAREN                      { Grep $3 }
     ;
 
+drop: DROPCOL LPAREN   INT_NUM   RPAREN { DropCol $3 }
+    | DROPROW LPAREN   INT_NUM   RPAREN { DropRow $3 }
+    ;
 
 titleextract_stmt: TITLEEXTRACT   { Title_extract }
     ;

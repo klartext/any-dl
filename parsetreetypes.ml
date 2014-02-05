@@ -57,8 +57,13 @@ type commands_t =
   | Save                                      (* save data *)
   | Setvar       of results_t
   | Show_type
+  (* -------------- *)
   | ColSelect  of int  (* horizontal selection of a matrix (match-result) *)
   | RowSelect  of int  (* vertical   selection of a matrix (match-result) *)
+  (* -------------- *)
+  | DropCol    of int  (* drop a column from a matchresult *)
+  | DropRow    of int  (* drop a row from a m atchresult *)
+  (* -------------- *)
   | Select_match    of int * string  (* selects a match from a match-result-matrix: args: row-index, match-pattern *)
   | I_Select_match  of int * string  (* interactive version of Select_match *)
   | System

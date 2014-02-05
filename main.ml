@@ -32,6 +32,7 @@ exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 
 exception Invalid_Row_Index             (* indexing a row that does not exist *)
 exception Invalid_Col_Index             (* indexing a col that does not exist *)
+exception Invalid_Index                 (* indexing a col/row that does not exist *)
 
 exception No_parser_found_for_this_url (* *)
 
@@ -96,6 +97,41 @@ let item_selection row_items index_list =
   done;
   res
 
+
+(* =================================================== *)
+(* from an array drop the element with the given index *)
+(* =================================================== *)
+let array_drop arr dropidx =
+  let len = Array.length arr             in
+
+  (* Argument checking *)
+  (* ----------------- *)
+  if dropidx < 0 || dropidx > len - 1 then raise Invalid_Index;
+
+
+  let res = Array.make (len - 1) arr.(0) in
+
+  let srcidx    = ref 0 in
+  let targetidx = ref 0 in
+
+  (* --------------------------------------------------------------------------------- *)
+  (* copy any element from src to target, that has different index than the drop-index *)
+  (* --------------------------------------------------------------------------------- *)
+  while !srcidx < len
+  do
+    if !srcidx != dropidx
+    then
+      begin
+        res.(!targetidx) <- arr.(!srcidx); (* copy data *)
+        incr srcidx;
+        incr targetidx
+      end
+    else
+      begin
+        incr srcidx;
+      end
+  done;
+  res (* the resulting array *)
 
 
 
@@ -382,7 +418,7 @@ let evaluate_command_list cmdlst =
                                                                                       else
                                                                                         raise Invalid_Col_Index
                                                                                     end
-                                                             | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+                                                             | _ -> print_warning "ColSelect: wrong type!!!"; raise Wrong_tmpvar_type
                                                          end
 
 
@@ -399,6 +435,52 @@ let evaluate_command_list cmdlst =
                                                                                         raise Invalid_Row_Index
                                                                                     end
                                                              | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+                                                         end;
+                                                         command tl !res varmap
+
+
+                                                           
+
+                         (* Drops a column from a matchres *)
+                         (* ------------------------------ *)
+                         | DropCol   col_index        ->
+                                                         begin
+                                                           match tmpvar with
+                                                             | Match_result mres ->
+                                                                        let dropres = Array.copy mres in
+                                                                        print_endline "show_match: match 0 is the whole match, all others are the groups\n";
+                                                                        Array.iteri ( fun idx the_row -> 
+                                                                                               Printf.printf "Row %2d:\n" idx;
+                                                                                               Printf.printf "-------\n";
+                                                                                               for index = 0 to Array.length the_row -1
+                                                                                               do
+                                                                                                 Printf.printf "  Col %2d: \"%s\" \n" index the_row.(index)
+                                                                                               done;
+                                                                                               print_newline();
+                                                                                               dropres.(idx) <- array_drop the_row col_index (* !!! *)
+                                                                                    ) mres;
+                                                                        command tl (Match_result dropres) varmap
+                                                             | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
+                                                         end
+
+
+                         (* TODO! *)
+                         (* TODO! *)
+                         (* TODO! *)
+                         | DropRow   index            ->
+                                                         raise NOT_IMPLEMENTED_SO_FAR;
+                                                         let res = ref Empty in
+                                                         begin
+                                                           match tmpvar with
+                                                             | Match_result mres ->
+                                                                                    begin
+                                                                                      if index >= 0 && index <= Array.length ( mres ) - 1
+                                                                                      then
+                                                                                        res := String_array ( mres.(index) )
+                                                                                      else
+                                                                                        raise Invalid_Row_Index
+                                                                                    end
+                                                             | _ -> print_warning "DropRow: wrong type!!!"; raise Wrong_tmpvar_type
                                                          end;
                                                          command tl !res varmap
 
@@ -475,6 +557,11 @@ let evaluate_command_list cmdlst =
 
 
 
+                         (* ------------------------------------------------------------------------------ *)
+                         (* to matchres does conbverts to a matchres-like result (matrix (array of array)) *)
+                         (* Urls will be converted in a way, that the link and the referrer will pop up as *)
+                         (* seperate coulmns in each rows. With dropcol() they can be kiekced out!         *)
+                         (* ------------------------------------------------------------------------------ *)
                          | To_matchres                -> 
                                                          let pair_to_arr pair = [| fst pair; snd pair |] in
 
