@@ -168,7 +168,9 @@ let rec  urlify  result_value varmap =
                       let strarr = Array.map ( fun (d,u) -> to_string (Document (d,u)) varmap ) arr in to_string (String_array strarr) varmap
                       *)
       | String_array  str_arr      -> Url_array( Array.map (fun str -> (str, "-") ) str_arr )
-      | Match_result  mres         -> raise Wrong_argument_type (* match-res => arr of arr -> recursion on String_array ! *)
+      | Match_result  mres         -> let liste = ref [] in
+                                      Array.iter( fun x -> Array.iter ( fun elem -> liste := (elem, "-") :: !liste ) x ) mres; (* extract elements to liste *)
+                                      Url_list !liste
       | Url           (href, ref)  -> Url (href, ref)
       | Url_list      url_list     -> Url_list      url_list
       | Url_array     url_arr      -> Url_array     url_arr
