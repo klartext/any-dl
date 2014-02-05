@@ -160,11 +160,7 @@ let rec  urlify  result_value varmap =
   let str =
     match result_value with
       | Varname       varname      -> let res = (Varmap.find varname varmap) in
-                                      begin
-                                        match res with
-                                          | String str -> Url(str, "-")
-                                          | _ as again -> urlify again varmap
-                                      end
+                                      urlify res varmap
       | String        str          -> Url(str, "-")
       | Document      (doc, url)   -> raise Value_conversion_unknown (* like Wrong_argument_type *)
       | Document_array  arr        -> raise Value_conversion_unknown
