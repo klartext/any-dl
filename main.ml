@@ -291,8 +291,12 @@ let evaluate_command_list cmdlst =
 
 
                            (* creates url and puts it into tmpvar *)
-                         | Make_url_tmpvar -> let (url, referrer) = (to_string tmpvar varmap, "-") in
+                         | Make_url_tmpvar -> command tl (urlify tmpvar varmap) varmap
+                                              (*
+                                              let (url, referrer) = (to_string tmpvar varmap, "-") in
                                               command tl (Url( url, referrer)) varmap
+                                              urlify tmpvar varmap
+                                              *)
 
                          | Make_url (u,r)  -> let (url, referrer) = (to_string u varmap, to_string r varmap) in
                                               command tl (Url( url, referrer)) varmap
