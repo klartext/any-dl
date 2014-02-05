@@ -464,25 +464,17 @@ let evaluate_command_list cmdlst =
                                                          end
 
 
-                         (* TODO! *)
-                         (* TODO! *)
-                         (* TODO! *)
+                         (* Drops a row from a matchres *)
+                         (* --------------------------- *)
                          | DropRow   index            ->
-                                                         raise NOT_IMPLEMENTED_SO_FAR;
-                                                         let res = ref Empty in
-                                                         begin
-                                                           match tmpvar with
-                                                             | Match_result mres ->
-                                                                                    begin
-                                                                                      if index >= 0 && index <= Array.length ( mres ) - 1
-                                                                                      then
-                                                                                        res := String_array ( mres.(index) )
-                                                                                      else
-                                                                                        raise Invalid_Row_Index
-                                                                                    end
-                                                             | _ -> print_warning "DropRow: wrong type!!!"; raise Wrong_tmpvar_type
-                                                         end;
-                                                         command tl !res varmap
+                                                         let res =
+                                                           begin
+                                                             match tmpvar with
+                                                               | Match_result mres -> Match_result (array_drop mres index)
+                                                               | _                 -> print_warning "DropRow: wrong type!!!"; raise Wrong_tmpvar_type
+                                                           end
+                                                         in
+                                                           command tl res varmap
 
                          | Select_match ( col_idx, matchpat) -> (* select match is a row-select, where the index *)
                                                                 (* first match wins *)
