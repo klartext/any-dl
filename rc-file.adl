@@ -635,9 +635,13 @@ end
 # =================================
 parsername "ard__hr_wdr": ( "http://www.ardmediathek.de/hr-fernsehen/", "http://www.ardmediathek.de/wdr-fernsehen/hier-und-heute/", "http://www.ardmediathek.de/das-erste/anne-will/", "http://http://www.ardmediathek.de/wdr-fernsehen/" )
 start
-  match( "http://.*mp4" );
+  match( "http://media.*mp4" );
 print;
-  rowselect(2);
+  #rowselect(2);
+  show_match;
+  iselectmatch(0, "");
+#to_matchres;
+#show_match;
   store("url");
 
   # make a better outfilename with title
