@@ -449,15 +449,7 @@ let evaluate_command_list cmdlst =
                                                            match tmpvar with
                                                              | Match_result mres ->
                                                                         let dropres = Array.copy mres in
-                                                                        print_endline "show_match: match 0 is the whole match, all others are the groups\n";
                                                                         Array.iteri ( fun idx the_row -> 
-                                                                                               Printf.printf "Row %2d:\n" idx;
-                                                                                               Printf.printf "-------\n";
-                                                                                               for index = 0 to Array.length the_row -1
-                                                                                               do
-                                                                                                 Printf.printf "  Col %2d: \"%s\" \n" index the_row.(index)
-                                                                                               done;
-                                                                                               print_newline();
                                                                                                dropres.(idx) <- array_drop the_row col_index (* !!! *)
                                                                                     ) mres;
                                                                         command tl (Match_result dropres) varmap
@@ -939,7 +931,7 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
                             parserdef.commands )
 
   with (* handle exceptions from the parse-tree-evaluation *)
-    | No_Match                -> prerr_endline "Parser problem: Could not match to pattern!\t Parse will be exited\n"
+    | No_Match                -> Printf.eprintf "Parser problem: Could not match to pattern!\t Parse will be exited for url %s\n" url
     | Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!\t Parse exited.\n"
     | Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name
     | No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url
