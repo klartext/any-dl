@@ -384,12 +384,12 @@ Language Features:
   can be passed as input for the next command/function
   and this is default behaviour.
   Not all commands / functions do need the stack
-  for input,a dn not all do leave something there
+  for input, and not all do leave something there
   as result (and input for following functions/commands).
 
   But if there is the need for transfering a result,
   normally no additional variables are needed.
-  Most often, the data can be transferred from one function7command
+  Most often, the data can be transferred from one function/command
   to the next one via the 1-valued-stack.
 
   But in certain cases, this is not enough.
