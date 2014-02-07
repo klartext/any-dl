@@ -349,6 +349,7 @@ let evaluate_command_list cmdlst =
                                                              match tmpvar with
                                                                | Document (doc, url) -> doc
                                                                | String    s         -> s
+                                                               | Document_array arr  -> Array.fold_left ( fun collect (doc,url) -> collect ^ doc) "" arr
                                                                (* match also on other types?? Does matching an URL for example makes sense? *)
                                                                | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
                                                            end
