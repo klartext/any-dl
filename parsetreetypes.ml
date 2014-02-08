@@ -124,6 +124,8 @@ let command_to_string cmd = match cmd with
   | Show_type       _ -> "Show_type"
   | ColSelect       _ -> "ColSelect" 
   | RowSelect       _ -> "RowSelect"
+  | DropCol         _ -> "DropCol"
+  | DropRow         _ -> "DropRow"
   | Select_match    _ -> "Select_match"
   | I_Select_match  _ -> "I_Select_match"
   | System          _ -> "System"
