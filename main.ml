@@ -955,9 +955,9 @@ let main ()  =
     then begin prerr_endline "Option auto-try and parser selection together make no sense!"; exit 1 end;
     (* ...other checks might follow here... *)
 
-    (* if cli-switches ask for it, print number of all commands of the parser-definitions *)
-    (* They wll be printed in alphabetical order.                                         *)
-    (* ---------------------------------------------------------------------------------- *)
+    (* if cli-switches ask for it, print all commands of the parser-language *)
+    (* They wll be printed in alphabetical order.                            *)
+    (* --------------------------------------------------------------------- *)
     if Cli.opt.Cli.show_commands || Cli.opt.Cli.verbose then
       begin
         print_endline "Keywords of the parser-definition language:";
@@ -972,7 +972,8 @@ let main ()  =
     (* ---------------------------- *)
     let parserlist = read_parser_definitions (Some Cli.opt.Cli.rc_filename) in
 
-    (* if cli-switches ask for it, print number of parser-definitions *)
+    (* if cli-switches ask for it, print the number of parser-defintions found *)
+    (* ------------------------------------------------------------------------------------ *)
     if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose then
       Printf.fprintf stderr "Number of found parser definitions: %d\n" (List.length parserlist);
 
@@ -995,7 +996,9 @@ let main ()  =
                                                           (* ----------------- *)
                                                           parser_urllist_raw := (url, parserdef.parsername) :: !parser_urllist_raw;
 
-                                                          (* info to user, depending on CLI args *)
+
+                                                          (* If CLI-switches ask for it, print the URL and the parser's name, it is bound to *)
+                                                          (* ------------------------------------------------------------------------------- *)
                                                           if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose
                                                           then
                                                             Printf.fprintf stderr "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
@@ -1004,7 +1007,8 @@ let main ()  =
                                  end
                                  else
                                  begin
-                                    (* info to user, depending on CLI args *)
+                                    (* If CLI-switches ask for it, print the parser's-name, mentioning that no url is bound to it *)
+                                    (* ------------------------------------------------------------------------------------------ *)
                                     if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose then
                                       Printf.fprintf stderr "Init: (unbound to URL)%-30s-> parser %s\n"   ""  parserdef.parsername
                                  end
