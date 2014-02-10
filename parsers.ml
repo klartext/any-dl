@@ -37,6 +37,27 @@ let url_get_baseurl url = (Pcre.extract ~rex:re_url_scheme ~flags:[] url).(0)
 (* this stuff can be done with Neturl-module also!!! *)
 
 
+(* index of first non-blank will be returned.      *)
+(* additionally spaces and newlines up t the first *)
+(* non-nblank char will be counted                 *)
+(* ----------------------------------------------- *)
+let first_nonblank_position str =
+  let lastidx = String.length str - 1 in
+  let result  = ref 0 in
+
+  let spc = ref 0 in
+  let nl  = ref 0 in
+
+  let idx     = ref 0 in
+  while !idx <= lastidx
+  do
+    let c = str.[!idx] in
+    if c != '\n' && c != ' ' && c != '\t' then (result := !idx; idx := lastidx);
+    if c = ' '  then incr spc;
+    if c = '\n' then incr nl;
+    incr idx
+  done;
+  (!result, !spc, !nl)
 
 
 module Rebase =
@@ -210,7 +231,20 @@ module Htmlparse =
             begin
               match hd with
                 | Element (tag, arg, dl) -> traverse_aux dl (depth+1) (* ignore tags, just traverse deeper *)
-                | Data    data          -> print_endline data         (* print the data-part solely *)
+                | Data    data          ->
+                                           (* well, ok, I could use PCRE instead ;-) *)
+                                           let (startidx,spc,nl) = first_nonblank_position data in
+
+                                           if startidx > 0 then
+                                           begin
+                                             if nl  > 0 then print_newline();
+                                             if spc > 0 then print_char ' '
+                                           end;
+                                           for idx = startidx to String.length data - 1
+                                           do
+                                             print_char data.[idx]
+                                           done;
+                                           if startidx < String.length data - 1 && spc = 0 && nl > 0 then print_newline()
             end;
             traverse_aux tl depth
         | [] -> ()
