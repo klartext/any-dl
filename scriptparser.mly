@@ -64,6 +64,7 @@
 %token DROPROW
 
 %token GREP
+%token GREPV
 %token SELECT
 %token MSELECT
 %token SELECT_MATCH
@@ -228,6 +229,7 @@ selection: COLSELECT LPAREN   INT_NUM   RPAREN { ColSelect $3 }
     |      SELECT_MATCH   LPAREN   INT_NUM COMMA STRING   RPAREN { Select_match ( $3, $5) }
     |      ISELECT_MATCH  LPAREN   INT_NUM COMMA STRING   RPAREN { I_Select_match ( $3, $5) }
     |      GREP      LPAREN   STRING RPAREN                      { Grep $3 }
+    |      GREPV     LPAREN   STRING RPAREN                      { Grep_v $3 }
     ;
 
 drop: DROPCOL LPAREN   INT_NUM   RPAREN { DropCol $3 }

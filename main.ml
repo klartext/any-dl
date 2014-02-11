@@ -380,6 +380,21 @@ let evaluate_command_list cmdlst =
                                                          in
                                                            command tl grepped varmap
 
+                         | Grep_v pattern             ->  (* grep -v *)
+                                                         (*
+                                                           if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
+                                                         *)
+                                                         let grepped = 
+                                                           begin
+                                                             match tmpvar with
+                                                               | String_array str_arr -> String_array( Array2.filter ( fun elem -> not (Pcre.pmatch ~pat:pattern elem) ) str_arr)
+                                                               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> not (Pcre.pmatch ~pat:pattern url ||
+                                                                                                                          Pcre.pmatch ~pat:pattern ref) ) url_arr )
+                                                               | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                           end
+                                                         in
+                                                           command tl grepped varmap
+
                          | Select index               -> 
                                                          begin
                                                            match tmpvar with

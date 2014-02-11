@@ -44,6 +44,7 @@
                   ("paste",          PASTE  );
 
                   ("grep",           GREP  );
+                  ("grepv",          GREPV );
                   ("rowselect",      ROWSELECT  );
                   ("select",         SELECT     );
                   ("mselect",        MSELECT     );

@@ -36,6 +36,7 @@ type commands_t =
   | Make_url_tmpvar                           (* create URL-Type-Var from tmpvar (1-val-stack) *)
   | Match             of string               (* regexp-pattern-string *)
   | Grep              of string               (* grep on the pattern-string *)
+  | Grep_v            of string               (* grep -v on the pattern-string *)
   | Select            of int                  (* index-list for item-selection *)
   | MSelect           of int list             (* index-list for MULTIPLE item-selection *)
   | Link_extract                              (* extracts html-href's from webpage *)
@@ -104,6 +105,7 @@ let command_to_string cmd = match cmd with
   | Make_url_tmpvar _ -> "Make_url"
   | Match           _ -> "Match"
   | Grep            _ -> "Grep"
+  | Grep_v          _ -> "Grep_v"
   | Select          _ -> "Select"
   | MSelect         _ -> "MSelect"
   | Link_extract      -> "Link_extract"

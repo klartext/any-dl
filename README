@@ -572,6 +572,11 @@ List of commands/keywords and a short-escription of them:
     extract matching elements from data
 
 
+  grepv
+    extract non-matching elements from data
+    (grepv: grep -v)
+
+
   exitparse
     exit's a parse of one parser.
     This means, that the URL that is currently tried to be parsed and
