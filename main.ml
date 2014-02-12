@@ -853,16 +853,26 @@ let read_parser_definitions filename_opt =
 
   let tokenlist = ref [] in
 
-  let input_channel = match filename_opt with None -> stdin | Some filename -> open_in filename in
-  let lexer = Lexing.from_channel input_channel in
-  begin
-    try
-      while true do
-        let result = Scriptparser.main Scriptlexer.read_command lexer in
-        tokenlist := result :: !tokenlist
-      done
-    with End_of_file ->
-                        verbose_printf "End of rc-file reached; parser definitions were read."
+  let input_channel =
+    match filename_opt with
+      | None          -> stdin
+      | Some filename -> open_in filename
+  in
+    let lexer = Lexing.from_channel input_channel in
+    begin
+      try
+        while true do
+          let result = Scriptparser.main Scriptlexer.read_command lexer in
+          tokenlist := result :: !tokenlist
+        done
+      with
+        | End_of_file         -> verbose_printf "End of rc-file reached; parser definitions were read."
+        | Parsing.Parse_error -> 
+                                 prerr_string "Parse error in line ";
+                                 prerr_int !Scriptlexer.linenum;
+                                 prerr_newline();
+                                 exit 1
+
 
          (*
          | Not_found -> prerr_string "Variable not known in line ";
@@ -871,12 +881,6 @@ let read_parser_definitions filename_opt =
                         exit 1
                         *)
          *)
-
-         | Parsing.Parse_error -> 
-                prerr_string "Parse error in line ";
-                prerr_int !Scriptlexer.linenum;
-                prerr_newline();
-                exit 1
 
   end
   ;
