@@ -850,7 +850,6 @@ let evaluate_command_list cmdlst =
 (* read the parser-definitions from the rc-file *)
 (* -------------------------------------------- *)
 let read_parser_definitions filename_opt =
-  verbose_printf "rc-filename: %s\n" Cli.opt.Cli.rc_filename;
 
   let tokenlist = ref [] in
 
@@ -985,6 +984,7 @@ let main ()  =
 
     (* parse the parser-definitions *)
     (* ---------------------------- *)
+    verbose_printf "rc-filename: %s\n" Cli.opt.Cli.rc_filename;
     let parserlist = read_parser_definitions (Some Cli.opt.Cli.rc_filename) in
 
     (* if cli-switches ask for it, print the number of parser-defintions found *)
