@@ -976,7 +976,15 @@ let main ()  =
     then
       begin
         let home_rcfile   = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")        in
-        let config_rcfile = Filename.concat (Sys.getenv "HOME") (".config/any-dl.rc") in
+
+        (* config file located in $XDG_CONFIG_HOME *)
+        let config_rcfile =
+          let xdg_config_home = (* XDG_CONFIG_HOME-directory *)
+            try Sys.getenv "XDG_CONFIG_HOME"
+            with Not_found -> Filename.concat (Sys.getenv "HOME") (".config")
+          in
+            Filename.concat xdg_config_home ("any-dl.rc")
+        in
 
         if   Sys.file_exists home_rcfile
         then Cli.opt.Cli.rc_filenames <- home_rcfile :: Cli.opt.Cli.rc_filenames;
