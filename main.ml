@@ -847,38 +847,45 @@ let evaluate_command_list cmdlst =
 
 
 
-(* read the parser-definitions from the rc-file *)
-(* or from stdin (if None)                      *)
+(* ============================================ *)
+(* read the parser-definitions from files.      *)
 (* -------------------------------------------- *)
-let parse_parser_definitions_from_inchannel input_channel =
+(* the filenames are given as list of filenames *)
+(* ============================================ *)
+let parse_parser_definitions_from_files filenames_list =
 
   let tokenlist = ref [] in
 
-  let lexer = Lexing.from_channel input_channel in
-    begin
-      try
-        while true do
-          let result = Scriptparser.main Scriptlexer.read_command lexer in
-          tokenlist := result :: !tokenlist
-        done
-      with
-        | End_of_file         -> verbose_printf "End of rc-file reached; parser definitions were read."
-        | Parsing.Parse_error -> 
-                                 prerr_string "Parse error in line ";
-                                 prerr_int !Scriptlexer.linenum;
-                                 prerr_newline();
-                                 exit 1
+  List.iter ( fun filename ->
+                              let input_channel = open_in filename in
 
-         (*
-         | Not_found -> prerr_string "Variable not known in line ";
-                        prerr_int !Scriptlex.linenum;prerr_newline()
-                        (*
-                        exit 1
-                        *)
-         *)
+                              let lexer = Lexing.from_channel input_channel in
+                                begin
+                                  try
+                                    while true do
+                                      let result = Scriptparser.main Scriptlexer.read_command lexer in
+                                      tokenlist := result :: !tokenlist
+                                    done
+                                  with
+                                    | End_of_file         -> verbose_printf "End of rc-file reached; parser definitions were read."
+                                    | Parsing.Parse_error -> 
+                                                             prerr_string "Parse error in line ";
+                                                             prerr_int !Scriptlexer.linenum;
+                                                             prerr_newline();
+                                                             exit 1
 
-    end
-  ;
+                                     (*
+                                     | Not_found -> prerr_string "Variable not known in line ";
+                                                    prerr_int !Scriptlex.linenum;prerr_newline()
+                                                    (*
+                                                    exit 1
+                                                    *)
+                                     *)
+
+                                end;
+                                close_in input_channel
+            ) filenames_list;
+
   List.rev !tokenlist
 
 
@@ -951,8 +958,6 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
 
 
 
-
-
 (* ############## *)
 (*    M A I N     *)
 (* ############## *)
@@ -984,17 +989,7 @@ let main ()  =
     (* ---------------------------- *)
     verbose_printf "rc-filename: %s\n" Cli.opt.Cli.rc_filename;
 
-
-    (*
-    let filename_opt = Some Cli.opt.Cli.rc_filename  in
-    match filename_opt with
-      | None          -> stdin
-      | Some filename -> open_in filename
-    *)
-
-    let inchan = open_in Cli.opt.Cli.rc_filename in
-    let parserlist = parse_parser_definitions_from_inchannel inchan in
-    close_in inchan;
+    let parserlist = parse_parser_definitions_from_files [ Cli.opt.Cli.rc_filename ] in
 
     (* if cli-switches ask for it, print the number of parser-defintions found *)
     (* ------------------------------------------------------------------------------------ *)
