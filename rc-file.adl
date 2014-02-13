@@ -263,6 +263,39 @@ end
 
 
 # ---------------------------------
+# ARD / das erste Sondersendung
+# ---------------------------------
+# Example: http://www.ardmediathek.de/das-erste/ard-sondersendung/edward-snowden-interview-in-english?documentId=19295624
+# =================================
+parsername "ard_das-erste_sondersendung": ( "http://www.ardmediathek.de/das-erste/ard-sondersendung/" )
+start
+  match( "(http://media.ndr.de.*mp4)" );  # the inner group-match is col 3 -> iselectmatch
+  show_match;
+
+  # Quality selection
+  # -----------------
+  iselectmatch(0, "hi.mp4"); # match on column 0 and default to 2nd highest quality
+  select(0);
+  store("select"); # this is the selected quality and we need to save it for later
+
+  # grab the title
+  # --------------
+  recall("BASEDOC");
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+  # get the video
+  # -------------
+  paste( "wget ", $select, " -O ", $title, ".mp4" );
+  system;
+
+
+end
+
+
+
+# ---------------------------------
 # ARD Tagesthemen
 # ---------------------------------
 # other possuble source (RSS/XML) would be:
