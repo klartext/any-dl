@@ -971,31 +971,44 @@ let main ()  =
     (* Setting the default config-files                                                      *)
     (* ------------------------------------------------------------------------------------- *)
     (* Defaults will only be set, if no config-files have been set via command-line options! *)
-    (* ------------------------------------------------------------------------------------- *)
+    (* ===================================================================================== *)
     if List.length Cli.opt.Cli.rc_filenames = 0
     then
       begin
-        let etc_rcfile    = "/etc/any-dl.rc"                                          in
 
-        let home_rcfile   = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")        in
-
-        (* config file located in $XDG_CONFIG_HOME *)
-        let config_rcfile =
-          let xdg_config_home = (* XDG_CONFIG_HOME-directory *)
-            try Sys.getenv "XDG_CONFIG_HOME"
-            with Not_found -> Filename.concat (Sys.getenv "HOME") (".config")
-          in
-            Filename.concat xdg_config_home ("any-dl.rc")
+        (* XDG_CONFIG_HOME - directory *)
+        (* --------------------------- *)
+        let xdg_config_home =
+          try Sys.getenv "XDG_CONFIG_HOME"
+          with Not_found -> Filename.concat (Sys.getenv "HOME") (".config") (* fall-back value for undefed env.var *)
+        in
+        let xdg_config_home =
+          if xdg_config_home = ""
+          then Filename.concat (Sys.getenv "HOME") (".config") (* fallback-value for empty env.var *)
+          else xdg_config_home
         in
 
+
+        (* systemwide rc-file in /etc/ *)
+        let etc_rcfile    = "/etc/any-dl.rc"                                          in
+
+        (* "classical" rc-file (dotfile) in HOME-dir *)
+        let home_rcfile   = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")        in
+
+        (* rc-file inside $XDG_CONFIG_HOME *)
+        let xdg_config_rcfile = Filename.concat xdg_config_home ("any-dl.rc") in
+
+
+        (* include those rc-files which do exist *)
+        (* ===================================== *)
         if   Sys.file_exists etc_rcfile
         then Cli.opt.Cli.rc_filenames <- etc_rcfile :: Cli.opt.Cli.rc_filenames;
 
         if   Sys.file_exists home_rcfile
         then Cli.opt.Cli.rc_filenames <- home_rcfile :: Cli.opt.Cli.rc_filenames;
 
-        if   Sys.file_exists config_rcfile
-        then Cli.opt.Cli.rc_filenames <- config_rcfile :: Cli.opt.Cli.rc_filenames
+        if   Sys.file_exists xdg_config_rcfile
+        then Cli.opt.Cli.rc_filenames <- xdg_config_rcfile :: Cli.opt.Cli.rc_filenames
       end;
 
 
