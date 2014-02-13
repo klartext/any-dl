@@ -978,7 +978,8 @@ let main ()  =
         let home_rcfile   = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")        in
         let config_rcfile = Filename.concat (Sys.getenv "HOME") (".config/any-dl.rc") in
 
-        Cli.opt.Cli.rc_filenames <- [ Filename.concat (Sys.getenv "HOME") (".any-dl.rc") ]; (* MANDATORY ! *)
+        if   Sys.file_exists home_rcfile
+        then Cli.opt.Cli.rc_filenames <- home_rcfile :: Cli.opt.Cli.rc_filenames;
 
         if   Sys.file_exists config_rcfile
         then Cli.opt.Cli.rc_filenames <- config_rcfile :: Cli.opt.Cli.rc_filenames
