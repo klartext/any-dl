@@ -848,17 +848,13 @@ let evaluate_command_list cmdlst =
 
 
 (* read the parser-definitions from the rc-file *)
+(* or from stdin (if None)                      *)
 (* -------------------------------------------- *)
-let read_parser_definitions filename_opt =
+let parse_parser_definitions_from_inchannel input_channel =
 
   let tokenlist = ref [] in
 
-  let input_channel =
-    match filename_opt with
-      | None          -> stdin
-      | Some filename -> open_in filename
-  in
-    let lexer = Lexing.from_channel input_channel in
+  let lexer = Lexing.from_channel input_channel in
     begin
       try
         while true do
@@ -873,7 +869,6 @@ let read_parser_definitions filename_opt =
                                  prerr_newline();
                                  exit 1
 
-
          (*
          | Not_found -> prerr_string "Variable not known in line ";
                         prerr_int !Scriptlex.linenum;prerr_newline()
@@ -882,9 +877,8 @@ let read_parser_definitions filename_opt =
                         *)
          *)
 
-  end
+    end
   ;
-  close_in input_channel;
   List.rev !tokenlist
 
 
@@ -989,7 +983,18 @@ let main ()  =
     (* parse the parser-definitions *)
     (* ---------------------------- *)
     verbose_printf "rc-filename: %s\n" Cli.opt.Cli.rc_filename;
-    let parserlist = read_parser_definitions (Some Cli.opt.Cli.rc_filename) in
+
+
+    (*
+    let filename_opt = Some Cli.opt.Cli.rc_filename  in
+    match filename_opt with
+      | None          -> stdin
+      | Some filename -> open_in filename
+    *)
+
+    let inchan = open_in Cli.opt.Cli.rc_filename in
+    let parserlist = parse_parser_definitions_from_inchannel inchan in
+    close_in inchan;
 
     (* if cli-switches ask for it, print the number of parser-defintions found *)
     (* ------------------------------------------------------------------------------------ *)
