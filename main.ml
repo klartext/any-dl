@@ -966,6 +966,26 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
 let main ()  =
     Cli.parse(); (* parse the command line *)
 
+
+    (* ------------------------------------------------------------------------------------- *)
+    (* Setting the default config-files                                                      *)
+    (* ------------------------------------------------------------------------------------- *)
+    (* Defaults will only be set, if no config-files have been set via command-line options! *)
+    (* ------------------------------------------------------------------------------------- *)
+    if List.length Cli.opt.Cli.rc_filenames = 0
+    then
+      begin
+        let home_rcfile   = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")        in
+        let config_rcfile = Filename.concat (Sys.getenv "HOME") (".config/any-dl.rc") in
+
+        Cli.opt.Cli.rc_filenames <- [ Filename.concat (Sys.getenv "HOME") (".any-dl.rc") ]; (* MANDATORY ! *)
+
+        if   Sys.file_exists config_rcfile
+        then Cli.opt.Cli.rc_filenames <- config_rcfile :: Cli.opt.Cli.rc_filenames
+      end;
+
+
+
     (* CLI-args plausibility checks *)
     (* ---------------------------- *)
     if Cli.opt.Cli.auto_try && Cli.opt.Cli.parser_selection != None
@@ -987,9 +1007,14 @@ let main ()  =
 
     (* parse the parser-definitions *)
     (* ---------------------------- *)
-    verbose_printf "rc-filename: %s\n" Cli.opt.Cli.rc_filename;
+    if Cli.opt.Cli.verbose then
+    begin
+      print_string "rc-filename(s): ";
+      List.iter ( fun str -> Printf.printf "\"%s\" " str ) Cli.opt.Cli.rc_filenames;
+      print_newline()
+    end;
 
-    let parserlist = parse_parser_definitions_from_files [ Cli.opt.Cli.rc_filename ] in
+    let parserlist = parse_parser_definitions_from_files Cli.opt.Cli.rc_filenames in
 
     (* if cli-switches ask for it, print the number of parser-defintions found *)
     (* ------------------------------------------------------------------------------------ *)
