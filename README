@@ -106,21 +106,77 @@ Compilation / Installation / Setup
 
   The file "rc-file.adl" does contain needed parser-definitions
   for any-dl to work as expected.
-  This file must be saved to the home-directory as file ".any-dl.rc".
 
-  So, please copy it from the local dir "./rc-file.adl" to $HOME/.any-dl.rc 
+  This file must be available in one of three places:
 
-  This command would do it:
+    - /etc/any-dl.rc
 
-   $ cp rc-file.adl  $HOME/.any-dl.rc
+    - $XDG_CONFIG_HOME/any-dl.rc  ( default: $HOME/.config/any-dl.rc )
 
-  Alternatively you can use the "-f" option of any-dl
-  to tell any-dl, which file contains the parser-definitions.
+    - $HOME/.any-dl.rc
 
 
-  ( For command-line-newbies:
-     The "$" symbol in the mentioned command lines, which you have to type
-     do represent the prompt of the shell; don't type it. )
+  So, please copy from the local dir, where you built any-dl
+  the file "rc-file.adl" to one of the three places, mentioned above.
+
+  This command would do it for the default of the XDG_CONFIG_HOME environment variable:
+
+   $ cp rc-file.adl  $HOME/.config/any-dl.rc     # copy the config file to the XDG-default-dir
+
+  But if the XDG_CONFIG_HOME-environment variable is set,
+  it's better to use it:
+
+   $ cp rc-file.adl  $XDG_CONFIG_HOME/any-dl.rc      # copy the config file to the XDG-dir
+
+        ( For command-line-newbies:
+           The "$" symbol in the mentioned command lines, which you have to
+           type do represent the prompt of the shell; don't type it. )
+
+
+  If you want to add your own parser-definitions, it would make sense
+  to save the file "rc-file.adl"  in the  /etc/-directory, as mentioned above
+  and then add your own parser-definitions in one of those places,
+  where a any-dl config-file can be placed inside your HOME directory.
+
+  This would have the advantage, that the config-file coming with any-dl will
+  always be placed in the /etc/ directory, and your local parser-definitions
+  will be saved in your local configs in $HOME.
+
+  PLEASE, BE AWARE, THAT ANY-DL READS ALL CONFIG-FILES AS IF THEY WERE
+  CONCATENATED INTO ONE BIG FILE.
+
+  So, if you want to add your ADDITIONAL parsers to those that are already
+  existing in the file inside "rc-file.adl" ( e.g. copied to /etc/any-dl.rc ),
+  this can be done by just editing the config files in your $HOME-dir
+  and write your own definitions into these files.
+  It's not necessary (and also not recommended) to have there a copy of the
+  "rc-file.adl", in which you added your parsers.
+  Just write ONLY your own parsers into your local files.
+
+  So, in other words: if you want to add your own parser-definitions place them
+  solely in one of the default places fo config files in $HOME.
+  Don't copy the stuff from "rc-file.adl" stored in /etc/any-dl.rc.
+
+  ( If you place the config file "rc-file.adl" in $XDG_CONFIG_HOME/any-dl.rc
+    you can add your parsers in $HOME/.any-dl.rc )
+  
+
+  Of course you can also add your additional parsers in the place,
+  where all parsers from "rc-file.adl" are stored... but when you update
+  to a newer version of any-dl you maybe by accident overwrite your own
+  stuff with the new "rc-file.adl" coming with a newer version of any-dl.)
+
+
+  IF YOU WISH TO USE OTHER CONFIG-FILES, you can specify them
+  with the -f option of any-dl.
+  If you use the -f option, you can give a filename-path, which is used
+  as config file then.
+
+  BE AWARE: All DEFAULT PLACES of config files WILL THEN BE IGNORED!
+  If you wish to add more than one config file, you can do it by just
+  using the -f option more than once.
+
+
 
 Usage
 =====
