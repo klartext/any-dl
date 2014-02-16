@@ -74,6 +74,13 @@ module Array2 =
     include Array
 
     let filter filt arr = Array.of_list ( List.filter filt (Array.to_list arr ))
+
+    let exists filt arr = List.exists filt (Array.to_list arr) 
+
+
+    let filter_row_by_colmatch colmatcher matr =
+      filter ( fun arr -> exists colmatcher arr ) matr
+
   end
 
 
@@ -375,6 +382,8 @@ let evaluate_command_list cmdlst =
                                                                | String_array str_arr -> String_array( Array2.filter ( fun elem -> Pcre.pmatch ~pat:pattern elem ) str_arr)
                                                                | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> Pcre.pmatch ~pat:pattern url ||
                                                                                                                           Pcre.pmatch ~pat:pattern ref ) url_arr )
+                                                               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch ( fun x -> Pcre.pmatch ~pat:pattern x ) mres )
+
                                                                | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                            end
                                                          in
@@ -390,6 +399,9 @@ let evaluate_command_list cmdlst =
                                                                | String_array str_arr -> String_array( Array2.filter ( fun elem -> not (Pcre.pmatch ~pat:pattern elem) ) str_arr)
                                                                | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> not (Pcre.pmatch ~pat:pattern url ||
                                                                                                                           Pcre.pmatch ~pat:pattern ref) ) url_arr )
+
+                                                               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch
+                                                                                                         ( fun x -> not (Pcre.pmatch ~pat:pattern x )) mres )
                                                                | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                            end
                                                          in
