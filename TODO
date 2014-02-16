@@ -7,21 +7,8 @@ ENHANCEMENT:
 BUGs:
 =====
 
- - the interactive loop for menue-item selection needs to catch excceptions for failing int_of_string !!
-
- - interactive selection menue: strangely, when just typing enter problems occur.
-   Non-match case occurs.
-   Must be checked, if there are not-correctly caught exceptions at the input part,
-   or if possibly giving back index instead of selection string would make
-   more sense. (possibly using index might makse sense, but can at some other
-   parts of the program become a bit more effort.
-
-   (...hhmmhhh the function tested separately, does work! )
-
 
  - using linkextract on "file:///"-urls does not work.
-
- - 3sat-Parser needs to be checked again. (See comments in rc-file, regarding Year / Month in URL)
 
 
 BETTER STRUCTURE, CLEANER CODE:
@@ -43,12 +30,9 @@ FEATUREs:
  a bit of priority
  =================
 
- - !!! automatic lookup for rc-file also in other places (/etc/FooBar or something like that?) ???   => ~/.config/
-    * yes, this feature makes sense:  one file is provided with any-dl
-                                      users can add their own files.
-                                      When updating, only the any-dl rc-file is updated,
-                                      and user-defined parsers will be parsed from seperate file! :-)
-
+ - getsave; getsave(<filename>) - command for writing the data aof a GET into file,
+   instead of saving itin memory. Especially for big videos this makes sense.
+   (temporally Workaround: invoke wget via system instead of using get-command for big files.)
 
  - Logfile for sucessful and failed downloads
 
@@ -114,3 +98,6 @@ QUESTIONS:
       print with referrer;
 
  - Implementing macros or not?
+
+ - the interactive loop for menue-item selection catches failing int_of_string: default-pattern is used.
+   It could also ask again for correct selection.
