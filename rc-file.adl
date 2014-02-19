@@ -1092,6 +1092,35 @@ end
 
 
 
+# ---------------------------------
+# www.ndr.de Feature
+# ---------------------------------
+# Example: http://www.ndr.de/info/programm/sendungen/feature/audio189059.html
+# http://www.ndr.de/info/programm/sendungen/feature/
+# =================================
+parsername "ndr_feature": ( "http://www.ndr.de/info/programm/sendungen/feature/" )
+start
+  titleextract;
+  subst(>>>([|"+?/%;&= ]+)|(%..)<<<, "_"); # remove all that crap from the title
+  print;
+  store("title");
+  paste($title, ".mp3");
+  store("filename");
+
+  recall("BASEDOC");
+  match("src:'(http://.*?.mp3)");
+  print;
+  show_match;
+  colselect(1);
+  print;
+  makeurl;
+  print;
+  get;
+  save;
+end
+
+
+
 #######################################################
 ####                   R A D I O                    ###
 #######################################################
