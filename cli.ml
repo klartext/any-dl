@@ -20,6 +20,7 @@ type opt_t = {
                mutable auto_try_stop    :  bool;          (* -as: auto-try: automatically try all parsers; after success STOP *)
                mutable user_agent       :  string;        (*  -u: user-agent: set name of the user-agent string *)
                mutable initial_referrer :  string;        (* -ir: initial referrer-string, set before any get-action *)
+               mutable ms_sleep         :  int;           (* -ms: milliseconds sleep after a get *)
              }
 
 
@@ -41,7 +42,8 @@ let opt =  {
              auto_try         = false;
              auto_try_stop    = false;
              user_agent       = "any-dl";
-             initial_referrer = "-"
+             initial_referrer = "-";
+             ms_sleep         = 0
            }
 
 
@@ -62,6 +64,7 @@ let parse () =
                                                  opt.auto_try_stop    <- true; prerr_endline "!!!"       ),        "   auto-try-stop: try all parsers; stop after first success" );
          ("-u",   Arg.String (fun useragent   -> opt.user_agent       <- useragent ),         "    set the user-agent-string manually" );
          ("-ir",  Arg.String (fun init_ref    -> opt.initial_referrer <- init_ref ),          "    set the initial referrer from '-' to custom value " );
+         ("-ms",  Arg.Int    (fun sleep_ms    -> opt.ms_sleep <- sleep_ms ),                  "    set a sleep-time after a get-command in milli-seconds" );
        (* => DEFAULT (hardcoded) !!!
        *)
               ]
