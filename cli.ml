@@ -64,7 +64,7 @@ let parse () =
                                                  opt.auto_try_stop    <- true; prerr_endline "!!!"       ),        "   auto-try-stop: try all parsers; stop after first success" );
          ("-u",   Arg.String (fun useragent   -> opt.user_agent       <- useragent ),         "    set the user-agent-string manually" );
          ("-ir",  Arg.String (fun init_ref    -> opt.initial_referrer <- init_ref ),          "    set the initial referrer from '-' to custom value " );
-         ("-ms",  Arg.Int    (fun sleep_ms    -> opt.ms_sleep <- sleep_ms ),                  "    set a sleep-time after a get-command in milli-seconds" );
+         ("-ms",  Arg.Int    (fun sleep_ms    -> opt.ms_sleep <- sleep_ms ),                  "    set a sleep-time in a (bulk-) get-command in milli-seconds" );
        (* => DEFAULT (hardcoded) !!!
        *)
               ]

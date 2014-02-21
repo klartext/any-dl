@@ -84,6 +84,24 @@ module Array2 =
   end
 
 
+
+module Sleep =
+  struct
+    open Unix
+
+    (* sleep a certain amount of time (in seconds as float *)
+    (* --------------------------------------------------- *)
+    let sleep_float  float_seconds =
+      ignore( select [] [] [ stdin ] (abs_float float_seconds) )
+
+    (* sleep ms milliseconds *)
+    (* --------------------- *)
+    let sleep_ms  ms =
+      verbose_printf "sleep %d miliseconds\n" ms; (* devel-debug-info *)
+      sleep_float (float_of_int ms /. 1000.0)
+
+  end
+
 (* ------------------------------------------------ *)
 (* ------------------------------------------------ *)
 (* ------------------------------------------------ *)
@@ -277,18 +295,26 @@ let evaluate_command_list cmdlst =
     end
     
 
+  (* -------------------------------------------------------------------------------------- *)
+  (* get_document_list: gets a list of documents (bulk-get) *)
+  (* if the sleep-time is set o values > 0, then each get waits this amoubt of milliseconds *)
+  (* before the get is executed.                                                            *)
+  (* -------------------------------------------------------------------------------------- *)
   (* at the moment, varmap is not returned  updated *)
+  (* ---------------------------------------------- *)
   and get_document_list  urls_refs varmap =
-    let rec aux urllist (result, vmap) = match urllist with
-      | []        -> result, vmap
-      | (u,r)::tl -> begin
-                       match get_document u r vmap with
-                         | None                  -> Printf.eprintf "no document found for %s\n" u;
-                                                    aux tl (result, vmap)
-                         | Some (doc, ref, new_varmap) -> aux tl ( (doc,ref)::result, new_varmap )
-                     end
-    in
-      aux urls_refs ([], varmap)
+    let rec aux urllist (result, vmap) =
+      if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep; (* call sleep-function if > 0 ms to wait *)
+      match urllist with
+        | []        -> result, vmap
+        | (u,r)::tl -> begin
+                         match get_document u r vmap with
+                           | None                  -> Printf.eprintf "no document found for %s\n" u;
+                                                      aux tl (result, vmap)
+                           | Some (doc, ref, new_varmap) -> aux tl ( (doc,ref)::result, new_varmap )
+                       end
+      in
+        aux urls_refs ([], varmap)
 
   (* "command"-function is the main commands-parser/evaluator *)
   (* -------------------------------------------------------- *)

@@ -502,10 +502,12 @@ Command Line Options:
 
     -u     set the user-agent-string manually
     -ir    set the initial referrer from '-' to custom value 
+    -ms    set a sleep-time in a (bulk-) get-command in milli-seconds
+            => sleeps only for bulk-get-commands (get that would call a list of documents,
+               not for single get-commands)
 
     -help  Display this list of options
     --help  Display this list of options
-
 
 
 
