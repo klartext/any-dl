@@ -107,6 +107,28 @@ start
 end
 
 
+# --------------------------------------------------------------
+# This parser creates the output for a Gnome-Desktop-File.
+# --------------------------------------------------------------
+# (what you get on your desktop, when you drag&drop
+# the URL-line from your browser (e.g. firefox) to
+# the desktop
+# --------------------------------------------------------------
+# Does create the output and prints it to stdout; does not
+# directly create the file.
+# --------------------------------------------------------------
+start
+  print( "[Desktop Entry]" );
+  print( "Encoding=UTF-8" );
+  titleextract;
+  store("title");
+  print("Name=", $title);
+  print("Type=Link");
+  print("URL=", $STARTURL);
+  print("Icon=gnome-fs-bookmark");
+end
+
+
 # parser for testing cookies
 # ----------------------------------------------------
 # Some tests of cookies can be found here:
