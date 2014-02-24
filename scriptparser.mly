@@ -245,8 +245,8 @@ titleextract_stmt: TITLEEXTRACT   { Title_extract }
 /* also keine eigenen Sum-Types!               */
 /* ------------------------------------------- */
 
-string_list:                { [] (* eigentlich quatsch; macht leere Liste Sinn fuer development phase of a parser? *)     }
-    | STRING                { [$1]    }
+string_list:                   { []       }
+    | STRING                   { [$1]     }
     | STRING COMMA string_list { $1 :: $3 }
     ;
 
