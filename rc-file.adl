@@ -458,8 +458,8 @@ parsername "ndr_mediathek_get": ( "http://www.ndr.de", "http://www.ardmediathek.
 start
   match( "http://.*?mp4" );
   show_match;
-  #iselectmatch(0, ".hi.mp4" );
-  iselectmatch(0, ".mp4" );
+  iselectmatch(0, ".hi.mp4" );
+  #iselectmatch(0, ".mp4" );
   select(0);
   store("url");
 
