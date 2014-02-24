@@ -101,3 +101,9 @@ QUESTIONS:
 
  - the interactive loop for menue-item selection catches failing int_of_string: default-pattern is used.
    It could also ask again for correct selection.
+
+ - after adding parser "desktop" ( e7afe913ee2734da3294134cc2242d685bc77e8b ),
+   but without the first line of the definition (parsername-line), any-dl mentioned
+   an error in line 350.
+   But it was line 120 where the problem was.
+   (corrected it with bugfix in ( 56e6ab42970aaeacb550d188b99e7c372563f885 ).
