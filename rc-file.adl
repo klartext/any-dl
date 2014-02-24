@@ -117,6 +117,7 @@ end
 # Does create the output and prints it to stdout; does not
 # directly create the file.
 # --------------------------------------------------------------
+parsername "desktop": ()
 start
   print( "[Desktop Entry]" );
   print( "Encoding=UTF-8" );
