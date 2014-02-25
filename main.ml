@@ -811,6 +811,9 @@ let evaluate_command_list cmdlst =
                                                                                      command tl (String_array replaced) varmap
                                                            | Document(doc, ref) -> let newdoc = Document( replacer doc, replacer ref ) in
                                                                                    command tl (newdoc) varmap
+                                                           | Document_array doc_arr ->
+                                                                      let new_docarr = Array.map ( fun (doc,ref) -> (replacer doc, replacer ref) ) doc_arr in
+                                                                      command tl (Document_array new_docarr) varmap
                                                            | _ -> raise Wrong_argument_type
                                                          end
 
