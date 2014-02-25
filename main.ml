@@ -809,6 +809,8 @@ let evaluate_command_list cmdlst =
                                                            | String str           -> command tl (String (replacer str)) varmap
                                                            | String_array str_arr -> let replaced = Array.map replacer str_arr in
                                                                                      command tl (String_array replaced) varmap
+                                                           | Document(doc, ref) -> let newdoc = Document( replacer doc, replacer ref ) in
+                                                                                   command tl (newdoc) varmap
                                                            | _ -> raise Wrong_argument_type
                                                          end
 
