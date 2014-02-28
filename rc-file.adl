@@ -1121,7 +1121,7 @@ end
 # Example: http://www.ndr.de/info/programm/sendungen/feature/audio189059.html
 # http://www.ndr.de/info/programm/sendungen/feature/
 # =================================
-parsername "ndr_feature": ( "http://www.ndr.de/info/programm/sendungen/feature/" )
+parsername "ndr_feature": ( "http://www.ndr.de/info/programm/sendungen/feature/", "http://www.ndr.de/info/" )
 start
   titleextract;
   subst(>>>([|"+?/%;&= ]+)|(%..)<<<, "_"); # remove all that crap from the title
