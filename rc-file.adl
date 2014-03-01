@@ -327,7 +327,8 @@ end
 parsername "ard_tagesthemen": ( "http://www.tagesschau.de/multimedia/video/",
                                 "http://www.ardmediathek.de/das-erste/tagesthemen",
                                 "http://mediathek.rbb-online.de/rbb-fernsehen/rbb-praxis/",
-                                "http://www.ardmediathek.de/das-erste/tagesschau-in-100-sek" )
+                                "http://www.ardmediathek.de/das-erste/tagesschau-in-100-sek",
+                                "http://www.ardmediathek.de/das-erste/" )
 start
   match( >>>http://(.*?).mp4<<< );
   rowselect(0);
@@ -335,8 +336,17 @@ start
   store("mp4url");
   basename;
   store("basename");
+
+  # extract title
+  # -------------
+  recall("BASEDOC");
+  titleextract;
+  print;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  print;
+  store("title");
  
-  paste(" wget -O ", $basename, " ", $mp4url );
+  paste(" wget -O ", $title, "_", $basename, " ", $mp4url );
   system;
 end
 
@@ -1337,7 +1347,7 @@ end
 # ---------------------------------
 # Example: http://www.br.de/mediathek/video/sendungen/quer/140130-quer-schlaeger-100.html
 # =================================
-parsername "BR_quer": ( "http://www.br.de/mediathek/video/sendungen/quer" )
+parsername "BR_quer": ( "http://www.br.de/mediathek/video/sendungen/quer", "http://www.br.de/mediathek/video/" )
 start
 
   # extract the URL for the xml-file
@@ -1366,6 +1376,14 @@ start
   makeurl;
   get;
   save;
+
+  # Download complete
+
+
+  # the following stuff is for later use...
+  recall("BASEDOC");
+  titleextract;
+  print;
 
 
 exitparse;
