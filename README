@@ -568,6 +568,7 @@ List of commands/keywords (not carved in stone so far) by example:
   basename;
   to_string;
   to_matchres;
+  htmldecode;
 
   get;
   system;
@@ -649,6 +650,11 @@ List of commands/keywords and a short-escription of them:
   get
     gets a document like html or xml page.
     Could also be a file, but not a stream so far.
+
+
+  htmldecode
+    Decodes the HTML-Quotings like &#034; and such stuff
+    back into "normal" characters.
 
 
   iselectmatch
