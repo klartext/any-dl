@@ -341,7 +341,7 @@ start
   # -------------
   recall("BASEDOC");
   titleextract;
-  print;
+  htmldecode;
   subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   print;
   store("title");
