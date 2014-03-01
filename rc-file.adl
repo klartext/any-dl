@@ -183,7 +183,7 @@ end
 # ---------------------------------
 # Example: http://www.ardmediathek.de/das-erste/polizeiruf-110/am-set-von-polizeiruf-110-interview-mit-charly-huebner?documentId=11177770
 # =================================
-parsername "ard_mediathek_get": ("http://www.ardmediathek.de", "http://mediathek.daserste.de")
+parsername "ard_mediathek_get": ("http://www.ardmediathek.de" )
 start
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)"<<< );
   store("match");
@@ -324,7 +324,10 @@ end
 # other possuble source (RSS/XML) would be:
 # http://www.tagesschau.de/export/video-podcast/tagesthemen/
 # ---------------------------------
-parsername "ard_tagesthemen": ( "http://www.tagesschau.de/multimedia/video/", "http://www.ardmediathek.de/das-erste/tagesthemen", "http://mediathek.rbb-online.de/rbb-fernsehen/rbb-praxis/" )
+parsername "ard_tagesthemen": ( "http://www.tagesschau.de/multimedia/video/",
+                                "http://www.ardmediathek.de/das-erste/tagesthemen",
+                                "http://mediathek.rbb-online.de/rbb-fernsehen/rbb-praxis/",
+                                "http://www.ardmediathek.de/das-erste/tagesschau-in-100-sek" )
 start
   match( >>>http://(.*?).mp4<<< );
   rowselect(0);
@@ -807,7 +810,10 @@ end
 # ---------------------------------
 # Example: http://www.ardmediathek.de/rbb-fernsehen/klartext/personal-als-sicherheitsrisiko?documentId=13243418
 # =================================
-parsername "ard_rbb_swr": ( "http://www.ardmediathek.de/rbb-fernsehen/", "http://www.ardmediathek.de/swr-fernsehen/", "http://www.ardmediathek.de/wdr-fernsehen/quarks-und-co" )
+parsername "ard_rbb_swr": ( "http://www.ardmediathek.de/rbb-fernsehen/",
+                            "http://www.ardmediathek.de/swr-fernsehen/",
+                            "http://www.ardmediathek.de/wdr-fernsehen/quarks-und-co",
+                            "http://mediathek.daserste.de/sendungen_a-z/"  )
 start
   match("(rtmp://.*?)\".*?\"(mp4:.*?mp4)");
   show_match;
@@ -834,7 +840,16 @@ start
   basename;
   store("filename");
 
-  paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o ", $filename );
+  recall("BASEDOC");
+  titleextract;
+  print;
+  subst(>>>(["+?/%;&= :,]+)|(%..)<<<, "_"); # remove all that crap from the title
+  subst(>>>(\[+)|(\])+<<<, "_"); # remove all that crap from the title
+  subst("__+", "_"); # substitute multiple underscores by a single one
+  print;
+  store("title");
+
+  paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o ", $title, $filename );
   print;
   system;
 
