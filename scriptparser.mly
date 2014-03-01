@@ -55,6 +55,7 @@
 %token DUMP_DATA
 %token SHOW_TAGS
 %token SHOW_TAGS_FULLPATH
+%token HTML_DECODE
 %token DUMMY
 
 %token COLSELECT
@@ -174,6 +175,7 @@ statement: match_stmt          SEMI   { $1 }
     |      DUMP_DATA           SEMI   { Dump_data }
     |      SHOW_TAGS           SEMI   { Show_tags }
     |      SHOW_TAGS_FULLPATH  SEMI   { Show_tags_fullpath }
+    |      HTML_DECODE         SEMI   { Html_decode }
     |      DUMMY               SEMI   { Dummy }
     ;
 

@@ -68,6 +68,17 @@ let save_string_to_file str filename =
   close_out oc
 
 
+(* -------------------------------------------------------------- *)
+(* HTML-decode                                                    *)
+(* -------------------------------------------------------------- *)
+(* it's hard-coded, based on the assumption, that UTF-8 is usual. *)
+(* might be parameterized if necessary.                           *)
+(* -------------------------------------------------------------- *)
+let html_decode str = Netencoding.Html.decode ~in_enc:`Enc_utf8 ~out_enc:`Enc_utf8 () str
+
+
+
+
 
 module Array2 =
   struct
@@ -874,6 +885,26 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar varmap
 
                          | Exit_parse                 -> flush stdout; prerr_endline "Parse was exited."; command [] tmpvar varmap (* call again with nothing-left-to-do *)
+
+
+                         | Html_decode                ->
+                                                         verbose_printf "%s" "Html_decode\n";
+                                                         let newvar =
+                                                           begin
+                                                           match tmpvar with
+                                                             | String str            -> String ( html_decode str )
+                                                             | String_array strarr   -> String_array ( Array.map html_decode strarr )
+                                                             | Document(doc, url)    -> Document( html_decode doc, html_decode url )
+                                                             | Document_array docarr -> Document_array( Array.map (fun (d,u) -> (html_decode d, html_decode u) ) docarr )
+                                                             | Url  (url, ref)       -> Url( html_decode url, html_decode ref )
+                                                             | Url_list    urllist   -> Url_list( List.map (fun (u,r) -> (html_decode u, html_decode r) ) urllist)
+                                                             | Url_array urlarr      -> Url_array( Array.map (fun (u,r) -> (html_decode u, html_decode r) ) urlarr )
+                                                             (*
+                                                             *)
+                                                             | _ -> raise Wrong_argument_type
+                                                           end
+                                                         in
+                                                         command tl newvar varmap
 
                          | Dummy                      -> command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *)
 

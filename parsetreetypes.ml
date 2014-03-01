@@ -78,6 +78,7 @@ type commands_t =
   | Show_tags                                 (* Show Tags *)
   | Show_tags_fullpath                        (* Show Tags with full tag-path *)
   | Dump_data                                 (* Dump only data-part if html, not the tags *)
+  | Html_decode                               (* decode HTML-quotings back to "normal" chars *)
   | Dummy
 
 
@@ -141,6 +142,7 @@ let command_to_string cmd = match cmd with
   | Show_tags         -> "Show_tags"
   | Show_tags_fullpath -> "Show_tags_fullpath"
   | Dump_data         -> "Dump_data"
+  | Html_decode       -> "Html_decode"        (* decode HTML-quotings back to "normal" chars *)
   | Dummy             -> "Dummy"
 
 

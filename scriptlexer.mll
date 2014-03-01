@@ -71,6 +71,8 @@
                   ("show_tags",      SHOW_TAGS  );
                   ("show_tags_fullpath",  SHOW_TAGS_FULLPATH  );
 
+                  ("htmldecode",  HTML_DECODE  );
+
 
                   ("dummy",  DUMMY  );
                 ]
