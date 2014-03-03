@@ -852,9 +852,11 @@ start
 
   recall("BASEDOC");
   titleextract;
+  htmldecode;
   print;
-  subst(>>>(["+?/%;&= :,]+)|(%..)<<<, "_"); # remove all that crap from the title
+  subst(>>>(["+?/%;&= :,']+)|(%..)<<<, "_"); # remove all that crap from the title
   subst(>>>(\[+)|(\])+<<<, "_"); # remove all that crap from the title
+  subst("_-_", "_"); # substitute multiple underscores by a single one
   subst("__+", "_"); # substitute multiple underscores by a single one
   print;
   store("title");
