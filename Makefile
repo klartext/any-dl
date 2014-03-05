@@ -1,6 +1,6 @@
 
-all: native-code
-#all: byte-code
+#all: native-code
+all: byte-code
 #all: debug-code
 
 
