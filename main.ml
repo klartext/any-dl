@@ -930,6 +930,9 @@ let parse_parser_definitions_from_files filenames_list =
 
   let tokenlist = ref [] in
 
+  (*
+  Parsing.set_trace true; (* only for debugging purposes *)
+  *)
   List.iter ( fun filename ->
                               let input_channel = open_in filename in
 
@@ -943,9 +946,7 @@ let parse_parser_definitions_from_files filenames_list =
                                   with
                                     | End_of_file         -> verbose_printf "End of rc-file reached; parser definitions were read."
                                     | Parsing.Parse_error -> 
-                                                             prerr_string "Parse error in line ";
-                                                             prerr_int !Scriptlexer.linenum;
-                                                             prerr_newline();
+                                                             Printf.eprintf "Parse error in file \"%s\", line %4d\n" filename !Scriptlexer.linenum;
                                                              exit 1
 
                                      (*
@@ -957,7 +958,8 @@ let parse_parser_definitions_from_files filenames_list =
                                      *)
 
                                 end;
-                                close_in input_channel
+                                close_in input_channel;
+                                Scriptlexer.linenum := 1 (* reset the linenumber for the next rc-file *)
             ) filenames_list;
 
   List.rev !tokenlist
