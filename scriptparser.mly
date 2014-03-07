@@ -136,6 +136,7 @@ urlmatches: LPAREN string_list RPAREN { $2 }
     ;
 
 parser_script: statement_list { $1 }
+parser_script:                { [] }
     ;
 
 
