@@ -1186,6 +1186,18 @@ start
 end
 
 
+parsername "DRKultur_breitband": ( "http://breitband.deutschlandradiokultur.de/" )
+start
+  match("(http://ondemand-mp3.*?mp3)");
+  rowselect(0);
+  select(1);
+  store("url");
+  print("mp3-URL: ", $url);
+  paste("wget ", $url);
+  system;
+end
+
+
 
 
 
