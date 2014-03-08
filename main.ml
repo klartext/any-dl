@@ -1215,8 +1215,9 @@ let _ =
   with Sys_error msg -> if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
                         then
                           begin
-                            Printf.fprintf stderr "The config file is missing. Default place for it is $HOME/.any-dl.rc.";
-                            Printf.fprintf stderr " Please provide it there or use -f option\n"
+                            Printf.fprintf stderr "The config file is missing. Possible default places for it: $XDG_CONFIG_HOME/any-dl.rc or";
+                            Printf.fprintf stderr "$HOME/.any-dl.rc or /etc/any-dl.rc\n";
+                            Printf.fprintf stderr " Please provide it there or use -f option, if you want to use a different rc-file.\n"
                           end
                         else
                           raise ( Sys_error msg )
