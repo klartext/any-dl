@@ -14,6 +14,12 @@ open Parsetreetypes
 let sort stringlist = List.sort ( fun a b -> let al = String.lowercase a and bl = String.lowercase b
                                    in if al < bl then (-1) else if al = bl then 0 else 1)  stringlist
 
+let activate_controlstrings str =
+  let str = Pcre.replace ~pat:"\\\\n" ~templ:"\n" str in
+  let str = Pcre.replace ~pat:"\\\\t" ~templ:"\t" str in
+  let str = Pcre.replace ~pat:"\\\\r" ~templ:"\r" str in
+  let str = Pcre.replace ~pat:"\\\\b" ~templ:"\b" str in
+  str
 
 
 

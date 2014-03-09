@@ -505,6 +505,7 @@ Command Line Options:
     -ms    set a sleep-time in a (bulk-) get-command in milli-seconds
             => sleeps only for bulk-get-commands (get that would call a list of documents,
                not for single get-commands)
+    -sep   set seperator-string, which is printed between parser-calls
 
     -help  Display this list of options
     --help  Display this list of options

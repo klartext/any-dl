@@ -1013,7 +1013,8 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
   in
 
   try
-    print_endline "# --------------------";
+    let seperator_string = Parsers.activate_controlstrings Cli.opt.Cli.sep in
+    print_string seperator_string; (* print seperator before (between) the parser-calls on urls *)
 
     (* ---------------------------------------------------------------- *)
     (* we evaluate the parse-tree, and start with a first, implicit get *)
