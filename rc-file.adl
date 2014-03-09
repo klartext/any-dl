@@ -325,6 +325,7 @@ end
 # http://www.tagesschau.de/export/video-podcast/tagesthemen/
 # ---------------------------------
 parsername "ard_tagesthemen": ( "http://www.tagesschau.de/multimedia/video/",
+                                "http://www.tagesschau.de/multimedia/sendung/",
                                 "http://www.ardmediathek.de/das-erste/tagesthemen",
                                 "http://mediathek.rbb-online.de/rbb-fernsehen/rbb-praxis/",
                                 "http://www.ardmediathek.de/das-erste/tagesschau-in-100-sek",
