@@ -80,6 +80,16 @@ start
 end
 
 
+# ------------------------------------------
+# same as dumptext, but with html-decode
+# ------------------------------------------
+parsername "dumptext2": ( )
+start
+  htmldecode;
+  dump_data;
+end
+
+
 # this one is unmature stuff, experimental field.
 parsername "videonames": ( )
 start
