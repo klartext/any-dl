@@ -336,14 +336,17 @@ end
 # ---------------------------------
 parsername "ard_tagesthemen": ( "http://www.tagesschau.de/multimedia/video/",
                                 "http://www.tagesschau.de/multimedia/sendung/",
+                                "http://www.tagesschau.de/ausland/",
                                 "http://www.ardmediathek.de/das-erste/tagesthemen",
                                 "http://mediathek.rbb-online.de/rbb-fernsehen/rbb-praxis/",
                                 "http://www.ardmediathek.de/das-erste/tagesschau-in-100-sek",
                                 "http://www.ardmediathek.de/das-erste/" )
 start
   match( >>>http://(.*?).mp4<<< );
-  rowselect(0);
+  dropcol(1);
+  iselectmatch(0,"webm.h264.mp4");
   select(0);
+print;
   store("mp4url");
   basename;
   store("basename");
