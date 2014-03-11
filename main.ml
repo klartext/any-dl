@@ -186,6 +186,12 @@ module Varmap =
     let find varname varmap =
       try Varmap.find varname varmap with Not_found -> raise (Variable_not_found varname)
 
+    (* find with an exception-default value                                               *)
+    (* This function allows to set a default value in case the lookup yields in Not_found *)
+    (* ---------------------------------------------------------------------------------- *)
+    let find_excdef varname varmap default =
+      try Varmap.find varname varmap with Not_found -> default
+
   end
 
 
@@ -229,19 +235,21 @@ let rec  to_string  result_value varmap =
 (* Should replace "to_string", if Url is wanted.  *)
 (* ---------------------------------------------- *)
 let rec  urlify  result_value varmap =
+  let make_referrer () = to_string ( Varmap.find_excdef "REFERRER" varmap (String "-") ) varmap in
   let str =
     match result_value with
       | Varname       varname      -> let res = (Varmap.find varname varmap) in
                                       urlify res varmap
-      | String        str          -> Url(str, "-")
+      | String        str          -> Url(str, make_referrer() )
       | Document      (doc, url)   -> raise Value_conversion_unknown (* like Wrong_argument_type *)
       | Document_array  arr        -> raise Value_conversion_unknown
                       (*
                       let strarr = Array.map ( fun (d,u) -> to_string (Document (d,u)) varmap ) arr in to_string (String_array strarr) varmap
                       *)
-      | String_array  str_arr      -> Url_array( Array.map (fun str -> (str, "-") ) str_arr )
+      | String_array  str_arr      -> Url_array( Array.map (fun str -> (str, make_referrer()) ) str_arr )
       | Match_result  mres         -> let liste = ref [] in
-                                      Array.iter( fun x -> Array.iter ( fun elem -> liste := (elem, "-") :: !liste ) x ) mres; (* extract elements to liste *)
+                                      let referrer = make_referrer() in 
+                                      Array.iter( fun x -> Array.iter ( fun elem -> liste := (elem, referrer) :: !liste ) x ) mres; (* extract elements to liste *)
                                       Url_list !liste
       | Url           (href, ref)  -> Url (href, ref)
       | Url_list      url_list     -> Url_list      url_list
