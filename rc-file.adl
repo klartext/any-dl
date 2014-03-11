@@ -1213,6 +1213,31 @@ end
 
 
 
+# =================================
+# mp3-files matched and downloaed =
+# =================================
+parsername "mp3": ( "http://www.ardmediathek.de/b5-aktuell/" )
+start
+  match("(http://.*?mp3)");
+  rowselect(0);
+  select(1);
+
+  store("url");
+  basename;
+  store("basename");
+
+  recall("BASEDOC");
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+  #paste("wget -O ", $title, "_", $basename, " ",  $url);
+  paste("wget -O ", $title, ".mp3", " ",  $url);
+  system;
+end
+
+
+
 
 
 #######################################################
