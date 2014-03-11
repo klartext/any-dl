@@ -1155,6 +1155,31 @@ start
 end
 
 
+# =================================
+# mp4-files matched and downloaed =
+# =================================
+parsername "mp4": ()
+start
+  match("(http://.*?mp4)");
+  rowselect(0);
+  select(1);
+
+  store("url");
+  basename;
+  store("basename");
+
+  recall("BASEDOC");
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+  #paste("wget -O ", $title, "_", $basename, " ",  $url);
+  paste("wget -O ", $title, ".mp4", " ",  $url);
+  system;
+end
+
+
+
 #######################################################
 ####                   R A D I O                    ###
 #######################################################
