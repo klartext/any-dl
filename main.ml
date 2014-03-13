@@ -68,14 +68,25 @@ let save_string_to_file str filename =
   close_out oc
 
 
+(* ---------------------------------------------------------------- *)
+(* exctract the charset-value from a string and select the matching *)
+(* value for encoding                                               *)
+(* ---------------------------------------------------------------- *)
+let select_decoding_scheme str =
+  let scheme = (Pcre.extract ~pat:"charset=([^\"]+)" ~flags:[] str).(1) in
+  match String.lowercase scheme with
+    | "iso-88-59-1" -> `Enc_iso88591
+    | "utf-8"       -> `Enc_utf8
+    | _             -> `Enc_utf8
+
+
 (* -------------------------------------------------------------- *)
 (* HTML-decode                                                    *)
 (* -------------------------------------------------------------- *)
 (* it's hard-coded, based on the assumption, that UTF-8 is usual. *)
 (* might be parameterized if necessary.                           *)
 (* -------------------------------------------------------------- *)
-let html_decode str = Netencoding.Html.decode ~in_enc:`Enc_utf8 ~out_enc:`Enc_utf8 () str
-
+let html_decode ?(inenc=`Enc_utf8) str = Netencoding.Html.decode ~in_enc:`Enc_iso88591 ~out_enc:`Enc_utf8 () str
 
 
 
@@ -897,12 +908,14 @@ let evaluate_command_list cmdlst =
 
                          | Html_decode                ->
                                                          verbose_printf "%s" "Html_decode\n";
+                                                         let sd str = select_decoding_scheme str in
                                                          let newvar =
                                                            begin
                                                            match tmpvar with
                                                              | String str            -> String ( html_decode str )
                                                              | String_array strarr   -> String_array ( Array.map html_decode strarr )
-                                                             | Document(doc, url)    -> Document( html_decode doc, html_decode url )
+                                                             | Document(doc, url)    -> let inenc = sd doc in
+                                                                                        Document( html_decode ~inenc:inenc doc, html_decode ~inenc:inenc url )
                                                              | Document_array docarr -> Document_array( Array.map (fun (d,u) -> (html_decode d, html_decode u) ) docarr )
                                                              | Url  (url, ref)       -> Url( html_decode url, html_decode ref )
                                                              | Url_list    urllist   -> Url_list( List.map (fun (u,r) -> (html_decode u, html_decode r) ) urllist)
