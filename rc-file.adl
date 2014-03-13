@@ -1253,9 +1253,11 @@ end
 # =================================
 # mp3-files matched and downloaed =
 # =================================
-parsername "mp3": ( "http://www.ardmediathek.de/b5-aktuell/" )
+parsername "mp3": ( "http://www.ardmediathek.de/b5-aktuell/",
+                    "http://www.deutschlandfunk.de/",
+                  )
 start
-  match("(http://.*?mp3)");
+  match("(http://.*mp3)");
   rowselect(0);
   select(1);
 
