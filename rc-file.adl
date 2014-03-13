@@ -58,9 +58,21 @@ end
 
 
 # show URL and title
-# ---------
+# -------------------
 parsername "pageinfo": ( )
 start
+  print_string("\n"); # blank line
+  titleextract;
+  print;
+  print( "   ", $STARTURL, "\n" );
+end
+
+
+# show URL and title, html-decoded
+# -------------------
+parsername "pageinfo2": ( )
+start
+  htmldecode;
   print_string("\n"); # blank line
   titleextract;
   print;
