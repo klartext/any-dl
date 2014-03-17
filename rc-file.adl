@@ -723,6 +723,37 @@ start
   system;
 end
 
+
+
+# ---------------------------------
+# WDR - Monitor
+# ---------------------------------
+parsername "wdr-monitor": ( "http://www.wdr.de/tv/monitor/sendungen" )
+start
+  # first extract the mp4-url
+  # -------------------------
+  match("Src=(http://http-ras.wdr.de/.*?mp4)");
+  show_match;
+  dropcol(0);
+  makeurl;
+  store("mp4url");
+
+  # extract and "beautify" the title
+  # --------------------------------
+  recall("BASEDOC");
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+  # get the file via wget
+  # ---------------------
+  paste( "wget -c ",  $mp4url, " -O ", $title, ".mp4" );
+  system;
+end
+
+
+
+
 # ---------------------------------
 # ARD/HR 
 # ---------------------------------
