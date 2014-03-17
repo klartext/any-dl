@@ -86,7 +86,7 @@ let select_decoding_scheme str =
 (* it's hard-coded, based on the assumption, that UTF-8 is usual. *)
 (* might be parameterized if necessary.                           *)
 (* -------------------------------------------------------------- *)
-let html_decode ?(inenc=`Enc_utf8) str = Netencoding.Html.decode ~in_enc:`Enc_iso88591 ~out_enc:`Enc_utf8 () str
+let html_decode ?(inenc=`Enc_utf8) str = Netencoding.Html.decode ~in_enc:inenc ~out_enc:`Enc_utf8 () str
 
 
 
