@@ -53,25 +53,28 @@ let opt =  {
 (* parse(): function to parse the command line *)
 (* ------------------------------------------- *)
 let parse () = 
-    Arg.parse [
-         ("-p",   Arg.String (fun parser_name -> opt.parser_selection <- Some parser_name ),  "    select a mandatory parser by name (give name here)" );
-         ("-l",   Arg.Unit   (fun ()          -> opt.list_parsers     <- true ),              "    list parsers" );
-         ("-f",   Arg.String (fun rcfilename  -> opt.rc_filenames  <- rcfilename :: opt.rc_filenames ),        "    rc-file-name" );
-         ("-c",   Arg.Unit   (fun ()          -> opt.show_commands    <- true       ),        "    show commands of parserdef-language" );
-         ("-v",   Arg.Unit   (fun ()          -> opt.verbose          <- true       ),        "    verbose     " );
-         ("-s",   Arg.Unit   (fun ()          -> opt.safe             <- true       ),        "    safe: no download via system invoked" );
-         ("-i",   Arg.Unit   (fun ()          -> opt.interactive      <- true       ),        "    interactive: interactive features enabled" );
-         ("-a",   Arg.Unit   (fun ()          -> opt.auto_try         <- true       ),        "    auto-try: try all parsers" );
+  let args_list =
+    Arg.align [
+         ("-p",   Arg.String (fun parser_name -> opt.parser_selection <- Some parser_name ),  " select a mandatory parser by name (give name here)" );
+         ("-l",   Arg.Unit   (fun ()          -> opt.list_parsers     <- true ),              " list parsers" );
+         ("-f",   Arg.String (fun rcfilename  -> opt.rc_filenames  <- rcfilename :: opt.rc_filenames ),        " rc-file-name" );
+         ("-c",   Arg.Unit   (fun ()          -> opt.show_commands    <- true       ),        " show commands of parserdef-language" );
+         ("-v",   Arg.Unit   (fun ()          -> opt.verbose          <- true       ),        " verbose" );
+         ("-s",   Arg.Unit   (fun ()          -> opt.safe             <- true       ),        " safe: no download via system invoked" );
+         ("-i",   Arg.Unit   (fun ()          -> opt.interactive      <- true       ),        " interactive: interactive features enabled" );
+         ("-a",   Arg.Unit   (fun ()          -> opt.auto_try         <- true       ),        " auto-try: try all parsers" );
          ("-as",  Arg.Unit   (fun ()          -> opt.auto_try         <- true;
-                                                 opt.auto_try_stop    <- true; prerr_endline "!!!"       ),        "   auto-try-stop: try all parsers; stop after first success" );
-         ("-u",   Arg.String (fun useragent   -> opt.user_agent       <- useragent ),         "    set the user-agent-string manually" );
-         ("-ir",  Arg.String (fun init_ref    -> opt.initial_referrer <- init_ref ),          "    set the initial referrer from '-' to custom value " );
-         ("-ms",  Arg.Int    (fun sleep_ms    -> opt.ms_sleep <- sleep_ms ),                  "    set a sleep-time in a (bulk-) get-command in milli-seconds" );
-         ("-sep", Arg.String (fun sep         -> opt.sep <- sep ),                            "    set seperator-string, which is printed between parser-calls" );
+                                                 opt.auto_try_stop    <- true; prerr_endline "!!!"       ),        " auto-try-stop: try all parsers; stop after first success" );
+         ("-u",   Arg.String (fun useragent   -> opt.user_agent       <- useragent ),         " set the user-agent-string manually" );
+         ("-ir",  Arg.String (fun init_ref    -> opt.initial_referrer <- init_ref ),          " set the initial referrer from '-' to custom value " );
+         ("-ms",  Arg.Int    (fun sleep_ms    -> opt.ms_sleep <- sleep_ms ),                  " set a sleep-time in a (bulk-) get-command in milli-seconds" );
+         ("-sep", Arg.String (fun sep         -> opt.sep <- sep ),                            " set seperator-string, which is printed between parser-calls" );
        (* => DEFAULT (hardcoded) !!!
        *)
               ]
-         ( fun str -> opt.url_list <- str :: opt.url_list  )
-         "Use \"any-dl\" following options:"
+  in
+    Arg.parse args_list
+      ( fun str -> opt.url_list <- str :: opt.url_list  )
+      "Use \"any-dl\" following options:"
 
 
