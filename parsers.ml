@@ -432,3 +432,6 @@ let xml_get_href  = Xmlparse.get_href_from_xml
 let xml_get_href_from_string  str = Xmlparse.get_href_from_xml ( Xmlparse.parse_string str )
 
 
+(*
+  http://selenium.googlecode.com/git/docs/api/py/webdriver_remote/selenium.webdriver.remote.webdriver.html#selenium.webdriver.remote.webdriver.WebDriver.find_element_by_name
+*)
