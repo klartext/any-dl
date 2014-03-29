@@ -435,3 +435,42 @@ let xml_get_href_from_string  str = Xmlparse.get_href_from_xml ( Xmlparse.parse_
 (*
   http://selenium.googlecode.com/git/docs/api/py/webdriver_remote/selenium.webdriver.remote.webdriver.html#selenium.webdriver.remote.webdriver.WebDriver.find_element_by_name
 *)
+
+(*
+        find_element(by='id', value=None)
+
+        find_element_by_class_name(name)
+
+        find_element_by_css_selector(css_selector)
+
+        find_element_by_id(id_)
+
+        find_element_by_link_text(link_text)
+
+        find_element_by_name(name)
+
+        find_element_by_partial_link_text(link_text)
+
+        find_element_by_tag_name(name)
+
+        find_element_by_xpath(xpath)
+
+        find_elements(by='id', value=None)
+
+        find_elements_by_class_name(name)
+
+        find_elements_by_css_selector(css_selector)
+
+        find_elements_by_id(id_)
+
+        find_elements_by_link_text(text)
+
+        find_elements_by_name(name)
+
+        find_elements_by_partial_link_text(link_text)
+
+        find_elements_by_tag_name(name)
+
+        find_elements_by_xpath(xpath)
+
+*)
