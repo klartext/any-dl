@@ -402,16 +402,14 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       let rec traverse_aux doclist =
         match doclist with
           | []     -> ()
-          | hd::tl ->
-                        (* work on the head *)
-                        begin
-                          match hd with
-                            | Element (tag, args, dl) when tag = name  -> picked := hd :: !picked
-                            | Element (tag, args, dl)                  -> traverse_aux dl
-                            | Data    _                                -> ()
-                        end;
+          | hd::tl -> begin (* work on the head *)
+                        match hd with
+                          | Element (tag, args, dl) when tag = name  -> picked := hd :: !picked
+                          | Element (tag, args, dl)                  -> traverse_aux dl
+                          | Data    _                                -> ()
+                      end;
 
-                        traverse_aux tl (* work on the tail *)
+                      traverse_aux tl (* work on the tail *)
       in
         traverse_aux doclist;
         List.rev !picked
