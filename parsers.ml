@@ -416,6 +416,44 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
+
+
+    let arg_pair_does_match  argname argval  args =
+      let filtered = List.filter (  fun arg -> fst arg = argname  &&  snd arg = argval ) args  in
+      List.length filtered > 0  (* comparison If match found, list-len is > 0 *)
+
+
+    (* finds elements by class-name *)
+    (* ============================ *)
+    let find_elements_by_class_name  classname  doclist =
+
+      let picked = ref [] in
+
+      let rec traverse_aux doclist =
+        match doclist with
+          | []     -> ()
+          | hd::tl -> begin (* work on the head *)
+                        match hd with
+                          | Element (tag, args, dl) -> if
+                                                         arg_pair_does_match "class" classname args
+                                                       then
+                                                         picked := hd :: !picked
+                                                       else
+                                                         traverse_aux dl
+
+                          | Data    _               -> ()
+                      end;
+
+                      traverse_aux tl (* work on the tail *)
+      in
+        traverse_aux doclist;
+        List.rev !picked
+
+
+
+
+
+
     (* functions to call the HTML-parsers with string as argument *)
     (* ---------------------------------------------------------- *)
     let dump_html_from_string str          = dump_html ( string_to_nethtml str )
@@ -445,7 +483,12 @@ let tagextract tag doc = parse_html ~pickdata:true ~tagmatch:tag (conv_to_doclis
 let xml_get_href  = Xmlparse.get_href_from_xml
 
 
-let find_elements_by_name_str name str = find_elements_by_name name (conv_to_doclist str)
+(* functions, that can be used on strings              *)
+(* They call conversion-function for string-to-doclist *)
+(* first, and then calling the appropriate parser      *)
+(* =================================================== *)
+let find_elements_by_name_str name  str           = find_elements_by_name name             (conv_to_doclist str)
+let find_elements_by_class_name_str classname str = find_elements_by_class_name  classname (conv_to_doclist str)
 
 
 (* --------------------------------------------------------------------------- *)
@@ -481,7 +524,6 @@ let xml_get_href_from_string  str = Xmlparse.get_href_from_xml ( Xmlparse.parse_
 
         find_elements(by='id', value=None)
 
-        find_elements_by_class_name(name)
 
         find_elements_by_css_selector(css_selector)
 
