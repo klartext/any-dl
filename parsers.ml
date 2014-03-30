@@ -425,7 +425,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
     (* finds elements by class-name *)
     (* ============================ *)
-    let find_elements_by_class_name  classname  doclist =
+    let find_elements_by_argpair  argname  argval  doclist =
 
       let picked = ref [] in
 
@@ -435,7 +435,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
           | hd::tl -> begin (* work on the head *)
                         match hd with
                           | Element (tag, args, dl) -> if
-                                                         arg_pair_does_match "class" classname args
+                                                         arg_pair_does_match argname argval args
                                                        then
                                                          picked := hd :: !picked
                                                        else
@@ -450,6 +450,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         List.rev !picked
 
 
+    let find_elements_by_class_name  classname  doclist = find_elements_by_argpair  "class" classname  doclist
 
 
 
