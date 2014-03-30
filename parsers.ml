@@ -393,6 +393,30 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
+    (* finds elements by name *)
+    (* ====================== *)
+    let find_elements_by_name  name  doclist =
+
+      let picked = ref [] in
+
+      let rec traverse_aux doclist =
+        match doclist with
+          | []     -> ()
+          | hd::tl ->
+                        (* work on the head *)
+                        begin
+                          match hd with
+                            | Element (tag, args, dl) when tag = name  -> picked := hd :: !picked
+                            | Element (tag, args, dl)                  -> traverse_aux dl
+                            | Data    _                                -> ()
+                        end;
+
+                        traverse_aux tl (* work on the tail *)
+      in
+        traverse_aux doclist;
+        List.rev !picked
+
+
 
     (* functions to call the HTML-parsers with string as argument *)
     (* ---------------------------------------------------------- *)
@@ -423,6 +447,8 @@ let tagextract tag doc = parse_html ~pickdata:true ~tagmatch:tag (conv_to_doclis
 let xml_get_href  = Xmlparse.get_href_from_xml
 
 
+let find_elements_by_name_str name str = find_elements_by_name name (conv_to_doclist str)
+
 
 (* --------------------------------------------------------------------------- *)
 (* parses xml out of a flat string and afterwards parses hrefs out of the xml  *)
@@ -451,7 +477,7 @@ let xml_get_href_from_string  str = Xmlparse.get_href_from_xml ( Xmlparse.parse_
 
         find_element_by_partial_link_text(link_text)
 
-        find_element_by_tag_name(name)
+    let find_element_by_tag_name  tagname =
 
         find_element_by_xpath(xpath)
 
@@ -465,7 +491,6 @@ let xml_get_href_from_string  str = Xmlparse.get_href_from_xml ( Xmlparse.parse_
 
         find_elements_by_link_text(text)
 
-        find_elements_by_name(name)
 
         find_elements_by_partial_link_text(link_text)
 
