@@ -391,11 +391,12 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         in
           traverse_aux doclist 0 [] ""
 
+    (* ================================================================================================================================== *)
 
 
-    (* finds elements by name *)
-    (* ====================== *)
-    let find_elements_by_name  name  doclist =
+    (* finds elements by tag-name *)
+    (* ========================== *)
+    let find_elements_by_tag_name  name  doclist =
 
       let picked = ref [] in
 
@@ -423,8 +424,8 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       List.length filtered > 0  (* comparison If match found, list-len is > 0 *)
 
 
-    (* finds elements by class-name *)
-    (* ============================ *)
+    (* finds elements by match of argname and argvalue *)
+    (* =============================================== *)
     let find_elements_by_argpair  argname  argval  doclist =
 
       let picked = ref [] in
@@ -450,46 +451,51 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         List.rev !picked
 
 
+    (* find elements by class-name *)
     let find_elements_by_class_name  classname  doclist = find_elements_by_argpair  "class" classname  doclist
+    let find_elements_by_id          id         doclist = find_elements_by_argpair  "id"    id         doclist
+    let find_elements_by_name        name       doclist = find_elements_by_argpair  "name"  name       doclist
 
-
-
-
-    (* functions to call the HTML-parsers with string as argument *)
-    (* ---------------------------------------------------------- *)
-    let dump_html_from_string str          = dump_html ( string_to_nethtml str )
-    let dump_html_data_from_string str     = dump_html_data ( string_to_nethtml str )
-    let show_tags_from_string str          = show_tags (string_to_nethtml str)
-    let show_tags_fullpath_from_string str = show_tags_full_path (string_to_nethtml str)
-    let show_tag_hierarchy_from_string str = show_tag_hierarchy ( string_to_nethtml str )
-      
 
 
   end (* Htmlparse-Ende *)
 (* ========================================================================================================================= *)
 (* ========================================================================================================================= *)
 
+
 open Htmlparse
 
 
 let conv_to_doclist str = Nethtml.parse(new Netchannels.input_string str)
 
+(* functions to call the HTML-parsers with string as argument *)
+(* ---------------------------------------------------------- *)
+let dump_html_from_string str          = dump_html ( string_to_nethtml str )
+let dump_html_data_from_string str     = dump_html_data ( string_to_nethtml str )
+let show_tags_from_string str          = show_tags (string_to_nethtml str)
+let show_tags_fullpath_from_string str = show_tags_full_path (string_to_nethtml str)
+let show_tag_hierarchy_from_string str = show_tag_hierarchy ( string_to_nethtml str )
+
+
+(* more functions to be called with string-docs, but using different conversion-functions *)
+(* -------------------------------------------------------------------------------------- *)
 let linkextract    doc = parse_html ~tagmatch:"a"   ~subtag:(Some "href") (conv_to_doclist doc)
 let imageextract   doc = parse_html ~tagmatch:"img" ~subtag:(Some "src")  (conv_to_doclist doc)
 let titleextract   doc = parse_html ~tagmatch:"title" ~pickdata:true     (conv_to_doclist doc)
-
 let tagextract tag doc = parse_html ~pickdata:true ~tagmatch:tag (conv_to_doclist doc)
 
 
-let xml_get_href  = Xmlparse.get_href_from_xml
 
+(* Selenium-API-Style *)
+(* ------------------ *)
+let find_elements_by_tag_name_str   tagname   str = find_elements_by_tag_name    tagname    (conv_to_doclist str)
+let find_elements_by_class_name_str classname str = find_elements_by_class_name  classname  (conv_to_doclist str)
+let find_elements_by_id_str         idname    str = find_elements_by_id          idname     (conv_to_doclist str)
+let find_elements_by_name_str       name      str = find_elements_by_name        name       (conv_to_doclist str)
 
-(* functions, that can be used on strings              *)
-(* They call conversion-function for string-to-doclist *)
-(* first, and then calling the appropriate parser      *)
-(* =================================================== *)
-let find_elements_by_name_str name  str           = find_elements_by_name name             (conv_to_doclist str)
-let find_elements_by_class_name_str classname str = find_elements_by_class_name  classname (conv_to_doclist str)
+(* the general function for matching argname/argvalue-pairs of an element *)
+let find_elements_by_argpair_str  argname  argval  str = find_elements_by_argpair argname  argval  (conv_to_doclist str)
+
 
 
 (* --------------------------------------------------------------------------- *)
@@ -500,43 +506,31 @@ let find_elements_by_class_name_str classname str = find_elements_by_class_name 
 let xml_get_href_from_string  str = Xmlparse.get_href_from_xml ( Xmlparse.parse_string str )
 
 
+
+let xml_get_href  = Xmlparse.get_href_from_xml
+
+
+
+
+
 (*
   http://selenium.googlecode.com/git/docs/api/py/webdriver_remote/selenium.webdriver.remote.webdriver.html#selenium.webdriver.remote.webdriver.WebDriver.find_element_by_name
 *)
 
 (*
         find_element(by='id', value=None)
-
         find_element_by_class_name(name)
-
         find_element_by_css_selector(css_selector)
-
         find_element_by_id(id_)
-
         find_element_by_link_text(link_text)
-
         find_element_by_name(name)
-
         find_element_by_partial_link_text(link_text)
-
-    let find_element_by_tag_name  tagname =
-
+        find_element_by_tag_name ( tagname  )
         find_element_by_xpath(xpath)
 
         find_elements(by='id', value=None)
-
-
         find_elements_by_css_selector(css_selector)
-
-        find_elements_by_id(id_)
-
         find_elements_by_link_text(text)
-
-
         find_elements_by_partial_link_text(link_text)
-
-        find_elements_by_tag_name(name)
-
         find_elements_by_xpath(xpath)
-
 *)
