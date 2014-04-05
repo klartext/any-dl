@@ -451,7 +451,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         List.rev !picked
 
 
-    (* find elements by class-name *)
+    (* find elements by .......... *)
     let find_elements_by_class_name  classname  doclist = find_elements_by_argpair  "class" classname  doclist
     let find_elements_by_id          id         doclist = find_elements_by_argpair  "id"    id         doclist
     let find_elements_by_name        name       doclist = find_elements_by_argpair  "name"  name       doclist
@@ -479,10 +479,10 @@ let show_tag_hierarchy_from_string str = show_tag_hierarchy ( string_to_nethtml 
 
 (* more functions to be called with string-docs, but using different conversion-functions *)
 (* -------------------------------------------------------------------------------------- *)
-let linkextract    doc = parse_html ~tagmatch:"a"   ~subtag:(Some "href") (conv_to_doclist doc)
-let imageextract   doc = parse_html ~tagmatch:"img" ~subtag:(Some "src")  (conv_to_doclist doc)
-let titleextract   doc = parse_html ~tagmatch:"title" ~pickdata:true     (conv_to_doclist doc)
-let tagextract tag doc = parse_html ~pickdata:true ~tagmatch:tag (conv_to_doclist doc)
+let linkextract_str    doc = parse_html ~tagmatch:"a"   ~subtag:(Some "href") (conv_to_doclist doc)
+let imageextract_str   doc = parse_html ~tagmatch:"img" ~subtag:(Some "src")  (conv_to_doclist doc)
+let titleextract_str   doc = parse_html ~tagmatch:"title" ~pickdata:true     (conv_to_doclist doc)
+let tagextract_str tag doc = parse_html ~pickdata:true ~tagmatch:tag (conv_to_doclist doc)
 
 
 
