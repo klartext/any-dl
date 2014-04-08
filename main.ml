@@ -188,20 +188,25 @@ module Varmap =
   struct
     module Varmap = Map.Make( String )
 
+    include Varmap
+
+    (* these must be included in output signature
     let empty  = Varmap.empty
     let add    = Varmap.add
     let remove = Varmap.remove
     let iter   = Varmap.iter
+    *)
+
     let exists = Varmap.mem
 
     let find varname varmap =
-      try Varmap.find varname varmap with Not_found -> raise (Variable_not_found varname)
+      try find varname varmap with Not_found -> raise (Variable_not_found varname)
 
     (* find with an exception-default value                                               *)
     (* This function allows to set a default value in case the lookup yields in Not_found *)
     (* ---------------------------------------------------------------------------------- *)
     let find_excdef varname varmap default =
-      try Varmap.find varname varmap with Not_found -> default
+      try find varname varmap with Not_found -> default
 
   end
 
