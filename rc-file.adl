@@ -1201,10 +1201,10 @@ end
 # =================================
 # mp4-files matched and downloaed =
 # =================================
-parsername "mp4": ()
+parsername "mp4": ( "http://www.ardmediathek.de/das-erste/report-muenchen/" )
 start
   match("(http://.*?mp4)");
-  rowselect(0);
+  iselectmatch(0,"mp4");
   select(1);
 
   store("url");
