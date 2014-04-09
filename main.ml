@@ -1220,7 +1220,7 @@ let main ()  =
                                (* for this url try all parsers *)
                                
                                try
-                                 List.iter ( fun parsername -> prerr_endline ("Parser: " ^ parsername);
+                                 List.iter ( fun parsername -> prerr_endline ("========================> Parser: " ^ parsername ^ " <========================");
                                                                try
                                                                  invoke_parser_on_url  url  parser_urllist  parser_namehash  (Some parsername);
                                                                  if Cli.opt.Cli.auto_try_stop then raise AutoTry_success
