@@ -56,7 +56,7 @@ type commands_t =
   | Show_match
   | Print_string of string
   | Save                                      (* save data (filename derived from document-url) *)
-  | Save_as           of string               (* save data, explicit filename *)
+  | Save_as           of results_t list       (* save data, explicit filename *)
   | Setvar       of results_t
   | Show_type
   (* -------------- *)

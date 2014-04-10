@@ -303,6 +303,15 @@ let interactive_string_select str_arr default_pattern =
     loop str_arr
 
 
+(* Pasting an Argument-list, converting to native string *)
+(* ===================================================== *)
+(* Used by the paste-command, as well as others.         *)
+(* ----------------------------------------------------- *)
+let paste_arglist_to_string  argument_list  varmap =
+  let str_lst = List.map (fun item ->  to_string item varmap) argument_list in (* convert to string  *)
+  let pasted  = List.fold_left ( ^ ) "" str_lst in                             (* append all strings *)
+  pasted
+
 
 (* ------------------------------------------------- *)
 (* This function evaluates the list of commands that *)
@@ -734,8 +743,11 @@ let evaluate_command_list cmdlst =
 
 
                          | Paste paste_list            ->
+                                                          let res = paste_arglist_to_string  paste_list  varmap in
+                                                          (*
                                                           let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
                                                           let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
+                                                          *)
                                                           command tl (String res) varmap
 
 
@@ -790,7 +802,7 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar varmap
 
 
-                         | Save_as      filename      ->
+                         | Save_as      argument_list -> let filename = paste_arglist_to_string  argument_list  varmap in
                                                          begin
                                                            match tmpvar with
                                                              | Document(doc, url)       -> save_string_to_file doc filename

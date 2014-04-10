@@ -208,7 +208,7 @@ recall_stmt: RECALL LPAREN STRING   RPAREN    { Recall $3 }
 delete_stmt: DELETE LPAREN STRING   RPAREN    { Delete $3 }
     ;
 
-save_as:     SAVE_AS  LPAREN  STRING  RPAREN     { Save_as $3 }
+save_as:     SAVE_AS  LPAREN  argument_list  RPAREN     { Save_as $3 }
     ;
 
 paste_stmt: PASTE LPAREN argument_list RPAREN    { Paste $3 }
