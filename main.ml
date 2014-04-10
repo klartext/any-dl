@@ -790,6 +790,18 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar varmap
 
 
+                         | Save_as      filename      ->
+                                                         begin
+                                                           match tmpvar with
+                                                             | Document(doc, url)       -> save_string_to_file doc filename
+                                                             (*
+                                                             | Document_array doc_array -> Array.iter saver doc_array
+                                                             *)
+                                                             | _ -> raise Wrong_tmpvar_type
+                                                         end;
+                                                         command tl tmpvar varmap
+
+
                          | Save                       -> (*print_endline "Save detected"; raise NOT_IMPLEMENTED_SO_FAR*)
                                                          let saver (doc, url) = let fname = Parsers.url_to_filename url in
                                                                              save_string_to_file doc fname

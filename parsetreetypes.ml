@@ -55,7 +55,8 @@ type commands_t =
   | Print_args        of results_t list       (* printing the general args-list *)
   | Show_match
   | Print_string of string
-  | Save                                      (* save data *)
+  | Save                                      (* save data (filename derived from document-url) *)
+  | Save_as           of string               (* save data, explicit filename *)
   | Setvar       of results_t
   | Show_type
   (* -------------- *)
@@ -123,6 +124,7 @@ let command_to_string cmd = match cmd with
   | Show_match        -> "Show_match"
   | Print_string    _ -> "Print_string"
   | Save            _ -> "Save"
+  | Save_as         _ -> "Save_as"
   | Setvar          _ -> "Setvar"
   | Show_type       _ -> "Show_type"
   | ColSelect       _ -> "ColSelect" 
