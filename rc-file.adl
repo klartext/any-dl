@@ -848,7 +848,8 @@ start
   #match("(rtmp://.*?.mp4)");
   #show_match;
 
-  iselectmatch(1,".*?B.mp4");  #   http://.*?B.mp4  is of acceptable size, so it's used as default
+  #iselectmatch(1,".*?B.mp4");  #   http://.*?B.mp4  is of acceptable size, so it's used as default
+  iselectmatch(1,".*?mp4");  #   http://.*?B.mp4  is of acceptable size, so it's used as default
 print("=======================");
 print;
 
@@ -865,8 +866,7 @@ print;
   makeurl;
   print;
   get;
-  save;
-  print("Filename should be: ", $filename); # as long as there is no option to save with filename-arg
+  save_as( $filename, ".mp4" );
 
 
 end
@@ -1204,6 +1204,7 @@ end
 parsername "mp4": ( "http://www.ardmediathek.de/das-erste/report-muenchen/" )
 start
   match("(http://.*?mp4)");
+show_match;
   iselectmatch(0,"mp4");
   select(1);
 
