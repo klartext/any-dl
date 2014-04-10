@@ -186,9 +186,9 @@ let array_drop arr dropidx =
 (* -------------------- *)
 module Varmap =
   struct
-    module Varmap = Map.Make( String )
+    module Variablemap = Map.Make( String )
 
-    include Varmap
+    include Variablemap
 
     (* these must be included in output signature
     let empty  = Varmap.empty
@@ -197,16 +197,16 @@ module Varmap =
     let iter   = Varmap.iter
     *)
 
-    let exists = Varmap.mem
+    let exists = Variablemap.mem
 
     let find varname varmap =
-      try find varname varmap with Not_found -> raise (Variable_not_found varname)
+      try Variablemap.find varname varmap with Not_found -> raise (Variable_not_found varname)
 
     (* find with an exception-default value                                               *)
     (* This function allows to set a default value in case the lookup yields in Not_found *)
     (* ---------------------------------------------------------------------------------- *)
     let find_excdef varname varmap default =
-      try find varname varmap with Not_found -> default
+      try Variablemap.find varname varmap with Not_found -> default
 
   end
 
