@@ -956,6 +956,9 @@ let evaluate_command_list cmdlst =
                                                          in
                                                          command tl newvar varmap
 
+                         | Sleep_ms  milliseconds     -> Sleep.sleep_ms milliseconds;
+                                                         command tl tmpvar varmap
+
                          | Dummy                      -> command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *)
 
                      end
