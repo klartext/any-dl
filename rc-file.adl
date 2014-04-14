@@ -1316,7 +1316,7 @@ end
 # would reorder the Parsetree to make Get-Array-Save-Array
 # on array sbstituted by (Get-Save)-Array.
 # ==================================================
-parsername "mp3mass": ( )
+parsername "mp3bulk": ( )
 start
   match("(http://.*mp3)");
   dropcol(1);
