@@ -376,7 +376,9 @@ let evaluate_command_list cmdlst =
                                                        end
 
 
-                         | Get             ->
+                         | Get             -> (* This is not directly downloading the data; just inserting    *)
+                                              (* the appropriate downloader-Tokens into the Tokenlist / "AST" *)
+                                              (* ------------------------------------------------------------ *)
                                               begin
                                                 match tmpvar with
                                                   | Url (u,r)          -> command (Get_url (u,r) :: tl) tmpvar varmap
@@ -388,19 +390,76 @@ let evaluate_command_list cmdlst =
                                                 end
 
 
-                         | Get_urls        -> begin
+                         | Get_urls        ->
+                                              (* If a list or array of URLs must be downloaded, this could be done   *)
+                                              (* directly, and data be stored in memory.                             *)
+                                              (* But if a save-command follows the get-command in the rc-file,       *)
+                                              (* then the data of all downloaded documents will be saved later on,   *)
+                                              (* when the the save-command will be executed.                         *)
+                                              (* Because all documents need to be held in memory until they have     *)
+                                              (* been saved, it would also make sense to do the Save operation       *)
+                                              (* immediately after the get-operation for all the URLs.               *)
+                                              (* But this ruls is incomplete: between the Get and the Save a         *)
+                                              (* Sleep_ms must be inserted, because this Sleeping-time is used for   *)
+                                              (* Bulk-downloads already; and this feature must work also after       *)
+                                              (* Tokenlist-transformation.                                           *)
+                                              (*                                                                     *)
+                                              (* Because of the change.of-order of the operations, the Tokenlist     *)
+                                              (* will be changed ("AST-optimization").                               *)
+                                              (*                                                                     *)
+                                              (* But this change of the tokenlist is only allowed, if the next       *)
+                                              (* command after the Get-command is a Save-command.                    *)
+                                              (* So, there must be a LOOKAHEAD of one Token.                         *)
+                                              (*                                                                     *)
+                                              (* In other words:                                                     *)
+                                              (* If the Get command is used on a LIST/ARRAY of URLs,                 *)
+                                              (*     AND                                                             *)
+                                              (* the token following the Get-Token is a Save-command-token,          *)
+                                              (* then transform the tokenlist  such, that Get is followed by         *)
+                                              (* Sleep_ms, and this followed by Save, for each of the requested URLs.*)
+                                              (* ------------------------------------------------------------------- *)
+
+                                              (* Ermittle und pruefe Lookahead-Token *)
+                                              (* ----------------------------------- *)
+                                              let lookahead = List.hd tl in
+                                              let next_token_is_savecommand = if lookahead = Save then true else false in
+
+
+                                              (* two functions for creating the action-list from the url-list *)
+                                              (* ------------------------------------------------------------ *)
+                                              let get_save_url (url,ref) = [ Get_url (url, ref); Save; Sleep_ms Cli.opt.Cli.ms_sleep ] in
+                                              let create_actionlist  url_liste = List.flatten ( List.map get_save_url (List.rev url_liste) ) in
+
+
+                                              (* Remark: The last Sleep added by this process is not necessary... (one sleep too much) *)
+
+                                              (* ----------------------------------------------------------------------- *)
+                                              (* here the download-actions will be done, either directly or via creating *)
+                                              (* a tokenlist that will do Get-Sleep-Save action-triplets, and prepends   *)
+                                              (* these actions before the tail of the former command-list.               *)
+                                              (* ----------------------------------------------------------------------- *)
+                                              begin
                                                 match tmpvar with
                                                   | Url_list  urllist  -> prerr_endline "Should now get Documents!";
-                                                                          let docs, vm = get_document_list  urllist varmap in
-                                                                          command tl (Document_array (Array.of_list docs)) vm
+                                                                          if next_token_is_savecommand
+                                                                          then
+                                                                            let actionlist = create_actionlist urllist in
+                                                                            command (List.append actionlist tl) tmpvar varmap
+                                                                          else
+                                                                            let docs, vm = get_document_list  urllist varmap in
+                                                                            command tl (Document_array (Array.of_list docs)) vm
 
                                                   | Url_array urlarray -> prerr_endline "Should now get Documents!";
-                                                                          let docs, vm = get_document_list  (Array.to_list urlarray) varmap in
-                                                                          command tl (Document_array (Array.of_list docs)) vm
-                                                  (*
-                                                  | Url_array urlarray -> prerr_endline "Should now get Documents!";
-                                                                          Array.iter ( fun (u,r) -> Printf.printf "url: %s /// referrer: %s\n" u r) urlarray
-                                                  *)
+                                                                          let urllist = Array.to_list urlarray in
+
+                                                                          if next_token_is_savecommand
+                                                                          then
+                                                                            let actionlist = create_actionlist urllist in
+                                                                            command (List.append actionlist tl) tmpvar varmap
+                                                                          else
+                                                                            let docs, vm = get_document_list  (Array.to_list urlarray) varmap in
+                                                                            command tl (Document_array (Array.of_list docs)) vm
+
                                                   | _                -> raise Wrong_tmpvar_type
                                               end
 
