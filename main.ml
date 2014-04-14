@@ -46,18 +46,8 @@ exception Variable_not_found of string   (* a variable-name lookup in the Varnam
 
 exception Devel (* exception while developing / testing *)
 
+open Tools
 
-
-(* CLI-VERBOSE-dependent print functions ! *)
-(* --------------------------------------- *)
-let verbose_fprintf channel formatstr =
-  let frmt = format_of_string formatstr in
-  if Cli.opt.Cli.verbose then Printf.fprintf channel frmt else Printf.ifprintf channel frmt
-
-let verbose_printf  formatstr = verbose_fprintf stdout formatstr
-(* -v means: verbose is wanted output, not an error... why then stderr? -> unneeded?
-let verbose_eprintf formatstr = verbose_fprintf stderr formatstr
-*)
 
 
 (* save string to file *)
@@ -745,7 +735,7 @@ let evaluate_command_list cmdlst =
                                                            (* extract urls and rebase these extracted urls *)
                                                            let extract_and_rebase document url =
                                                                let extracted_urls = Parsers.linkextract_str document in
-                                                               if Cli.opt.Cli.verbose then List.iter (fun x -> verbose_fprintf stdout "---extracted url: %s\n" x) extracted_urls;
+                                                               List.iter (fun x -> verbose_fprintf stdout "---extracted url: %s\n" x) extracted_urls;
                                                                rebase_urls extracted_urls url
                                                            in
 
@@ -1211,7 +1201,7 @@ let main ()  =
     (* if cli-switches ask for it, print all commands of the parser-language *)
     (* They wll be printed in alphabetical order.                            *)
     (* --------------------------------------------------------------------- *)
-    if Cli.opt.Cli.show_commands || Cli.opt.Cli.verbose then
+    if Cli.opt.Cli.show_commands || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
       begin
         print_endline "Keywords of the parser-definition language:";
         print_endline "-------------------------------------------";
@@ -1223,7 +1213,7 @@ let main ()  =
 
     (* parse the parser-definitions *)
     (* ---------------------------- *)
-    if Cli.opt.Cli.verbose then
+    if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
     begin
       print_string "rc-filename(s): ";
       List.iter ( fun str -> Printf.printf "\"%s\" " str ) Cli.opt.Cli.rc_filenames;
@@ -1234,7 +1224,7 @@ let main ()  =
 
     (* if cli-switches ask for it, print the number of parser-defintions found *)
     (* ------------------------------------------------------------------------------------ *)
-    if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose then
+    if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
       Printf.fprintf stderr "Number of found parser definitions: %d\n" (List.length parserlist);
 
 
@@ -1259,7 +1249,7 @@ let main ()  =
 
                                                           (* If CLI-switches ask for it, print the URL and the parser's name, it is bound to *)
                                                           (* ------------------------------------------------------------------------------- *)
-                                                          if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose
+                                                          if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
                                                           then
                                                             Printf.fprintf stderr "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
 
@@ -1269,7 +1259,7 @@ let main ()  =
                                  begin
                                     (* If CLI-switches ask for it, print the parser's-name, mentioning that no url is bound to it *)
                                     (* ------------------------------------------------------------------------------------------ *)
-                                    if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose then
+                                    if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
                                       Printf.fprintf stderr "Init: (unbound to URL)%-30s-> parser %s\n"   ""  parserdef.parsername
                                  end
 
