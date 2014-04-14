@@ -25,7 +25,8 @@
                   ("print",        PRINT  );
                   ("print_string", PRINT_STRING  );
 
-                  ("save",  SAVE  );
+                  ("save",     SAVE     );
+                  ("save_as",  SAVE_AS  );
 
                   ("linkextract",      LINKEXTRACT  );
                   ("linkextract_xml",  LINKEXTRACT_XML  );

@@ -10,6 +10,13 @@ BUGs:
 
  - using linkextract on "file:///"-urls does not work.
 
+ - "http://www.ardmediathek.de/das-erste/menschen-bei-maischberger/(...)"
+   lässt sich mit -i -p mp4
+              und anderen Parsern, evbenfalls mit -i
+              downloaden. Aber ohne -i nicht!
+
+
+
 
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
@@ -30,9 +37,23 @@ FEATUREs:
  a bit of priority
  =================
 
+ - possibly an option/pragma, that allows parsers to be *not* invoked
+   via "-a" CLI switch, because some parsers download anything, not
+   a certain video-file (because they are more general, like general
+   parsers that download all pics or so.)
+
+
  - getsave; getsave(<filename>) - command for writing the data aof a GET into file,
    instead of saving itin memory. Especially for big videos this makes sense.
    (temporally Workaround: invoke wget via system instead of using get-command for big files.)
+
+   Parser "mp3mass" would be better with  Get_array-Save_arr changed to
+   (Get-Save)_array.
+
+   Instead of a seperated command, a better Idea might be, 
+   to have an optimizer function, that works on the Command-Tree/AST.
+
+
 
  - Logfile for sucessful and failed downloads
 

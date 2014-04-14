@@ -55,7 +55,8 @@ type commands_t =
   | Print_args        of results_t list       (* printing the general args-list *)
   | Show_match
   | Print_string of string
-  | Save                                      (* save data *)
+  | Save                                      (* save data (filename derived from document-url) *)
+  | Save_as           of results_t list       (* save data, explicit filename *)
   | Setvar       of results_t
   | Show_type
   (* -------------- *)
@@ -79,6 +80,8 @@ type commands_t =
   | Show_tags_fullpath                        (* Show Tags with full tag-path *)
   | Dump_data                                 (* Dump only data-part if html, not the tags *)
   | Html_decode                               (* decode HTML-quotings back to "normal" chars *)
+  (* -------------- *)
+  | Sleep_ms    of int                        (* sleep a certain number of milli-seconds *)
   | Dummy
 
 
@@ -123,6 +126,7 @@ let command_to_string cmd = match cmd with
   | Show_match        -> "Show_match"
   | Print_string    _ -> "Print_string"
   | Save            _ -> "Save"
+  | Save_as         _ -> "Save_as"
   | Setvar          _ -> "Setvar"
   | Show_type       _ -> "Show_type"
   | ColSelect       _ -> "ColSelect" 
@@ -143,6 +147,7 @@ let command_to_string cmd = match cmd with
   | Show_tags_fullpath -> "Show_tags_fullpath"
   | Dump_data         -> "Dump_data"
   | Html_decode       -> "Html_decode"        (* decode HTML-quotings back to "normal" chars *)
+  | Sleep_ms        _ -> "Sleep_ms"
   | Dummy             -> "Dummy"
 
 

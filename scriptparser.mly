@@ -32,6 +32,7 @@
 %token PRINT
 %token SHOW_TYPE
 %token SAVE
+%token SAVE_AS
 %token LINKEXTRACT
 %token LINKEXTRACT_XML
 %token TAGEXTRACT
@@ -172,6 +173,7 @@ statement: match_stmt          SEMI   { $1 }
     |      titleextract_stmt   SEMI   { Title_extract }
     |      SHOW_TYPE           SEMI   { Show_type }
     |      SAVE                SEMI   { Save }
+    |      save_as             SEMI   { $1 }
     |      DUMP                SEMI   { Dump }
     |      DUMP_DATA           SEMI   { Dump_data }
     |      SHOW_TAGS           SEMI   { Show_tags }
@@ -204,6 +206,9 @@ recall_stmt: RECALL LPAREN STRING   RPAREN    { Recall $3 }
     ;
 
 delete_stmt: DELETE LPAREN STRING   RPAREN    { Delete $3 }
+    ;
+
+save_as:     SAVE_AS  LPAREN  argument_list  RPAREN     { Save_as $3 }
     ;
 
 paste_stmt: PASTE LPAREN argument_list RPAREN    { Paste $3 }
