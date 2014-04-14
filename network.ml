@@ -8,6 +8,7 @@
 *)
 
 open Nethtml
+open Tools
 
 (* ------------------------------------------------------------------------ *)
 (* Sortiere String-Liste mit Reihenfolge von a nach z; case insensitive *)
@@ -130,26 +131,28 @@ module Curly =
 
         let user_agent = Cli.opt.Cli.user_agent in
         connection#set_useragent user_agent;
-    (*
+        (*
         connection#set_timeout Config.timeout;
-    *)
+        *)
         connection#set_followlocation true;
         connection#set_connecttimeout 10;
         connection#set_timeout 600;
         connection#set_cookiefile "cookiefile.txt";
         connection#set_forbidreuse false;
-    (*
+        (*
         connection#set_connecttimeout Config.connect_timeout;
-    *)
-    (*  connection#set_verbose true;*)
-      if Cli.opt.Cli.verbose then connection#set_verbose true; (* curl itself is verbose here, driven by cli *)
-        (connection, buffer)
+        *)
+
+      (*  if very_verbose is true, then Curl-option set_verbose is activated. *)
+      (*  Curl is very verbose, when this option is set.                      *)
+      (* -------------------------------------------------------------------- *)
+      if Cli.opt.Cli.very_verbose then connection#set_verbose true; (* curl itself is very_verbose here, driven by cli *)
+
+      (connection, buffer)
+
 
 
     let get_raw url referer cookies =
-            (*
-            if Cli.opt.Cli.verbose then Printf.printf "URL: %s\t Referrer: %s\n" url referer;
-            *)
 
             let conn, buffer = new_curl_connection() in
             conn#set_url url;
@@ -173,7 +176,7 @@ module Curly =
               (* no http-error *)
               let cookies = conn#get_cookielist in
               begin
-                if Cli.opt.Cli.verbose
+                if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
                 then
                   begin
                     print_endline "=====> COOOKIES:";
@@ -190,13 +193,14 @@ module Curly =
             (* http-error-case *)
             else
               begin
-                if Cli.opt.Cli.verbose then Printf.eprintf "http-returncode: %d (URL: %s)\n" http_code url;
+                if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then Printf.eprintf "http-returncode: %d (URL: %s)\n" http_code url;
                 None
               end
 
 
     let get url referer cookies =
-      Printf.printf "GET %s\n" url; flush stdout;
+      verbose_printf "GET %s\n" url; flush stdout;
+
       let trial_numbers = 3 in
       let rec get_aux num =
         if num <= trial_numbers
