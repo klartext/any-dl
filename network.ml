@@ -196,7 +196,7 @@ module Curly =
 
 
     let get url referer cookies =
-      Printf.printf "GET %s\n" url;
+      Printf.printf "GET %s\n" url; flush stdout;
       let trial_numbers = 3 in
       let rec get_aux num =
         if num <= trial_numbers
