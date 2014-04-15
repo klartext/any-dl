@@ -36,6 +36,13 @@ let save_string_to_file str filename =
 
 
 
+(* ------------------------------------------------------------------------ *)
+(* Sortiere String-Liste mit Reihenfolge von a nach z; case insensitive *)
+let sort stringlist = List.sort ( fun a b -> let al = String.lowercase a and bl = String.lowercase b
+                                   in if al < bl then (-1) else if al = bl then 0 else 1)  stringlist
+(* ------------------------------------------------------------------------ *)
+
+
 (* =================================================== *)
 (* from an array drop the element with the given index *)
 (* =================================================== *)

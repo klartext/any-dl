@@ -15,16 +15,13 @@ open Parsetreetypes
 
 
 exception NOT_IMPLEMENTED_SO_FAR (* for planned, but not already implemented functionality *)
-(* ??
-exception Command_Sequence_error of string (* for sequences that are not allowed *)
-*)
 
 exception Value_conversion_unknown  (* type conversion, that can't handle this special item (similar to "Wrong_tmpvar_type") *)
 
-exception No_document_found         (* a dcoument could not be retrieved *)
-exception No_Match                  (* if a match was tried, but no match could be found *)
-exception No_Matchresult_available  (* if Select is used, but there is no match-result available as tmpvar *)
-exception No_Matchable_value_available  (* if Match is used, but there is no matchabe tmpvar *)
+exception No_document_found             (* a dcoument could not be retrieved *)
+exception No_Match                      (* if a match was tried, but no match could be found *)
+exception No_Matchresult_available      (* if Select is used, but there is no match-result available as tmpvar *)
+exception No_Matchable_value_available  (* if Match is used, but there is no matchable tmpvar *)
 
 
 exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... without more detailed info *)
@@ -33,17 +30,13 @@ exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 exception Invalid_Row_Index             (* indexing a row that does not exist *)
 exception Invalid_Col_Index             (* indexing a col that does not exist *)
 
-exception No_parser_found_for_this_url (* *)
+exception No_parser_found_for_this_url  (* *)
 
-exception AutoTry_success              (* in auto-try mode (switch -a), if successful, this exception will be thrown *)
+exception AutoTry_success               (* in auto-try mode (switch -a), if successful, this exception will be thrown *)
 
-(* ???
-exception No_String_representation     (* To_string called on a value that has no way conversion so far *)
-*)
+exception Variable_not_found of string  (* a variable-name lookup in the Varname-map failed *)
 
-exception Variable_not_found of string   (* a variable-name lookup in the Varname-map failed *)
-
-exception Devel (* exception while developing / testing *)
+exception Devel (* exception for developing / testing *)
 
 open Tools
 
@@ -818,7 +811,7 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar varmap
 
 
-                         | Save                       -> (*print_endline "Save detected"; raise NOT_IMPLEMENTED_SO_FAR*)
+                         | Save                       ->
                                                          let saver (doc, url) = let fname = Parsers.url_to_filename url in
                                                                              save_string_to_file doc fname
                                                          in
@@ -1241,9 +1234,7 @@ let main ()  =
     then
       begin
         prerr_endline "option auto-try: would need to invoke all parsers now...";
-        (*
-        raise NOT_IMPLEMENTED_SO_FAR;
-        *)
+
         let parsernames = Hashtbl.fold ( fun k v sofar -> k :: sofar) parser_namehash [] in
         (* for each url try the work *)
         (* ------------------------- *)
