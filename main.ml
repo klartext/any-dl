@@ -32,7 +32,6 @@ exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 
 exception Invalid_Row_Index             (* indexing a row that does not exist *)
 exception Invalid_Col_Index             (* indexing a col that does not exist *)
-exception Invalid_Index                 (* indexing a col/row that does not exist *)
 
 exception No_parser_found_for_this_url (* *)
 
@@ -124,42 +123,6 @@ let item_selection row_items index_list =
     res.(res_index) <- row_items.(index_arr.(res_index))
   done;
   res
-
-
-(* =================================================== *)
-(* from an array drop the element with the given index *)
-(* =================================================== *)
-let array_drop arr dropidx =
-  let len = Array.length arr             in
-
-  (* Argument checking *)
-  (* ----------------- *)
-  if dropidx < 0 || dropidx > len - 1 then raise Invalid_Index;
-
-
-  let res = Array.make (len - 1) arr.(0) in
-
-  let srcidx    = ref 0 in
-  let targetidx = ref 0 in
-
-  (* --------------------------------------------------------------------------------- *)
-  (* copy any element from src to target, that has different index than the drop-index *)
-  (* --------------------------------------------------------------------------------- *)
-  while !srcidx < len
-  do
-    if !srcidx != dropidx
-    then
-      begin
-        res.(!targetidx) <- arr.(!srcidx); (* copy data *)
-        incr srcidx;
-        incr targetidx
-      end
-    else
-      begin
-        incr srcidx;
-      end
-  done;
-  res (* the resulting array *)
 
 
 
