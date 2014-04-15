@@ -21,3 +21,12 @@ let very_verbose_printf  ?(optflag=false) formatstr = very_verbose_fprintf ~optf
 let very_verbose_eprintf formatstr = very_verbose_fprintf stderr formatstr
 *)
 
+
+
+(* save string to file *)
+(* ------------------- *)
+let save_string_to_file str filename =
+  let oc = open_out filename in
+  output_string oc str;
+  close_out oc
+

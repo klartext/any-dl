@@ -49,15 +49,6 @@ exception Devel (* exception while developing / testing *)
 open Tools
 
 
-
-(* save string to file *)
-(* ------------------- *)
-let save_string_to_file str filename =
-  let oc = open_out filename in
-  output_string oc str;
-  close_out oc
-
-
 (* ---------------------------------------------------------------- *)
 (* exctract the charset-value from a string and select the matching *)
 (* value for encoding                                               *)
