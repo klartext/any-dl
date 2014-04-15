@@ -10,13 +10,6 @@
 open Nethtml
 open Tools
 
-(* ------------------------------------------------------------------------ *)
-(* Sortiere String-Liste mit Reihenfolge von a nach z; case insensitive *)
-let sort stringlist = List.sort ( fun a b -> let al = String.lowercase a and bl = String.lowercase b
-                                   in if al < bl then (-1) else if al = bl then 0 else 1)  stringlist
-
-(* ------------------------------------------------------------------------ *)
-
 
 module CurlHelp =
   struct

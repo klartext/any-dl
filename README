@@ -491,7 +491,8 @@ Command Line Options:
                      The names that can be selected can be listed with
                      the -l option, or one can look into the rc-file.
     -f filename for rc-file
-    -v verbose output
+    -v  verbose output
+    -vv very verbose output
     -c show commands of parserdef-language
     -v verbose     
     -s safe: no download via system invoked
