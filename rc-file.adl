@@ -152,6 +152,22 @@ start
 end
 
 
+parsername "desktop2": ()
+start
+  print( "[Desktop Entry]" );
+  print( "Encoding=UTF-8" );
+  titleextract;
+print;
+  htmldecode;
+print;
+  store("title");
+  print("Name=", $title);
+  print("Type=Link");
+  print("URL=", $STARTURL);
+  print("Icon=gnome-fs-bookmark");
+end
+
+
 # parser for testing cookies
 # ----------------------------------------------------
 # Some tests of cookies can be found here:
@@ -1513,36 +1529,25 @@ start
 
   print;
 
+  # save the URL for the video-file
+  # -------------------------------
   makeurl;
-  get;
-  save;
+  store("URL");
 
-  # Download complete
-
-
-  # the following stuff is for later use...
+  # extract title and convert to make it useful for filenames
+  # ---------------------------------------------------------
   recall("BASEDOC");
   titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
   print;
 
-
-exitparse;
-
-  linkextract_xml;
-
-  select(0);
-  store("mms");
-
-  # create filename
-  to_string;
-  basename;
-  store("filename");
-
-  # download the video
-  # ------------------
-  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
-  print;
-  system;
+  # Download and save_as
+  # --------------------
+  recall("URL");
+  get;
+  save_as( $title, ".mp4" );
 
 end
 
