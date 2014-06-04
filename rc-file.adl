@@ -105,7 +105,7 @@ end
 # this one is unmature stuff, experimental field.
 parsername "videonames": ( )
 start
-  match( "(*.mp4)|(*.flv)|(*.swf)|(*.mpg)|(*.m4v)|(mp4:.*)|(rtmp.*)" );
+  match( "(*.mp4)|(*.flv)|(*.swf)|(*.mpg)|(*.m4v)|(mp4:.*)|(rtmp.*)|(.*f4v)|(*.3gp)" );
   print;
 end
 
@@ -945,12 +945,12 @@ end
 # ---------------------------------
 # 3SAT
 # ---------------------------------
-# Example: http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=37284
+# Example: http://www.3sat.de/mediathek/?mode=play&obj=44029
 # =================================
 parsername "3sat_mediathek_get": ( "http://www.3sat.de/mediathek/")
 start
- match(".*(http.*xmlservice[^ ]+)");
- # http://www.3sat.de/mediathek/xmlservice/web/beitragsDetails?ak=web&id=37284
+ match(>>>.*(http.*xmlservice[^"]+)<<<);
+ ### url_xmlservice="http://www.3sat.de/mediathek/xmlservice/web/beitragsDetails?ak=web&id=40880";
  rowselect(0);
  select(1);
  makeurl;
