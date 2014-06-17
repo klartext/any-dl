@@ -115,7 +115,7 @@ parsername "pics": ( )
 start
   linkextract;
   print;
-  grep("(\.jpg)|(\.jpeg)|(\.gif)|(\.png)$");
+  grep("(\.jpg)|(\.jpeg)|(\.gif)|(\.png)|(\.svg)|(\.pnm)|(\.ppm)|(\.pgm)|(\.pbm)$");
   print( " ======================================================================== ");
   print;
   show_type;
