@@ -102,12 +102,27 @@ start
 end
 
 
-# this one is unmature stuff, experimental field.
+# show video-files
 parsername "videonames": ( )
 start
   match( "(*.mp4)|(*.flv)|(*.swf)|(*.mpg)|(*.m4v)|(mp4:.*)|(rtmp.*)|(.*f4v)|(*.3gp)" );
   print;
 end
+
+
+# downloading picture-files
+parsername "pics": ( )
+start
+  linkextract;
+  print;
+  grep("(\.jpg)|(\.jpeg)|(\.gif)|(\.png)$");
+  print( " ======================================================================== ");
+  print;
+  show_type;
+  get;
+  save;
+end
+
 
 # get pdf-docs
 # ------------
