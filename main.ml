@@ -23,6 +23,7 @@ exception No_Match                      (* if a match was tried, but no match co
 exception No_Matchresult_available      (* if Select is used, but there is no match-result available as tmpvar *)
 exception No_Matchable_value_available  (* if Match is used, but there is no matchable tmpvar *)
 
+exception Unknown_parser  (* if a parsername is requested, which does not exist *)
 
 exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... without more detailed info *)
 exception Wrong_argument_type           (* e.g. Show_match on non-match *)
@@ -1049,7 +1050,13 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
       try
         begin
           match parser_selection with
-            | Some parsername -> Hashtbl.find parser_namehash parsername
+            | Some parsername ->
+                                 begin
+                                 try
+                                   Hashtbl.find parser_namehash parsername
+                                 with Not_found -> prerr_endline ("Unknown parser " ^ parsername);
+                                                   raise Unknown_parser
+                                 end
 
             | None            -> (* parsername looked up via from url *)
 
