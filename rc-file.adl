@@ -102,12 +102,27 @@ start
 end
 
 
-# this one is unmature stuff, experimental field.
+# show video-files
 parsername "videonames": ( )
 start
-  match( "(*.mp4)|(*.flv)|(*.swf)|(*.mpg)|(*.m4v)|(mp4:.*)|(rtmp.*)" );
+  match( "(*.mp4)|(*.flv)|(*.swf)|(*.mpg)|(*.m4v)|(mp4:.*)|(rtmp.*)|(.*f4v)|(*.3gp)" );
   print;
 end
+
+
+# downloading picture-files
+parsername "pics": ( )
+start
+  linkextract;
+  print;
+  grep("(\.jpg)|(\.jpeg)|(\.gif)|(\.png)|(\.svg)|(\.pnm)|(\.ppm)|(\.pgm)|(\.pbm)$");
+  print( " ======================================================================== ");
+  print;
+  show_type;
+  get;
+  save;
+end
+
 
 # get pdf-docs
 # ------------
@@ -144,6 +159,22 @@ start
   print( "[Desktop Entry]" );
   print( "Encoding=UTF-8" );
   titleextract;
+  store("title");
+  print("Name=", $title);
+  print("Type=Link");
+  print("URL=", $STARTURL);
+  print("Icon=gnome-fs-bookmark");
+end
+
+
+parsername "desktop2": ()
+start
+  print( "[Desktop Entry]" );
+  print( "Encoding=UTF-8" );
+  titleextract;
+print;
+  htmldecode;
+print;
   store("title");
   print("Name=", $title);
   print("Type=Link");
@@ -929,12 +960,12 @@ end
 # ---------------------------------
 # 3SAT
 # ---------------------------------
-# Example: http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=37284
+# Example: http://www.3sat.de/mediathek/?mode=play&obj=44029
 # =================================
 parsername "3sat_mediathek_get": ( "http://www.3sat.de/mediathek/")
 start
- match(".*(http.*xmlservice[^ ]+)");
- # http://www.3sat.de/mediathek/xmlservice/web/beitragsDetails?ak=web&id=37284
+ match(>>>.*(http.*xmlservice[^"]+)<<<);
+ ### url_xmlservice="http://www.3sat.de/mediathek/xmlservice/web/beitragsDetails?ak=web&id=40880";
  rowselect(0);
  select(1);
  makeurl;
@@ -1513,36 +1544,25 @@ start
 
   print;
 
+  # save the URL for the video-file
+  # -------------------------------
   makeurl;
-  get;
-  save;
+  store("URL");
 
-  # Download complete
-
-
-  # the following stuff is for later use...
+  # extract title and convert to make it useful for filenames
+  # ---------------------------------------------------------
   recall("BASEDOC");
   titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
   print;
 
-
-exitparse;
-
-  linkextract_xml;
-
-  select(0);
-  store("mms");
-
-  # create filename
-  to_string;
-  basename;
-  store("filename");
-
-  # download the video
-  # ------------------
-  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
-  print;
-  system;
+  # Download and save_as
+  # --------------------
+  recall("URL");
+  get;
+  save_as( $title, ".mp4" );
 
 end
 
