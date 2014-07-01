@@ -132,6 +132,7 @@ module Curly =
         connection#set_timeout 600;
         connection#set_cookiefile "cookiefile.txt";
         connection#set_forbidreuse false;
+        connection#set_encoding CURL_ENCODING_DEFLATE;
         (*
         connection#set_connecttimeout Config.connect_timeout;
         *)
