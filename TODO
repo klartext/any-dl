@@ -8,6 +8,8 @@ BUGs:
 =====
 
 
+ - ARD-mediathek has different Webpages => llok for "DOWNLOAD" and then look there for the mp4-files
+
  - using linkextract on "file:///"-urls does not work.
 
  - "http://www.ardmediathek.de/das-erste/menschen-bei-maischberger/(...)"
