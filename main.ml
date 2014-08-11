@@ -569,8 +569,8 @@ let evaluate_command_list cmdlst =
                                                                    match tmpvar with
                                                                      | Match_result mres ->
 
-                                                                            let max_row_idx = Array.length ( mres ) - 1 in
-                                                                            let max_col_idx = Array.length ( mres.(0) ) - 1 in
+                                                                            (*let max_row_idx = Array.length ( mres ) - 1 in*)
+                                                                            (*let max_col_idx = Array.length ( mres.(0) ) - 1 in*)
 
                                                                             let rows     = Array.to_list mres in
 
@@ -922,9 +922,9 @@ let evaluate_command_list cmdlst =
                                                                                 (* ----------- *)
                                                                                 if Cli.opt.Cli.safe = false
                                                                                 then
-                                                                                  Sys.command syscmd
+                                                                                   ignore( Sys.command syscmd )
                                                                                 else
-                                                                                  (Printf.fprintf stderr "*** Command not invoked: %s\n" syscmd; 0)
+                                                                                  (Printf.fprintf stderr "*** Command not invoked: %s\n" syscmd)
                                                              | _ -> raise Wrong_argument_type
                                                          end;
                                                          command tl tmpvar varmap

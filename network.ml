@@ -100,6 +100,7 @@ module CurlHelp =
       | CURLE_REMOTE_FILE_NOT_FOUND -> "CURLE_REMOTE_FILE_NOT_FOUND"
       | CURLE_SSH                  -> "CURLE_SSH"
       | CURLE_SSL_SHUTDOWN_FAILED  -> "CURLE_SSL_SHUTDOWN_FAILED"
+      | CURLE_AGAIN                -> "CURLE_AGAIN"
 
   let prerr_curlerror curl_exc =
     match curl_exc with
@@ -114,6 +115,7 @@ module Curly =
   (
   struct
 
+    open Curl
     open CurlHelp
 
     let new_curl_connection () =
