@@ -67,8 +67,23 @@ module Rebase =
   struct
     open Neturl
 
+
+    (* tries to extract the url-scheme from the url. If thats not possible, use "http" as fallback *)
+    (* ------------------------------------------------------------------------------------------- *)
+    let guess_scheme url = try extract_url_scheme url with Malformed_URL -> "http"
+
+
+    (* give back the common syntax of the url. relies on guess_scheme-function *)
+    (* ----------------------------------------------------------------------- *)
+    let common_syntax_of_url url = Hashtbl.find common_url_syntax (guess_scheme url)
+
+
+
+    (* reabse: rebasing an url: make relative urls absolute urls *)
+    (* --------------------------------------------------------- *)
     let rebase_url  url  extracted_link =
-      let syntax = Hashtbl.find common_url_syntax "http" in
+
+      let syntax = common_syntax_of_url url in (* extract the syntax of the original *)
 
       try
         let neturl        = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  url in
