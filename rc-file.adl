@@ -1653,17 +1653,7 @@ parsername "try_tagselect": ( )
 start
   print("try tagselect syntax");
 
-  print("plain:");
-  tagselect("a");
-
-  print("plain:");
-  tagselect("body", "a");
-
-  print("with ARGS:");
-  tagselect("body", "a" | args );
-
-  print("with ARG(href):");
-  tagselect("body", "a" | arg("href") );
-
-  print("tagselect syntax worked fine");
+tagselect("table", "a" | arg("href") );
+#tagselect("a" | arg("href") );
+#  tagselect("div", "button" | arg("data-sessionlink") );
 end

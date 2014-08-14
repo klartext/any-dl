@@ -541,6 +541,21 @@ List of commands/keywords (not carved in stone so far) by example:
   linkextract_xml;
   match("Regexp-String");
 
+  # Warning: the syntax for TAGSELECT is work under progress so far (2014-08-15)!
+  # The syntax for this command may change sooner or later.
+  # The unclarfied thing so far is: is this selection-stuff powerfull enough?
+  # should there be a syntax that allows tag-selection and data-extraction
+  # to be specified independently?
+  # would it make sense to have a notation like <tagname>.<argkey>=<argval>?
+  # only for selection of the tags, or also for extraction of data?
+  # ------------------------------------------------------------------------
+  # syntax for tagseöection at the moment is this one:
+  tagselect( "a" );
+  tagselect( "br" );
+  tagselect( "table", "a" );
+  tagselect( "table", "a" | args );
+  tagselect( "table", "a" | arg("href") );
+
   print;
   print("string");
   print_string("My string");
@@ -568,6 +583,7 @@ List of commands/keywords (not carved in stone so far) by example:
   subst("pattern", "subst-string");
 
   basename;
+  titleextract;
   to_string;
   to_matchres;
   htmldecode;
@@ -805,6 +821,15 @@ List of commands/keywords and a short-escription of them:
   system
     calls the system() command with the string that is hold in
     the one-val-stack.
+
+
+  tagselect
+    selects tags and "subtags" from a document tree and gives back
+    data accordingly.
+    selection can be a *list* of tags, and optionally the argument
+    "args" or the argument "arg" with a key-parameter (of a key-value pair)
+    that selects the certain argument.
+    See above in the command-examples for syntax details.
 
 
   titleextract

@@ -740,18 +740,57 @@ let evaluate_command_list cmdlst =
 
 
                          | Tag_select (tags_list, specializer)   ->
-                                                          print_endline ">>> TAG-List:";
-                                                          List.iter print_endline tags_list;
-                                                          print_endline "<<< TAG-List:";
 
-                                                          begin
-                                                            match specializer with
-                                                             | `Plain     -> print_endline "PLAIN"
-                                                             | `Data      -> print_endline "DATA"
-                                                             | `Args      -> print_endline "Args"
-                                                             | `Arg name  -> print_endline ("Arg: "^ name )
-                                                          end;
-                                                          print_endline "---------";
+                                                         (* --------------------------------------------------------------------- *)
+                                                         (* apply "find_elements_by_tag_name" to the doclist with hd as selector  *)
+                                                         (* and the resulting doclist is used as input to the next call of        *)
+                                                         (* "find_elements_by_tag_name", with the next element from the list then *)
+                                                         (* --------------------------------------------------------------------- *)
+                                                         let selectloop sel_lst doclist =
+                                                           let rec aux sel dl = match sel with
+                                                             | hd::tl -> aux tl (Parsers.Htmlparse.find_elements_by_tag_name hd dl)
+                                                             | []     -> dl
+                                                           in
+                                                             aux sel_lst doclist
+                                                         in
+
+
+
+                                                         begin
+                                                           match tmpvar with
+                                                             | Document (doc, url) -> print_endline "Should do the tag-selection now ";
+                                                                                      (* --------------------------------------------------- *)
+                                                                                      print_endline ">>> TAG-List:";
+                                                                                      List.iter print_endline tags_list;
+                                                                                      print_endline "<<< TAG-List:";
+
+                                                                                     let open Parsers.Htmlparse in
+                                                                                     let doclist = Parsers.conv_to_doclist doc in
+
+                                                                                     let plain_selected = selectloop tags_list doclist in
+
+                                                                                      begin
+                                                                                        match specializer with
+                                                                                         | `Plain     -> dump_html plain_selected
+                                                                                         | `Data      -> print_endline "DATA"
+                                                                                         | `Args      -> print_endline "Args"
+                                                                                         | `Arg name  -> print_endline ("Arg: "^ name );
+                                                                                                         let y = find_elements_by_argkey name plain_selected in
+                                                                                                         dump_html y
+                                                                                      end;
+                                                                                      print_endline "---------";
+                                                                                      (* --------------------------------------------------- *)
+
+
+
+
+
+
+                                                             | _ -> print_warning "Tag_select found non-usable type"; raise Wrong_tmpvar_type
+                                                         end;
+
+
+
                                                           (*
                                                           let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
                                                           let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
