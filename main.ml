@@ -682,9 +682,8 @@ let evaluate_command_list cmdlst =
 
                                                            (* extract urls and rebase these extracted urls *)
                                                            let extract_and_rebase document url =
-                                                               let extracted_urls = Parsers.linkextract document in
-                                                               if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
-                                                               then List.iter (fun x -> very_verbose_fprintf stdout "---extracted url: %s\n" x) extracted_urls;
+                                                               let extracted_urls = Parsers.linkextract_str document in
+                                                               List.iter (fun x -> verbose_fprintf stdout "---extracted url: %s\n" x) extracted_urls;
                                                                rebase_urls extracted_urls url
                                                            in
 
@@ -724,7 +723,7 @@ let evaluate_command_list cmdlst =
                                                            begin
                                                              match tmpvar with
                                                                | Document (doc, url) ->
-                                                                         let result = Array.of_list (Parsers.tagextract tagname doc) in
+                                                                         let result = Array.of_list (Parsers.tagextract_str tagname doc) in
                                                                          command tl (String_array result) varmap
                                                                | _ -> print_warning "Tag_extract found non-usable type"; raise Wrong_tmpvar_type
                                                            end
@@ -734,7 +733,7 @@ let evaluate_command_list cmdlst =
                                                          begin
                                                            match tmpvar with
                                                              | Document (doc, url) ->
-                                                                       let result = Array.of_list (Parsers.titleextract doc) in
+                                                                       let result = Array.of_list (Parsers.titleextract_str doc) in
                                                                        command (Subst ("\n", "") :: tl) (String_array result) varmap
                                                              | _ -> print_warning "Tag_extract found non-usable type"; raise Wrong_tmpvar_type
                                                          end
@@ -905,7 +904,7 @@ let evaluate_command_list cmdlst =
                          | Dump                       ->
                                                          begin
                                                          match tmpvar with
-                                                           | Document(doc, url)-> Parsers.Htmlparse.dump_html_from_string doc
+                                                           | Document(doc, url)-> Parsers.dump_html_from_string doc
                                                            | _ -> raise Wrong_argument_type
                                                          end;
                                                          command tl tmpvar varmap
@@ -913,7 +912,7 @@ let evaluate_command_list cmdlst =
                          | Show_tags                  ->
                                                          begin
                                                          match tmpvar with
-                                                           | Document(doc, url)-> Parsers.Htmlparse.show_tags_from_string doc
+                                                           | Document(doc, url)-> Parsers.show_tags_from_string doc
                                                            | _ -> raise Wrong_argument_type
                                                          end;
                                                          command tl tmpvar varmap
@@ -921,7 +920,7 @@ let evaluate_command_list cmdlst =
                          | Show_tags_fullpath         ->
                                                          begin
                                                          match tmpvar with
-                                                           | Document(doc, url)-> Parsers.Htmlparse.show_tags_fullpath_from_string doc
+                                                           | Document(doc, url)-> Parsers.show_tags_fullpath_from_string doc
                                                            | _ -> raise Wrong_argument_type
                                                          end;
                                                          command tl tmpvar varmap
@@ -929,7 +928,7 @@ let evaluate_command_list cmdlst =
                          | Dump_data                  ->
                                                          begin
                                                          match tmpvar with
-                                                           | Document(doc, url)-> Parsers.Htmlparse.dump_html_data_from_string doc
+                                                           | Document(doc, url)-> Parsers.dump_html_data_from_string doc
                                                            | _ -> raise Wrong_argument_type
                                                          end;
                                                          command tl tmpvar varmap
