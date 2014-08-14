@@ -31,6 +31,11 @@
                   ("linkextract",      LINKEXTRACT  );
                   ("linkextract_xml",  LINKEXTRACT_XML  );
                   ("titleextract",     TITLEEXTRACT  );
+                  ("tagselect",        TAGSELECT  );
+
+                  ("data",             DATA  );
+                  ("args",             ARGS  );
+                  ("arg",              ARG  );
 
 
                   ("get",            GET  );
@@ -108,6 +113,7 @@ rule read_command = parse
    | ':'            { COLON }
    | '('            { LPAREN }
    | ')'            { RPAREN }
+   | '|'            { VBAR         (* VBAR or "pipe" in unix'ish *) }
    | digit+         { INT_NUM (int_of_string(Lexing.lexeme lexbuf)) }
    | '#'            { eat_up_line lexbuf }
    | _              { IDENTIFIER (Lexing.lexeme lexbuf) }

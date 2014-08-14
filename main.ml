@@ -740,6 +740,27 @@ let evaluate_command_list cmdlst =
                                                          end
 
 
+                         | Tag_select (tags_list, specializer)   ->
+                                                          print_endline ">>> TAG-List:";
+                                                          List.iter print_endline tags_list;
+                                                          print_endline "<<< TAG-List:";
+
+                                                          begin
+                                                            match specializer with
+                                                             | `Plain     -> print_endline "PLAIN"
+                                                             | `Data      -> print_endline "DATA"
+                                                             | `Args      -> print_endline "Args"
+                                                             | `Arg name  -> print_endline ("Arg: "^ name )
+                                                          end;
+                                                          print_endline "---------";
+                                                          (*
+                                                          let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
+                                                          let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
+                                                          *)
+                                                          command tl tmpvar varmap
+
+
+
                          | Paste paste_list            ->
                                                           let res = paste_arglist_to_string  paste_list  varmap in
                                                           (*

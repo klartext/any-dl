@@ -24,6 +24,7 @@
 %token COLON
 %token EQUALS
 
+%token VBAR
 
 %token ANY
 %token PARSERNAME
@@ -37,6 +38,12 @@
 %token LINKEXTRACT_XML
 %token TAGEXTRACT
 %token TITLEEXTRACT
+
+%token TAGSELECT
+%token DATA
+%token ARGS
+%token ARG
+
 %token GET
 %token MAKE_URL
 %token STORE
@@ -171,6 +178,9 @@ statement: match_stmt          SEMI   { $1 }
     |      LINKEXTRACT         SEMI   { Link_extract }
     |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
     |      titleextract_stmt   SEMI   { Title_extract }
+    /*
+    */
+    |      tagselect_stmt      SEMI   { $1 }
     |      SHOW_TYPE           SEMI   { Show_type }
     |      SAVE                SEMI   { Save }
     |      save_as             SEMI   { $1 }
@@ -246,6 +256,22 @@ drop: DROPCOL LPAREN   INT_NUM   RPAREN { DropCol $3 }
 
 titleextract_stmt: TITLEEXTRACT   { Title_extract }
     ;
+
+
+tagselect_stmt: tagselect_simple        { $1 }
+    |           tagselect_data          { $1 }
+    |           tagselect_args          { $1 }
+    |           tagselect_arg           { $1 }
+    ;
+
+tagselect_simple: TAGSELECT LPAREN string_list RPAREN                 { Tag_select ($3, `Plain) };
+tagselect_data:   TAGSELECT LPAREN string_list VBAR  DATA  RPAREN     { Tag_select ($3, `Data) };
+tagselect_args:   TAGSELECT LPAREN string_list VBAR  ARGS  RPAREN     { Tag_select ($3, `Args) };
+tagselect_arg:    TAGSELECT LPAREN string_list VBAR  ARG LPAREN STRING RPAREN  RPAREN     { Tag_select ($3, `Arg $7) };
+
+
+
+
 
 
 /* ------------------------------------------- */

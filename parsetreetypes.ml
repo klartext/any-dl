@@ -28,6 +28,7 @@ type results_t =
   | Empty
 
 
+type tagsel_specializer = [ `Plain | `Data | `Args | `Arg of string ]
 type commands_t =
   | Get_url       of string * string          (* url, referrer *)
   | Get_urls  (* can be removed maybe *)      (* get via tmpvar *)
@@ -42,6 +43,7 @@ type commands_t =
   | Link_extract                              (* extracts html-href's from webpage *)
   | Link_extract_xml                          (* extracts html-href's from (xml-formatted) webpage (e.g. asx-files) *)
   | Title_extract                             (* extracts the title-tag's text part *)
+  | Tag_select        of string list * tagsel_specializer    (* extracts tags and parts of it from the document *)
   | Paste             of results_t list       (* paste together strings *)
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
   | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)
@@ -115,6 +117,7 @@ let command_to_string cmd = match cmd with
   | Link_extract      -> "Link_extract"
   | Link_extract_xml  -> "Link_extract_xml"
   | Title_extract     -> "Title_extract"
+  | Tag_select      _ -> "Tag_select"
   | Paste           _ -> "Paste"
   | Store           _ -> "Store"
   | Recall          _ -> "Recall"
