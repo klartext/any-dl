@@ -631,6 +631,25 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         List.rev !picked
 
 
+    (* Collect all DATA *)
+    (* ================ *)
+    let collect_data  doclist =
+      let buf = Buffer.create 10000 in
+
+      let rec traverse_aux doclist =
+        match doclist with
+          | []     -> ()
+          | hd::tl -> begin (* work on the head *)
+                        match hd with
+                          | Element (tag, args, dl)                  -> traverse_aux dl
+                          | Data    data                             -> Buffer.add_string buf (String.trim data);
+                                                                        Buffer.add_char buf '\n'
+                      end;
+
+                      traverse_aux tl (* work on the tail *)
+      in
+        traverse_aux doclist;
+        Buffer.contents buf
 
 
 
