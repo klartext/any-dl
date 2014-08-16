@@ -475,6 +475,11 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       List.length filtered > 0  (* comparison If match found, list-len is > 0 *)
 
 
+    let arg_val_does_match  (key:string) (args: (string*string) list) =
+      let filtered = List.filter (  fun argpair -> key = (snd argpair)  ) args  in
+      List.length filtered > 0  (* comparison If match found, list-len is > 0 *)
+
+
 
     (* finds elements by match of argname (argkey)            *)
     (* ====================================================== *)
@@ -491,6 +496,38 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
                         match hd with
                           | Element (tag, args, dl) -> if
                                                          arg_key_does_match  argkey  args
+                                                       then
+                                                         picked := hd :: !picked
+                                                       else
+                                                         traverse_aux dl
+
+                          | Data    _               -> ()
+                      end;
+
+                      traverse_aux tl (* work on the tail *)
+      in
+        traverse_aux doclist;
+        List.rev !picked
+
+
+
+
+
+    (* finds elements by match of argname (argval)            *)
+    (* ====================================================== *)
+    (* example: in <a href="http://foobar"> 'href' is the val *)
+    (* ------------------------------------------------------ *)
+    let find_elements_by_argval   argval   doclist =
+
+      let picked = ref [] in
+
+      let rec traverse_aux doclist =
+        match doclist with
+          | []     -> ()
+          | hd::tl -> begin (* work on the head *)
+                        match hd with
+                          | Element (tag, args, dl) -> if
+                                                         arg_val_does_match  argval  args
                                                        then
                                                          picked := hd :: !picked
                                                        else
