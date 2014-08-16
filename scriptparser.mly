@@ -258,6 +258,7 @@ titleextract_stmt: TITLEEXTRACT   { Title_extract }
     ;
 
 
+/*
 tagselect_stmt: tagselect_simple        { $1 }
     |           tagselect_data          { $1 }
     |           tagselect_args          { $1 }
@@ -269,7 +270,48 @@ tagselect_data:   TAGSELECT LPAREN string_list VBAR  DATA  RPAREN     { Tag_sele
 tagselect_args:   TAGSELECT LPAREN string_list VBAR  ARGS  RPAREN     { Tag_select ($3, `Args) };
 tagselect_arg:    TAGSELECT LPAREN string_list VBAR  ARG LPAREN STRING RPAREN  RPAREN     { Tag_select ($3, `Arg $7) };
 
+*/
 
+
+
+tagselect_stmt: TAGSELECT LPAREN tagselect_arg_list RPAREN { Tag_select $3 }
+
+tagselect_arg_list: tagselect_arg                            { [$1] }
+    |               tagselect_arg  COMMA tagselect_arg_list  { $1 :: $3 }
+    ;
+
+
+
+tagselect_arg: tagname DOT argkey EQUALS argval      { { tag_sel = Some $1; argkey_sel = Some $3; argval_sel = Some $5 } }
+    |          tagname DOT argkey                    { { tag_sel = Some $1; argkey_sel = Some $3; argval_sel = None    } }
+    |          tagname DOT        EQUALS argval      { { tag_sel = Some $1; argkey_sel = None;    argval_sel = Some $4 } }
+    |          tagname                               { { tag_sel = Some $1; argkey_sel = None;    argval_sel = None    } }
+    |                  DOT argkey EQUALS argval      { { tag_sel = None;    argkey_sel = Some $2; argval_sel = Some $4 } }
+    |                  DOT argkey                    { { tag_sel = None;    argkey_sel = Some $2; argval_sel = None    } }
+    |                  DOT        EQUALS argval      { { tag_sel = None;    argkey_sel = None;    argval_sel = Some $3 } }
+
+/*  |                  DOT        EQUALS      l      { { tag_sel = None;    argkey_sel = None;    argval_sel = None;   } } QUATSCH */
+    ;
+
+tagname: STRING { $1 };
+argkey:  STRING { $1 };
+argval:  STRING { $1 };
+
+
+
+
+
+
+/*
+      tagselect( <tagname> )
+      tagselect( <tagname>.<argkey> )
+      tagselect( <tagname>.<argkey> = <argval> )
+      tagselect( <tagname>.= <argval> )
+      tagselect( .= <argval> )
+    
+    ... so something like tagselect( "table", "div"."class" = "foobar" | data )
+    to pick the data from <div class="foobar"> inside a table?!
+*/
 
 
 

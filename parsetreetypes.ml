@@ -11,7 +11,9 @@
 type col_t          = string array     (* Hselect as well as VSelec are represented the same way - late think of it as a row *)
 type row_t          = string array     (* Hselect as well as VSelec are represented the same way - late think of it as a row *)
 type match_result_t = string array array
+(*
 type selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
+*)
 
 
 type results_t =
@@ -28,7 +30,8 @@ type results_t =
   | Empty
 
 
-type tagsel_specializer = [ `Plain | `Data | `Args | `Arg of string ]
+type selector_t = { tag_sel: string option; argkey_sel: string option; argval_sel: string option }
+
 type commands_t =
   | Get_url       of string * string          (* url, referrer *)
   | Get_urls  (* can be removed maybe *)      (* get via tmpvar *)
@@ -43,7 +46,7 @@ type commands_t =
   | Link_extract                              (* extracts html-href's from webpage *)
   | Link_extract_xml                          (* extracts html-href's from (xml-formatted) webpage (e.g. asx-files) *)
   | Title_extract                             (* extracts the title-tag's text part *)
-  | Tag_select        of string list * tagsel_specializer    (* extracts tags and parts of it from the document *)
+  | Tag_select        of selector_t list      (* extracts tags and parts of it from the document *)
   | Paste             of results_t list       (* paste together strings *)
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
   | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)

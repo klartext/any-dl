@@ -739,7 +739,7 @@ let evaluate_command_list cmdlst =
                                                          end
 
 
-                         | Tag_select (tags_list, specializer)   ->
+                         | Tag_select selector_liste  ->
 
                                                          (* --------------------------------------------------------------------- *)
                                                          (* apply "find_elements_by_tag_name" to the doclist with hd as selector  *)
@@ -760,6 +760,7 @@ let evaluate_command_list cmdlst =
                                                            match tmpvar with
                                                              | Document (doc, url) -> print_endline "Should do the tag-selection now ";
                                                                                       (* --------------------------------------------------- *)
+                                                                                      (*
                                                                                       print_endline ">>> TAG-List:";
                                                                                       List.iter print_endline tags_list;
                                                                                       print_endline "<<< TAG-List:";
@@ -778,6 +779,7 @@ let evaluate_command_list cmdlst =
                                                                                                          let y = find_elements_by_argkey name plain_selected in
                                                                                                          dump_html y
                                                                                       end;
+                                                                                      *)
                                                                                       print_endline "---------";
                                                                                       (* --------------------------------------------------- *)
 
