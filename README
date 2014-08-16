@@ -549,12 +549,21 @@ List of commands/keywords (not carved in stone so far) by example:
   # would it make sense to have a notation like <tagname>.<argkey>=<argval>?
   # only for selection of the tags, or also for extraction of data?
   # ------------------------------------------------------------------------
-  # syntax for tagseöection at the moment is this one:
+  # syntax for tagselection at the moment is this one:
   tagselect( "a" );
   tagselect( "br" );
-  tagselect( "table", "a" );
-  tagselect( "table", "a" | args );
-  tagselect( "table", "a" | arg("href") );
+  tagselect( "table", "a" ); # <a ...> inside tables
+  tagselect( "img"."src" );  # <img src="...">
+
+  tagselect("table", "a", "img"."align"="top"); # all img-tags with "align"="top" will be selected. if they appear in a table
+
+  
+  # the next two examples are using not implemented syntax
+  # ------------------------------------------------------
+  tagselect( "table", "a" | args );          # maybe the part after the "|" may become extractor patterns
+  tagselect( "table", "a" | arg("href") );   # maybe the part after the "|" may become extractor patterns
+
+
 
   print;
   print("string");

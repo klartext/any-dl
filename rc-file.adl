@@ -1653,8 +1653,17 @@ parsername "try_tagselect": ( )
 start
   print("try tagselect syntax");
 
-tagselect("table");
-#tagselect("table", "a","href" );
-#tagselect("a" | arg("href") );
-#  tagselect("div", "button" | arg("data-sessionlink") );
+#tagselect("table");
+#tagselect("table", "a"."href");
+print("****************************************");
+tagselect("img"."src");
+print("****************************************");
+tagselect("table","a","img"."align"="top");
+print("****************************************");
+tagselect(.="top");
+print("****************************************");
+tagselect("meta"."property");
+print("****************************************");
+tagselect("script");
+print("****************************************");
 end
