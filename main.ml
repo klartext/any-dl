@@ -740,6 +740,9 @@ let evaluate_command_list cmdlst =
 
 
                          | Tag_select selector_liste  ->
+                         (*
+                         | Tag_select (selector_liste, extractor)  ->
+                         *)
                                                          (* --------------------------------------------------------------------- *)
                                                          (* apply "find_elements_by_tag_name" to the doclist with hd as selector  *)
                                                          (* and the resulting doclist is used as input to the next call of        *)
@@ -752,13 +755,13 @@ let evaluate_command_list cmdlst =
                                                                          begin
                                                                                match hd.tag_sel, hd.argkey_sel, hd.argval_sel with
 
-                                                                                 | None,     None,     Some aval -> Parsers.Htmlparse.find_elements_by_argval    aval      (* OK *)
-                                                                                 | None,     Some key, None      -> Parsers.Htmlparse.find_elements_by_argkey    key       (* OK *)
-                                                                                 | None,     Some key, Some aval -> Parsers.Htmlparse.find_elements_by_argpair   key aval  (* OK *)
-                                                                                 | Some tag, None,     None      -> Parsers.Htmlparse.find_elements_by_tag_name  tag       (* OK *)
-                                                                                 | Some tag, None,     Some aval -> Parsers.Htmlparse.find_elements_by_tag_argval  tag  aval (* OK *)
-                                                                                 | Some tag, Some key, None      -> Parsers.Htmlparse.find_elements_by_tag_argkey  tag  key  (* OK *)
-                                                                                 | Some tag, Some key, Some aval -> Parsers.Htmlparse.find_elements_by_tag_argpair tag key aval (* OK *)
+                                                                                 | None,     None,     Some aval -> Parsers.Htmlparse.find_elements_by_argval                aval  (* OK *)
+                                                                                 | None,     Some key, None      -> Parsers.Htmlparse.find_elements_by_argkey           key        (* OK *)
+                                                                                 | None,     Some key, Some aval -> Parsers.Htmlparse.find_elements_by_argpair          key  aval  (* OK *)
+                                                                                 | Some tag, None,     None      -> Parsers.Htmlparse.find_elements_by_tag_name    tag             (* OK *)
+                                                                                 | Some tag, None,     Some aval -> Parsers.Htmlparse.find_elements_by_tag_argval  tag       aval  (* OK *)
+                                                                                 | Some tag, Some key, None      -> Parsers.Htmlparse.find_elements_by_tag_argkey  tag  key        (* OK *)
+                                                                                 | Some tag, Some key, Some aval -> Parsers.Htmlparse.find_elements_by_tag_argpair tag  key  aval  (* OK *)
                                                                          end
                                                                          in
                                                                                 aux tl (selector dl)
@@ -769,15 +772,21 @@ let evaluate_command_list cmdlst =
                                                          in
 
 
-                                                         begin
-                                                           match tmpvar with
-                                                             | Document (doc, url) -> 
-                                                                                     let doclist = Parsers.conv_to_doclist doc in
-                                                                                     let selected = selectloop selector_liste doclist in
-                                                                                     Parsers.Htmlparse.dump_html selected;
+                                                         let selected_tags =
+                                                           begin
+                                                             match tmpvar with
+                                                               | Document (doc, url) ->
+                                                                                       let doclist = Parsers.conv_to_doclist doc in
 
-                                                             | _ -> print_warning "Tag_select found non-usable type"; raise Wrong_tmpvar_type
-                                                         end;
+                                                                                       selectloop selector_liste doclist (* the selected tags *)
+
+                                                               | _ -> print_warning "Tag_select found non-usable type"; raise Wrong_tmpvar_type
+                                                           end
+                                                         in
+
+                                                         Parsers.Htmlparse.dump_html selected_tags;
+
+                                                         (* result should be a   Match_result ( whichg is: string array array) *)
 
 
 
