@@ -543,6 +543,96 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
+    (* finds elements by match of argname (argval)            *)
+    (* ====================================================== *)
+    (* example: in <a href="http://foobar"> 'href' is the val *)
+    (* ------------------------------------------------------ *)
+    let find_elements_by_tag_argval  tagval  argval   doclist =
+
+      let picked = ref [] in
+
+      let rec traverse_aux doclist =
+        match doclist with
+          | []     -> ()
+          | hd::tl -> begin (* work on the head *)
+                        match hd with
+                          | Element (tag, args, dl) -> if
+                                                         tag = tagval && arg_val_does_match  argval  args
+                                                       then
+                                                         picked := hd :: !picked
+                                                       else
+                                                         traverse_aux dl
+
+                          | Data    _               -> ()
+                      end;
+
+                      traverse_aux tl (* work on the tail *)
+      in
+        traverse_aux doclist;
+        List.rev !picked
+
+
+    (* finds elements by match of argname (argval)            *)
+    (* ====================================================== *)
+    (* example: in <a href="http://foobar"> 'href' is the val *)
+    (* ------------------------------------------------------ *)
+    let find_elements_by_tag_argkey  tagval  argkey   doclist =
+
+      let picked = ref [] in
+
+      let rec traverse_aux doclist =
+        match doclist with
+          | []     -> ()
+          | hd::tl -> begin (* work on the head *)
+                        match hd with
+                          | Element (tag, args, dl) -> if
+                                                         tag = tagval && arg_key_does_match  argkey  args
+                                                       then
+                                                         picked := hd :: !picked
+                                                       else
+                                                         traverse_aux dl
+
+                          | Data    _               -> ()
+                      end;
+
+                      traverse_aux tl (* work on the tail *)
+      in
+        traverse_aux doclist;
+        List.rev !picked
+
+
+
+    (* finds elements by match of tagname and matching arg-pair *)
+    (* ====================================================== *)
+    (* example: in <a href="http://foobar"> 'href' is the key *)
+    (* ------------------------------------------------------ *)
+    let find_elements_by_tag_argpair  tagval argname argval doclist =
+
+      let picked = ref [] in
+
+      let rec traverse_aux doclist =
+        match doclist with
+          | []     -> ()
+          | hd::tl -> begin (* work on the head *)
+                        match hd with
+                          | Element (tag, args, dl) -> if 
+                                                         tag = tagval && arg_pair_does_match  argname  argval  args
+                                                       then
+                                                         picked := hd :: !picked
+                                                       else
+                                                         traverse_aux dl
+
+                          | Data    _               -> ()
+                      end;
+
+                      traverse_aux tl (* work on the tail *)
+      in
+        traverse_aux doclist;
+        List.rev !picked
+
+
+
+
 
 
 
