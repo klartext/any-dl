@@ -120,6 +120,10 @@ module Rebase =
 (* -------------------------------- *)
 let suffixes = [".jpg"; ".png"; ".txt"; ".pdf"; ".doc"; ".ps"; ".docx"; ".xls"; ".htm"; ".html"]
 
+
+
+(* ==================================================== *)
+(* ==================================================== *)
 let url_to_filename url_string =
   let filename = String.copy url_string in
   for idx = 0 to String.length filename - 1
@@ -130,6 +134,8 @@ let url_to_filename url_string =
   done;
   filename
 
+(* ==================================================== *)
+(* ==================================================== *)
 let url_to_filename_with_suffix_check  str =
   let sel = List.filter ( fun suffix -> Filename.check_suffix str suffix ) suffixes in
   match sel with
@@ -140,6 +146,8 @@ let url_to_filename_with_suffix_check  str =
 
 
 
+(* ==================================================== *)
+(* ==================================================== *)
 let print_times ?(scale=1) character times =
   for idx = 1 to times * scale
     do
@@ -160,6 +168,8 @@ module Xmlparse =
   struct
     open Xml
 
+    (* ==================================================== *)
+    (* ==================================================== *)
     let print_element elem =
       let a = fst elem in
       let second = snd elem in
@@ -168,6 +178,8 @@ module Xmlparse =
       Printf.printf "(%s, (%s /// %s))\n" a b c
 
 
+    (* ==================================================== *)
+    (* ==================================================== *)
     let traverse_print xml =
       print_endline "------------------------------------------------";
       let rec aux xml_elem = match xml_elem with
@@ -181,8 +193,10 @@ module Xmlparse =
 
     let parse_string = parse_string
 
+
+    (* ==================================================== *)
     (* ggf. String-lowercase bei "href"-Vergleich einsetzen *)
-    (* ---------------------------------------------------- *)
+    (* ==================================================== *)
     let get_href_from_xml xml = 
       let href_list = ref [] in
       let rec aux xml_elem = match xml_elem with
@@ -207,8 +221,9 @@ module Xmlparse =
 module Htmlparse =
   struct
 
+    (* ===================================================== *)
     (* convert string html-document to nethtml-document list *)
-    (* ----------------------------------------------------- *)
+    (* ===================================================== *)
     let string_to_nethtml str =
       Nethtml.parse ~dtd:relaxed_html40_dtd
                     ~return_declarations:true
@@ -217,6 +232,11 @@ module Htmlparse =
                     (new Netchannels.input_string str)
 
 
+    (* ======================================================================================= *)
+    (* dumping html-document to stdout: displaying contents ("payload") as well as tag-names   *)
+    (* --------------------------------------------------------------------------------------- *)
+    (* The stuff is indented, depending on the depth of where the tag was found in the doctree *)
+    (* ======================================================================================= *)
     let dump_html doclist =
       let rec traverse_aux doclist depth =
         match doclist with
@@ -246,6 +266,9 @@ module Htmlparse =
 
 
 
+    (* =========================================================================================== *)
+    (* dumps html-data to stdout, which means: displaying the contents ("payload") of the document *)
+    (* =========================================================================================== *)
     let dump_html_data doclist =
       let rec traverse_aux doclist depth =
         
@@ -276,8 +299,9 @@ module Htmlparse =
 
 
 
+    (* ========= *)
     (* SHOW TAGS *)
-    (* --------- *)
+    (* ========= *)
     let show_tags  doclist =
       let rec traverse_aux doclist depth =
         match doclist with
@@ -298,8 +322,9 @@ module Htmlparse =
   
 
 (* REFACTOR: "show_tags_full_path" can be fusioned with show_tags via optional argument to select full-path printing *)
+    (* ========= *)
     (* SHOW TAGS *)
-    (* --------- *)
+    (* ========= *)
     let show_tags_full_path  doclist =
       let print_tagpath tp = (* function to print path of tags *)
         List.iter ( fun str -> print_string str; print_char '.' ) (List.rev tp)
@@ -327,8 +352,9 @@ module Htmlparse =
   
 
 
+    (* ================== *)
     (* SHOW TAG-Hierarchy *)
-    (* ------------------ *)
+    (* ================== *)
     let show_tag_hierarchy doclist =
       let rec traverse_aux doclist depth tag_hierarchy =
         
@@ -408,9 +434,47 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         in
           traverse_aux doclist 0 [] ""
 
+
     (* ================================================================================================================================== *)
 
 
+
+    (* ================================================================== *)
+    (* checks, if there is a matching key-value-pair of the tag-arguments *)
+    (* ------------------------------------------------------------------ *)
+    (* gives back a boolean value                                         *)
+    (* ------------------------------------------------------------------ *)
+    (* The match must really be name (key) AND value matching the         *)
+    (* looked-up name (key) and value.                                    *)
+    (* Only name (key) or only value match is NOT sufficient for a "true".*)
+    (* ================================================================== *)
+    let arg_pair_does_match  argname argval  args =
+      let filtered = List.filter (  fun arg -> fst arg = argname  &&  snd arg = argval ) args  in
+      List.length filtered > 0  (* comparison If match found, list-len is > 0 *)
+
+
+    (* ========================================================== *)
+    (* checks, if at least one arg-key of the tag-args does match *)
+    (* ========================================================== *)
+    let arg_key_does_match  (key:string) (args: (string*string) list) =
+      let filtered = List.filter (  fun argpair -> key = (fst argpair)  ) args  in
+      List.length filtered > 0  (* comparison If match found, list-len is > 0 *)
+
+
+    (* ============================================================ *)
+    (* checks, if at least one arg-value of the tag-args does match *)
+    (* ============================================================ *)
+    let arg_val_does_match  (key:string) (args: (string*string) list) =
+      let filtered = List.filter (  fun argpair -> key = (snd argpair)  ) args  in
+      List.length filtered > 0  (* comparison If match found, list-len is > 0 *)
+
+
+
+    (* ================================================================================================================================== *)
+
+
+
+    (* ========================== *)
     (* finds elements by tag-name *)
     (* ========================== *)
     let find_elements_by_tag_name  name  doclist =
@@ -435,12 +499,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
-
-    let arg_pair_does_match  argname argval  args =
-      let filtered = List.filter (  fun arg -> fst arg = argname  &&  snd arg = argval ) args  in
-      List.length filtered > 0  (* comparison If match found, list-len is > 0 *)
-
-
+    (* =============================================== *)
     (* finds elements by match of argname and argvalue *)
     (* =============================================== *)
     let find_elements_by_argpair  argname  argval  doclist =
@@ -469,18 +528,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
-
-    let arg_key_does_match  (key:string) (args: (string*string) list) =
-      let filtered = List.filter (  fun argpair -> key = (fst argpair)  ) args  in
-      List.length filtered > 0  (* comparison If match found, list-len is > 0 *)
-
-
-    let arg_val_does_match  (key:string) (args: (string*string) list) =
-      let filtered = List.filter (  fun argpair -> key = (snd argpair)  ) args  in
-      List.length filtered > 0  (* comparison If match found, list-len is > 0 *)
-
-
-
+    (* ====================================================== *)
     (* finds elements by match of argname (argkey)            *)
     (* ====================================================== *)
     (* example: in <a href="http://foobar"> 'href' is the key *)
@@ -513,6 +561,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
+    (* ====================================================== *)
     (* finds elements by match of argname (argval)            *)
     (* ====================================================== *)
     (* example: in <a href="http://foobar"> 'href' is the val *)
@@ -543,6 +592,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
+    (* ====================================================== *)
     (* finds elements by match of argname (argval)            *)
     (* ====================================================== *)
     (* example: in <a href="http://foobar"> 'href' is the val *)
@@ -572,6 +622,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         List.rev !picked
 
 
+    (* ====================================================== *)
     (* finds elements by match of argname (argval)            *)
     (* ====================================================== *)
     (* example: in <a href="http://foobar"> 'href' is the val *)
@@ -602,10 +653,11 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
+    (* ======================================================== *)
     (* finds elements by match of tagname and matching arg-pair *)
-    (* ====================================================== *)
-    (* example: in <a href="http://foobar"> 'href' is the key *)
-    (* ------------------------------------------------------ *)
+    (* -------------------------------------------------------- *)
+    (* example: in <a href="http://foobar"> 'href' is the key   *)
+    (* ======================================================== *)
     let find_elements_by_tag_argpair  tagval argname argval doclist =
 
       let picked = ref [] in
@@ -631,6 +683,9 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         List.rev !picked
 
 
+    (* ================================================================================================================================== *)
+
+    (* ================ *)
     (* Collect all DATA *)
     (* ================ *)
     let collect_data  doclist =
@@ -651,6 +706,8 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         traverse_aux doclist;
         Buffer.contents buf
 
+
+    (* ================================================================================================================================== *)
 
 
 
