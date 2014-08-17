@@ -79,3 +79,18 @@ let array_drop arr dropidx =
   res (* the resulting array *)
 
 
+
+(* ======================================================== *)
+(* converts a list of pairs into a list, by just prepending *)
+(* the items of the pairs into the resullting list          *)
+(* ======================================================== *)
+let pairlist_to_list  inputlist =
+  let rec aux res li = match li with
+    | (k,v)::tl -> aux (v::k::res) tl
+    | []        -> List.rev res
+in
+  aux [] inputlist
+
+
+
+
