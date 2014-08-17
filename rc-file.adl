@@ -1656,14 +1656,14 @@ start
 #tagselect("table");
 #tagselect("table", "a"."href");
 print("****************************************");
-tagselect("img"."src");
+tagselect("img"."src"|dump);
 print("****************************************");
-tagselect("table","a","img"."align"="top");
+tagselect("table","a","img"."align"="top"|dump);
 print("****************************************");
-tagselect(.="top");
+tagselect(.="top"|dump);
 print("****************************************");
-tagselect("meta"."property");
+tagselect("meta"."property"|dump);
 print("****************************************");
-tagselect("script");
+tagselect("script"|dump);
 print("****************************************");
 end

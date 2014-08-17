@@ -739,10 +739,7 @@ let evaluate_command_list cmdlst =
                                                          end
 
 
-                         | Tag_select selector_liste  ->
-                         (*
                          | Tag_select (selector_liste, extractor)  ->
-                         *)
                                                          (* --------------------------------------------------------------------- *)
                                                          (* apply "find_elements_by_tag_name" to the doclist with hd as selector  *)
                                                          (* and the resulting doclist is used as input to the next call of        *)
@@ -784,7 +781,18 @@ let evaluate_command_list cmdlst =
                                                            end
                                                          in
 
-                                                         Parsers.Htmlparse.dump_html selected_tags;
+
+                                                         begin
+                                                          match extractor with
+                                                            | `Data     -> print_endline "Data"
+                                                            | `Args     -> print_endline "Args"
+                                                            | `Arg x    -> print_endline ("Arg " ^ x)
+                                                            | `Tag      -> print_endline "Tag"
+                                                            | `Arg_keys -> print_endline "Arg_keys"
+                                                            | `Arg_vals -> print_endline "Arg_vals"
+                                                            | `Arg_pair -> print_endline "Arg_pair"
+                                                            | `Dump     -> Parsers.Htmlparse.dump_html selected_tags;
+                                                         end;
 
                                                          (* result should be a   Match_result ( whichg is: string array array) *)
 

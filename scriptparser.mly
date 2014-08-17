@@ -264,8 +264,7 @@ titleextract_stmt: TITLEEXTRACT   { Title_extract }
 
 
 
-tagselect_stmt: TAGSELECT LPAREN tagselect_arg_list RPAREN { Tag_select $3 }
-    |           TAGSELECT LPAREN tagselect_arg_list VBAR extractor RPAREN { Tag_select $3 }
+tagselect_stmt: TAGSELECT LPAREN tagselect_arg_list VBAR extractor RPAREN { Tag_select( $3, $5 ) }
     ;
 
 tagselect_arg_list: tagselect_arg                            { [$1] }
@@ -295,6 +294,7 @@ extractor: DATA                     { `Data }
     |      ARG_KEYS                 { `Arg_keys }
     |      ARG_VALS                 { `Arg_vals }
     |      ARG_PAIR                 { `Arg_pair }
+    |      DUMP                     { `Dump     }
     ;
 
 
