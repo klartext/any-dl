@@ -6,7 +6,8 @@ all: native-code
 
 SOURCES :=  cli.ml tools.ml parsetreetypes.ml scriptparser.mly scriptlexer.mll parsers.ml network.ml main.ml
 
-PACKS := pcre netstring netsys netclient curl xml-light
+PACKS := pcre netstring netsys netclient curl xml-light csv
+
 
 YFLAGS=-v
 #OCAMLYACC = menhir
