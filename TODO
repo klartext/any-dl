@@ -23,6 +23,10 @@ BUGs:
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
+ - refactoring parsers.ml => the find-functions in htmlparse,
+   added for tagselect and selenium-like API have MUCH potential
+   for refactoring!
+
  - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
  - maybe remove print_string(), because print() does the same now.
  - dump is rather a deparse; dump_data is dump-like or deparse-like too;
