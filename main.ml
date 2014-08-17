@@ -782,17 +782,22 @@ let evaluate_command_list cmdlst =
                                                          in
 
 
-                                                         begin
-                                                          match extractor with
-                                                            | `Data     -> print_endline "Data"
-                                                            | `Args     -> print_endline "Args"
-                                                            | `Arg x    -> print_endline ("Arg " ^ x)
-                                                            | `Tag      -> print_endline "Tag"
-                                                            | `Arg_keys -> print_endline "Arg_keys"
-                                                            | `Arg_vals -> print_endline "Arg_vals"
-                                                            | `Arg_pair -> print_endline "Arg_pair"
-                                                            | `Dump     -> Parsers.Htmlparse.dump_html selected_tags;
-                                                         end;
+                                                         Printf.printf "*** Length of selected_tags-list: %d\n" (List.length selected_tags);
+
+                                                         let result =
+                                                           begin
+                                                            match extractor with
+                                                              | `Data      -> let dat = Parsers.Htmlparse.collect_data selected_tags in String dat
+                                                              | `Arg x     -> print_endline ("Arg " ^ x); tmpvar; raise NOT_IMPLEMENTED_SO_FAR
+                                                              | `Tag       -> String_array ( Array.of_list (Parsers.Htmlparse.extract_tagname_from_topdoc selected_tags))
+                                                              | `Arg_keys  -> String_array ( Array.of_list (Parsers.Htmlparse.extract_arg_keys_from_topdoc selected_tags))
+                                                              | `Arg_vals  -> String_array ( Array.of_list (Parsers.Htmlparse.extract_arg_values_from_topdoc selected_tags))
+                                                              | `Arg_pairs -> let pairs = Parsers.Htmlparse.extract_arg_pairs_from_topdoc selected_tags in
+                                                                              let splitted = List.map ( fun (k,v) -> [| k; v |] ) pairs in
+                                                                              Match_result (Array.of_list splitted)
+                                                              | `Dump      -> Parsers.Htmlparse.dump_html selected_tags; tmpvar  (* dumping; then  give back original tmpvar *)
+                                                           end
+                                                         in
 
                                                          (* result should be a   Match_result ( whichg is: string array array) *)
 
@@ -802,7 +807,7 @@ let evaluate_command_list cmdlst =
                                                           let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
                                                           let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
                                                           *)
-                                                          command tl tmpvar varmap
+                                                          command tl result varmap
 
 
 

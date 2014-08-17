@@ -1653,17 +1653,55 @@ parsername "try_tagselect": ( )
 start
   print("try tagselect syntax");
 
-#tagselect("table");
-#tagselect("table", "a"."href");
-print("****************************************");
-tagselect("img"."src"|dump);
-print("****************************************");
-tagselect("table","a","img"."align"="top"|dump);
-print("****************************************");
-tagselect(.="top"|dump);
-print("****************************************");
-tagselect("meta"."property"|dump);
-print("****************************************");
-tagselect("script"|dump);
-print("****************************************");
+  #tagselect("table");
+  #tagselect("table", "a"."href");
+  print("****************************************");
+
+  print("----- argkeys -----------------------");
+  recall("BASEDOC");
+  tagselect("img"."src"|argkeys);
+  print;
+
+  print("----- argvals -----------------------");
+
+  recall("BASEDOC");
+  tagselect("img"."src"|argvals);
+  print;
+
+
+  print("----- argpairs ----------------------");
+
+  recall("BASEDOC");
+  tagselect("img"."src"|argpairs);
+  print;
+
+
+  print("----- argpairs ----------------------");
+
+  recall("BASEDOC");
+  tagselect("div"|argpairs);
+  print;
+
+
+  print("----- tag ---------------------------");
+
+  recall("BASEDOC");
+  tagselect(."align"|tag);
+  print;
+
+
+exitparse;
+  print("****************************************");
+  tagselect("table","a","img"."align"="top"|dump);
+  print("****************************************");
+  tagselect(.="top"|dump);
+  tagselect("meta"."property"|dump);
+  print("****************************************");
+  print("Now with \"data\" and \"print()\"");
+  tagselect("title"|data);
+  print;
+  recall("BASEDOC");
+  print("****************************************");
+  tagselect("script"|dump);
+  print("****************************************");
 end

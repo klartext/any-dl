@@ -533,6 +533,27 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
+    (* extracts tagnames of ONE document-element *)
+    (* ========================================= *)
+    let extract_tagname_from_doc doc = match doc with
+      | Data _              -> raise Not_found
+      | Element (tag, _, _) -> tag
+
+
+    (* =========================================================================== *)
+    (* from the HEAD of the doclist, extract pairs of arguments of that tag       *)
+    (* --------------------------------------------------------------------------- *)
+    (* The reason, why only the HEAD of the doclist is extracted, is, because      *)
+    (* normally, if you look for one selected tag, you want to know the properties *)
+    (* of this first tag (which is the one which was selected).                    *)
+    (* =========================================================================== *)
+    let extract_tagname_from_topdoc doclist = match doclist with
+      | hd::tl -> [ extract_tagname_from_doc hd ]
+      | []     -> []
+
+
+
+
     (* ================================================================================================================================== *)
 
 
