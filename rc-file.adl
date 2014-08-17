@@ -1665,8 +1665,9 @@ start
   print("----- argvals -----------------------");
 
   recall("BASEDOC");
-  tagselect("img"."src"|argvals);
+  tagselect("img"."src"|dump);
   print;
+exitparse;
 
 
   print("----- argpairs ----------------------");

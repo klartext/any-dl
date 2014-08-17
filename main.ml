@@ -783,19 +783,30 @@ let evaluate_command_list cmdlst =
 
 
                                                          Printf.printf "*** Length of selected_tags-list: %d\n" (List.length selected_tags);
+                                                         (*
+                                                         Parsers.Htmlparse.element_or_data_in_doclist selected_tags;
+                                                         *)
 
                                                          let result =
                                                            begin
                                                             match extractor with
                                                               | `Data      -> let dat = Parsers.Htmlparse.collect_data selected_tags in String dat
                                                               | `Arg x     -> print_endline ("Arg " ^ x); tmpvar; raise NOT_IMPLEMENTED_SO_FAR
-                                                              | `Tag       -> String_array ( Array.of_list (Parsers.Htmlparse.extract_tagname_from_topdoc selected_tags))
-                                                              | `Arg_keys  -> String_array ( Array.of_list (Parsers.Htmlparse.extract_arg_keys_from_topdoc selected_tags))
-                                                              | `Arg_vals  -> String_array ( Array.of_list (Parsers.Htmlparse.extract_arg_values_from_topdoc selected_tags))
-                                                              | `Arg_pairs -> let pairs = Parsers.Htmlparse.extract_arg_pairs_from_topdoc selected_tags in
-                                                                              let splitted = List.map ( fun (k,v) -> [| k; v |] ) pairs in
-                                                                              Match_result (Array.of_list splitted)
-                                                              | `Dump      -> Parsers.Htmlparse.dump_html selected_tags; tmpvar  (* dumping; then  give back original tmpvar *)
+                                                              | `Tag       -> 
+                                                                              let tagnames = Parsers.Htmlparse.extract_tagname_from_topdocs_of_doclist selected_tags in
+                                                                              (* String_array (Array.of_list tagnames) *)
+                                                                              Match_result [| (Array.of_list tagnames) |]
+
+                                                              | `Arg_keys  -> let arg_keys   =  Parsers.Htmlparse.extract_arg_keys_from_topdocs_of_doclist selected_tags in
+                                                                              Match_result ( Array.of_list arg_keys )
+
+                                                              | `Arg_vals  -> let arg_values = Parsers.Htmlparse.extract_arg_values_from_topdocs_of_doclist selected_tags in
+                                                                              Match_result ( Array.of_list arg_values )
+
+                                                                              
+                                                              | `Arg_pairs -> let pairs = Parsers.Htmlparse.extract_arg_values_from_topdocs_of_doclist selected_tags in
+                                                                              Match_result (Array.of_list pairs)
+                                                              | `Dump      -> Parsers.Htmlparse.dump_html selected_tags; Empty  (* dumping; Empty should be replaced by selected_tags-representation *)
                                                            end
                                                          in
 

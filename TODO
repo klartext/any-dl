@@ -23,6 +23,8 @@ BUGs:
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
+ - tagselect: `Dump  should return a string representation of the dump...
+
  - refactoring parsers.ml => the find-functions in htmlparse,
    added for tagselect and selenium-like API have MUCH potential
    for refactoring!

@@ -440,6 +440,18 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
     (* ================================================================== *)
+    (* just prints out, if the list contains Element's or Data's          *)
+    (* ================================================================== *)
+    let rec element_or_data_in_doclist  doclist = match doclist with
+      | hd::tl -> begin
+                    match hd with Element _ -> print_endline "Element" | Data _ -> print_endline "Data"
+                  end;
+                  element_or_data_in_doclist tl
+      | []     -> ()
+
+
+
+    (* ================================================================== *)
     (* checks, if there is a matching key-value-pair of the tag-arguments *)
     (* ------------------------------------------------------------------ *)
     (* gives back a boolean value                                         *)
@@ -479,16 +491,8 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       | Element (_, args, _) -> List.map fst args
 
 
-    (* =========================================================================== *)
-    (* from the HEAD of the doclist, extract keys (names) of arguments of that tag *)
-    (* --------------------------------------------------------------------------- *)
-    (* The reason, why only the HEAD of the doclist is extracted, is, because      *)
-    (* normally, if you look for one selected tag, you want to know the properties *)
-    (* of this first tag (which is the one which was selected).                    *)
-    (* =========================================================================== *)
-    let extract_arg_keys_from_topdoc doclist = match doclist with
-      | hd::tl -> extract_arg_keys_from_doc hd
-      | []     -> []
+    (* ==================================================== *)
+    let extract_arg_keys_from_topdocs_of_doclist  doclist =  List.map ( fun x -> Array.of_list (extract_arg_keys_from_doc x) ) doclist
 
 
 
@@ -498,17 +502,8 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       | Data _               -> raise Not_found
       | Element (_, args, _) -> List.map snd args
 
-
-    (* =========================================================================== *)
-    (* from the HEAD of the doclist, extract values of arguments of that tag       *)
-    (* --------------------------------------------------------------------------- *)
-    (* The reason, why only the HEAD of the doclist is extracted, is, because      *)
-    (* normally, if you look for one selected tag, you want to know the properties *)
-    (* of this first tag (which is the one which was selected).                    *)
-    (* =========================================================================== *)
-    let extract_arg_values_from_topdoc doclist = match doclist with
-      | hd::tl -> extract_arg_values_from_doc hd
-      | []     -> []
+    let extract_arg_values_from_topdocs_of_doclist doclist =
+      List.map ( fun x -> Array.of_list (extract_arg_values_from_doc x) ) doclist
 
 
 
@@ -519,16 +514,12 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       | Element (_, args, _) -> args
 
 
-    (* =========================================================================== *)
-    (* from the HEAD of the doclist, extract pairs of arguments of that tag       *)
-    (* --------------------------------------------------------------------------- *)
-    (* The reason, why only the HEAD of the doclist is extracted, is, because      *)
-    (* normally, if you look for one selected tag, you want to know the properties *)
-    (* of this first tag (which is the one which was selected).                    *)
-    (* =========================================================================== *)
-    let extract_arg_pairs_from_topdoc doclist = match doclist with
-      | hd::tl -> extract_arg_pairs_from_doc hd
-      | []     -> []
+
+
+    (* ==================================================== *)
+    let extract_arg_pairs_from_topdocs_of_doclist doclist = List.map (fun doc -> Tools.pairlist_to_list (extract_arg_pairs_from_doc doc) ) doclist
+
+
 
 
 
@@ -539,17 +530,8 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       | Data _              -> raise Not_found
       | Element (tag, _, _) -> tag
 
-
-    (* =========================================================================== *)
-    (* from the HEAD of the doclist, extract pairs of arguments of that tag       *)
-    (* --------------------------------------------------------------------------- *)
-    (* The reason, why only the HEAD of the doclist is extracted, is, because      *)
-    (* normally, if you look for one selected tag, you want to know the properties *)
-    (* of this first tag (which is the one which was selected).                    *)
-    (* =========================================================================== *)
-    let extract_tagname_from_topdoc doclist = match doclist with
-      | hd::tl -> [ extract_tagname_from_doc hd ]
-      | []     -> []
+    (* ==================================================== *)
+    let extract_tagname_from_topdocs_of_doclist  doclist = List.map extract_tagname_from_doc doclist
 
 
 
