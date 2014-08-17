@@ -472,6 +472,69 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
     (* ================================================================================================================================== *)
 
+    (* extracts keys (names) of arguments of ONE document-element *)
+    (* ========================================================== *)
+    let extract_arg_keys_from_doc doc = match doc with
+      | Data _               -> raise Not_found
+      | Element (_, args, _) -> List.map fst args
+
+
+    (* =========================================================================== *)
+    (* from the HEAD of the doclist, extract keys (names) of arguments of that tag *)
+    (* --------------------------------------------------------------------------- *)
+    (* The reason, why only the HEAD of the doclist is extracted, is, because      *)
+    (* normally, if you look for one selected tag, you want to know the properties *)
+    (* of this first tag (which is the one which was selected).                    *)
+    (* =========================================================================== *)
+    let extract_arg_keys_from_topdoc doclist = match doclist with
+      | hd::tl -> extract_arg_keys_from_doc hd
+      | []     -> []
+
+
+
+    (* extracts values of arguments of ONE document-element *)
+    (* ==================================================== *)
+    let extract_arg_values_from_doc doc = match doc with
+      | Data _               -> raise Not_found
+      | Element (_, args, _) -> List.map snd args
+
+
+    (* =========================================================================== *)
+    (* from the HEAD of the doclist, extract values of arguments of that tag       *)
+    (* --------------------------------------------------------------------------- *)
+    (* The reason, why only the HEAD of the doclist is extracted, is, because      *)
+    (* normally, if you look for one selected tag, you want to know the properties *)
+    (* of this first tag (which is the one which was selected).                    *)
+    (* =========================================================================== *)
+    let extract_arg_values_from_topdoc doclist = match doclist with
+      | hd::tl -> extract_arg_values_from_doc hd
+      | []     -> []
+
+
+
+    (* extracts pairs of arguments of ONE document-element *)
+    (* ==================================================== *)
+    let extract_arg_pairs_from_doc doc = match doc with
+      | Data _               -> raise Not_found
+      | Element (_, args, _) -> args
+
+
+    (* =========================================================================== *)
+    (* from the HEAD of the doclist, extract pairs of arguments of that tag       *)
+    (* --------------------------------------------------------------------------- *)
+    (* The reason, why only the HEAD of the doclist is extracted, is, because      *)
+    (* normally, if you look for one selected tag, you want to know the properties *)
+    (* of this first tag (which is the one which was selected).                    *)
+    (* =========================================================================== *)
+    let extract_arg_pairs_from_topdoc doclist = match doclist with
+      | hd::tl -> extract_arg_pairs_from_doc hd
+      | []     -> []
+
+
+
+
+    (* ================================================================================================================================== *)
+
 
 
     (* ========================== *)
