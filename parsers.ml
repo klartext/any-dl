@@ -704,7 +704,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
                       traverse_aux tl (* work on the tail *)
       in
         traverse_aux doclist;
-        Buffer.contents buf
+        String.trim (Buffer.contents buf) (* trimming again will remove the last added "\n" *)
 
 
     (* ================================================================================================================================== *)
