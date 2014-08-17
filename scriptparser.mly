@@ -32,6 +32,7 @@
 %token SHOW_MATCH
 %token PRINT
 %token SHOW_TYPE
+%token CSV_SAVE
 %token SAVE
 %token SAVE_AS
 %token LINKEXTRACT
@@ -188,6 +189,7 @@ statement: match_stmt          SEMI   { $1 }
     |      SHOW_TYPE           SEMI   { Show_type }
     |      SAVE                SEMI   { Save }
     |      save_as             SEMI   { $1 }
+    |      csv_save            SEMI   { $1 }
     |      DUMP                SEMI   { Dump }
     |      DUMP_DATA           SEMI   { Dump_data }
     |      SHOW_TAGS           SEMI   { Show_tags }
@@ -220,6 +222,9 @@ recall_stmt: RECALL LPAREN STRING   RPAREN    { Recall $3 }
     ;
 
 delete_stmt: DELETE LPAREN STRING   RPAREN    { Delete $3 }
+    ;
+
+csv_save:    CSV_SAVE  LPAREN  STRING  RPAREN     { CSV_save ( $3 ) }
     ;
 
 save_as:     SAVE_AS  LPAREN  argument_list  RPAREN     { Save_as $3 }

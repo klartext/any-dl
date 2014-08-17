@@ -27,6 +27,15 @@ start
 end
 
 
+parsername "linkextract2csv": ( )
+start
+  linkextract;
+  to_matchres;
+  csv_save("links");
+  print;
+end
+
+
 parsername "linkextract_xml": ( )
 start
   linkextract_xml;
@@ -1674,6 +1683,7 @@ start
   recall("BASEDOC");
   tagselect("img"."src"|argpairs);
   print;
+  csv_save("img_src");
 
 
   print("----- argpairs ----------------------");
