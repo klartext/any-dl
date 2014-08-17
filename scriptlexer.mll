@@ -40,7 +40,7 @@
                   ("tag",              TAG  );       (* extractor *)
                   ("argkeys",          ARG_KEYS  );  (* extractor *)
                   ("argvals",          ARG_VALS  );  (* extractor *)
-                  ("argpair",          ARG_PAIR  );  (* extractor *)
+                  ("argpairs",         ARG_PAIRS );  (* extractor *)
 
 
                   ("get",            GET  );

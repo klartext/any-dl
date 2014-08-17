@@ -46,7 +46,7 @@
 %token TAG
 %token ARG_KEYS
 %token ARG_VALS
-%token ARG_PAIR 
+%token ARG_PAIRS
 
 %token GET
 %token MAKE_URL
@@ -293,7 +293,7 @@ extractor: DATA                     { `Data }
     |      TAG                      { `Tag }
     |      ARG_KEYS                 { `Arg_keys }
     |      ARG_VALS                 { `Arg_vals }
-    |      ARG_PAIR                 { `Arg_pair }
+    |      ARG_PAIRS                { `Arg_pairs }
     |      DUMP                     { `Dump     }
     ;
 

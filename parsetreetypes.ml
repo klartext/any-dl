@@ -31,7 +31,7 @@ type results_t =
 
 
 type selector_t = { tag_sel: string option; argkey_sel: string option; argval_sel: string option }
-type extractor_t = [ `Data  | `Args | `Arg of string | `Tag | `Arg_keys | `Arg_vals | `Arg_pair | `Dump ]
+type extractor_t = [ `Data  | `Args | `Arg of string | `Tag | `Arg_keys | `Arg_vals | `Arg_pairs | `Dump ]
 
 
 type commands_t =
