@@ -1665,9 +1665,8 @@ start
   print("----- argvals -----------------------");
 
   recall("BASEDOC");
-  tagselect("img"."src"|dump);
+  tagselect("img"."src"|argvals);
   print;
-exitparse;
 
 
   print("----- argpairs ----------------------");
@@ -1688,6 +1687,13 @@ exitparse;
 
   recall("BASEDOC");
   tagselect(."align"|tag);
+  print;
+
+
+  print("-------------------------------------");
+
+  recall("BASEDOC");
+  tagselect("div"."class"|argvals);
   print;
 
 
