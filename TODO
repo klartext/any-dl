@@ -89,6 +89,8 @@ FEATUREs:
  lesser Priority
  ===============
 
+  - javascript engine
+
  - !!!! XML-deparse -> get values from XML via name :-)
 
  - matches and assignments -> each match-group one varname... like   (url,vidname,foobar) = match("^(.*)xyz(lala).*?(foobar)")
