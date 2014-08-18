@@ -45,6 +45,8 @@ FEATUREs:
  a bit of priority
  =================
 
+  - json-files for saving data with some structure?
+
  - possibly an option/pragma, that allows parsers to be *not* invoked
    via "-a" CLI switch, because some parsers download anything, not
    a certain video-file (because they are more general, like general
