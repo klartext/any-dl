@@ -517,7 +517,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
     (* ==================================================== *)
-    let extract_arg_pairs_from_topdocs_of_doclist doclist = List.map (fun doc -> Tools.pairlist_to_list (extract_arg_pairs_from_doc doc) ) doclist
+    let extract_arg_pairs_from_topdocs_of_doclist doclist = List.map (fun doc -> Array.of_list (Tools.pairlist_to_list (extract_arg_pairs_from_doc doc) ) ) doclist
 
 
 
