@@ -750,18 +750,14 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
-    type matcher_generic_t = tagname : string ->  argkey : string ->  argval : string -> string -> (string*string) list -> bool
-    type matcher_t         = string ->  (string*string) list -> bool
+    type matcher_t = string -> string -> string  -> string -> (string*string) list -> bool
 
-    let matcher_tag_argpair_gen ~tagname:t ~argkey:k ~argval:v  tag args = tag = t && arg_pair_does_match  k  v  args
-
-    let matcher_tag_argpair ~tagname:t ~argkey:k ~argval:v  (tag : string) (args : (string*string) list) = tag = t && arg_pair_does_match  k  v  args
 
     (* ======================================================== *)
-    (* finds elements by match that the matcher-function mtches *)
+    (* GENERIC find_elemets_by                                  *)
     (* -------------------------------------------------------- *)
     (* ======================================================== *)
-    let find_elements_by  t k v  (matcher : matcher_generic_t) doclist =
+    let find_elements_by      tagval argname argval (matcher_func : matcher_t) doclist =
 
       let picked = ref [] in
 
@@ -771,8 +767,10 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
           | hd::tl -> begin (* work on the head *)
                         match hd with
                           | Element (tag, args, dl) -> if 
-                                                         matcher ~tagname:t ~argkey:k ~argval:v  tag args
-                                                         (*tag = tagval && arg_pair_does_match  argname  argval  args*)
+                                                         matcher_func  tagval  argname  argval   tag args
+                                                         (*
+                                                         tag = tagval && arg_pair_does_match  argname  argval  args
+                                                         *)
                                                        then
                                                          picked := hd :: !picked
                                                        else
@@ -786,14 +784,10 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         traverse_aux doclist;
         List.rev !picked
 
+    let matcher_tag_argpair : matcher_t = fun tagval argkey argval tag args  ->  tag = tagval && arg_pair_does_match  argkey  argval  args
 
-      (*
-      let find_elements_by_tag_argpair_2 dl = find_elements_by  matcher_tag_argpair  dl
-      *)
+    let find_elements_by_tag_argpair_2 tagval argname argval = find_elements_by tagval argname argval matcher_tag_argpair
 
-      let matcher_example  (search_tag : string)  (search_argkey : string)  (search_argval : string)    (tag : string)  (args : (string*string) list) = true
-
-      let f ~foo x = x
 
 
     (* ================================================================================================================================== *)
