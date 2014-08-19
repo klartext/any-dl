@@ -749,6 +749,53 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         List.rev !picked
 
 
+
+    type matcher_generic_t = tagname : string ->  argkey : string ->  argval : string -> string -> (string*string) list -> bool
+    type matcher_t         = string ->  (string*string) list -> bool
+
+    let matcher_tag_argpair_gen ~tagname:t ~argkey:k ~argval:v  tag args = tag = t && arg_pair_does_match  k  v  args
+
+    let matcher_tag_argpair ~tagname:t ~argkey:k ~argval:v  (tag : string) (args : (string*string) list) = tag = t && arg_pair_does_match  k  v  args
+
+    (* ======================================================== *)
+    (* finds elements by match that the matcher-function mtches *)
+    (* -------------------------------------------------------- *)
+    (* ======================================================== *)
+    let find_elements_by  t k v  (matcher : matcher_generic_t) doclist =
+
+      let picked = ref [] in
+
+      let rec traverse_aux doclist =
+        match doclist with
+          | []     -> ()
+          | hd::tl -> begin (* work on the head *)
+                        match hd with
+                          | Element (tag, args, dl) -> if 
+                                                         matcher ~tagname:t ~argkey:k ~argval:v  tag args
+                                                         (*tag = tagval && arg_pair_does_match  argname  argval  args*)
+                                                       then
+                                                         picked := hd :: !picked
+                                                       else
+                                                         traverse_aux dl
+
+                          | Data    _               -> ()
+                      end;
+
+                      traverse_aux tl (* work on the tail *)
+      in
+        traverse_aux doclist;
+        List.rev !picked
+
+
+      (*
+      let find_elements_by_tag_argpair_2 dl = find_elements_by  matcher_tag_argpair  dl
+      *)
+
+      let matcher_example  (search_tag : string)  (search_argkey : string)  (search_argval : string)    (tag : string)  (args : (string*string) list) = true
+
+      let f ~foo x = x
+
+
     (* ================================================================================================================================== *)
 
     (* ================ *)
