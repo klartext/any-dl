@@ -785,8 +785,10 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         List.rev !picked
 
     let matcher_tag_argpair : matcher_t = fun tagval argkey argval tag args  ->  tag = tagval && arg_pair_does_match  argkey  argval  args
+    let matcher_tag_argkey : matcher_t =  fun tagval argkey argval tag args  ->  tag = tagval && arg_key_does_match  argkey  args
 
     let find_elements_by_tag_argpair_2 tagval argname argval = find_elements_by tagval argname argval matcher_tag_argpair
+    let find_elements_by_tag_argkey_2  tagval argname        = find_elements_by tagval argname "" matcher_tag_argkey
 
 
 

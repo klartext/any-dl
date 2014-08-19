@@ -23,6 +23,10 @@ BUGs:
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
+ - tagselect: `Data should also be able to give back SEPERATED entities of data. (?)
+
+ - tagselect: unparse a table should be possible...
+
  - tagselect: `Dump  should return a string representation of the dump...
 
  - refactoring parsers.ml => the find-functions in htmlparse,
