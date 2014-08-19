@@ -790,7 +790,7 @@ let evaluate_command_list cmdlst =
                                                          let result =
                                                            begin
                                                             match extractor with
-                                                              | `Data      -> let dat = Parsers.Htmlparse.collect_data selected_tags in String dat
+                                                              | `Data_slurp-> let dat = Parsers.Htmlparse.collect_data selected_tags in String dat
                                                               | `Arg x     -> print_endline ("Arg " ^ x); tmpvar; raise NOT_IMPLEMENTED_SO_FAR
                                                               | `Tag       -> 
                                                                               let tagnames = Parsers.Htmlparse.extract_tagname_from_topdocs_of_doclist selected_tags in
@@ -807,7 +807,7 @@ let evaluate_command_list cmdlst =
                                                               | `Arg_pairs -> let pairs = Parsers.Htmlparse.extract_arg_pairs_from_topdocs_of_doclist selected_tags in
                                                                               Match_result (Array.of_list pairs)
                                                               | `Dump      -> Parsers.Htmlparse.dump_html selected_tags; Empty  (* dumping; Empty should be replaced by selected_tags-representation *)
-                                                           end
+                                                           end 
                                                          in
 
                                                          (* result should be a   Match_result ( whichg is: string array array) *)

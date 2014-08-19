@@ -1689,6 +1689,13 @@ start
   print("----- argpairs ----------------------");
 
   recall("BASEDOC");
+  tagselect("a"."href"|argpairs);
+  print;
+
+
+  print("----- argpairs ----------------------");
+
+  recall("BASEDOC");
   tagselect("div"|argpairs);
   print;
 
@@ -1697,6 +1704,14 @@ start
 
   recall("BASEDOC");
   tagselect(."align"|tag);
+  print;
+
+
+  print("----- dataslurp ---------------------");
+  print("TABLE");
+
+  recall("BASEDOC");
+  tagselect("table","tr","td"|dataslurp);
   print;
 
 
@@ -1715,7 +1730,7 @@ exitparse;
   tagselect("meta"."property"|dump);
   print("****************************************");
   print("Now with \"data\" and \"print()\"");
-  tagselect("title"|data);
+  tagselect("title"|dataslurp);
   print;
   recall("BASEDOC");
   print("****************************************");

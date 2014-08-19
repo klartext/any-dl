@@ -42,6 +42,7 @@
 
 %token TAGSELECT
 %token DATA
+%token DATA_SLURP
 %token ARGS
 %token ARG
 %token TAG
@@ -293,6 +294,7 @@ argval:  STRING { $1 };
 
 
 extractor: DATA                     { `Data }
+    |      DATA_SLURP               { `Data_slurp  }
     |      ARGS                     { `Args  }
     |      ARG LPAREN STRING RPAREN { `Arg $3 }
     |      TAG                      { `Tag }
