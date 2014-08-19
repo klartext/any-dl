@@ -8,6 +8,11 @@ BUGs:
 =====
 
 
+ - any-dl -c   prints all keywords of the lexer.
+   But it should print only the command-names,
+   and not the parameters of the comands!!
+
+
  - ARD-mediathek has different Webpages => llok for "DOWNLOAD" and then look there for the mp4-files
 
  - using linkextract on "file:///"-urls does not work.
