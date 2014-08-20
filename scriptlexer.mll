@@ -11,7 +11,9 @@
   let linenum = ref 1
   let stringbuf = Buffer.create 1000
 
-  let commands_table = Hashtbl.create 72
+  let commands_table  = Hashtbl.create 72
+  let parameter_table = Hashtbl.create 20
+
   let _ =
     List.iter (fun (kwd, tok) -> Hashtbl.add commands_table kwd tok)
                 [
@@ -33,17 +35,6 @@
                   ("linkextract_xml",  LINKEXTRACT_XML  );
                   ("titleextract",     TITLEEXTRACT  );
                   ("tagselect",        TAGSELECT  );
-
-                  (* selectors and extractors for tagselect() *)
-                  ("data",             DATA  );      (* selector / extractor *)
-                  ("dataslurp",        DATA_SLURP  ); (* selector / extractor *)
-                  ("args",             ARGS  );      (* selector / extractor *)
-                  ("arg",              ARG  );       (* selector / extractor *)
-                  ("tag",              TAG  );       (* extractor *)
-                  ("argkeys",          ARG_KEYS  );  (* extractor *)
-                  ("argvals",          ARG_VALS  );  (* extractor *)
-                  ("argpairs",         ARG_PAIRS );  (* extractor *)
-
 
                   ("get",            GET  );
                   ("makeurl",        MAKE_URL  );
@@ -88,6 +79,19 @@
 
 
                   ("dummy",  DUMMY  );
+                ];
+
+    List.iter (fun (kwd, tok) -> Hashtbl.add parameter_table kwd tok)
+                [
+                  (* selectors and extractors for tagselect() *)
+                  ("data",             DATA  );      (* selector / extractor *)
+                  ("dataslurp",        DATA_SLURP  ); (* selector / extractor *)
+                  ("args",             ARGS  );      (* selector / extractor *)
+                  ("arg",              ARG  );       (* selector / extractor *)
+                  ("tag",              TAG  );       (* extractor *)
+                  ("argkeys",          ARG_KEYS  );  (* extractor *)
+                  ("argvals",          ARG_VALS  );  (* extractor *)
+                  ("argpairs",         ARG_PAIRS );  (* extractor *)
                 ]
 
 
@@ -102,7 +106,7 @@ let identifier = ['a'-'z' 'A'-'Z' ] (alpha_ | digit)*
 rule read_command = parse
    | [ ' ' '\t' ]   { read_command lexbuf }
    | "\n"           { incr linenum; read_command lexbuf }
-   | identifier as name { try Hashtbl.find commands_table  name with Not_found -> IDENTIFIER (Lexing.lexeme lexbuf) }
+   | identifier as name { try Hashtbl.find commands_table  name with Not_found -> begin try Hashtbl.find parameter_table name with Not_found -> IDENTIFIER (Lexing.lexeme lexbuf) end }
    | digit+ as num  { INT_NUM (int_of_string num) }
    | '"'            { Buffer.clear stringbuf; read_string lexbuf }
    | ">>>"          { Buffer.clear stringbuf; read_specialstring lexbuf }

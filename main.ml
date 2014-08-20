@@ -1256,7 +1256,7 @@ let main ()  =
       begin
         print_endline "Keywords of the parser-definition language:";
         print_endline "-------------------------------------------";
-        let kwlist = Hashtbl.fold (fun key value sofar -> key :: sofar ) Scriptlexer.keyword_table [] in
+        let kwlist = Hashtbl.fold (fun key value sofar -> key :: sofar ) Scriptlexer.commands_table [] in
         List.iter ( fun kw -> Printf.printf "keyword   %s\n" kw) (List.sort compare kwlist)
       end;
       flush stdout;

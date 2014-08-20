@@ -1688,9 +1688,9 @@ start
 
   print("----- data --------------------------");
 
-  recall("BASEDOC");
-  tagselect("img"."src"|data);
-  print;
+#  recall("BASEDOC");
+#  tagselect("img"."src"|data);
+#  print;
   # csv_save("img_src");
 exitparse;
 
