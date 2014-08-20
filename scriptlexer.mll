@@ -11,9 +11,9 @@
   let linenum = ref 1
   let stringbuf = Buffer.create 1000
 
-  let keyword_table = Hashtbl.create 72
+  let commands_table = Hashtbl.create 72
   let _ =
-    List.iter (fun (kwd, tok) -> Hashtbl.add keyword_table kwd tok)
+    List.iter (fun (kwd, tok) -> Hashtbl.add commands_table kwd tok)
                 [
                   ("parsername",  PARSERNAME  );
                   ("start",       START  );
@@ -102,7 +102,7 @@ let identifier = ['a'-'z' 'A'-'Z' ] (alpha_ | digit)*
 rule read_command = parse
    | [ ' ' '\t' ]   { read_command lexbuf }
    | "\n"           { incr linenum; read_command lexbuf }
-   | identifier as name { try Hashtbl.find keyword_table  name with Not_found -> IDENTIFIER (Lexing.lexeme lexbuf) }
+   | identifier as name { try Hashtbl.find commands_table  name with Not_found -> IDENTIFIER (Lexing.lexeme lexbuf) }
    | digit+ as num  { INT_NUM (int_of_string num) }
    | '"'            { Buffer.clear stringbuf; read_string lexbuf }
    | ">>>"          { Buffer.clear stringbuf; read_specialstring lexbuf }
