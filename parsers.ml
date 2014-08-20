@@ -565,166 +565,15 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
-    (* =============================================== *)
-    (* finds elements by match of argname and argvalue *)
-    (* =============================================== *)
-    let find_elements_by_argpair  argname  argval  doclist =
 
-      let picked = ref [] in
-
-      let rec traverse_aux doclist =
-        match doclist with
-          | []     -> ()
-          | hd::tl -> begin (* work on the head *)
-                        match hd with
-                          | Element (tag, args, dl) -> if
-                                                         arg_pair_does_match argname argval args
-                                                       then
-                                                         picked := hd :: !picked
-                                                       else
-                                                         traverse_aux dl
-
-                          | Data    _               -> ()
-                      end;
-
-                      traverse_aux tl (* work on the tail *)
-      in
-        traverse_aux doclist;
-        List.rev !picked
-
-
-
-    (* ====================================================== *)
-    (* finds elements by match of argname (argkey)            *)
-    (* ====================================================== *)
-    (* example: in <a href="http://foobar"> 'href' is the key *)
-    (* ------------------------------------------------------ *)
-    let find_elements_by_argkey   argkey   doclist =
-
-      let picked = ref [] in
-
-      let rec traverse_aux doclist =
-        match doclist with
-          | []     -> ()
-          | hd::tl -> begin (* work on the head *)
-                        match hd with
-                          | Element (tag, args, dl) -> if
-                                                         arg_key_does_match  argkey  args
-                                                       then
-                                                         picked := hd :: !picked
-                                                       else
-                                                         traverse_aux dl
-
-                          | Data    _               -> ()
-                      end;
-
-                      traverse_aux tl (* work on the tail *)
-      in
-        traverse_aux doclist;
-        List.rev !picked
-
-
-
-
-
-    (* ====================================================== *)
-    (* finds elements by match of argname (argval)            *)
-    (* ====================================================== *)
-    (* example: in <a href="http://foobar"> 'href' is the val *)
-    (* ------------------------------------------------------ *)
-    let find_elements_by_argval   argval   doclist =
-
-      let picked = ref [] in
-
-      let rec traverse_aux doclist =
-        match doclist with
-          | []     -> ()
-          | hd::tl -> begin (* work on the head *)
-                        match hd with
-                          | Element (tag, args, dl) -> if
-                                                         arg_val_does_match  argval  args
-                                                       then
-                                                         picked := hd :: !picked
-                                                       else
-                                                         traverse_aux dl
-
-                          | Data    _               -> ()
-                      end;
-
-                      traverse_aux tl (* work on the tail *)
-      in
-        traverse_aux doclist;
-        List.rev !picked
-
-
-
-    (* ====================================================== *)
-    (* finds elements by match of argname (argval)            *)
-    (* ====================================================== *)
-    (* example: in <a href="http://foobar"> 'href' is the val *)
-    (* ------------------------------------------------------ *)
-    let find_elements_by_tag_argval  tagval  argval   doclist =
-
-      let picked = ref [] in
-
-      let rec traverse_aux doclist =
-        match doclist with
-          | []     -> ()
-          | hd::tl -> begin (* work on the head *)
-                        match hd with
-                          | Element (tag, args, dl) -> if
-                                                         tag = tagval && arg_val_does_match  argval  args
-                                                       then
-                                                         picked := hd :: !picked
-                                                       else
-                                                         traverse_aux dl
-
-                          | Data    _               -> ()
-                      end;
-
-                      traverse_aux tl (* work on the tail *)
-      in
-        traverse_aux doclist;
-        List.rev !picked
-
-
-    (* ====================================================== *)
-    (* finds elements by match of argname (argval)            *)
-    (* ====================================================== *)
-    (* example: in <a href="http://foobar"> 'href' is the val *)
-    (* ------------------------------------------------------ *)
-    let find_elements_by_tag_argkey  tagval  argkey   doclist =
-
-      let picked = ref [] in
-
-      let rec traverse_aux doclist =
-        match doclist with
-          | []     -> ()
-          | hd::tl -> begin (* work on the head *)
-                        match hd with
-                          | Element (tag, args, dl) -> if
-                                                         tag = tagval && arg_key_does_match  argkey  args
-                                                       then
-                                                         picked := hd :: !picked
-                                                       else
-                                                         traverse_aux dl
-
-                          | Data    _               -> ()
-                      end;
-
-                      traverse_aux tl (* work on the tail *)
-      in
-        traverse_aux doclist;
-        List.rev !picked
-
+    type matcher_t = string -> string -> string  -> string -> (string*string) list -> bool
 
 
     (* ======================================================== *)
-    (* finds elements by match of tagname and matching arg-pair *)
+    (* GENERIC find_elements_by                                 *)
     (* -------------------------------------------------------- *)
-    (* example: in <a href="http://foobar"> 'href' is the key   *)
     (* ======================================================== *)
-    let find_elements_by_tag_argpair  tagval argname argval doclist =
+    let find_elements_by      ?(tagval="") ?(argkey="") ?(argval="") (matcher_func : matcher_t) doclist =
 
       let picked = ref [] in
 
@@ -734,7 +583,10 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
           | hd::tl -> begin (* work on the head *)
                         match hd with
                           | Element (tag, args, dl) -> if 
-                                                         tag = tagval && arg_pair_does_match  argname  argval  args
+                                                         (* selection of an element is done via a matcher-function *)
+                                                         (* ------------------------------------------------------ *)
+                                                         (* matcher      args-by-caller        args from document *)
+                                                         matcher_func   tagval argkey argval   tag args
                                                        then
                                                          picked := hd :: !picked
                                                        else
@@ -747,6 +599,40 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       in
         traverse_aux doclist;
         List.rev !picked
+
+    (* matcher-functions *)
+    (* ================= *)
+
+    (* matchers with tag-match *)
+    (* ----------------------- *)
+    let matcher_tag_argkey  : matcher_t  =  fun tagval argkey argval tag args  ->   tag = tagval  &&  arg_key_does_match   argkey  args
+    let matcher_tag_argval  : matcher_t  =  fun tagval argkey argval tag args  ->   tag = tagval  &&  arg_val_does_match   argval  args
+    let matcher_tag_argpair : matcher_t  =  fun tagval argkey argval tag args  ->   tag = tagval  &&  arg_pair_does_match  argkey  argval  args
+
+    (* matchers without tag-match *)
+    (* -------------------------- *)
+    let matcher_argkey  : matcher_t  =  fun tagval argkey argval tag args  ->   arg_key_does_match   argkey  args
+    let matcher_argval  : matcher_t  =  fun tagval argkey argval tag args  ->   arg_val_does_match   argval  args
+    let matcher_argpair : matcher_t  =  fun tagval argkey argval tag args  ->   arg_pair_does_match  argkey  argval  args
+
+
+
+    (* ========================================================= *)
+    (* generated lookup-functions                                *)
+    (* created from "find_elements_by" and the matcher-functions *)
+    (* ========================================================= *)
+
+    (* lookup-funcctions with tag-match *)
+    (* -------------------------------- *)
+    let find_elements_by_tag_argpair tagval argname argvalue = find_elements_by ~tagval:tagval ~argkey:argname ~argval:argvalue  matcher_tag_argpair
+    let find_elements_by_tag_argkey  tagval argname          = find_elements_by ~tagval:tagval ~argkey:argname                   matcher_tag_argkey
+    let find_elements_by_tag_argval  tagval         argvalue = find_elements_by ~tagval:tagval                 ~argval:argvalue  matcher_tag_argval
+
+    (* lookup-funcctions with tag-match *)
+    (* -------------------------------- *)
+    let find_elements_by_argpair argname argvalue     = find_elements_by ~argkey:argname ~argval:argvalue  matcher_argpair
+    let find_elements_by_argkey  argname              = find_elements_by ~argkey:argname                   matcher_argkey
+    let find_elements_by_argval          argvalue     = find_elements_by                 ~argval:argvalue  matcher_argval
 
 
     (* ================================================================================================================================== *)

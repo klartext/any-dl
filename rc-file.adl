@@ -1686,6 +1686,15 @@ start
   csv_save("img_src");
 
 
+  print("----- data --------------------------");
+
+  recall("BASEDOC");
+  tagselect("img"."src"|data);
+  print;
+  # csv_save("img_src");
+exitparse;
+
+
   print("----- argpairs ----------------------");
 
   recall("BASEDOC");
@@ -1736,4 +1745,12 @@ exitparse;
   print("****************************************");
   tagselect("script"|dump);
   print("****************************************");
+end
+
+
+parsername "tbl2csv": ( )
+start
+  tagselect("table"|dump);
+  show_match;
+  print;
 end
