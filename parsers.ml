@@ -565,6 +565,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
+(*
     (* =============================================== *)
     (* finds elements by match of argname and argvalue *)
     (* =============================================== *)
@@ -591,8 +592,10 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       in
         traverse_aux doclist;
         List.rev !picked
+*)
 
 
+(*
 
     (* ====================================================== *)
     (* finds elements by match of argname (argkey)            *)
@@ -622,10 +625,12 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       in
         traverse_aux doclist;
         List.rev !picked
+*)
 
 
 
 
+(*
 
     (* ====================================================== *)
     (* finds elements by match of argname (argval)            *)
@@ -655,8 +660,10 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       in
         traverse_aux doclist;
         List.rev !picked
+*)
 
 
+(*
 
     (* ====================================================== *)
     (* finds elements by match of argname (argval)            *)
@@ -686,7 +693,9 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       in
         traverse_aux doclist;
         List.rev !picked
+*)
 
+(*
 
     (* ====================================================== *)
     (* finds elements by match of argname (argval)            *)
@@ -717,8 +726,10 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         traverse_aux doclist;
         List.rev !picked
 
+*)
 
 
+(*
     (* ======================================================== *)
     (* finds elements by match of tagname and matching arg-pair *)
     (* -------------------------------------------------------- *)
@@ -747,6 +758,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
       in
         traverse_aux doclist;
         List.rev !picked
+*)
 
 
 
@@ -757,7 +769,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     (* GENERIC find_elemets_by                                  *)
     (* -------------------------------------------------------- *)
     (* ======================================================== *)
-    let find_elements_by      tagval argname argval (matcher_func : matcher_t) doclist =
+    let find_elements_by      ?(tagval="") ?(argkey="") ?(argval="") (matcher_func : matcher_t) doclist =
 
       let picked = ref [] in
 
@@ -767,10 +779,10 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
           | hd::tl -> begin (* work on the head *)
                         match hd with
                           | Element (tag, args, dl) -> if 
-                                                         matcher_func  tagval  argname  argval   tag args
-                                                         (*
-                                                         tag = tagval && arg_pair_does_match  argname  argval  args
-                                                         *)
+                                                         (* selection of an element is done via a matcher-function *)
+                                                         (* ------------------------------------------------------ *)
+                                                         (* matcher      args-by-caller        args from document *)
+                                                         matcher_func   tagval argkey argval   tag args
                                                        then
                                                          picked := hd :: !picked
                                                        else
@@ -784,12 +796,39 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         traverse_aux doclist;
         List.rev !picked
 
-    let matcher_tag_argpair : matcher_t = fun tagval argkey argval tag args  ->  tag = tagval && arg_pair_does_match  argkey  argval  args
-    let matcher_tag_argkey : matcher_t =  fun tagval argkey argval tag args  ->  tag = tagval && arg_key_does_match  argkey  args
+    (* matcher-functions *)
+    (* ================= *)
 
-    let find_elements_by_tag_argpair_2 tagval argname argval = find_elements_by tagval argname argval matcher_tag_argpair
-    let find_elements_by_tag_argkey_2  tagval argname        = find_elements_by tagval argname "" matcher_tag_argkey
+    (* matchers with tag-match *)
+    (* ----------------------- *)
+    let matcher_tag_argkey  : matcher_t  =  fun tagval argkey argval tag args  ->   tag = tagval  &&  arg_key_does_match   argkey  args
+    let matcher_tag_argval  : matcher_t  =  fun tagval argkey argval tag args  ->   tag = tagval  &&  arg_val_does_match   argval  args
+    let matcher_tag_argpair : matcher_t  =  fun tagval argkey argval tag args  ->   tag = tagval  &&  arg_pair_does_match  argkey  argval  args
 
+    (* matchers without tag-match *)
+    (* -------------------------- *)
+    let matcher_argkey  : matcher_t  =  fun tagval argkey argval tag args  ->   arg_key_does_match   argkey  args
+    let matcher_argval  : matcher_t  =  fun tagval argkey argval tag args  ->   arg_val_does_match   argval  args
+    let matcher_argpair : matcher_t  =  fun tagval argkey argval tag args  ->   arg_pair_does_match  argkey  argval  args
+
+
+
+    (* ========================================================= *)
+    (* generated lookup-functions                                *)
+    (* created from "find_elements_by" and the matcher-functions *)
+    (* ========================================================= *)
+
+    (* lookup-funcctions with tag-match *)
+    (* -------------------------------- *)
+    let find_elements_by_tag_argpair tagval argname argvalue = find_elements_by ~tagval:tagval ~argkey:argname ~argval:argvalue  matcher_tag_argpair
+    let find_elements_by_tag_argkey  tagval argname          = find_elements_by ~tagval:tagval ~argkey:argname                   matcher_tag_argkey
+    let find_elements_by_tag_argval  tagval         argvalue = find_elements_by ~tagval:tagval                 ~argval:argvalue  matcher_tag_argval
+
+    (* lookup-funcctions with tag-match *)
+    (* -------------------------------- *)
+    let find_elements_by_argpair argname argvalue     = find_elements_by ~argkey:argname ~argval:argvalue  matcher_argpair
+    let find_elements_by_argkey  argname              = find_elements_by ~argkey:argname                   matcher_argkey
+    let find_elements_by_argval          argvalue     = find_elements_by                 ~argval:argvalue  matcher_argval
 
 
     (* ================================================================================================================================== *)
