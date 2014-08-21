@@ -1688,9 +1688,11 @@ start
 
   print("----- data --------------------------");
 
-#  recall("BASEDOC");
-#  tagselect("img"."src"|data);
-#  print;
+  recall("BASEDOC");
+  tagselect("ul","li","a"|data);
+  print;
+  print("---------------------------------------------------");
+  show_match;
   # csv_save("img_src");
 exitparse;
 
