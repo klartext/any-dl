@@ -8,11 +8,6 @@ BUGs:
 =====
 
 
- - any-dl -c   prints all keywords of the lexer.
-   But it should print only the command-names,
-   and not the parameters of the comands!!
-
-
  - ARD-mediathek has different Webpages => llok for "DOWNLOAD" and then look there for the mp4-files
 
  - using linkextract on "file:///"-urls does not work.
@@ -28,15 +23,11 @@ BUGs:
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
- - tagselect: `Data should also be able to give back SEPERATED entities of data. (?)
+ - tagselect: html_decode for data- and dataslurp- extractors?
 
  - tagselect: unparse a table should be possible...
 
  - tagselect: `Dump  should return a string representation of the dump...
-
- - refactoring parsers.ml => the find-functions in htmlparse,
-   added for tagselect and selenium-like API have MUCH potential
-   for refactoring!
 
  - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
  - maybe remove print_string(), because print() does the same now.
@@ -60,18 +51,6 @@ FEATUREs:
    via "-a" CLI switch, because some parsers download anything, not
    a certain video-file (because they are more general, like general
    parsers that download all pics or so.)
-
-
- - getsave; getsave(<filename>) - command for writing the data aof a GET into file,
-   instead of saving itin memory. Especially for big videos this makes sense.
-   (temporally Workaround: invoke wget via system instead of using get-command for big files.)
-
-   Parser "mp3mass" would be better with  Get_array-Save_arr changed to
-   (Get-Save)_array.
-
-   Instead of a seperated command, a better Idea might be, 
-   to have an optimizer function, that works on the Command-Tree/AST.
-
 
 
  - Logfile for sucessful and failed downloads
