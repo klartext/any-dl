@@ -841,6 +841,28 @@ List of commands/keywords and a short-escription of them:
     that selects the certain argument.
     See above in the command-examples for syntax details.
 
+    Selection list does do a selection on the firt selector-specification.
+    Then the resulting stuff is again selected, and so on.
+
+    Example:
+    --------
+        tagselect("table", "a", "img"."align"="top"| dump);
+
+      The document is first scanned for table's.
+      The outest match is selected. So if a table is inside a table,
+      the outer tag will be selected, and the whole outer table be selected.
+      The inner table would just be content of the first one.
+      No in-depth selection is done.
+
+      All found table's then are scanned for <a ...> tags, which
+      should be the <a href="..."> stuff.
+      From the found <a ...>-tags any img-tags inside these a-tags
+      will be selected, if they also are top-aligned.
+
+      The reult then is dumped to screen/console.
+
+
+
 
   titleextract
     extracts the contents from the <title>-tag of a webpage
