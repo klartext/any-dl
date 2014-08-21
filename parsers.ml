@@ -659,6 +659,13 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         String.trim (Buffer.contents buf) (* trimming again will remove the last added "\n" *)
 
 
+
+    (* ============================================================== *)
+    (* Collect DATA for each document in the document-list seperately *)
+    (* ============================================================== *)
+    let collect_data_per_doc  doclist = List.map (fun elem ->  collect_data [elem] ) doclist
+
+
     (* ================================================================================================================================== *)
 
 

@@ -790,6 +790,8 @@ let evaluate_command_list cmdlst =
                                                          let result =
                                                            begin
                                                             match extractor with
+                                                              | `Data      -> let dat = Parsers.Htmlparse.collect_data_per_doc selected_tags in Match_result [| (Array.of_list dat) |]
+
                                                               | `Data_slurp-> let dat = Parsers.Htmlparse.collect_data selected_tags in String dat
                                                               | `Arg x     -> print_endline ("Arg " ^ x); tmpvar; raise NOT_IMPLEMENTED_SO_FAR
                                                               | `Tag       -> 
