@@ -94,3 +94,17 @@ in
 
 
 
+(* ======================================================== *)
+(* Decode HTML-stuff (ampersand-foobar)                     *)
+(* -------------------------------------------------------- *)
+(* utf8 is hard encoded, as long as no encoding detection   *)
+(* is implemented and in use.                               *)
+(* ======================================================== *)
+let html_decode ?(inenc=`Enc_utf8) str =
+  try
+    Netencoding.Html.decode ~in_enc:inenc ~out_enc:`Enc_utf8 () str
+  with  Netconversion.Malformed_code -> str
+
+
+
+

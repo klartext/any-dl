@@ -1037,14 +1037,14 @@ let evaluate_command_list cmdlst =
                                                          let newvar =
                                                            begin
                                                            match tmpvar with
-                                                             | String str            -> String ( html_decode str )
-                                                             | String_array strarr   -> String_array ( Array.map html_decode strarr )
+                                                             | String str            -> String ( Tools.html_decode str )
+                                                             | String_array strarr   -> String_array ( Array.map Tools.html_decode strarr )
                                                              | Document(doc, url)    -> let inenc = sd doc in
-                                                                                        Document( html_decode ~inenc:inenc doc, html_decode ~inenc:inenc url )
-                                                             | Document_array docarr -> Document_array( Array.map (fun (d,u) -> (html_decode d, html_decode u) ) docarr )
-                                                             | Url  (url, ref)       -> Url( html_decode url, html_decode ref )
-                                                             | Url_list    urllist   -> Url_list( List.map (fun (u,r) -> (html_decode u, html_decode r) ) urllist)
-                                                             | Url_array urlarr      -> Url_array( Array.map (fun (u,r) -> (html_decode u, html_decode r) ) urlarr )
+                                                                                        Document( Tools.html_decode ~inenc:inenc doc, Tools.html_decode ~inenc:inenc url )
+                                                             | Document_array docarr -> Document_array( Array.map (fun (d,u) -> (Tools.html_decode d, Tools.html_decode u) ) docarr )
+                                                             | Url  (url, ref)       -> Url( Tools.html_decode url, Tools.html_decode ref )
+                                                             | Url_list    urllist   -> Url_list( List.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urllist)
+                                                             | Url_array urlarr      -> Url_array( Array.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urlarr )
                                                              (*
                                                              *)
                                                              | _ -> raise Wrong_argument_type
