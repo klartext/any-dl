@@ -92,6 +92,7 @@
                   ("argkeys",          ARG_KEYS  );  (* extractor *)
                   ("argvals",          ARG_VALS  );  (* extractor *)
                   ("argpairs",         ARG_PAIRS );  (* extractor *)
+                  ("htmlstring",       HTML_STRING );  (* extractor *)
                 ]
 
 

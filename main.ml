@@ -782,8 +782,8 @@ let evaluate_command_list cmdlst =
                                                          in
 
 
-                                                         Printf.printf "*** Length of selected_tags-list: %d\n" (List.length selected_tags);
                                                          (*
+                                                         Printf.printf "*** Length of selected_tags-list: %d\n" (List.length selected_tags);
                                                          Parsers.Htmlparse.element_or_data_in_doclist selected_tags;
                                                          *)
 
@@ -809,6 +809,7 @@ let evaluate_command_list cmdlst =
                                                               | `Arg_pairs -> let pairs = Parsers.Htmlparse.extract_arg_pairs_from_topdocs_of_doclist selected_tags in
                                                                               Match_result (Array.of_list pairs)
                                                               | `Dump      -> Parsers.Htmlparse.dump_html selected_tags; Empty  (* dumping; Empty should be replaced by selected_tags-representation *)
+                                                              | `Html_string  -> String (Parsers.convert_doclist_to_htmlstring selected_tags)
                                                            end 
                                                          in
 
