@@ -35,6 +35,7 @@
                   ("linkextract_xml",  LINKEXTRACT_XML  );
                   ("titleextract",     TITLEEXTRACT  );
                   ("tagselect",        TAGSELECT  );
+                  ("rebase",           REBASE  );
 
                   ("get",            GET  );
                   ("makeurl",        MAKE_URL  );

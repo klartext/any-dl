@@ -39,6 +39,7 @@
 %token LINKEXTRACT_XML
 %token TAGEXTRACT
 %token TITLEEXTRACT
+%token REBASE
 
 %token TAGSELECT
 %token DATA
@@ -183,6 +184,7 @@ statement: match_stmt          SEMI   { $1 }
     |      BASENAME            SEMI   { Basename }
     |      SYSTEM              SEMI   { System }
     |      LINKEXTRACT         SEMI   { Link_extract }
+    |      REBASE              SEMI   { Rebase }
     |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
     |      titleextract_stmt   SEMI   { Title_extract }
     /*

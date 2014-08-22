@@ -111,6 +111,11 @@ module Rebase =
       with
         Neturl.Malformed_URL -> None
 
+    let try_rebase  url  extracted_link =
+      match rebase_url  url  extracted_link with
+        | Some rebased -> rebased
+        | None         -> prerr_endline "rebase not possible"; extracted_link
+
   end
 
 

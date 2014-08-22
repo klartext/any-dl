@@ -717,6 +717,34 @@ let evaluate_command_list cmdlst =
                                                              | _ -> print_warning "Link_extract_xml found non-usable type"; raise Wrong_tmpvar_type
                                                          end
 
+                         | Rebase               ->
+                                                         let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
+                                                         let rebase   = Parsers.Rebase.try_rebase  starturl                in
+                                                         Printf.printf "STARTURL: %s\n" starturl;
+
+                                                         let result =
+                                                           begin
+                                                             match tmpvar with
+                                                                | String          s          -> String ( rebase s )
+                                                                | String_array    str_arr    -> String_array ( Array.map rebase str_arr )
+                                                                | Match_result    match_res  -> Match_result ( Array.map ( fun x -> Array.iter prerr_endline x;
+                                                                                                                             Array.map rebase x ) match_res )
+                                                                (*
+                                                                | Document        (doc, url) -> Match_result [| [| doc; url |] |]
+                                                                | Document_array  doc_arr    -> Match_result (Array.map pair_to_arr doc_arr)
+                                                                | Url             (url, ref) -> Match_result [| [| url; ref  |] |]
+
+                                                                | Url_list        url_list   -> let url_array = Array.of_list url_list in
+                                                                                                Match_result (Array.map pair_to_arr url_array)
+
+                                                                | Url_array       url_array  -> Match_result (Array.map pair_to_arr url_array)
+                                                                | Dummy_result               -> Match_result [| [| "DUMMY_A"; "DUMMY_B" |]; [| "DUMMY_C"; "DUMMY_D"|] |]
+                                                                | Match_result    match_res  -> Match_result match_res  (* stays the same *)
+                                                                *)
+                                                                | _ -> print_warning "Rebase found non-usable type"; raise Wrong_tmpvar_type
+                                                           end
+                                                         in
+                                                         command tl result varmap
                            (*
                            | Tag_extract  tagname ...   ->
                                                            Printf.eprintf "Tag_extract  tagname: %s\n" tagname;
