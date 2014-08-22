@@ -639,6 +639,8 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
     (* ================ *)
     (* Collect all DATA *)
+    (* ---------------- *)
+    (* html_decode used *)
     (* ================ *)
     let collect_data  doclist =
       let buf = Buffer.create 10000 in
@@ -656,7 +658,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
                       traverse_aux tl (* work on the tail *)
       in
         traverse_aux doclist;
-        String.trim (Buffer.contents buf) (* trimming again will remove the last added "\n" *)
+        String.trim (html_decode (Buffer.contents buf)) (* trimming again will remove the last added "\n" *)
 
 
 
