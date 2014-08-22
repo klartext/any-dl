@@ -689,7 +689,29 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 open Htmlparse
 
 
+(* html-string converted to a doclist *)
+(* ---------------------------------- *)
 let conv_to_doclist str = Nethtml.parse(new Netchannels.input_string str)
+
+
+(* print a doclist as html-string to stdout *)
+(* ---------------------------------------- *)
+let print_doclist_to_outchannel doclist =
+  let open Netchannels in
+    Nethtml.write (new output_channel Pervasives.stdout) doclist
+
+
+(* convert a doclist to a html-string *)
+(* ---------------------------------- *)
+let convert_doclist_to_htmlstring doclist =
+  let open Netchannels in
+    let buffer = Buffer.create 10000 in
+    Nethtml.write (new output_buffer buffer) doclist;
+    Buffer.contents buffer
+
+
+
+
 
 (* functions to call the HTML-parsers with string as argument *)
 (* ---------------------------------------------------------- *)
