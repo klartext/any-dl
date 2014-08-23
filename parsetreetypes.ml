@@ -32,7 +32,7 @@ type results_t =
 
 
 type selector_t = { tag_sel: string option; argkey_sel: string option; argval_sel: string option }
-type extractor_t = [ `Data | `Data_slurp  | `Args | `Arg of string | `Tag | `Arg_keys | `Arg_vals | `Arg_pairs | `Dump | `Html_string ]
+type extractor_t = [ `Data | `Data_slurp  | `Arg of string | `Tag | `Arg_keys | `Arg_vals | `Arg_pairs | `Dump | `Html_string ]
 
 
 type commands_t =
@@ -126,6 +126,7 @@ let command_to_string cmd = match cmd with
   | Link_extract      -> "Link_extract"
   | Link_extract_xml  -> "Link_extract_xml"
   | Title_extract     -> "Title_extract"
+  | Rebase            -> "Rebase"
   | Tag_select      _ -> "Tag_select"
   | Paste           _ -> "Paste"
   | Store           _ -> "Store"
@@ -137,6 +138,7 @@ let command_to_string cmd = match cmd with
   | Print_args      _ -> "Print_args"
   | Show_match        -> "Show_match"
   | Print_string    _ -> "Print_string"
+  | CSV_save        _ -> "CSV_save"
   | Save              -> "Save"
   | Save_as         _ -> "Save_as"
   | Setvar          _ -> "Setvar"

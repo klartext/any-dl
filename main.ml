@@ -787,6 +787,7 @@ let evaluate_command_list cmdlst =
                                                                                  | Some tag, None,     Some aval -> Parsers.Htmlparse.find_elements_by_tag_argval  tag       aval  (* OK *)
                                                                                  | Some tag, Some key, None      -> Parsers.Htmlparse.find_elements_by_tag_argkey  tag  key        (* OK *)
                                                                                  | Some tag, Some key, Some aval -> Parsers.Htmlparse.find_elements_by_tag_argpair tag  key  aval  (* OK *)
+                                                                                 | None,     None,     None      -> assert false  (* this case makes no sense, and should not occur *)
                                                                          end
                                                                          in
                                                                                 aux tl (selector dl)

@@ -87,7 +87,6 @@
                   (* selectors and extractors for tagselect() *)
                   ("data",             DATA  );      (* selector / extractor *)
                   ("dataslurp",        DATA_SLURP  ); (* selector / extractor *)
-                  ("args",             ARGS  );      (* selector / extractor *)
                   ("arg",              ARG  );       (* selector / extractor *)
                   ("tag",              TAG  );       (* extractor *)
                   ("argkeys",          ARG_KEYS  );  (* extractor *)
