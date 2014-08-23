@@ -104,7 +104,8 @@ module CurlHelp =
 
   let prerr_curlerror curl_exc =
     match curl_exc with
-      Curl.CurlException(curl_code, err_int, message) -> Printf.printf "%s, %d, %s\n" (string_of_curlcode curl_code) err_int message
+      | Curl.CurlException(curl_code, err_int, message) -> Printf.eprintf "%s, %d, %s\n" (string_of_curlcode curl_code) err_int message
+      | exc                                             -> Printf.eprintf "exception found in prerr_curlerror: %s" (Printexc.to_string exc)
   end
 
 
