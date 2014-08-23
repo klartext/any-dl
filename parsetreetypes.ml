@@ -27,6 +27,7 @@ type results_t =
   | Url_array       of (string * string) array
   | Dummy_result
   | Match_result    of match_result_t
+  | Doclist         of Nethtml.document list
   | Empty
 
 
@@ -106,6 +107,7 @@ let result_to_string res = match res with
     | Url_array      _ -> "Url_array"
     | Dummy_result     -> "Dummy_result"
     | Match_result   _ -> "Match_result"
+    | Doclist        _ -> "Doclist"
     | Empty            -> "Empty"
 
 
