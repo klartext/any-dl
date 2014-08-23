@@ -1694,6 +1694,17 @@ start
   print("---------------------------------------------------");
   show_match;
   # csv_save("img_src");
+
+  print("----- doclist test --------------------------");
+  recall("BASEDOC");
+  tagselect("ul","li","a"|doclist);
+  print;
+  print("---------------------------------------------------");
+  show_match;
+
+
+
+
 exitparse;
 
 

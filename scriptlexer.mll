@@ -93,6 +93,7 @@
                   ("argvals",          ARG_VALS  );  (* extractor *)
                   ("argpairs",         ARG_PAIRS );  (* extractor *)
                   ("htmlstring",       HTML_STRING );  (* extractor *)
+                  ("doclist",          DOCLIST     );  (* extractor *)
                 ]
 
 

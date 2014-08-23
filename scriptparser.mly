@@ -50,6 +50,7 @@
 %token ARG_VALS
 %token ARG_PAIRS
 %token HTML_STRING
+%token DOCLIST
 
 %token GET
 %token MAKE_URL
@@ -304,6 +305,7 @@ extractor: DATA                     { `Data }
     |      ARG_PAIRS                { `Arg_pairs }
     |      DUMP                     { `Dump     }
     |      HTML_STRING              { `Html_string  }
+    |      DOCLIST                  { `Doclist  }
     ;
 
 

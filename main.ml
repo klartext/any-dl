@@ -175,6 +175,7 @@ let rec  to_string  result_value varmap =
       | Url_list      url_list     -> List.fold_right ( fun a sofar -> "\"" ^ (fst a) ^ "\" " ^ sofar ) url_list ""
       | Url_array     url_arr      -> let elem = url_arr.(0) in to_string (Url (fst(elem), snd(elem))) varmap (* first Url used *)
       | Empty                      -> ""
+      | Doclist       dl           -> Parsers.convert_doclist_to_htmlstring dl
       | Dummy_result               -> ""
       (*
       *)
@@ -839,6 +840,7 @@ let evaluate_command_list cmdlst =
                                                                               Match_result (Array.of_list pairs)
                                                               | `Dump      -> Parsers.Htmlparse.dump_html selected_tags; Empty  (* dumping; Empty should be replaced by selected_tags-representation *)
                                                               | `Html_string  -> String (Parsers.convert_doclist_to_htmlstring selected_tags)
+                                                              | `Doclist      -> Doclist selected_tags
                                                            end 
                                                          in
 
@@ -883,7 +885,11 @@ let evaluate_command_list cmdlst =
                                                              | Url (href, ref)   -> Printf.printf "%s   # Referrer:  %s\n" href ref
                                                              | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
                                                              | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
+
+                                                             | Doclist   doclist  -> let string_of_dl dl = Parsers.convert_doclist_to_htmlstring [dl] in
+                                                                                     List.iter ( fun doc -> print_endline ( string_of_dl doc ) ) doclist (* one per line *)
                                                              (*
+                                                             | Doclist   doclist as dl -> print_endline (to_string dl varmap) (* raw *)
                                                              | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
                                                              *)
                                                              | _ -> print_warning "Print-command found non-printable type"

@@ -32,7 +32,7 @@ type results_t =
 
 
 type selector_t = { tag_sel: string option; argkey_sel: string option; argval_sel: string option }
-type extractor_t = [ `Data | `Data_slurp  | `Arg of string | `Tag | `Arg_keys | `Arg_vals | `Arg_pairs | `Dump | `Html_string ]
+type extractor_t = [ `Data | `Data_slurp  | `Arg of string | `Tag | `Arg_keys | `Arg_vals | `Arg_pairs | `Dump | `Html_string | `Doclist ]
 
 
 type commands_t =
