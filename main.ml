@@ -844,8 +844,12 @@ let evaluate_command_list cmdlst =
                                                                               
                                                               | `Arg_pairs -> let pairs = Parsers.Htmlparse.extract_arg_pairs_from_topdocs_of_doclist selected_tags in
                                                                               Match_result (Array.of_list pairs)
-                                                              | `Dump      -> Parsers.Htmlparse.dump_html selected_tags; Empty  (* dumping; Empty should be replaced by selected_tags-representation *)
+
+                                                              | `Dump      -> Parsers.Htmlparse.dump_html selected_tags;
+                                                                              String (Parsers.convert_doclist_to_htmlstring selected_tags)
+
                                                               | `Html_string  -> String (Parsers.convert_doclist_to_htmlstring selected_tags)
+
                                                               | `Doclist      -> Doclist selected_tags
                                                            end 
                                                          in
