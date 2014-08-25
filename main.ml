@@ -823,7 +823,13 @@ let evaluate_command_list cmdlst =
                                                               | `Data      -> let dat = Parsers.Htmlparse.collect_data_per_doc selected_tags in Match_result [| (Array.of_list dat) |]
 
                                                               | `Data_slurp-> let dat = Parsers.Htmlparse.collect_data selected_tags in String dat
-                                                              | `Arg x     -> print_endline ("Arg " ^ x); tmpvar; raise NOT_IMPLEMENTED_SO_FAR
+
+                                                              | `Arg key   -> let pairs     = List.map Parsers.Htmlparse.extract_arg_pairs_from_doc selected_tags in
+                                                                              let extracted = List.fold_left ( fun sofar pairlst -> try (List.assoc key pairlst) :: sofar
+                                                                                                                                    with Not_found -> sofar ) [] pairs
+                                                                              in
+                                                                                String_array ( Array.of_list extracted )
+
                                                               | `Tag       -> 
                                                                               let tagnames = Parsers.Htmlparse.extract_tagname_from_topdocs_of_doclist selected_tags in
                                                                               (* String_array (Array.of_list tagnames) *)
