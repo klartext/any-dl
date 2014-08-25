@@ -8,8 +8,6 @@ BUGs:
 =====
 
 
- - ARD-mediathek has different Webpages => llok for "DOWNLOAD" and then look there for the mp4-files
-
  - using linkextract on "file:///"-urls does not work.
 
  - "http://www.ardmediathek.de/das-erste/menschen-bei-maischberger/(...)"
@@ -23,20 +21,13 @@ BUGs:
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
- - tagselect: html_decode for data- and dataslurp- extractors?
-
  - tagselect: unparse a table should be possible...
-
- - tagselect: `Dump  should return a string representation of the dump...
 
  - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
  - maybe remove print_string(), because print() does the same now.
  - dump is rather a deparse; dump_data is dump-like or deparse-like too;
    possibly better names should be used here
 
- - in traversing HTML, possibly using a function, that gives back
-   contents of current document, and of the head of the subdocs.
-   Then (as recursion/fixpoint?) making the recursion complete??
 
 
 FEATUREs:
@@ -44,6 +35,8 @@ FEATUREs:
 
  a bit of priority
  =================
+
+ - Special variable for the  tmpvar? maybe $TMPVAR ?
 
   - json-files for saving data with some structure?
 
