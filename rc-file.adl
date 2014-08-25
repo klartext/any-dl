@@ -348,6 +348,36 @@ end
 
 
 # ---------------------------------
+# ARD / das erste
+# ---------------------------------
+# Example: http://www.ardmediathek.de/das-erste/satire-gipfel/die-sendung-vom-4-februar-2013?documentId=13300098
+# =================================
+parsername "ard_das-erste_get": ( "http://www.ardmediathek.de/tv/" )
+start
+  # extract the mp4-video-url from the webpage and save result in variable "link"
+  # -----------------------------------------------------------------------------
+  match(".*(http.*?mp4)");
+  dropcol(0);
+show_match;
+  store("link");
+
+  # extract the title of the document, make it filename'able and store it in var. "title"
+  # -------------------------------------------------------------------------------------
+  recall("BASEDOC");
+  htmldecode;
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+  print; # show title to user
+
+  recall("link");
+  makeurl;
+  get;
+  save_as( $title, ".mp4" );
+end
+
+
+# ---------------------------------
 # ARD / das erste Sondersendung
 # ---------------------------------
 # Example: http://www.ardmediathek.de/das-erste/ard-sondersendung/edward-snowden-interview-in-english?documentId=19295624
