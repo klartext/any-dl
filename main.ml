@@ -1010,6 +1010,11 @@ let evaluate_command_list cmdlst =
                                                            | String str           -> command tl (String (replacer str)) varmap
                                                            | String_array str_arr -> let replaced = Array.map replacer str_arr in
                                                                                      command tl (String_array replaced) varmap
+                                                           | Url (href, ref)       -> command tl ( Url (replacer href, replacer ref) ) varmap
+
+                                                           | Url_array   url_arr   -> let changed = Array.map ( fun (u,r) -> (replacer u, replacer r) ) url_arr in
+                                                                                       command tl ( Url_array changed ) varmap
+
                                                            | Document(doc, ref) -> let newdoc = Document( replacer doc, replacer ref ) in
                                                                                    command tl (newdoc) varmap
                                                            | Document_array doc_arr ->
