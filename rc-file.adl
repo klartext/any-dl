@@ -1678,6 +1678,23 @@ start
   print;
 
 
+  print("----- arg(\"src\") ----------------------");
+  recall("BASEDOC");
+  tagselect("img"."src"| arg("src") );
+  print;
+
+
+  print("----- arg(\"alt\") ----------------------");
+  recall("BASEDOC");
+  tagselect("img"."src"| arg("alt") );
+  print;
+
+
+
+
+exitparse;
+
+
   print("----- argpairs ----------------------");
 
   recall("BASEDOC");
@@ -1700,7 +1717,7 @@ start
   tagselect("ul","li","a"|doclist);
   print;
   print("---------------------------------------------------");
-  show_match;
+  #show_match;
 
 
 
