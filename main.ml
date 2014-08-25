@@ -948,9 +948,9 @@ let evaluate_command_list cmdlst =
                                                          begin
                                                            match tmpvar with
                                                              | Document(doc, url)       -> save_string_to_file doc filename
-                                                             (*
-                                                             | Document_array doc_array -> Array.iter saver doc_array
-                                                             *)
+                                                             | Document_array doc_array ->
+                                                                                           print_warning "Only the first document is saved with save_as!";
+                                                                                           save_string_to_file ( fst doc_array.(0) ) filename
                                                              | _ -> raise Wrong_tmpvar_type
                                                          end;
                                                          command tl tmpvar varmap
