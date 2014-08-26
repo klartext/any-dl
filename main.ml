@@ -447,9 +447,15 @@ let evaluate_command_list cmdlst =
                                                          let grepped = 
                                                            begin
                                                              match tmpvar with
+                                                               | Document (doc, url) -> let lines = Tools.lines_of_string doc in
+                                                                                        let selected_lines = ( List.filter ( fun line -> Pcre.pmatch ~pat:pattern line ) lines ) in
+                                                                                        String_array (Array.of_list selected_lines )
+
                                                                | String_array str_arr -> String_array( Array2.filter ( fun elem -> Pcre.pmatch ~pat:pattern elem ) str_arr)
+
                                                                | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> Pcre.pmatch ~pat:pattern url ||
                                                                                                                           Pcre.pmatch ~pat:pattern ref ) url_arr )
+
                                                                | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch ( fun x -> Pcre.pmatch ~pat:pattern x ) mres )
 
                                                                | _            -> prerr_endline "Grep: nothing to match"; raise No_Matchresult_available
@@ -464,6 +470,10 @@ let evaluate_command_list cmdlst =
                                                          let grepped = 
                                                            begin
                                                              match tmpvar with
+                                                               | Document (doc, url) -> let lines = Tools.lines_of_string doc in
+                                                                                        let selected_lines = ( List.filter ( fun line -> not (Pcre.pmatch ~pat:pattern line) ) lines ) in
+                                                                                        String_array (Array.of_list selected_lines )
+
                                                                | String_array str_arr -> String_array( Array2.filter ( fun elem -> not (Pcre.pmatch ~pat:pattern elem) ) str_arr)
                                                                | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> not (Pcre.pmatch ~pat:pattern url ||
                                                                                                                           Pcre.pmatch ~pat:pattern ref) ) url_arr )
