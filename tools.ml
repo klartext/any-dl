@@ -107,4 +107,5 @@ let html_decode ?(inenc=`Enc_utf8) str =
 
 
 
-
+(* ======================================= *)
+let lines_of_string  str = Pcre.split ~pat:"\n" str
