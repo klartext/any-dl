@@ -452,7 +452,7 @@ let evaluate_command_list cmdlst =
                                                                                                                           Pcre.pmatch ~pat:pattern ref ) url_arr )
                                                                | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch ( fun x -> Pcre.pmatch ~pat:pattern x ) mres )
 
-                                                               | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                               | _            -> prerr_endline "Grep: nothing to match"; raise No_Matchresult_available
                                                            end
                                                          in
                                                            command tl grepped varmap
@@ -470,7 +470,7 @@ let evaluate_command_list cmdlst =
 
                                                                | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch
                                                                                                          ( fun x -> not (Pcre.pmatch ~pat:pattern x )) mres )
-                                                               | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                               | _            -> prerr_endline "Grep_v: nothing to match"; raise No_Matchresult_available
                                                            end
                                                          in
                                                            command tl grepped varmap
@@ -489,7 +489,7 @@ let evaluate_command_list cmdlst =
                                                            match tmpvar with
                                                              | String_array rowitems -> command tl (String_array(item_selection rowitems index_list)) varmap
                                                              | Url_array    rowitems -> command tl (Url_array(item_selection rowitems index_list)) varmap
-                                                             | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+                                                             | _            -> prerr_endline "MSelect: nothing to match"; raise No_Matchresult_available
                                                          end
 
                                                            
