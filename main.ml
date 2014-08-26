@@ -444,12 +444,26 @@ let evaluate_command_list cmdlst =
                                                          (*
                                                            if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
                                                          *)
+
+                                                         (* for each line of a string apply a grep-on-pattern and return list of matching lines *)
+                                                         (* ----------------------------------------------------------------------------------- *)
+                                                         let grep_lines_from_string  str =
+                                                           let lines = Tools.lines_of_string str in
+                                                           List.filter ( fun line -> Pcre.pmatch ~pat:pattern line ) lines
+                                                         in
+
+                                                         (* do the grep *)
+                                                         (* ----------- *)
                                                          let grepped = 
                                                            begin
                                                              match tmpvar with
-                                                               | Document (doc, url) -> let lines = Tools.lines_of_string doc in
-                                                                                        let selected_lines = ( List.filter ( fun line -> Pcre.pmatch ~pat:pattern line ) lines ) in
-                                                                                        String_array (Array.of_list selected_lines )
+                                                               | Document (doc, url) -> let grepped_lines = grep_lines_from_string doc in
+                                                                                        String_array (Array.of_list grepped_lines )
+
+                                                               | Document_array docarr ->
+                                                                                          let res =
+                                                                                            Array.fold_left ( fun sofar (d,r) -> Array.append sofar (Array.of_list (grep_lines_from_string d)) ) [||] docarr in
+                                                                                          String_array res
 
                                                                | String_array str_arr -> String_array( Array2.filter ( fun elem -> Pcre.pmatch ~pat:pattern elem ) str_arr)
 
@@ -899,6 +913,11 @@ let evaluate_command_list cmdlst =
 
                                                              | String   str      -> print_endline str 
                                                              | Document(doc, url)-> print_endline doc  (* only print the document, without referrer *)
+
+                                                             | Document_array doc_arr -> (* only print the documents, without referrer *)
+                                                                                         Array.iter (fun (doc,ref) -> print_endline doc;
+                                                                                                                      print_endline "----------------------------------" ) doc_arr
+
                                                              | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
                                                                                                           print_newline() ) mres
                                                              | String_array     str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr
