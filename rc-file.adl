@@ -461,7 +461,7 @@ end
 # ---------------------------------
 # Example-URL: http://videos.arte.tv/de/videos/joe-strummer--7161356.html
 # =================================
-parsername "arte-guide": ( "http://www.arte.tv/guide/fr/", "http://www.arte.tv/guide/de/" )
+parsername "arte-guide": ( "http://www.arte.tv/guide/fr/", "http://www.arte.tv/guide/de/"  )
 start
 
   titleextract;
@@ -485,7 +485,7 @@ start
 
   # etract videofile-name
   # ---------------------
-  match("http://artestrsmv.*?mp4");
+  match("http://artestras.*?mp4");
   rowselect(0);
   select(0);
 
@@ -501,6 +501,8 @@ start
   system;
 
 end
+
+
 
 
 
