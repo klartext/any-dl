@@ -940,7 +940,7 @@ let evaluate_command_list cmdlst =
                                                          begin
                                                            match tmpvar with
                                                              | Match_result mres ->
-                                                                        print_endline "show_match: match 0 is the whole match, all others are the groups\n";
+                                                                        print_endline "show_match: Col 0 is the whole match, all others are the groups\n";
                                                                         Array.iteri ( fun idx x -> 
                                                                                                Printf.printf "Row %2d:\n" idx;
                                                                                                Printf.printf "-------\n";
