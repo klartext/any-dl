@@ -754,33 +754,11 @@ let evaluate_command_list cmdlst =
                                                                 | String_array    str_arr    -> String_array ( Array.map rebase str_arr )
                                                                 | Match_result    match_res  -> Match_result ( Array.map ( fun x -> Array.iter prerr_endline x;
                                                                                                                              Array.map rebase x ) match_res )
-                                                                (*
-                                                                | Document        (doc, url) -> Match_result [| [| doc; url |] |]
-                                                                | Document_array  doc_arr    -> Match_result (Array.map pair_to_arr doc_arr)
-                                                                | Url             (url, ref) -> Match_result [| [| url; ref  |] |]
 
-                                                                | Url_list        url_list   -> let url_array = Array.of_list url_list in
-                                                                                                Match_result (Array.map pair_to_arr url_array)
-
-                                                                | Url_array       url_array  -> Match_result (Array.map pair_to_arr url_array)
-                                                                | Dummy_result               -> Match_result [| [| "DUMMY_A"; "DUMMY_B" |]; [| "DUMMY_C"; "DUMMY_D"|] |]
-                                                                | Match_result    match_res  -> Match_result match_res  (* stays the same *)
-                                                                *)
                                                                 | _ -> print_warning "Rebase found non-usable type"; raise Wrong_tmpvar_type
                                                            end
                                                          in
                                                          command tl result varmap
-                           (*
-                           | Tag_extract  tagname ...   ->
-                                                           Printf.eprintf "Tag_extract  tagname: %s\n" tagname;
-                                                           begin
-                                                             match tmpvar with
-                                                               | Document (doc, url) ->
-                                                                         let result = Array.of_list (Parsers.tagextract_str tagname doc) in
-                                                                         command tl (String_array result) varmap
-                                                               | _ -> print_warning "Tag_extract found non-usable type"; raise Wrong_tmpvar_type
-                                                           end
-                           *)
 
                            | Title_extract            ->
                                                          begin
@@ -835,67 +813,53 @@ let evaluate_command_list cmdlst =
                                                            end
                                                          in
 
+                                                         (* verbose-optional message to the user: how many matching tags were found *)
+                                                         (* ----------------------------------------------------------------------- *)
+                                                         verbose_printf "*** Tag_select:  Length of selected_tags-list: %d\n" (List.length selected_tags);
 
-                                                         (*
-                                                         Printf.printf "*** Length of selected_tags-list: %d\n" (List.length selected_tags);
-                                                         Parsers.Htmlparse.element_or_data_in_doclist selected_tags;
-                                                         *)
 
                                                          let result =
                                                            begin
                                                             match extractor with
-                                                              | `Data      -> let dat = Parsers.Htmlparse.collect_data_per_doc selected_tags in Match_result [| (Array.of_list dat) |]
+                                                              | `Data        -> let dat = Parsers.Htmlparse.collect_data_per_doc selected_tags in Match_result [| (Array.of_list dat) |]
 
-                                                              | `Data_slurp-> let dat = Parsers.Htmlparse.collect_data selected_tags in String dat
+                                                              | `Data_slurp  -> let dat = Parsers.Htmlparse.collect_data selected_tags in String dat
 
-                                                              | `Arg key   -> let pairs     = List.map Parsers.Htmlparse.extract_arg_pairs_from_doc selected_tags in
-                                                                              let extracted = List.fold_left ( fun sofar pairlst -> try (List.assoc key pairlst) :: sofar
+                                                              | `Arg key     -> let pairs     = List.map Parsers.Htmlparse.extract_arg_pairs_from_doc selected_tags in
+                                                                                let extracted = List.fold_left ( fun sofar pairlst -> try (List.assoc key pairlst) :: sofar
                                                                                                                                     with Not_found -> sofar ) [] pairs
-                                                                              in
-                                                                                String_array ( Array.of_list extracted )
+                                                                                in
+                                                                                  String_array ( Array.of_list extracted )
 
-                                                              | `Tag       -> 
-                                                                              let tagnames = Parsers.Htmlparse.extract_tagname_from_topdocs_of_doclist selected_tags in
-                                                                              (* String_array (Array.of_list tagnames) *)
-                                                                              Match_result [| (Array.of_list tagnames) |]
+                                                              | `Tag         -> let tagnames = Parsers.Htmlparse.extract_tagname_from_topdocs_of_doclist selected_tags in
+                                                                                (* String_array (Array.of_list tagnames) *)
+                                                                                Match_result [| (Array.of_list tagnames) |]
 
-                                                              | `Arg_keys  -> let arg_keys   =  Parsers.Htmlparse.extract_arg_keys_from_topdocs_of_doclist selected_tags in
-                                                                              Match_result ( Array.of_list arg_keys )
+                                                              | `Arg_keys    -> let arg_keys   =  Parsers.Htmlparse.extract_arg_keys_from_topdocs_of_doclist selected_tags in
+                                                                                Match_result ( Array.of_list arg_keys )
 
-                                                              | `Arg_vals  -> let arg_values = Parsers.Htmlparse.extract_arg_values_from_topdocs_of_doclist selected_tags in
-                                                                              Match_result ( Array.of_list arg_values )
+                                                              | `Arg_vals    -> let arg_values = Parsers.Htmlparse.extract_arg_values_from_topdocs_of_doclist selected_tags in
+                                                                                Match_result ( Array.of_list arg_values )
 
                                                                               
-                                                              | `Arg_pairs -> let pairs = Parsers.Htmlparse.extract_arg_pairs_from_topdocs_of_doclist selected_tags in
-                                                                              Match_result (Array.of_list pairs)
+                                                              | `Arg_pairs   -> let pairs = Parsers.Htmlparse.extract_arg_pairs_from_topdocs_of_doclist selected_tags in
+                                                                                Match_result (Array.of_list pairs)
 
-                                                              | `Dump      -> Parsers.Htmlparse.dump_html selected_tags;
-                                                                              String (Parsers.convert_doclist_to_htmlstring selected_tags)
+                                                              | `Dump        -> Parsers.Htmlparse.dump_html selected_tags;
+                                                                                String (Parsers.convert_doclist_to_htmlstring selected_tags)
 
-                                                              | `Html_string  -> String (Parsers.convert_doclist_to_htmlstring selected_tags)
+                                                              | `Html_string -> String (Parsers.convert_doclist_to_htmlstring selected_tags)
 
-                                                              | `Doclist      -> Doclist selected_tags
+                                                              | `Doclist     -> Doclist selected_tags
                                                            end 
                                                          in
 
-                                                         (* result should be a   Match_result ( whichg is: string array array) *)
-
-
-
-                                                          (*
-                                                          let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
-                                                          let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
-                                                          *)
-                                                          command tl result varmap
+                                                         command tl result varmap
 
 
 
                          | Paste paste_list            ->
                                                           let res = paste_arglist_to_string  paste_list  varmap in
-                                                          (*
-                                                          let str_lst = List.map (fun item ->  to_string item varmap) paste_list in (* convert to string  *)
-                                                          let res     = List.fold_left ( ^ ) "" str_lst in                          (* append all strings *)
-                                                          *)
                                                           command tl (String res) varmap
 
 
@@ -927,10 +891,7 @@ let evaluate_command_list cmdlst =
 
                                                              | Doclist   doclist  -> let string_of_dl dl = Parsers.convert_doclist_to_htmlstring [dl] in
                                                                                      List.iter ( fun doc -> print_endline ( string_of_dl doc ) ) doclist (* one per line *)
-                                                             (*
-                                                             | Doclist   doclist as dl -> print_endline (to_string dl varmap) (* raw *)
-                                                             | Result_selection str_arr -> Array.iter ( fun str -> print_endline str; print_newline()) str_arr
-                                                             *)
+
                                                              | _ -> print_warning "Print-command found non-printable type"
                                                          end;
                                                          command tl tmpvar varmap
@@ -1037,15 +998,18 @@ let evaluate_command_list cmdlst =
                                                          begin
                                                          match tmpvar with
                                                            | String str           -> command tl (String (replacer str)) varmap
+
                                                            | String_array str_arr -> let replaced = Array.map replacer str_arr in
                                                                                      command tl (String_array replaced) varmap
-                                                           | Url (href, ref)       -> command tl ( Url (replacer href, replacer ref) ) varmap
 
-                                                           | Url_array   url_arr   -> let changed = Array.map ( fun (u,r) -> (replacer u, replacer r) ) url_arr in
-                                                                                       command tl ( Url_array changed ) varmap
+                                                           | Url (href, ref)      -> command tl ( Url (replacer href, replacer ref) ) varmap
 
-                                                           | Document(doc, ref) -> let newdoc = Document( replacer doc, replacer ref ) in
-                                                                                   command tl (newdoc) varmap
+                                                           | Url_array   url_arr  -> let changed = Array.map ( fun (u,r) -> (replacer u, replacer r) ) url_arr in
+                                                                                      command tl ( Url_array changed ) varmap
+
+                                                           | Document(doc, ref)   -> let newdoc = Document( replacer doc, replacer ref ) in
+                                                                                     command tl (newdoc) varmap
+
                                                            | Document_array doc_arr ->
                                                                       let new_docarr = Array.map ( fun (doc,ref) -> (replacer doc, replacer ref) ) doc_arr in
                                                                       command tl (Document_array new_docarr) varmap
@@ -1125,8 +1089,7 @@ let evaluate_command_list cmdlst =
                                                              | Url  (url, ref)       -> Url( Tools.html_decode url, Tools.html_decode ref )
                                                              | Url_list    urllist   -> Url_list( List.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urllist)
                                                              | Url_array urlarr      -> Url_array( Array.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urlarr )
-                                                             (*
-                                                             *)
+
                                                              | _ -> raise Wrong_argument_type
                                                            end
                                                          in
