@@ -109,3 +109,21 @@ let html_decode ?(inenc=`Enc_utf8) str =
 
 (* ======================================= *)
 let lines_of_string  str = Pcre.split ~pat:"\n" str
+
+
+
+(* ---------------------------------------------- *)
+(* Adds items from input list in the order they   *)
+(* are in the input list, but add each item only  *)
+(* once.                                          *)
+(* It's like sort -u without sorting, or like     *)
+(* uniq, also working on items that are not       *)
+(* neighbours in the input list.                  *)
+(* ---------------------------------------------- *)
+let add_item_once lst =
+  let rec aux  sofar  old = match old with
+    | hd::tl -> if List.mem hd sofar then aux sofar tl else aux (hd::sofar) tl
+    | []     -> List.rev sofar
+  in
+    aux [] lst
+
