@@ -27,6 +27,14 @@ start
 end
 
 
+parsername "linkextract-uniq": ( )
+start
+  linkextract;
+  uniq;
+  print;
+end
+
+
 parsername "linkextract2csv": ( )
 start
   linkextract;
