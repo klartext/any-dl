@@ -55,6 +55,7 @@ type commands_t =
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
   | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)
   | Delete            of string               (* Delete a named variable (remove it from the varmap *)
+  | Uniq                                      (* throw out multiple data *)
   | Show_variables                            (* print all named variables (their names and their contents) *)
   | List_variables                            (* print only names of named variables *)
   (*

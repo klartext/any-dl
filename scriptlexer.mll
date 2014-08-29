@@ -43,6 +43,7 @@
                   ("store",          STORE  );
                   ("recall",         RECALL  );
                   ("delete",         DELETE  );
+                  ("uniq",           UNIQ  );
                   ("show_variables",   SHOW_VARIABLES  );
                   ("list_variables",   LIST_VARIABLES  );
 

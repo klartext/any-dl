@@ -887,7 +887,7 @@ let evaluate_command_list cmdlst =
                                                              | String_array     str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr
                                                              | Url (href, ref)   -> Printf.printf "%s   # Referrer:  %s\n" href ref
                                                              | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
-                                                             | Url_array liste    -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
+                                                             | Url_array arr      -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) arr
 
                                                              | Doclist   doclist  -> let string_of_dl dl = Parsers.convert_doclist_to_htmlstring [dl] in
                                                                                      List.iter ( fun doc -> print_endline ( string_of_dl doc ) ) doclist (* one per line *)
@@ -972,6 +972,27 @@ let evaluate_command_list cmdlst =
                                                          command tl varcontents varmap
 
                          | Delete varname             -> command tl tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
+
+
+                         | Uniq                       -> (* uniq: make entries unique: ignore multiple entries with same contents *)
+                                                         let res =
+                                                           begin
+                                                             match tmpvar with
+                                                               | Match_result mres -> let li_of_colarr = Array.to_list mres in
+                                                                                      let uniq = Tools.add_item_once li_of_colarr in
+                                                                                      Match_result (Array.of_list uniq)
+
+                                                               | Url (href, ref)   -> Url (href, ref)
+                                                               | Url_list  liste   -> Url_list ( Tools.add_item_once liste )
+                                                               | Url_array arr     -> Url_list ( Tools.add_item_once (Array.to_list arr) )
+                                                               | String   str as s -> s
+
+                                                               | String_array  str_arr -> String_array ( Array.of_list ( Tools.add_item_once  (Array.to_list str_arr)) )
+
+                                                               | _ -> raise Wrong_tmpvar_type
+                                                           end
+                                                         in
+                                                           command tl res varmap  (* removes multiple data *)
 
 
                          | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;

@@ -57,6 +57,7 @@
 %token STORE
 %token RECALL
 %token DELETE
+%token UNIQ
 %token SHOW_VARIABLES
 %token LIST_VARIABLES
 %token PASTE
@@ -174,6 +175,7 @@ statement: match_stmt          SEMI   { $1 }
     |      store_stmt          SEMI   { $1 }
     |      recall_stmt         SEMI   { $1 }
     |      delete_stmt         SEMI   { $1 }
+    |      UNIQ                SEMI   { Uniq }
     |      paste_stmt          SEMI   { $1 }
     |      show_variables_stmt SEMI   { $1 }
     |      list_variables_stmt SEMI   { $1 }
