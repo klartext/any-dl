@@ -1376,8 +1376,14 @@ let main ()  =
     let parser_urllist = List.sort ( fun elem1 elem2 -> String.length (fst elem2) - String.length (fst elem1) ) !parser_urllist_raw in
 
 
-    (* for all the URLs from the command line, do the intended work :-) *)
-    (* ---------------------------------------------------------------- *)
+    (* for all distinct URLs from the command line, do the intended work :-) *)
+    (* ===================================================================== *)
+
+    (* first we kick out urls that are mentioned more than once on thecommand line, *)
+    (* and bring the list into the right order.                                     *)
+    (* ---------------------------------------------------------------------------- *)
+    let list_of_urls = List.rev (Tools.add_item_once Cli.opt.Cli.url_list) in
+
     if Cli.opt.Cli.auto_try
     then
       begin
@@ -1400,10 +1406,10 @@ let main ()  =
                                            ) parsernames
                                with AutoTry_success -> prerr_endline "Parser succeeded." (* catch only a success; any other exceptions igonre here *)
 
-                  ) (List.rev Cli.opt.Cli.url_list)
+                  ) list_of_urls
       end
     else (* non-auto (normal mode) *)
-      List.iter ( fun url -> invoke_parser_on_url  url  parser_urllist  parser_namehash  Cli.opt.Cli.parser_selection ) (List.rev Cli.opt.Cli.url_list)
+      List.iter ( fun url -> invoke_parser_on_url  url  parser_urllist  parser_namehash  Cli.opt.Cli.parser_selection ) list_of_urls
 
 
 let _ =
