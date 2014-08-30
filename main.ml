@@ -766,7 +766,7 @@ let evaluate_command_list cmdlst =
                                                              | Document (doc, url) ->
                                                                        let result = Array.of_list (Parsers.titleextract_str doc) in
                                                                        command (Subst ("\n", "") :: tl) (String_array result) varmap
-                                                             | _ -> print_warning "Tag_extract found non-usable type"; raise Wrong_tmpvar_type
+                                                             | _ -> print_warning "Title_extract found non-usable type"; raise Wrong_tmpvar_type
                                                          end
 
 
