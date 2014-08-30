@@ -885,6 +885,13 @@ List of commands/keywords and a short-escription of them:
     value.
 
 
+  uniq
+    From the tmpvar it removes entries with same contents.
+    Works like "uniq" from unix-toolbox, but not limited to neighbouring lines;
+    or like "sort -u" without a sort (not changing the order of the entries).
+
+
+
 Prefedined Variables:
 =====================
 
