@@ -21,7 +21,8 @@ let activate_controlstrings str =
 
 
 (* *)
-let if_match_give_group_of_groups str regexp =
+let if_match_give_group_of_groups str ~regexp_str =
+  let regexp = Pcre.regexp regexp_str in
   if Pcre.pmatch ~rex:regexp str
   then
     begin

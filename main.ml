@@ -12,6 +12,7 @@
 
 
 open Parsetreetypes
+open Tools
 
 
 exception NOT_IMPLEMENTED_SO_FAR (* for planned, but not already implemented functionality *)
@@ -39,7 +40,6 @@ exception Variable_not_found of string  (* a variable-name lookup in the Varname
 
 exception Devel (* exception for developing / testing *)
 
-open Tools
 
 
 (* ---------------------------------------------------------------- *)
@@ -429,7 +429,7 @@ let evaluate_command_list cmdlst =
                                                                | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
                                                            end
                                                          in
-                                                         let match_res = Parsers.if_match_give_group_of_groups str (Pcre.regexp pattern (* flags here *)) in
+                                                         let match_res = Parsers.if_match_give_group_of_groups str ~regexp_str:pattern (* flags here *) in
                                                          let matched =
                                                            begin
                                                              match match_res with
