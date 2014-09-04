@@ -27,12 +27,14 @@ type results_t =
   | Url_array       of (string * string) array
   | Dummy_result
   | Match_result    of match_result_t
+  (*
   | Doclist         of Nethtml.document list
+  *)
   | Empty
 
 
 type selector_t = { tag_sel: string option; argkey_sel: string option; argval_sel: string option }
-type extractor_t = [ `Data | `Data_slurp  | `Arg of string | `Tag | `Arg_keys | `Arg_vals | `Arg_pairs | `Dump | `Html_string | `Doclist ]
+type extractor_t = [ `Data | `Data_slurp  | `Arg of string | `Tag | `Arg_keys | `Arg_vals | `Arg_pairs | `Dump | `Html_string (*| `Doclist *) ]
 
 
 type commands_t =
@@ -108,7 +110,9 @@ let result_to_string res = match res with
     | Url_array      _ -> "Url_array"
     | Dummy_result     -> "Dummy_result"
     | Match_result   _ -> "Match_result"
+    (*
     | Doclist        _ -> "Doclist"
+    *)
     | Empty            -> "Empty"
 
 

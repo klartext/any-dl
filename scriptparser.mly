@@ -308,14 +308,16 @@ extractor_list: extractor                   { [$1] }
 
 extractor: DATA                     { `Data }
     |      DATA_SLURP               { `Data_slurp  }
-    |      ARG LPAREN STRING RPAREN { `Arg $3 }
     |      TAG                      { `Tag }
+    |      ARG_PAIRS                { `Arg_pairs }
     |      ARG_KEYS                 { `Arg_keys }
     |      ARG_VALS                 { `Arg_vals }
-    |      ARG_PAIRS                { `Arg_pairs }
+    |      ARG LPAREN STRING RPAREN { `Arg $3 }
     |      DUMP                     { `Dump     }
     |      HTML_STRING              { `Html_string  }
+    /*
     |      DOCLIST                  { `Doclist  }
+    */
     ;
 
 

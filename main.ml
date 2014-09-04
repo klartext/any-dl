@@ -175,7 +175,9 @@ let rec  to_string  result_value varmap =
       | Url_list      url_list     -> List.fold_right ( fun a sofar -> "\"" ^ (fst a) ^ "\" " ^ sofar ) url_list ""
       | Url_array     url_arr      -> let elem = url_arr.(0) in to_string (Url (fst(elem), snd(elem))) varmap (* first Url used *)
       | Empty                      -> ""
+      (*
       | Doclist       dl           -> Parsers.convert_doclist_to_htmlstring dl
+      *)
       | Dummy_result               -> ""
       (*
       *)
@@ -822,7 +824,7 @@ let evaluate_command_list cmdlst =
                                                          (* basic extractor-functions that extract the DOM-stuff from a doclist *)
                                                          (* ------------------------------------------------------------------- *)
                                                          let extr_data dl      = Parsers.Htmlparse.collect_data_per_doc dl    in
-                                                         let extr_dataslurp dl = Parsers.Htmlparse.collect_data dl in
+                                                         let extr_dataslurp dl = [ Parsers.Htmlparse.collect_data dl ] in  (* gives back list, for making retval a list, like the other functions *)
 
                                                          let extr_arg   key dl = let pairs = List.map Parsers.Htmlparse.extract_arg_pairs_from_doc dl in
                                                                                  List.fold_left ( fun sofar pairlst -> try (List.assoc key pairlst) :: sofar with Not_found -> sofar ) [] pairs in
@@ -833,7 +835,7 @@ let evaluate_command_list cmdlst =
                                                          let extr_argpairs  dl = Parsers.Htmlparse.extract_arg_pairs_from_topdocs_of_doclist dl in
 
                                                          let extr_dump      dl = Parsers.Htmlparse.dump_html dl; (* dump!!! *)
-                                                                                 Parsers.convert_doclist_to_htmlstring dl in
+                                                                                 [ Parsers.convert_doclist_to_htmlstring dl ] in  (* gives back list, for making retval a list, like the other functions *)
                                                          let extr_html_str  dl = Parsers.convert_doclist_to_htmlstring dl in
 
 
@@ -842,21 +844,48 @@ let evaluate_command_list cmdlst =
                                                            begin
                                                             match extractor with
                                                               | `Data        -> let dat        = extr_data      selected_tags in Match_result [| (Array.of_list dat) |]
-                                                              | `Data_slurp  -> let dat        = extr_dataslurp selected_tags in String dat
-                                                              | `Arg key     -> let extracted  = extr_arg key   selected_tags in String_array ( Array.of_list extracted )
+                                                              | `Data_slurp  -> let dat        = extr_dataslurp selected_tags in Match_result [| Array.of_list dat |]
                                                               | `Tag         -> let tagnames   = extr_tag       selected_tags in Match_result [| (Array.of_list tagnames) |]
+                                                              | `Arg_pairs   -> let pairs      = extr_argpairs  selected_tags in Match_result (Array.of_list pairs)
                                                               | `Arg_keys    -> let arg_keys   = extr_argkeys   selected_tags in Match_result ( Array.of_list arg_keys )
                                                               | `Arg_vals    -> let arg_values = extr_argvals   selected_tags in Match_result ( Array.of_list arg_values )
-
-                                                              | `Arg_pairs   -> let pairs      = extr_argpairs  selected_tags in Match_result (Array.of_list pairs)
-                                                              | `Dump        -> let dumped     = extr_dump      selected_tags in String ( dumped )
-                                                              | `Html_string -> String (extr_html_str selected_tags)
-                                                              | `Doclist     -> Doclist selected_tags
+                                                              | `Arg key     -> let extracted  = extr_arg key   selected_tags in Match_result [| Array.of_list extracted |]
+                                                              | `Dump        -> let dumped     = extr_dump      selected_tags in Match_result [| Array.of_list dumped |]
+                                                              | `Html_string -> Match_result [| [| (extr_html_str selected_tags) |] |]
+                                                              (*| `Doclist     -> Doclist selected_tags*)
                                                            end 
                                                            ) extractor_list
                                                          in
 
+                                                         let result2 =
+                                                           List.fold_left ( fun sofar extr ->
+                                                                                               begin
+                                                                                                match extr with
+                                                                                                  | `Data        -> let dat        = extr_data      selected_tags in Match_result [| (Array.of_list dat) |]
+                                                                                                  | `Data_slurp  -> let dat        = extr_dataslurp selected_tags in Match_result [| Array.of_list dat |]
+                                                                                                  | `Tag         -> let tagnames   = extr_tag       selected_tags in Match_result [| (Array.of_list tagnames) |]
+                                                                                                  | `Arg_pairs   -> let pairs      = extr_argpairs  selected_tags in Match_result (Array.of_list pairs)
+                                                                                                  | `Arg_keys    -> let arg_keys   = extr_argkeys   selected_tags in Match_result ( Array.of_list arg_keys )
+                                                                                                  | `Arg_vals    -> let arg_values = extr_argvals   selected_tags in Match_result ( Array.of_list arg_values )
+                                                                                                  | `Arg key     -> let extracted  = extr_arg key   selected_tags in Match_result [| Array.of_list extracted |]
+                                                                                                  | `Dump        -> let dumped     = extr_dump      selected_tags in Match_result [| Array.of_list dumped |]
+                                                                                                  | `Html_string -> Match_result [| [| (extr_html_str selected_tags) |] |]
+                                                                                                  (*| `Doclist     -> Doclist selected_tags *)
+                                                                                               end :: sofar
+                                                           ) [] extractor_list
+                                                         in
+
+                                                         (*
+                                                           `Doclist
+                                                           is fundamentally different to the other return-values.
+                                                           It does not make sense to give it back, and it also is not of type string!!!!!
+                                                           So it also does not make sense to collect it tigether with the other items!
+                                                         *)
+
+                                                         (*
                                                          command tl (List.hd result) varmap
+                                                         *)
+                                                         command tl (List.hd result2) varmap
 
 
 
@@ -891,8 +920,10 @@ let evaluate_command_list cmdlst =
                                                              | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
                                                              | Url_array arr      -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) arr
 
+                                                             (*
                                                              | Doclist   doclist  -> let string_of_dl dl = Parsers.convert_doclist_to_htmlstring [dl] in
                                                                                      List.iter ( fun doc -> print_endline ( string_of_dl doc ) ) doclist (* one per line *)
+                                                             *)
 
                                                              | _ -> print_warning "Print-command found non-printable type"
                                                          end;
@@ -903,7 +934,7 @@ let evaluate_command_list cmdlst =
                                                          begin
                                                            match tmpvar with
                                                              | Match_result mres ->
-                                                                        print_endline "show_match: Col 0 is the whole match, all others are the groups\n";
+                                                                        print_endline "for real matches: show_match: Col 0 is the whole match, all others are the groups\n";
                                                                         Array.iteri ( fun idx x -> 
                                                                                                Printf.printf "Row %2d:\n" idx;
                                                                                                Printf.printf "-------\n";
