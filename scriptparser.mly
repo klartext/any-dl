@@ -275,7 +275,7 @@ titleextract_stmt: TITLEEXTRACT   { Title_extract }
 
 
 
-tagselect_stmt: TAGSELECT LPAREN tagselect_arg_list VBAR extractor RPAREN { Tag_select( $3, $5 ) }
+tagselect_stmt: TAGSELECT LPAREN tagselect_arg_list VBAR extractor_list RPAREN { Tag_select( $3, $5 ) }
     ;
 
 tagselect_arg_list: tagselect_arg                            { [$1] }
@@ -297,6 +297,14 @@ tagname: STRING { $1 };
 argkey:  STRING { $1 };
 argval:  STRING { $1 };
 
+
+
+
+/* ---------------------------------------------- */
+/* nextractor-list: non-empty list of extractor's */
+/* ---------------------------------------------- */
+extractor_list: extractor                   { [$1] }
+    |           extractor COMMA extractor_list  { $1 :: $3 }
 
 extractor: DATA                     { `Data }
     |      DATA_SLURP               { `Data_slurp  }

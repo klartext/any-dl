@@ -50,7 +50,7 @@ type commands_t =
   | Link_extract_xml                          (* extracts html-href's from (xml-formatted) webpage (e.g. asx-files) *)
   | Title_extract                             (* extracts the title-tag's text part *)
   | Rebase                                    (* rebases the tmpvar to STARTURL as base *)
-  | Tag_select        of selector_t list * extractor_t     (* extracts tags and parts of it from the document *)
+  | Tag_select        of selector_t list * extractor_t list     (* extracts tags and parts of it from the document *)
   | Paste             of results_t list       (* paste together strings *)
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
   | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)

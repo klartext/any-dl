@@ -770,7 +770,7 @@ let evaluate_command_list cmdlst =
                                                          end
 
 
-                         | Tag_select (selector_liste, extractor)  ->
+                         | Tag_select (selector_liste, extractor_list)  ->
                                                          (* --------------------------------------------------------------------- *)
                                                          (* apply "find_elements_by_tag_name" to the doclist with hd as selector  *)
                                                          (* and the resulting doclist is used as input to the next call of        *)
@@ -819,6 +819,7 @@ let evaluate_command_list cmdlst =
 
 
                                                          let result =
+                                                           List.map ( fun extractor ->
                                                            begin
                                                             match extractor with
                                                               | `Data        -> let dat = Parsers.Htmlparse.collect_data_per_doc selected_tags in Match_result [| (Array.of_list dat) |]
@@ -852,9 +853,10 @@ let evaluate_command_list cmdlst =
 
                                                               | `Doclist     -> Doclist selected_tags
                                                            end 
+                                                           ) extractor_list
                                                          in
 
-                                                         command tl result varmap
+                                                         command tl (List.hd result) varmap
 
 
 
