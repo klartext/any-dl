@@ -818,39 +818,39 @@ let evaluate_command_list cmdlst =
                                                          verbose_printf "*** Tag_select:  Length of selected_tags-list: %d\n" (List.length selected_tags);
 
 
+                                                         (* ------------------------------------------------------------------- *)
+                                                         (* basic extractor-functions that extract the DOM-stuff from a doclist *)
+                                                         (* ------------------------------------------------------------------- *)
+                                                         let extr_data dl      = Parsers.Htmlparse.collect_data_per_doc dl    in
+                                                         let extr_dataslurp dl = Parsers.Htmlparse.collect_data dl in
+
+                                                         let extr_arg   key dl = let pairs = List.map Parsers.Htmlparse.extract_arg_pairs_from_doc dl in
+                                                                                 List.fold_left ( fun sofar pairlst -> try (List.assoc key pairlst) :: sofar with Not_found -> sofar ) [] pairs in
+
+                                                         let extr_tag       dl = Parsers.Htmlparse.extract_tagname_from_topdocs_of_doclist dl in
+                                                         let extr_argkeys   dl = Parsers.Htmlparse.extract_arg_keys_from_topdocs_of_doclist dl in
+                                                         let extr_argvals   dl = Parsers.Htmlparse.extract_arg_values_from_topdocs_of_doclist dl in
+                                                         let extr_argpairs  dl = Parsers.Htmlparse.extract_arg_pairs_from_topdocs_of_doclist dl in
+
+                                                         let extr_dump      dl = Parsers.Htmlparse.dump_html dl; (* dump!!! *)
+                                                                                 Parsers.convert_doclist_to_htmlstring dl in
+                                                         let extr_html_str  dl = Parsers.convert_doclist_to_htmlstring dl in
+
+
                                                          let result =
                                                            List.map ( fun extractor ->
                                                            begin
                                                             match extractor with
-                                                              | `Data        -> let dat = Parsers.Htmlparse.collect_data_per_doc selected_tags in Match_result [| (Array.of_list dat) |]
+                                                              | `Data        -> let dat        = extr_data      selected_tags in Match_result [| (Array.of_list dat) |]
+                                                              | `Data_slurp  -> let dat        = extr_dataslurp selected_tags in String dat
+                                                              | `Arg key     -> let extracted  = extr_arg key   selected_tags in String_array ( Array.of_list extracted )
+                                                              | `Tag         -> let tagnames   = extr_tag       selected_tags in Match_result [| (Array.of_list tagnames) |]
+                                                              | `Arg_keys    -> let arg_keys   = extr_argkeys   selected_tags in Match_result ( Array.of_list arg_keys )
+                                                              | `Arg_vals    -> let arg_values = extr_argvals   selected_tags in Match_result ( Array.of_list arg_values )
 
-                                                              | `Data_slurp  -> let dat = Parsers.Htmlparse.collect_data selected_tags in String dat
-
-                                                              | `Arg key     -> let pairs     = List.map Parsers.Htmlparse.extract_arg_pairs_from_doc selected_tags in
-                                                                                let extracted = List.fold_left ( fun sofar pairlst -> try (List.assoc key pairlst) :: sofar
-                                                                                                                                    with Not_found -> sofar ) [] pairs
-                                                                                in
-                                                                                  String_array ( Array.of_list extracted )
-
-                                                              | `Tag         -> let tagnames = Parsers.Htmlparse.extract_tagname_from_topdocs_of_doclist selected_tags in
-                                                                                (* String_array (Array.of_list tagnames) *)
-                                                                                Match_result [| (Array.of_list tagnames) |]
-
-                                                              | `Arg_keys    -> let arg_keys   =  Parsers.Htmlparse.extract_arg_keys_from_topdocs_of_doclist selected_tags in
-                                                                                Match_result ( Array.of_list arg_keys )
-
-                                                              | `Arg_vals    -> let arg_values = Parsers.Htmlparse.extract_arg_values_from_topdocs_of_doclist selected_tags in
-                                                                                Match_result ( Array.of_list arg_values )
-
-                                                                              
-                                                              | `Arg_pairs   -> let pairs = Parsers.Htmlparse.extract_arg_pairs_from_topdocs_of_doclist selected_tags in
-                                                                                Match_result (Array.of_list pairs)
-
-                                                              | `Dump        -> Parsers.Htmlparse.dump_html selected_tags;
-                                                                                String (Parsers.convert_doclist_to_htmlstring selected_tags)
-
-                                                              | `Html_string -> String (Parsers.convert_doclist_to_htmlstring selected_tags)
-
+                                                              | `Arg_pairs   -> let pairs      = extr_argpairs  selected_tags in Match_result (Array.of_list pairs)
+                                                              | `Dump        -> let dumped     = extr_dump      selected_tags in String ( dumped )
+                                                              | `Html_string -> String (extr_html_str selected_tags)
                                                               | `Doclist     -> Doclist selected_tags
                                                            end 
                                                            ) extractor_list
