@@ -1702,103 +1702,105 @@ parsername "try_tagselect": ( )
 start
   print("try tagselect syntax");
 
-  #tagselect("table");
-  #tagselect("table", "a"."href");
   print("****************************************");
 
-  print("----- argkeys -----------------------");
+  print("===== data ==========================");
+  recall("BASEDOC");
+  tagselect("h1"| data );
+  #tagselect("ul","li","a"|data);
+  print;
+  show_type;
+  show_match;
+
+  print("===== dataslurp =====================");
+  recall("BASEDOC");
+  tagselect("h1"| data );
+  #tagselect("table","tr","td"|dataslurp);
+  print;
+  show_type;
+  show_match;
+
+
+  print("===== tag ===========================");
+  recall("BASEDOC");
+  tagselect(."align"|tag);
+  print;
+  show_type;
+  show_match;
+
+
+  print("===== argpairs =======================");
+  recall("BASEDOC");
+  tagselect("img"."src"|argpairs);
+  print;
+  show_type;
+  show_match;
+
+
+  print("===== argkeys =======================");
   recall("BASEDOC");
   tagselect("img"."src"|argkeys);
   print;
+  show_type;
+  show_match;
 
-  print("----- argvals -----------------------");
+  print("===== argvals =======================");
 
   recall("BASEDOC");
   tagselect("img"."src"|argvals);
   print;
+  show_type;
+  show_match;
 
 
-  print("----- arg(\"src\") ----------------------");
+  print("===== arg(\"src\") ======================");
   recall("BASEDOC");
   tagselect("img"."src"| arg("src") );
   print;
+  show_type;
+  show_match;
 
 
-  print("----- arg(\"alt\") ----------------------");
+  print("===== arg(\"alt\") ======================");
   recall("BASEDOC");
   tagselect("img"."src"| arg("alt") );
   print;
-
-
-
-
-exitparse;
-
-
-  print("----- argpairs ----------------------");
-
-  recall("BASEDOC");
-  tagselect("img"."src"|argpairs);
-  print;
-  csv_save("img_src");
-
-
-  print("----- data --------------------------");
-
-  recall("BASEDOC");
-  tagselect("ul","li","a"|data);
-  print;
-  print("---------------------------------------------------");
+  show_type;
   show_match;
-  # csv_save("img_src");
 
-  print("----- doclist test --------------------------");
+
+  print("===== arg(\"src\"), arg(\"alt\") ======================");
   recall("BASEDOC");
-  tagselect("ul","li","a"|doclist);
+  tagselect("img"."src"| arg("src"), arg("alt") );
   print;
-  print("---------------------------------------------------");
+  show_type;
   #show_match;
 
 
-
-
-exitparse;
-
-
-  print("----- argpairs ----------------------");
-
+  print("===== dump =====================");
   recall("BASEDOC");
-  tagselect("a"."href"|argpairs);
+  tagselect("table","tr","td"|dump);
   print;
+  show_type;
+  #show_match;
 
 
-  print("----- argpairs ----------------------");
-
+  print("===== htmlstring ======================");
   recall("BASEDOC");
-  tagselect("div"|argpairs);
+  tagselect("img"."src"| htmlstring );
   print;
+  show_type;
+  #show_match;
 
 
-  print("----- tag ---------------------------");
-
-  recall("BASEDOC");
-  tagselect(."align"|tag);
-  print;
-
-
-  print("----- dataslurp ---------------------");
-  print("TABLE");
-
-  recall("BASEDOC");
-  tagselect("table","tr","td"|dataslurp);
-  print;
+#  print("===== doclist ======================");
+#  recall("BASEDOC");
+#  tagselect("img"."src"| doclist );
+#  print;
+#  show_type;
+#  #show_match;
 
 
-  print("-------------------------------------");
-
-  recall("BASEDOC");
-  tagselect("div"."class"|argvals);
-  print;
 
 
 exitparse;
