@@ -275,7 +275,10 @@ titleextract_stmt: TITLEEXTRACT   { Title_extract }
 
 
 
-tagselect_stmt: TAGSELECT LPAREN tagselect_arg_list VBAR extractor RPAREN { Tag_select( $3, $5 ) }
+tagselect_stmt: TAGSELECT LPAREN tagselect_arg_list VBAR extractor_list RPAREN { Tag_select( $3, Single_extr $5 ) }
+    |           TAGSELECT LPAREN tagselect_arg_list VBAR ARG_PAIRS      RPAREN { Tag_select( $3, Pair_extr `Arg_pairs ) }
+    |           TAGSELECT LPAREN tagselect_arg_list VBAR ARG_KEYS       RPAREN { Tag_select( $3, Pair_extr `Arg_keys ) }
+    |           TAGSELECT LPAREN tagselect_arg_list VBAR ARG_VALS       RPAREN { Tag_select( $3, Pair_extr `Arg_vals ) }
     ;
 
 tagselect_arg_list: tagselect_arg                            { [$1] }
@@ -298,16 +301,28 @@ argkey:  STRING { $1 };
 argval:  STRING { $1 };
 
 
+
+
+/* ---------------------------------------------- */
+/* nextractor-list: non-empty list of extractor's */
+/* ---------------------------------------------- */
+extractor_list: extractor                   { [$1] }
+    |           extractor COMMA extractor_list  { $1 :: $3 }
+
 extractor: DATA                     { `Data }
     |      DATA_SLURP               { `Data_slurp  }
-    |      ARG LPAREN STRING RPAREN { `Arg $3 }
     |      TAG                      { `Tag }
+    /*
+    |      ARG_PAIRS                { `Arg_pairs }
     |      ARG_KEYS                 { `Arg_keys }
     |      ARG_VALS                 { `Arg_vals }
-    |      ARG_PAIRS                { `Arg_pairs }
+    */
+    |      ARG LPAREN STRING RPAREN { `Arg $3 }
     |      DUMP                     { `Dump     }
     |      HTML_STRING              { `Html_string  }
+    /*
     |      DOCLIST                  { `Doclist  }
+    */
     ;
 
 

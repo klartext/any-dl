@@ -560,6 +560,12 @@ List of commands/keywords (not carved in stone so far) by example:
   tagselect( "table", "a" | argpairs );      # extract argpairs from the stuff that was selected
   tagselect( "table", "a" | arg("href") );   # extract value for the arg with key/name "href" from the stuff that was selected
 
+  # the pair-extratcors ( "argpairs", "argkeys", "argvals" ) can be used as single-extractor-arguments
+  # the other selectros select one item only (not pairs) and can be given as list, like this:
+
+  tagselect("img"."src" | arg("src"), arg("alt") );
+
+
 
 
   print;
