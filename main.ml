@@ -36,6 +36,8 @@ exception No_parser_found_for_this_url  (* *)
 
 exception AutoTry_success               (* in auto-try mode (switch -a), if successful, this exception will be thrown *)
 
+exception Extractor_list_failure
+
 exception Variable_not_found of string  (* a variable-name lookup in the Varname-map failed *)
 
 exception Devel (* exception for developing / testing *)
@@ -772,7 +774,7 @@ let evaluate_command_list cmdlst =
                                                          end
 
 
-                         | Tag_select (selector_liste, extractor_list)  ->
+                         | Tag_select (selector_liste, extractor )  ->
                                                          (* --------------------------------------------------------------------- *)
                                                          (* apply "find_elements_by_tag_name" to the doclist with hd as selector  *)
                                                          (* and the resulting doclist is used as input to the next call of        *)
@@ -839,6 +841,7 @@ let evaluate_command_list cmdlst =
                                                          let extr_html_str  dl = Parsers.convert_doclist_to_htmlstring dl in
 
 
+                                                         (*
                                                          let result =
                                                            List.map ( fun extractor ->
                                                            begin
@@ -856,7 +859,36 @@ let evaluate_command_list cmdlst =
                                                            end 
                                                            ) extractor_list
                                                          in
+                                                         *)
 
+                                                         let collect_singles liste =
+                                                           List.fold_left ( fun sofar extr ->
+                                                                                               begin
+                                                                                                match extr with
+                                                                                                  | `Data        -> let dat        = extr_data      selected_tags in (Array.of_list dat)
+                                                                                                  | `Data_slurp  -> let dat        = extr_dataslurp selected_tags in Array.of_list dat
+                                                                                                  | `Tag         -> let tagnames   = extr_tag       selected_tags in (Array.of_list tagnames)
+                                                                                                  | `Arg key     -> let extracted  = extr_arg key   selected_tags in Array.of_list extracted
+                                                                                                  | `Dump        -> let dumped     = extr_dump      selected_tags in Array.of_list dumped
+                                                                                                  | `Html_string -> [| (extr_html_str selected_tags) |]
+                                                                                                  (*| `Doclist     -> Doclist selected_tags *)
+                                                                                                  | _            -> raise Extractor_list_failure
+                                                                                               end :: sofar
+                                                           ) [] liste
+                                                         in
+
+                                                         let extract_pairs item =
+                                                                                   begin
+                                                                                    match item with
+                                                                                      | `Arg_pairs   -> let pairs      = extr_argpairs  selected_tags in ( Array.of_list pairs )
+                                                                                      | `Arg_keys    -> let arg_keys   = extr_argkeys   selected_tags in ( Array.of_list arg_keys )
+                                                                                      | `Arg_vals    -> let arg_values = extr_argvals   selected_tags in ( Array.of_list arg_values )
+                                                                                      | _            -> raise Extractor_list_failure
+                                                                                      (*| `Doclist     -> Doclist selected_tags *)
+                                                                                   end
+                                                         in
+
+                                                         (*
                                                          let result2 =
                                                            List.fold_left ( fun sofar extr ->
                                                                                                begin
@@ -871,8 +903,19 @@ let evaluate_command_list cmdlst =
                                                                                                   | `Dump        -> let dumped     = extr_dump      selected_tags in Match_result [| Array.of_list dumped |]
                                                                                                   | `Html_string -> Match_result [| [| (extr_html_str selected_tags) |] |]
                                                                                                   (*| `Doclist     -> Doclist selected_tags *)
+                                                                                                  | _            -> raise Extractor_list_failure
                                                                                                end :: sofar
                                                            ) [] extractor_list
+                                                         in
+                                                         *)
+
+
+                                                         let result2 =
+                                                           begin
+                                                             match extractor with
+                                                               | Pair_extr   extr     -> Match_result ( extract_pairs extr )
+                                                               | Single_extr extr_lst -> Match_result ( Array.of_list ( collect_singles extr_lst ) )
+                                                           end
                                                          in
 
                                                          (*
@@ -885,7 +928,7 @@ let evaluate_command_list cmdlst =
                                                          (*
                                                          command tl (List.hd result) varmap
                                                          *)
-                                                         command tl (List.hd result2) varmap
+                                                         command tl (result2) varmap
 
 
 
