@@ -841,26 +841,8 @@ let evaluate_command_list cmdlst =
                                                          let extr_html_str  dl = Parsers.convert_doclist_to_htmlstring dl in
 
 
-                                                         (*
-                                                         let result =
-                                                           List.map ( fun extractor ->
-                                                           begin
-                                                            match extractor with
-                                                              | `Data        -> let dat        = extr_data      selected_tags in Match_result [| (Array.of_list dat) |]
-                                                              | `Data_slurp  -> let dat        = extr_dataslurp selected_tags in Match_result [| Array.of_list dat |]
-                                                              | `Tag         -> let tagnames   = extr_tag       selected_tags in Match_result [| (Array.of_list tagnames) |]
-                                                              | `Arg_pairs   -> let pairs      = extr_argpairs  selected_tags in Match_result (Array.of_list pairs)
-                                                              | `Arg_keys    -> let arg_keys   = extr_argkeys   selected_tags in Match_result ( Array.of_list arg_keys )
-                                                              | `Arg_vals    -> let arg_values = extr_argvals   selected_tags in Match_result ( Array.of_list arg_values )
-                                                              | `Arg key     -> let extracted  = extr_arg key   selected_tags in Match_result [| Array.of_list extracted |]
-                                                              | `Dump        -> let dumped     = extr_dump      selected_tags in Match_result [| Array.of_list dumped |]
-                                                              | `Html_string -> Match_result [| [| (extr_html_str selected_tags) |] |]
-                                                              (*| `Doclist     -> Doclist selected_tags*)
-                                                           end 
-                                                           ) extractor_list
-                                                         in
-                                                         *)
-
+                                                         (* function, that extracts single-items from the doclist *)
+                                                         (* ----------------------------------------------------- *)
                                                          let collect_singles liste =
                                                            List.fold_left ( fun sofar extr ->
                                                                                                begin
@@ -877,6 +859,8 @@ let evaluate_command_list cmdlst =
                                                            ) [] liste
                                                          in
 
+                                                         (* function, that extracts paired data from the doclist *)
+                                                         (* ---------------------------------------------------- *)
                                                          let extract_pairs item =
                                                                                    begin
                                                                                     match item with
@@ -884,33 +868,11 @@ let evaluate_command_list cmdlst =
                                                                                       | `Arg_keys    -> let arg_keys   = extr_argkeys   selected_tags in ( Array.of_list arg_keys )
                                                                                       | `Arg_vals    -> let arg_values = extr_argvals   selected_tags in ( Array.of_list arg_values )
                                                                                       | _            -> raise Extractor_list_failure
-                                                                                      (*| `Doclist     -> Doclist selected_tags *)
                                                                                    end
                                                          in
 
-                                                         (*
-                                                         let result2 =
-                                                           List.fold_left ( fun sofar extr ->
-                                                                                               begin
-                                                                                                match extr with
-                                                                                                  | `Data        -> let dat        = extr_data      selected_tags in Match_result [| (Array.of_list dat) |]
-                                                                                                  | `Data_slurp  -> let dat        = extr_dataslurp selected_tags in Match_result [| Array.of_list dat |]
-                                                                                                  | `Tag         -> let tagnames   = extr_tag       selected_tags in Match_result [| (Array.of_list tagnames) |]
-                                                                                                  | `Arg_pairs   -> let pairs      = extr_argpairs  selected_tags in Match_result (Array.of_list pairs)
-                                                                                                  | `Arg_keys    -> let arg_keys   = extr_argkeys   selected_tags in Match_result ( Array.of_list arg_keys )
-                                                                                                  | `Arg_vals    -> let arg_values = extr_argvals   selected_tags in Match_result ( Array.of_list arg_values )
-                                                                                                  | `Arg key     -> let extracted  = extr_arg key   selected_tags in Match_result [| Array.of_list extracted |]
-                                                                                                  | `Dump        -> let dumped     = extr_dump      selected_tags in Match_result [| Array.of_list dumped |]
-                                                                                                  | `Html_string -> Match_result [| [| (extr_html_str selected_tags) |] |]
-                                                                                                  (*| `Doclist     -> Doclist selected_tags *)
-                                                                                                  | _            -> raise Extractor_list_failure
-                                                                                               end :: sofar
-                                                           ) [] extractor_list
-                                                         in
-                                                         *)
 
-
-                                                         let result2 =
+                                                         let result =
                                                            begin
                                                              match extractor with
                                                                | Pair_extr   extr     -> Match_result ( extract_pairs extr )
@@ -925,10 +887,7 @@ let evaluate_command_list cmdlst =
                                                            So it also does not make sense to collect it tigether with the other items!
                                                          *)
 
-                                                         (*
-                                                         command tl (List.hd result) varmap
-                                                         *)
-                                                         command tl (result2) varmap
+                                                         command tl result varmap
 
 
 
