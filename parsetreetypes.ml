@@ -88,6 +88,7 @@ type commands_t =
   | Subst      of string * string             (* substitution *)
   | To_string                                 (* convert to string *)
   | To_matchres                               (* convert to matchresult (array) *)
+  | Transpose                                 (* transposes a Match-result (array-array) *)
   | Quote                                     (* wraps '"' around the string in tmpvar *)
   | Exit_parse
   | Dump                                      (* Dump html *)

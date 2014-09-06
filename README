@@ -891,6 +891,11 @@ List of commands/keywords and a short-escription of them:
     value.
 
 
+  transpose
+    transposition of a Match_result (which is an array of arrays, or a "matrix").
+    This exchanges rows and columns.
+
+
   uniq
     From the tmpvar it removes entries with same contents.
     Works like "uniq" from unix-toolbox, but not limited to neighbouring lines;

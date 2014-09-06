@@ -698,6 +698,20 @@ let evaluate_command_list cmdlst =
                                                          in
                                                          command tl new_var varmap
 
+                         | Transpose                  ->
+                                                         let result =
+                                                         begin
+                                                           match tmpvar with
+                                                              | Match_result    match_res  -> Match_result ( Tools.transpose match_res )
+                                                              | _ -> raise Wrong_argument_type
+                                                         end;
+                                                         in
+                                                         command tl result varmap
+
+
+
+
+
                          | Link_extract               ->
                                                          begin
 

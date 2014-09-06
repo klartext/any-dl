@@ -66,6 +66,7 @@
 %token QUOTE
 %token TO_STRING
 %token TO_MATCHRES
+%token TRANSPOSE
 %token BASENAME
 %token EXITPARSE
 %token DUMP
@@ -183,6 +184,7 @@ statement: match_stmt          SEMI   { $1 }
     |      QUOTE               SEMI   { Quote     }
     |      TO_STRING           SEMI   { To_string }
     |      TO_MATCHRES         SEMI   { To_matchres }
+    |      TRANSPOSE           SEMI   { Transpose }
     |      BASENAME            SEMI   { Basename }
     |      SYSTEM              SEMI   { System }
     |      LINKEXTRACT         SEMI   { Link_extract }

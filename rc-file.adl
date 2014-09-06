@@ -1769,12 +1769,22 @@ start
   show_match;
 
 
+  # --------- SELECTION LIST ---------------------------------------------
   print("===== arg(\"src\"), arg(\"alt\") ======================");
   recall("BASEDOC");
   tagselect("img"."src" | arg("src"), arg("alt") );
   print;
   show_type;
   show_match;
+
+  # --------- transposing ---------
+  print(" *************** TRANSPOSE DATA ***************\n" );
+  transpose;
+  print;
+  show_type;
+  show_match;
+  print(" *************** -------------- ***************\n" );
+  # --------- -------------- ---------------------------------------------
 
 
   print("===== dump =====================");
