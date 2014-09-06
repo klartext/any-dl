@@ -870,7 +870,7 @@ let evaluate_command_list cmdlst =
                                                                                                   (*| `Doclist     -> Doclist selected_tags *)
                                                                                                   | _            -> raise Extractor_list_failure
                                                                                                end :: sofar
-                                                           ) [] liste
+                                                           ) [] (List.rev liste)
                                                          in
 
                                                          (* function, that extracts paired data from the doclist *)
