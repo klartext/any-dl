@@ -36,6 +36,17 @@ FEATUREs:
  a bit of priority
  =================
 
+ - tagselect: regexp's for selection-pattern  (extraction-pattern also?)
+
+ - converting HTML to named variables (like it also was planned for XML)
+   This would make it easier to select certain data from a docoment / doclist.
+
+ - tagselect: allow Doclist argument as tmpvar to work on
+
+ - DropCol / DropRow also for other data-structures, like Doc_array, Url_list and so on.
+
+
+
  - Special variable for the  tmpvar? maybe $TMPVAR ?
 
   - json-files for saving data with some structure?
