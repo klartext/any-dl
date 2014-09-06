@@ -1771,10 +1771,10 @@ start
 
   print("===== arg(\"src\"), arg(\"alt\") ======================");
   recall("BASEDOC");
-  tagselect("img"."src"| arg("src"), arg("alt") );
+  tagselect("img"."src" | arg("src"), arg("alt") );
   print;
   show_type;
-  #show_match;
+  show_match;
 
 
   print("===== dump =====================");
