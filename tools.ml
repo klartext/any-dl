@@ -137,3 +137,14 @@ let add_item_once lst =
   in
     aux [] lst
 
+
+
+(* ------------------------------------------------- *)
+(* transpose an array-of-arrays                      *)
+(* ------------------------------------------------- *)
+(* lazy man's implementation via Csv's list-of-lists *)
+(* ------------------------------------------------- *)
+let transpose arrarr =
+  let data = Csv.of_array arrarr in
+  let tr = Csv.transpose data in
+  Csv.to_array tr
