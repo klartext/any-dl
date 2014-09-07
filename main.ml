@@ -1083,6 +1083,10 @@ let evaluate_command_list cmdlst =
                                                            | Document_array doc_arr ->
                                                                       let new_docarr = Array.map ( fun (doc,ref) -> (replacer doc, replacer ref) ) doc_arr in
                                                                       command tl (Document_array new_docarr) varmap
+
+                                                           | Match_result  arrarr -> let res = Array.map (fun arr -> let a = Array.copy arr in Array.map replacer a ) arrarr in
+                                                                                     command tl (Match_result res) varmap
+
                                                            | _ -> raise Wrong_argument_type
                                                          end
 
