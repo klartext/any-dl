@@ -123,6 +123,7 @@ end
 parsername "videonames": ( )
 start
   match( "(.*mp4)|(.*flv)|(.*swf)|(.*mpg)|(.*m4v)|(.*mp4)|(.*rtmp)|(.*f4v)|(.*3gp)" );
+  uniq;
   print;
 end
 
