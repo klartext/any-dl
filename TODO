@@ -36,6 +36,26 @@ FEATUREs:
  a bit of priority
  =================
 
+ - tagselect: argpairs: different deparsing scheme also would make sense.
+              maybe giving back matrix instead of array/list?
+
+ - tagselect / csv_save: things like tagselect( ... | argpairs)
+                         would make sense to be converted to a table of the form
+
+                           argname_1     argname_2  argname_3 ...
+                             argval_1_1  argval_2_1   argval_3_1
+                             argval_1_2  argval_2_2   argval_3_2
+                             argval_1_3  argval_2_3   argval_3_3
+                             argval_1_4  argval_2_4   argval_3_4
+                              ...         ...          ...
+
+                            and then saved with csv_save...
+                       So, this scheme would make sense.
+                       But the scheme in use now also make sense to get a good and fast overview.
+                       So, maybe, and option for selecting the deparsing scheme would make sense.
+
+
+
  - tagselect: regexp's for selection-pattern  (extraction-pattern also?)
 
  - converting HTML to named variables (like it also was planned for XML)
