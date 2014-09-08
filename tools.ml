@@ -103,6 +103,18 @@ in
 
 
 
+(* ================================================================ *)
+(* exctract the charset-value from a string and select the matching *)
+(* value for encoding                                               *)
+(* ================================================================ *)
+let select_decoding_scheme str =
+  let scheme = (Pcre.extract ~pat:"charset=([^\"]+)" ~flags:[] str).(1) in
+  match String.lowercase scheme with
+    | "iso-88-59-1" -> `Enc_iso88591
+    | "utf-8"       -> `Enc_utf8
+    | _             -> `Enc_utf8
+
+
 
 (* ======================================================== *)
 (* Decode HTML-stuff (ampersand-foobar)                     *)

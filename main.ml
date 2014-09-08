@@ -44,29 +44,6 @@ exception Devel (* exception for developing / testing *)
 
 
 
-(* ---------------------------------------------------------------- *)
-(* exctract the charset-value from a string and select the matching *)
-(* value for encoding                                               *)
-(* ---------------------------------------------------------------- *)
-let select_decoding_scheme str =
-  let scheme = (Pcre.extract ~pat:"charset=([^\"]+)" ~flags:[] str).(1) in
-  match String.lowercase scheme with
-    | "iso-88-59-1" -> `Enc_iso88591
-    | "utf-8"       -> `Enc_utf8
-    | _             -> `Enc_utf8
-
-
-(* -------------------------------------------------------------- *)
-(* HTML-decode                                                    *)
-(* -------------------------------------------------------------- *)
-(* it's hard-coded, based on the assumption, that UTF-8 is usual. *)
-(* might be parameterized if necessary.                           *)
-(* -------------------------------------------------------------- *)
-let html_decode ?(inenc=`Enc_utf8) str = Netencoding.Html.decode ~in_enc:inenc ~out_enc:`Enc_utf8 () str
-
-
-
-
 module Array2 =
   struct
     include Array
@@ -819,13 +796,17 @@ let evaluate_command_list cmdlst =
                                                          in
 
 
+                                                         (* select tags from the document in TMPVAR *)
+                                                         (* --------------------------------------- *)
                                                          let selected_tags =
                                                            begin
                                                              match tmpvar with
-                                                               | Document (doc, url) ->
-                                                                                       let doclist = Parsers.conv_to_doclist doc in
+                                                               (* maybe it does make sense for using taglist-command on already extracted doclist?!
+                                                               | Doclist   doclist   -> selectloop selector_liste doclist (* the selected tags *)
+                                                               *)
 
-                                                                                       selectloop selector_liste doclist (* the selected tags *)
+                                                               | Document (doc, url) -> let doclist = Parsers.conv_to_doclist doc in (* convert doc-string to Doclist *)
+                                                                                        selectloop selector_liste doclist (* the selected tags *)
 
                                                                | _ -> print_warning "Tag_select found non-usable type"; raise Wrong_tmpvar_type
                                                            end
@@ -1151,7 +1132,7 @@ let evaluate_command_list cmdlst =
 
                          | Html_decode                ->
                                                          verbose_printf "%s" "Html_decode\n";
-                                                         let sd str = select_decoding_scheme str in
+                                                         let sd str = Tools.select_decoding_scheme str in
                                                          let newvar =
                                                            begin
                                                            match tmpvar with
