@@ -246,6 +246,30 @@ end
 # Parser-Definitions for the Mediathek-Parsers #
 # ==============================================
 
+# ---------------------------------
+# Extract OSR Shownotes, and write them to csv-file
+# ---------------------------------
+parsername "OSR-shownotes-2-csv": (  "http://www.openscienceradio.de/" )
+start
+# html.body.div.div.div.div.article.div.div.p.a.target
+
+  tagselect("article", "div", "div", "p", "a" | arg("title"), arg("href") );
+  transpose;
+
+  # Html-decode first, then remove semicolons left over
+  # ----------------------------------------------------
+  htmldecode;       # html-encoded stuff to UTF-8
+  subst(";", " -"); # remove semicolon, because of CSV-saving later on !!
+
+  subst(" - \(link\)", ""); # remove unnecessary stuff
+
+  #print;
+  show_match;
+
+  csv_save("shownotes");
+  print("OSR Shownote-links saved to file \"shownotes.csv\".");
+
+end
 
 
 
