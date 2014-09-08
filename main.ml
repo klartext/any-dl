@@ -1145,6 +1145,10 @@ let evaluate_command_list cmdlst =
                                                              | Url_list    urllist   -> Url_list( List.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urllist)
                                                              | Url_array urlarr      -> Url_array( Array.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urlarr )
 
+
+                                                             | Match_result  arrarr -> let res = Array.map (fun arr -> let a = Array.copy arr in Array.map Tools.html_decode a ) arrarr in
+                                                                                       (Match_result res)
+
                                                              | _ -> raise Wrong_argument_type
                                                            end
                                                          in
