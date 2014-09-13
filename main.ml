@@ -816,6 +816,16 @@ let evaluate_command_list cmdlst =
                                                          (* ----------------------------------------------------------------------- *)
                                                          verbose_printf "*** Tag_select:  Length of selected_tags-list: %d\n" (List.length selected_tags);
 
+                                                         (* if tagselect() gives back empty list, this means: no document found.                                   *)
+                                                         (* if not raising No_document_found, this would be a fatal error, because of the following function-calls *)
+                                                         (* ------------------------------------------------------------------------------------------------------ *)
+                                                         if (List.length selected_tags) = 0
+                                                         then
+                                                           begin
+                                                             prerr_endline "tagselect: nothing found";
+                                                             raise No_document_found
+                                                           end;
+
 
                                                          (* ------------------------------------------------------------------- *)
                                                          (* basic extractor-functions that extract the DOM-stuff from a doclist *)
