@@ -55,6 +55,13 @@ FEATUREs:
                        So, maybe, and option for selecting the deparsing scheme would make sense.
 
 
+ - iselectmatch with 3 parameters would be good:
+     * selection-source
+     * selection-match-string
+     * default-selection
+
+   At the moment, selection-source and default-selection are both the same!
+
 
  - tagselect: regexp's for selection-pattern  (extraction-pattern also?)
 
