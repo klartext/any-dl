@@ -504,28 +504,60 @@ start
 
   #select the JSON-URL ( e.g. http://org-www.arte.tv/papi/tvguide/videos/stream/player/F/044035-000_PLUS7-F/ALL/ALL.json )
   # ------------------
-  match( >>>arte_vp_url="(.*)"<<< );
-  show_match;
 
-  #rowselect(0);
-  iselectmatch(1,"json");
-  select(1);
+
+  # Looking for arte_vp_url-entries, which look like these examples:
+  # ----------------------------------------------------------------
+  # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url='http://arte.tv/papi/tvguide/videos/stream/player/D/051090-007_PLUS7-D/ALL/ALL.json' class='video-container'></div>
+  # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url='http://arte.tv/papi/tvguide/videos/stream/player/D/051090-007_EXTRAIT-D/ALL/ALL.json' class='video-container'></div>
+  # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url='http://arte.tv/papi/tvguide/videos/stream/player/D/051090-007_PLUS7-D/ALL/ALL.json' class='video-container'></div>
+  # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url='http://arte.tv/papi/tvguide/videos/stream/player/D/051090-007_EXTRAIT-D/ALL/ALL.json' class='video-container'></div>
+
+  tagselect("div"."arte_vp_url" | arg("arte_vp_url") ); 
+  #show_match;
+
+
+  # throw out multiple entries (entries are held in columns)
+  transpose;  # transposition to get uniq working on the columns
+  uniq;       # uniq on the columns
+  # not transposing back, because iselectmatch() needs selectables in the columns.
+
+  # remove unnecessary video-urls
+  # -----------------------------
+  grepv("EXTRAIT"); # "extrait" means part/extracted (short trailer-like stuff)
+
+  #iselectmatch(0,"json");
+  rowselect(0);
+  select(0);
 
   makeurl;
   get;    # get file "ALL.json"
 
   store("ALL.json"); # store it, just in case
 
-  # etract videofile-name
-  # ---------------------
-  match("http://artestras.*?mp4");
-  rowselect(0);
-  select(0);
+
+  # extract videofile-name
+  # ----------------------
+  match(>>>("quality":".*?").*?(http.*?mp4).*?"versionShortLibelle":(".*?")<<<);
+  dropcol(0);
+
+  droprow(2); # not sure if this is generally full of crap
+
+
+  # print information on the selectable videos for the user
+  # -------------------------------------------------------
+  print("You can select from the following videos:");
+  print("-----------------------------------------");
+  show_match;
+
+  # now selection by the user
+  # -------------------------
+  iselectmatch(1,"mp4"); # Do the match on column 1 (urls)
+  select(1); # index 1: the URL
+  #print;
 
   makeurl;
   store("videourl");
-
-
 
   #get; # geht so nicht. bekommt rtsp:// angeboten... ?! -> debugging wäre sinnvoll
 
@@ -795,6 +827,40 @@ start
   print;
   system;
 end
+
+
+
+# ---------------------------------
+# ZDF  NEWEST ;-)
+# ---------------------------------
+# Example: http://www.zdf.de/ZDFmediathek/beitrag/video/2232650/
+#parsername "ZDF-NEU": ( "http://www.zdf.de/ZDFmediathek/beitrag/video" )
+parsername "ZDF-JANZ-NEU": ( "http://www.zdf.de/ZDFmediathek/beitrag/v" )
+start
+
+  linkextract;
+  grep("mov");
+
+  print;
+  print("islect() einbauen");
+  makeurl;
+  get;
+  print;
+  print("..........");
+
+  match("(.*mp4)");
+  dropcol(0);
+  print;
+
+
+exitparse;
+  paste("rtmpdump --resume  -r ",  $rtmp, " -y ", $mp4, " -o ", $filename );
+  print;
+  system;
+
+
+end
+
 
 
 
@@ -1860,4 +1926,20 @@ start
   tagselect("table"|dump);
   show_match;
   print;
+end
+
+
+parsername "uniq-test": ( )
+start
+  match("<H1>");
+  show_match;
+  print;
+
+  print("============ UNIQ: ============");
+
+  uniq;
+  show_match;
+  print;
+
+
 end
