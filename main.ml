@@ -1380,7 +1380,7 @@ let main ()  =
     (* if cli-switches ask for it, print the number of parser-defintions found *)
     (* ------------------------------------------------------------------------------------ *)
     if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
-      Printf.fprintf stderr "Number of found parser definitions: %d\n" (List.length parserlist);
+      Printf.fprintf stdout "Number of found parser definitions: %d\n" (List.length parserlist);
 
 
     (* create and initialize hashes for parser-lookup by name / url *)
@@ -1406,7 +1406,7 @@ let main ()  =
                                                           (* ------------------------------------------------------------------------------- *)
                                                           if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
                                                           then
-                                                            Printf.fprintf stderr "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
+                                                            Printf.fprintf stdout "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
 
                                              ) parserdef.urllist;
                                  end
@@ -1415,7 +1415,7 @@ let main ()  =
                                     (* If CLI-switches ask for it, print the parser's-name, mentioning that no url is bound to it *)
                                     (* ------------------------------------------------------------------------------------------ *)
                                     if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
-                                      Printf.fprintf stderr "Init: (unbound to URL)%-30s-> parser %s\n"   ""  parserdef.parsername
+                                      Printf.fprintf stdout "Init: (unbound to URL)%-30s-> parser %s\n"   ""  parserdef.parsername
                                  end
 
               ) parserlist;
