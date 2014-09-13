@@ -901,6 +901,17 @@ List of commands/keywords and a short-escription of them:
     Works like "uniq" from unix-toolbox, but not limited to neighbouring lines;
     or like "sort -u" without a sort (not changing the order of the entries).
 
+    Please note: on match-results, uniq works on ROWs. This means, that multiple
+    rows will be discarded.
+    But multiple Columns in a row will not be touched.
+    If you want to remove multiple columns of a row, you need to first transpose,
+    then use uniq, and then transpose again.
+
+    So, for uniq-ing columns (remove multiple equal columns), you need to do it this way:
+      transpose;
+      uniq;
+      transpose;
+
 
 
 Prefedined Variables:
