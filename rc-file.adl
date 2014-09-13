@@ -525,10 +525,11 @@ start
   # remove unnecessary video-urls
   # -----------------------------
   grepv("EXTRAIT"); # "extrait" means part/extracted (short trailer-like stuff)
+  grepv("PWA11059"); # seems also just be partial stuff
 
-  #iselectmatch(0,"json");
-  rowselect(0);
-  select(0);
+  iselectmatch(0,"json");
+  #rowselect(0);
+  #select(0);
 
   makeurl;
   get;    # get file "ALL.json"
