@@ -21,7 +21,6 @@ BUGs:
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
- - tagselect: unparse a table should be possible...
 
  - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
  - maybe remove print_string(), because print() does the same now.
@@ -36,8 +35,37 @@ FEATUREs:
  a bit of priority
  =================
 
+ - implement csv_save() - with automatic outfile-creation, in the way of save()
+
+ - implement readline(), so that more interactivity is possible.
+   For user-entered titles and so on this might make sense.
+
+ - timestamp: either as $TIME or $NOW, or as seperate keywd "timestamp" or as
+   cli-switch to prepend a timestamp for each output.
+   (Later would make refactoring of file-writing necessary, I think)
+
+ - Implementing a get()-variant that writes directly to file (instead of eating up memory)
+     get_to_file()
+     get_to_file_as()
+   (not sure if Curl allows this, but swithcing completely to OCamlnet is in my mind already.)
+
+
+ - Array2.colmap / Array2.rowmap  map-functions for Array-data.
+   (Should behave non-destructive / functional of course.)
+
+ - Refactoring code, using colmap/rowmap functions
+
+ - tagselect: unparse a table should be possible...
+
  - tagselect: argpairs: different deparsing scheme also would make sense.
               maybe giving back matrix instead of array/list?
+
+ - tagselect: regexp's for selection-pattern  (extraction-pattern also?)
+
+ - tagselect: "any" keyword for accepting the whole document instead of matching to certain tags/properties.
+     Something like
+       tagselect( any | argpairs );
+   Makes sense for Parsers that should display properties for the whole document.
 
  - tagselect / csv_save: things like tagselect( ... | argpairs)
                          would make sense to be converted to a table of the form
@@ -62,53 +90,56 @@ FEATUREs:
 
    At the moment, selection-source and default-selection are both the same!
 
-
- - tagselect: regexp's for selection-pattern  (extraction-pattern also?)
+ - slurping the URL-list from the command line, getting it into TMPVAR.
+   Must be clear, that the URL-list then is shortened, or that an exception
+   for ending any-dl after the parser has finished is called.
+   (exc. caught and normal exit)
 
  - converting HTML to named variables (like it also was planned for XML)
    This would make it easier to select certain data from a docoment / doclist.
+   (DOM-to-string as varnames)
 
  - tagselect: allow Doclist argument as tmpvar to work on
 
  - DropCol / DropRow also for other data-structures, like Doc_array, Url_list and so on.
 
+ - Special variable for the  tmpvar? maybe $TMPVAR ? || First exploration: there seems to be a problem with internally called Subst (?)
+                                                        Must Clean Code there!
 
+ - JSON-parser implementing or using lib for it.
+   Some videofile-meta-data is saved in json-format,
+   so adding it would make sense.
+   Very likely that access will be easier than with simple regexp-matching.
 
- - Special variable for the  tmpvar? maybe $TMPVAR ?
-
-  - json-files for saving data with some structure?
+ - JSON-files for saving data with some structure?
 
  - possibly an option/pragma, that allows parsers to be *not* invoked
    via "-a" CLI switch, because some parsers download anything, not
    a certain video-file (because they are more general, like general
    parsers that download all pics or so.)
 
-
- - Logfile for sucessful and failed downloads
-
- - UNIQ for URLs (e.g. in case, linkextract gives certain URLs multpiple times)
-
- - if/then/else?  try/catch?
-
- - possibly a true stack ( push, pop, dup, exch, ...) might make sense,
-   enhancing the one-val-stack concept.
-
  - * new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
    * new command: astore("NAME");  (autostore() -> store current value like matrix -> NAME.(x).(y) or something like that
    * syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
+
+ - switching from Curl to OCamlnet completely.
+
+
+
+ lesser Priority
+ ===============
+
+ - javascript engine
 
  - call/use command, to call a different parser? ==>   parsername "parsefoobar": ( "url" ) begin call "ard_mediathek_get" end
    This way, not only an URL can be added, but also a name, or a distinct parser that just calls another parser.
    Not checked so far, how much effort for implementing this would be.
    But it looks reasonable to invest that effort for this feature.
 
- - Testsuite would help a lot (example where helpful: linkextract problem in  commit c7f3c1ec98d9c3e88d47c93637a50879c0711d05 )
-     - tesing sites as qell as testing parsers would be needed.
+ - Logfile for sucessful and failed downloads
 
- lesser Priority
- ===============
-
-  - javascript engine
+ - more sophisticated selection menue? (enhancing, what iselectmatch offers).
+   (Should be text-only interface, and even ncurses will be overhead. KISS)
 
  - !!!! XML-deparse -> get values from XML via name :-)
 
@@ -116,11 +147,16 @@ FEATUREs:
 
  - maybe add a more sophisticated program invocation (fork/exec or popen) ?
 
+ - possibly a true stack ( push, pop, dup, exch, ...) might make sense,
+   enhancing the one-val-stack concept.
+
  - would it make sense to allow get also to read the streams?
    Or should there be some other special commadn for it?
    like "get_stream"?
    (but how to achieve this? by using fork/exec to the tools used via system() at the moment?
    Or using stream-reading libraries for this? Are there any such libs and/or OCaml bindings?)
+
+ - if/then/else?  try/catch?
 
  - possibly switch to ulex instead of ocamllex:
      http://alain.frisch.fr/soft.html#ulex
@@ -132,6 +168,9 @@ FEATUREs:
      - command for attaching parsers to URLs or vice versa.
        something like:     attach parser "ard_mediathek_get" to ("http://...", "http://"...")
                  or        attach_urls "ard_mediathek_get" ("http://...", "http://"...")
+
+ - Testsuite would help a lot (example where helpful: linkextract problem in  commit c7f3c1ec98d9c3e88d47c93637a50879c0711d05 )
+     - tesing sites as well as testing parsers would be needed.
 
 
 
