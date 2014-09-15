@@ -69,7 +69,7 @@ type commands_t =
   | Print_args        of results_t list       (* printing the general args-list *)
   | Show_match
   | Print_string of string
-  | CSV_save          of string               (* save data to a csv-file *)
+  | CSV_save_as       of string               (* save data as csv-file *)
   | Save                                      (* save data (filename derived from document-url) *)
   | Save_as           of results_t list       (* save data, explicit filename *)
   | Setvar       of results_t
@@ -146,7 +146,7 @@ let command_to_string cmd = match cmd with
   | Print_args      _ -> "Print_args"
   | Show_match        -> "Show_match"
   | Print_string    _ -> "Print_string"
-  | CSV_save        _ -> "CSV_save"
+  | CSV_save_as     _ -> "CSV_save_as"
   | Save              -> "Save"
   | Save_as         _ -> "Save_as"
   | Setvar          _ -> "Setvar"

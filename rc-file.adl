@@ -39,7 +39,7 @@ parsername "linkextract2csv": ( )
 start
   linkextract;
   to_matchres;
-  csv_save("links");
+  csv_save_as("links.csv");
   print;
 end
 
@@ -266,7 +266,7 @@ start
   #print;
   show_match;
 
-  csv_save("shownotes");
+  csv_save_as("shownotes.csv");
   print("OSR Shownote-links saved to file \"shownotes.csv\".");
 
 end
@@ -1097,6 +1097,8 @@ start
 end
 
 
+# 3SAT: all video-URLs are available via RSS:
+# http://www.3sat.de/mediathek/rss/mediathek.xml
 
 # ---------------------------------
 # 3SAT

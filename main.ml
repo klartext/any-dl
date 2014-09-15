@@ -960,14 +960,14 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar varmap
 
 
-                         | CSV_save    base_filename -> (*  Save the data from a Match_result to a csv-file.                         *)
+                         | CSV_save_as filename      -> (*  Save the data from a Match_result to a csv-file.                         *)
                                                         (* Data will be made square (equal number of columns per row) before saving! *)
                                                         (* ------------------------------------------------------------------------- *)
                                                          begin
                                                            match tmpvar with
                                                              | Match_result mres -> let csv = Csv.of_array mres in
                                                                                     let csvstuff = Csv.square csv in
-                                                                                    Csv.save ( base_filename ^ ".csv" ) csvstuff
+                                                                                    Csv.save filename csvstuff
                                                              | _ -> raise Wrong_tmpvar_type
                                                          end;
                                                          command tl tmpvar varmap

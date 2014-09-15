@@ -27,7 +27,7 @@
                   ("print",        PRINT  );
                   ("print_string", PRINT_STRING  );
 
-                  ("csv_save",     CSV_SAVE );
+                  ("csv_save_as",     CSV_SAVE_AS );
                   ("save",     SAVE     );
                   ("save_as",  SAVE_AS  );
 

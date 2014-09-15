@@ -615,11 +615,9 @@ List of commands/keywords and a short-escription of them:
     the leading filename or URL-path is removed
 
 
-  csv_save
+  csv_save_as
     csv_save does save a *match_result* to a csv-file.
     All data is transformed to have equal number of columns in each row.
-    Only the basename of the output file is needed as parameter.
-    The file extension "csv" is appended automatically.
 
 
   colselect
