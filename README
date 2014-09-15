@@ -856,7 +856,7 @@ List of commands/keywords and a short-escription of them:
         tagselect("table", "a", "img"."align"="top"| dump);
 
       The document is first scanned for table's.
-      The outest match is selected. So if a table is inside a table,
+      The outermost match is selected. So if a table is inside a table,
       the outer tag will be selected, and the whole outer table be selected.
       The inner table would just be content of the first one.
       No in-depth selection is done.
@@ -866,7 +866,7 @@ List of commands/keywords and a short-escription of them:
       From the found <a ...>-tags any img-tags inside these a-tags
       will be selected, if they also are top-aligned.
 
-      The reult then is dumped to screen/console.
+      The result then is dumped to screen/console.
 
 
 
