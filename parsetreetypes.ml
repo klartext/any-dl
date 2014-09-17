@@ -97,7 +97,7 @@ type commands_t =
   | Dump_data                                 (* Dump only data-part if html, not the tags *)
   | Html_decode                               (* decode HTML-quotings back to "normal" chars *)
   (* -------------- *)
-  | Readline of string option                 (* decode HTML-quotings back to "normal" chars *)
+  | Readline of string option                 (* Read line from stdin *)
   (* -------------- *)
   | Sleep_ms    of int                        (* sleep a certain number of milli-seconds *)
   | Dummy
