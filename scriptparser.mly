@@ -26,7 +26,6 @@
 
 %token VBAR
 
-%token ANY
 %token PARSERNAME
 %token MATCH
 %token SHOW_MATCH
@@ -42,6 +41,7 @@
 %token REBASE
 
 %token TAGSELECT
+%token ANY
 %token DATA
 %token DATA_SLURP
 %token ARG
@@ -283,11 +283,17 @@ titleextract_stmt: TITLEEXTRACT   { Title_extract }
 
 
 
-tagselect_stmt: TAGSELECT LPAREN tagselect_arg_list VBAR extractor_list RPAREN { Tag_select( $3, Single_extr $5 ) }
-    |           TAGSELECT LPAREN tagselect_arg_list VBAR ARG_PAIRS      RPAREN { Tag_select( $3, Pair_extr `Arg_pairs ) }
-    |           TAGSELECT LPAREN tagselect_arg_list VBAR ARG_KEYS       RPAREN { Tag_select( $3, Pair_extr `Arg_keys ) }
-    |           TAGSELECT LPAREN tagselect_arg_list VBAR ARG_VALS       RPAREN { Tag_select( $3, Pair_extr `Arg_vals ) }
+tagselect_stmt: TAGSELECT LPAREN tag_selector VBAR extractor_list RPAREN { Tag_select( $3, Single_extr $5 ) }
+    |           TAGSELECT LPAREN tag_selector VBAR ARG_PAIRS      RPAREN { Tag_select( $3, Pair_extr `Arg_pairs ) }
+    |           TAGSELECT LPAREN tag_selector VBAR ARG_KEYS       RPAREN { Tag_select( $3, Pair_extr `Arg_keys ) }
+    |           TAGSELECT LPAREN tag_selector VBAR ARG_VALS       RPAREN { Tag_select( $3, Pair_extr `Arg_vals ) }
     ;
+
+
+tag_selector: ANY {  Selector_any }
+    | tagselect_arg_list { Specific_selector $1 }
+    ;
+
 
 tagselect_arg_list: tagselect_arg                            { [$1] }
     |               tagselect_arg  COMMA tagselect_arg_list  { $1 :: $3 }

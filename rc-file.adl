@@ -1923,6 +1923,11 @@ exitparse;
   print("****************************************");
 end
 
+parsername "anytag": ( )
+start
+  tagselect(any | argpairs );
+  #print;
+end
 
 parsername "tbl2csv": ( )
 start

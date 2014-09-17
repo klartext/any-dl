@@ -12,7 +12,7 @@ type col_t          = string array     (* Hselect as well as VSelec are represen
 type row_t          = string array     (* Hselect as well as VSelec are represented the same way - late think of it as a row *)
 type match_result_t = string array array
 (*
-type selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
+type specific_selector_t     = ( match_result_t -> match_result_t ) (* function, that has a certain algorithm to select certain match_result_t *)
 *)
 
 
@@ -33,7 +33,8 @@ type results_t =
   | Empty
 
 
-type selector_t = { tag_sel: string option; argkey_sel: string option; argval_sel: string option }
+type specific_selector_t = { tag_sel: string option; argkey_sel: string option; argval_sel: string option }
+type selector_t = Selector_any | Specific_selector of specific_selector_t list
 type single_extractor_t = [ `Data | `Data_slurp  | `Arg of string | `Tag | `Arg_keys | `Arg_vals | `Arg_pairs | `Dump | `Html_string (*| `Doclist *) ]
 type pair_extractor_t   = [ `Arg_keys | `Arg_vals | `Arg_pairs ]
 type extractor_t        = Single_extr of single_extractor_t list | Pair_extr of pair_extractor_t
@@ -54,7 +55,7 @@ type commands_t =
   | Link_extract_xml                          (* extracts html-href's from (xml-formatted) webpage (e.g. asx-files) *)
   | Title_extract                             (* extracts the title-tag's text part *)
   | Rebase                                    (* rebases the tmpvar to STARTURL as base *)
-  | Tag_select        of selector_t list * extractor_t (* extracts tags and parts of it from the document *)
+  | Tag_select        of selector_t * extractor_t (* extracts tags and parts of it from the document *)
   | Paste             of results_t list       (* paste together strings *)
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
   | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)
@@ -63,7 +64,7 @@ type commands_t =
   | Show_variables                            (* print all named variables (their names and their contents) *)
   | List_variables                            (* print only names of named variables *)
   (*
-  | Select            of selector_t           (* acts as a filter *) (* old ideas from other tool *)
+  | Select            of specific_selector_t           (* acts as a filter *) (* old ideas from other tool *)
   *)
   | Print
   | Print_args        of results_t list       (* printing the general args-list *)

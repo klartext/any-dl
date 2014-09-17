@@ -765,7 +765,7 @@ let evaluate_command_list cmdlst =
                                                          end
 
 
-                         | Tag_select (selector_liste, extractor )  ->
+                         | Tag_select (selector, extractor )  ->
                                                          (* --------------------------------------------------------------------- *)
                                                          (* apply "find_elements_by_tag_name" to the doclist with hd as selector  *)
                                                          (* and the resulting doclist is used as input to the next call of        *)
@@ -806,7 +806,11 @@ let evaluate_command_list cmdlst =
                                                                *)
 
                                                                | Document (doc, url) -> let doclist = Parsers.conv_to_doclist doc in (* convert doc-string to Doclist *)
-                                                                                        selectloop selector_liste doclist (* the selected tags *)
+                                                                                        begin
+                                                                                          match selector with
+                                                                                            | Selector_any                     -> doclist
+                                                                                            | Specific_selector selector_liste -> selectloop selector_liste doclist (* the selected tags *)
+                                                                                        end
 
                                                                | _ -> print_warning "Tag_select found non-usable type"; raise Wrong_tmpvar_type
                                                            end
