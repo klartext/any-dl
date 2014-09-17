@@ -594,6 +594,9 @@ List of commands/keywords (not carved in stone so far) by example:
   quote;
   subst("pattern", "subst-string");
 
+  readline;
+  readline("VarnameForInputLine");
+
   basename;
   titleextract;
   to_string;
@@ -780,6 +783,13 @@ List of commands/keywords and a short-escription of them:
     needed for arguments that are given to other tools,
     which will be invoked bia system() (which is invoking
     a shell).
+
+
+  readline
+    reads one line from stdin / console.
+    Without arguments, the input is stored in the TMPVAR,
+    With argument, the argument is used as variable-name,
+    and the input is stored in this named variable.
 
 
   recall

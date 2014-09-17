@@ -37,9 +37,6 @@ FEATUREs:
 
  - implement csv_save() - with automatic outfile-creation, in the way of save()
 
- - implement readline(), so that more interactivity is possible.
-   For user-entered titles and so on this might make sense.
-
  - timestamp: either as $TIME or $NOW, or as seperate keywd "timestamp" or as
    cli-switch to prepend a timestamp for each output.
    (Later would make refactoring of file-writing necessary, I think)

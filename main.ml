@@ -1164,6 +1164,17 @@ let evaluate_command_list cmdlst =
                                                          in
                                                          command tl newvar varmap
 
+                         | Readline  arg_opt          -> prerr_endline "Readline  arg_opt";
+                                                         let read_line = String ( read_line() ) in
+                                                         begin
+                                                           match arg_opt with
+                                                             | None         -> command tl read_line varmap
+                                                             | Some varname -> command tl tmpvar ( Varmap.add varname read_line varmap )
+                                                         end
+
+
+
+
                          | Sleep_ms  milliseconds     -> Sleep.sleep_ms milliseconds;
                                                          command tl tmpvar varmap
 

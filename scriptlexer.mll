@@ -80,6 +80,8 @@
 
                   ("htmldecode",  HTML_DECODE  );
 
+                  ("readline",       READLINE  );
+
 
                   ("dummy",  DUMMY  );
                 ];

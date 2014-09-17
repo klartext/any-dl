@@ -74,6 +74,7 @@
 %token SHOW_TAGS
 %token SHOW_TAGS_FULLPATH
 %token HTML_DECODE
+%token READLINE
 %token DUMMY
 
 %token COLSELECT
@@ -203,6 +204,7 @@ statement: match_stmt          SEMI   { $1 }
     |      SHOW_TAGS           SEMI   { Show_tags }
     |      SHOW_TAGS_FULLPATH  SEMI   { Show_tags_fullpath }
     |      HTML_DECODE         SEMI   { Html_decode }
+    |      readline            SEMI   { $1 }
     |      DUMMY               SEMI   { Dummy }
     ;
 
@@ -236,6 +238,10 @@ csv_save_as:    CSV_SAVE_AS  LPAREN  STRING  RPAREN     { CSV_save_as ( $3 ) }
     ;
 
 save_as:     SAVE_AS  LPAREN  argument_list  RPAREN     { Save_as $3 }
+    ;
+
+readline: READLINE LPAREN STRING RPAREN    { Readline (Some $3) }
+    |     READLINE                         { Readline None      }
     ;
 
 paste_stmt: PASTE LPAREN argument_list RPAREN    { Paste $3 }

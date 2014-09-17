@@ -97,6 +97,8 @@ type commands_t =
   | Dump_data                                 (* Dump only data-part if html, not the tags *)
   | Html_decode                               (* decode HTML-quotings back to "normal" chars *)
   (* -------------- *)
+  | Readline of string option                 (* decode HTML-quotings back to "normal" chars *)
+  (* -------------- *)
   | Sleep_ms    of int                        (* sleep a certain number of milli-seconds *)
   | Dummy
 
@@ -169,6 +171,7 @@ let command_to_string cmd = match cmd with
   | Show_tags_fullpath -> "Show_tags_fullpath"
   | Dump_data         -> "Dump_data"
   | Html_decode       -> "Html_decode"        (* decode HTML-quotings back to "normal" chars *)
+  | Readline        _ -> "Readline"
   | Sleep_ms        _ -> "Sleep_ms"
   | Dummy             -> "Dummy"
 
