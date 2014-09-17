@@ -1164,7 +1164,7 @@ let evaluate_command_list cmdlst =
                                                          in
                                                          command tl newvar varmap
 
-                         | Readline  arg_opt          -> prerr_endline "Readline  arg_opt";
+                         | Readline  arg_opt          ->
                                                          let read_line = String ( read_line() ) in
                                                          begin
                                                            match arg_opt with
