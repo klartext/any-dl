@@ -1925,13 +1925,6 @@ exitparse;
   print("****************************************");
 end
 
-parsername "anytag": ( )
-start
-  tagselect( anytag | argpairs );
-  #uniq; # removes multiple rows (e.g. many empty rows)
-  #show_match;
-  print;
-end
 
 parsername "tbl2csv": ( )
 start
@@ -1955,3 +1948,38 @@ start
 
 
 end
+
+
+# some stuff to experiment with
+# -----------------------------
+parsername "anytag_tags": ( )
+start
+  tagselect( anytag | tag );
+
+  show_match;
+end
+
+
+# some stuff to experiment with
+# -----------------------------
+parsername "anytag_tags_uniq": ( )
+start
+  tagselect( anytag | tag );
+
+  transpose;
+  uniq; # removes multiple rows (e.g. many empty rows)
+  transpose;
+
+  show_match;
+end
+
+# some stuff to experiment with
+# -----------------------------
+parsername "anytag_argpairs": ( )
+start
+  tagselect( anytag | argpairs );
+
+  show_match;
+end
+
+

@@ -565,6 +565,16 @@ List of commands/keywords (not carved in stone so far) by example:
 
   tagselect("img"."src" | arg("src"), arg("alt") );
 
+  # tagselect used with "anytags"-selector 
+  # --------------------------------------
+  # the "anytags"-selector selects ANY tags,
+  # which means that ALL tags from the document are
+  # picked up in depth-first manner.
+  # without anytags, a match does pick a tag with all descendants.
+  # But these descendants will not be extracted with a extractor-pattern!
+  # --------------------------------------
+  tagselect( anytags | argpairs ); # shows argpairs of ANY / ALL tags found (depth-first)
+
 
 
 
@@ -877,6 +887,23 @@ List of commands/keywords and a short-escription of them:
       will be selected, if they also are top-aligned.
 
       The result then is dumped to screen/console.
+
+    tagselect selects elements from the document tree,
+    so that a selection picks that certain tag and all it's descenmdants.
+    That means for example, that a data-slurp-extraction will show all data from the descendants.
+    But all other extractors ONLY LOOK UP THE TOPMOST element.
+    (And not the desendants)
+    The reason is: that the selected element normaly is what needs to be analyzed,
+    not necessarily the descendants.
+
+    With the "anytag" selector in tagselect (e.g. 'tagselect( anytags, argpairs );' )
+    ANY tag is selected, so ALL tags are TOPMOST tags, because any descendant also
+    is edetected as a new tag.
+    This is a depth-first selection, with each element being a top-element.
+    This way you can access all descendants and analyse them, fr example
+    extract all argpairs from all the tags of the whole document.
+
+
 
 
 
