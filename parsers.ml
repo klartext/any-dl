@@ -575,7 +575,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     (* ================== *)
     (* finds any elements *)
     (* ================== *)
-    let find_any_elements name  doclist =
+    let find_any_elements doclist =
 
       let picked = ref [] in
 
@@ -587,7 +587,6 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
                           | Element (tag, args, dl)                  -> picked := hd :: !picked; traverse_aux dl
                           | Data    _                                -> ()
                       end;
-
                       traverse_aux tl (* work on the tail *)
       in
         traverse_aux doclist;
@@ -633,7 +632,6 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
     (* matcher-functions *)
     (* ================= *)
-    let matcher_any_element  : matcher_t  =  fun tagval argkey argval tag args  ->   true
 
     (* matchers with tag-match *)
     (* ----------------------- *)
@@ -653,7 +651,6 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     (* generated lookup-functions                                *)
     (* created from "find_elements_by" and the matcher-functions *)
     (* ========================================================= *)
-    let find_any_elements = find_elements_by  matcher_any_element (* gives back *any* Element's *)
 
     (* lookup-funcctions with tag-match *)
     (* -------------------------------- *)
