@@ -572,6 +572,30 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
+    (* ================== *)
+    (* finds any elements *)
+    (* ================== *)
+    let find_any_elements name  doclist =
+
+      let picked = ref [] in
+
+      let rec traverse_aux doclist =
+        match doclist with
+          | []     -> ()
+          | hd::tl -> begin (* work on the head *)
+                        match hd with
+                          | Element (tag, args, dl)                  -> picked := hd :: !picked; traverse_aux dl
+                          | Data    _                                -> ()
+                      end;
+
+                      traverse_aux tl (* work on the tail *)
+      in
+        traverse_aux doclist;
+        List.rev !picked
+
+
+
+
 
     type matcher_t = string -> string -> string  -> string -> (string*string) list -> bool
 

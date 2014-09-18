@@ -134,6 +134,7 @@ start
   linkextract;
   print;
   grep("(\.jpg)|(\.jpeg)|(\.gif)|(\.png)|(\.svg)|(\.pnm)|(\.ppm)|(\.pgm)|(\.pbm)$");
+  uniq;
   print( " ======================================================================== ");
   print;
   show_type;
@@ -149,6 +150,7 @@ start
   #match( >>>"(http[^"]+\.pdf)<<< );
   linkextract;
   grep( >>>(.*?\.pdf)<<< );
+  uniq;
   print;
   to_matchres;
   dropcol(1); # referrer removed!
