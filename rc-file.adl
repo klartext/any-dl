@@ -1928,6 +1928,8 @@ end
 parsername "anytag": ( )
 start
   tagselect( anytag | argpairs );
+  #uniq; # removes multiple rows (e.g. many empty rows)
+  #show_match;
   print;
 end
 

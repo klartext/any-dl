@@ -852,30 +852,30 @@ let evaluate_command_list cmdlst =
 
                                                          (* function, that extracts single-items from the doclist *)
                                                          (* ----------------------------------------------------- *)
-                                                         let collect_singles liste =
+                                                         let collect_singles extractor_liste elements =
                                                            List.fold_left ( fun sofar extr ->
                                                                                                begin
                                                                                                 match extr with
-                                                                                                  | `Data        -> let dat        = extr_data      selected_tags in (Array.of_list dat)
-                                                                                                  | `Data_slurp  -> let dat        = extr_dataslurp selected_tags in Array.of_list dat
-                                                                                                  | `Tag         -> let tagnames   = extr_tag       selected_tags in (Array.of_list tagnames)
-                                                                                                  | `Arg key     -> let extracted  = extr_arg key   selected_tags in Array.of_list extracted
-                                                                                                  | `Dump        -> let dumped     = extr_dump      selected_tags in Array.of_list dumped
-                                                                                                  | `Html_string -> [| (extr_html_str selected_tags) |]
-                                                                                                  (*| `Doclist     -> Doclist selected_tags *)
+                                                                                                  | `Data        -> let dat        = extr_data      elements in (Array.of_list dat)
+                                                                                                  | `Data_slurp  -> let dat        = extr_dataslurp elements in Array.of_list dat
+                                                                                                  | `Tag         -> let tagnames   = extr_tag       elements in (Array.of_list tagnames)
+                                                                                                  | `Arg key     -> let extracted  = extr_arg key   elements in Array.of_list extracted
+                                                                                                  | `Dump        -> let dumped     = extr_dump      elements in Array.of_list dumped
+                                                                                                  | `Html_string -> [| (extr_html_str elements) |]
+                                                                                                  (*| `Doclist     -> Doclist elements *)
                                                                                                   | _            -> raise Extractor_list_failure
                                                                                                end :: sofar
-                                                           ) [] (List.rev liste)
+                                                           ) [] (List.rev extractor_liste)
                                                          in
 
                                                          (* function, that extracts paired data from the doclist *)
                                                          (* ---------------------------------------------------- *)
-                                                         let extract_pairs item =
+                                                         let extract_pairs item elements =
                                                                                    begin
                                                                                     match item with
-                                                                                      | `Arg_pairs   -> let pairs      = extr_argpairs  selected_tags in ( Array.of_list pairs )
-                                                                                      | `Arg_keys    -> let arg_keys   = extr_argkeys   selected_tags in ( Array.of_list arg_keys )
-                                                                                      | `Arg_vals    -> let arg_values = extr_argvals   selected_tags in ( Array.of_list arg_values )
+                                                                                      | `Arg_pairs   -> let pairs      = extr_argpairs  elements in ( Array.of_list pairs )
+                                                                                      | `Arg_keys    -> let arg_keys   = extr_argkeys   elements in ( Array.of_list arg_keys )
+                                                                                      | `Arg_vals    -> let arg_values = extr_argvals   elements in ( Array.of_list arg_values )
                                                                                       | _            -> raise Extractor_list_failure
                                                                                    end
                                                          in
@@ -884,8 +884,8 @@ let evaluate_command_list cmdlst =
                                                          let result =
                                                            begin
                                                              match extractor with
-                                                               | Pair_extr   extr     -> Match_result ( extract_pairs extr )
-                                                               | Single_extr extr_lst -> Match_result ( Array.of_list ( collect_singles extr_lst ) )
+                                                               | Pair_extr   extr     -> Match_result ( extract_pairs extr selected_tags )
+                                                               | Single_extr extr_lst -> Match_result ( Array.of_list ( collect_singles extr_lst selected_tags ) )
                                                            end
                                                          in
 
