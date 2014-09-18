@@ -59,11 +59,6 @@ FEATUREs:
 
  - tagselect: regexp's for selection-pattern  (extraction-pattern also?)
 
- - tagselect: "any" keyword for accepting the whole document instead of matching to certain tags/properties.
-     Something like
-       tagselect( any | argpairs );
-   Makes sense for Parsers that should display properties for the whole document.
-
  - tagselect / csv_save: things like tagselect( ... | argpairs)
                          would make sense to be converted to a table of the form
 
