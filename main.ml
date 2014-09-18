@@ -808,7 +808,7 @@ let evaluate_command_list cmdlst =
                                                                | Document (doc, url) -> let doclist = Parsers.conv_to_doclist doc in (* convert doc-string to Doclist *)
                                                                                         begin
                                                                                           match selector with
-                                                                                            | Selector_any                     -> doclist
+                                                                                            | Selector_any                     -> Parsers.Htmlparse.find_any_elements doclist
                                                                                             | Specific_selector selector_liste -> selectloop selector_liste doclist (* the selected tags *)
                                                                                         end
 

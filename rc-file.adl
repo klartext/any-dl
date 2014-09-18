@@ -1926,7 +1926,7 @@ end
 parsername "anytag": ( )
 start
   tagselect(any | argpairs );
-  #print;
+  print;
 end
 
 parsername "tbl2csv": ( )

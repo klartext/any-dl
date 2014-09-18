@@ -10,6 +10,7 @@ open Nethtml
 open Parsetreetypes
 open Tools
 
+exception Not_found_Element (* *)
 
 let activate_controlstrings str =
   let str = Pcre.replace ~pat:"\\\\n" ~templ:"\n" str in
@@ -493,7 +494,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     (* extracts keys (names) of arguments of ONE document-element *)
     (* ========================================================== *)
     let extract_arg_keys_from_doc doc = match doc with
-      | Data _               -> raise Not_found
+      | Data _               -> raise Not_found_Element
       | Element (_, args, _) -> List.map fst args
 
 
@@ -505,7 +506,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     (* extracts values of arguments of ONE document-element *)
     (* ==================================================== *)
     let extract_arg_values_from_doc doc = match doc with
-      | Data _               -> raise Not_found
+      | Data _               -> raise Not_found_Element
       | Element (_, args, _) -> List.map snd args
 
     let extract_arg_values_from_topdocs_of_doclist doclist =
@@ -516,7 +517,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     (* extracts pairs of arguments of ONE document-element *)
     (* ==================================================== *)
     let extract_arg_pairs_from_doc doc = match doc with
-      | Data _               -> raise Not_found
+      | Data _               -> raise Not_found_Element
       | Element (_, args, _) -> args
 
 
@@ -533,7 +534,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     (* extracts tagnames of ONE document-element *)
     (* ========================================= *)
     let extract_tagname_from_doc doc = match doc with
-      | Data _              -> raise Not_found
+      | Data _              -> raise Not_found_Element
       | Element (tag, _, _) -> tag
 
     (* ==================================================== *)
@@ -608,6 +609,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
     (* matcher-functions *)
     (* ================= *)
+    let matcher_any_element  : matcher_t  =  fun tagval argkey argval tag args  ->   true
 
     (* matchers with tag-match *)
     (* ----------------------- *)
@@ -627,6 +629,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     (* generated lookup-functions                                *)
     (* created from "find_elements_by" and the matcher-functions *)
     (* ========================================================= *)
+    let find_any_elements = find_elements_by  matcher_any_element (* gives back *any* Element's *)
 
     (* lookup-funcctions with tag-match *)
     (* -------------------------------- *)
