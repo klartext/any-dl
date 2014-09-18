@@ -41,7 +41,7 @@
 %token REBASE
 
 %token TAGSELECT
-%token ANY
+%token ANYTAG
 %token DATA
 %token DATA_SLURP
 %token ARG
@@ -290,7 +290,7 @@ tagselect_stmt: TAGSELECT LPAREN tag_selector VBAR extractor_list RPAREN { Tag_s
     ;
 
 
-tag_selector: ANY {  Selector_any }
+tag_selector: ANYTAG {  Selector_any }
     | tagselect_arg_list { Specific_selector $1 }
     ;
 

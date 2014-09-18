@@ -89,7 +89,7 @@
     List.iter (fun (kwd, tok) -> Hashtbl.add parameter_table kwd tok)
                 [
                   (* selectors and extractors for tagselect() *)
-                  ("any",              ANY  );        (* selector  *)
+                  ("anytag",           ANYTAG  );     (* selector  *)
 
                   ("data",             DATA  );       (* extractor *)
                   ("dataslurp",        DATA_SLURP  ); (* extractor *)
