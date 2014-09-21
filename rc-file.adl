@@ -526,8 +526,7 @@ start
 
   # remove unnecessary video-urls
   # -----------------------------
-  grepv("EXTRAIT"); # "extrait" means part/extracted (short trailer-like stuff)
-  grepv("PWA11059"); # seems also just be partial stuff
+  grep("PLUS7-D"); # here are the videos
 
   iselectmatch(0,"json");
   #rowselect(0);
@@ -852,9 +851,29 @@ start
   print("..........");
 
   match("(.*mp4)");
-  dropcol(0);
+  dropcol(0); # full-match removed
   print;
+  iselectmatch(0, ".*mp4");
+  to_string;
 
+  store("rtspurl");
+
+  basename;
+  store("basename");
+
+
+ # there are rtsp-files inside
+ # have found no toool so far that does work on rtsp-streams well.
+
+
+ # http://www.zdf.de/ZDFmediathek/beitrag/video/2241436/Referendum-Wird-Schottland-unabhaengig%253F?bc=sts;stt&flash=off
+
+ ####  rtmpdump -a firefox -r rtsp://real2.infn.it/webcast/2012-esploratori-invisibile/esploratori-dell-invisibile.rm -o myfile.rm
+ #### mplayer -dumpstream rtsp://real2.infn.it/webcast/2012-esploratori-invisibile/esploratori-dell-invisi‌​bile.rm -dumpfile esploratori-dell-invisibile.rm
+
+  paste(" rtspdump -r ", $rtspurl, " -o ", $basename );
+  print;
+  system;
 
 exitparse;
   paste("rtmpdump --resume  -r ",  $rtmp, " -y ", $mp4, " -o ", $filename );
@@ -864,6 +883,44 @@ exitparse;
 
 end
 
+
+
+# ---------------------------------
+# SRF.CH 
+# ---------------------------------
+# Example: http://www.srf.ch/player/tv/rundschau/video/michail-gorbatschow-exklusiv?id=02183e52-ba13-4f0b-9558-a3c7448be0cc
+# =================================
+parsername "srf": ( "http://www.srf.ch/player/tv/rundschau/video" )
+start
+  match(>>>(http.*?mp4)<<<);
+  #show_match;
+  droprow(0); # full-match removed
+
+  # remove doublettes
+  # -----------------
+  transpose;
+  uniq;
+  transpose;
+
+  makeurl;
+  to_string;
+  subst("\"", ""); # necessary because of stupid match?
+  store("videourl");
+
+  to_string;
+  basename;
+  store("basename");
+
+  recall("BASEDOC");
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+  paste("wget ", $videourl, " -O ", $title, $basename );
+  print;
+  system;
+
+end
 
 
 
