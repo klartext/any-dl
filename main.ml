@@ -20,6 +20,7 @@ exception NOT_IMPLEMENTED_SO_FAR (* for planned, but not already implemented fun
 exception Value_conversion_unknown  (* type conversion, that can't handle this special item (similar to "Wrong_tmpvar_type") *)
 
 exception No_document_found             (* a dcoument could not be retrieved *)
+exception Tagselect_empty_list          (* tagselect gives back an empty list *)
 exception No_Match                      (* if a match was tried, but no match could be found *)
 exception No_Matchresult_available      (* if Select is used, but there is no match-result available as tmpvar *)
 exception No_Matchable_value_available  (* if Match is used, but there is no matchable tmpvar *)
@@ -820,14 +821,14 @@ let evaluate_command_list cmdlst =
                                                          (* ----------------------------------------------------------------------- *)
                                                          verbose_printf "*** Tag_select:  Length of selected_tags-list: %d\n" (List.length selected_tags);
 
-                                                         (* if tagselect() gives back empty list, this means: no document found.                                   *)
-                                                         (* if not raising No_document_found, this would be a fatal error, because of the following function-calls *)
-                                                         (* ------------------------------------------------------------------------------------------------------ *)
+                                                         (* if tagselect() gives back empty list, this means: no document found.                                      *)
+                                                         (* if not raising Tagselect_empty_list, this would be a fatal error, because of the following function-calls *)
+                                                         (* --------------------------------------------------------------------------------------------------------- *)
                                                          if (List.length selected_tags) = 0
                                                          then
                                                            begin
                                                              prerr_endline "tagselect: nothing found";
-                                                             raise No_document_found
+                                                             raise Tagselect_empty_list
                                                            end;
 
 
@@ -1313,6 +1314,7 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
     | Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!\t Parse exited.\n"
     | Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name
     | No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url
+    | Tagselect_empty_list    -> Printf.eprintf "Tagselect_empty_list for URL %s\n" url
 
 
 
