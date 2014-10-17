@@ -965,9 +965,10 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar varmap
 
 
-                         | CSV_save_as filename      -> (*  Save the data from a Match_result to a csv-file.                         *)
+                         | CSV_save_as argument_list -> (*  Save the data from a Match_result to a csv-file.                         *)
                                                         (* Data will be made square (equal number of columns per row) before saving! *)
                                                         (* ------------------------------------------------------------------------- *)
+                                                         let filename = paste_arglist_to_string  argument_list  varmap in
                                                          begin
                                                            match tmpvar with
                                                              | Match_result mres -> let csv = Csv.of_array mres in

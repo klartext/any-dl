@@ -70,7 +70,7 @@ type commands_t =
   | Print_args        of results_t list       (* printing the general args-list *)
   | Show_match
   | Print_string of string
-  | CSV_save_as       of string               (* save data as csv-file *)
+  | CSV_save_as       of results_t list               (* save data as csv-file *)
   | Save                                      (* save data (filename derived from document-url) *)
   | Save_as           of results_t list       (* save data, explicit filename *)
   | Setvar       of results_t

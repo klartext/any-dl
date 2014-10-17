@@ -253,8 +253,15 @@ end
 # ---------------------------------
 parsername "OSR-shownotes-2-csv": (  "http://www.openscienceradio.de/" )
 start
-# html.body.div.div.div.div.article.div.div.p.a.target
 
+  # extract title, for usage as part of the filename
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+
+  recall("BASEDOC");
+# html.body.div.div.div.div.article.div.div.p.a.target
   tagselect("article", "div", "div", "p", "a" | arg("title"), arg("href") );
   transpose;
 
@@ -268,8 +275,8 @@ start
   #print;
   show_match;
 
-  csv_save_as("shownotes.csv");
-  print("OSR Shownote-links saved to file \"shownotes.csv\".");
+  csv_save_as($title, "shownotes.csv");
+  print("OSR Shownote-links saved to file \"", $title, "shownotes.csv\".");
 
 end
 

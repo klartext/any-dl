@@ -234,7 +234,7 @@ recall_stmt: RECALL LPAREN STRING   RPAREN    { Recall $3 }
 delete_stmt: DELETE LPAREN STRING   RPAREN    { Delete $3 }
     ;
 
-csv_save_as:    CSV_SAVE_AS  LPAREN  STRING  RPAREN     { CSV_save_as ( $3 ) }
+csv_save_as:    CSV_SAVE_AS  LPAREN  argument_list  RPAREN     { CSV_save_as ( $3 ) }
     ;
 
 save_as:     SAVE_AS  LPAREN  argument_list  RPAREN     { Save_as $3 }
