@@ -1359,7 +1359,7 @@ end
 # -----------------------------------------------------------
 # TED
 # -----------------------------------------------------------
-# Example: http://www.ted.com/talks/cesar_kuriyama_one_second_every_day.html
+# Example: http://download.ted.com/talks/GlennGreenwald_2014G-320k.mp4
 # -----------------------------------------------------------
 # simple parser, just picks the easiesed way,
 # with no quality selection so far.
@@ -1367,8 +1367,19 @@ end
 # ===========================================================
 parsername "ted": ( "http://www.ted.com/talks/" )
 start
-  linkextract;
-  grep("mp4");
+  match(>>>:"(http://.*?mp4)"<<<);
+
+  #show_match;
+
+  dropcol(0); # full-match removed
+
+  # drop two rows ( seem to be crap... but not sure they always are)
+  # -------------
+  droprow(0);
+  droprow(0);
+
+  iselectmatch(0,"mp4");
+
   makeurl;
 
   store("url");
