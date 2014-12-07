@@ -163,17 +163,19 @@ parser_script:                { [] }
 
 statement_list: statement         { [$1]    }
     | statement statement_list    { $1 :: $2 }
+    | assignment                  { (snd $1) :: [ fst $1 ] }
+    | assignment statement_list   { (snd $1) :: (fst $1) :: $2 }
     ;
 
+/*
 statement: simple_statement { $1 }
-    |      assignment       { $1 }
+    ;
+*/
+
+assignment: IDENTIFIER EQUALS statement { ($3, Store $1) }
     ;
 
-assignment: IDENTIFIER EQUALS simple_statement { $3 }
-    |
-    ;
-
-simple_statement: match_stmt          SEMI   { $1 }
+statement: match_stmt          SEMI   { $1 }
     |      print_stmt_simple   SEMI   { Print  }
     |      showmatch_stmt      SEMI   { Show_match }
     |      print_stmt          SEMI   { $1 }
