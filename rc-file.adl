@@ -2058,3 +2058,23 @@ start
 end
 
 
+parsername "testassign": ( )
+start
+  linkextract;
+  print;
+  print("--------");
+  store("links");
+
+  # Mit Assignments
+  print("Jetzt mit Assigments");
+  recall("BASEDOC");
+  linksa = linkextract;
+  #show_match;
+  show_type;
+#print;
+  print("--------");
+  print($linksa);
+  #print($linksa);
+end
+
+
