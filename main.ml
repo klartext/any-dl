@@ -1010,14 +1010,16 @@ let evaluate_command_list cmdlst =
 
 
 
-                         | Store  varname             -> command tl tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
+                         | Store  varname             ->  verbose_printf "Store tmpvar in varname \"%s\"\n" varname;
+                                                          command tl tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
 
 
                          | Recall varname             -> verbose_printf "Recall variable: \"%s\"\n" varname;
                                                          let varcontents = Varmap.find varname varmap in
                                                          command tl varcontents varmap
 
-                         | Delete varname             -> command tl tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
+                         | Delete varname             -> verbose_printf "Delete variable \"%s\"\n" varname;
+                                                         command tl tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
 
 
                          | Uniq                       -> (* uniq: make entries unique: ignore multiple entries with same contents *)
