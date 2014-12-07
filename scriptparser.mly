@@ -165,7 +165,15 @@ statement_list: statement         { [$1]    }
     | statement statement_list    { $1 :: $2 }
     ;
 
-statement: match_stmt          SEMI   { $1 }
+statement: simple_statement { $1 }
+    |      assignment       { $1 }
+    ;
+
+assignment: IDENTIFIER EQUALS simple_statement { $3 }
+    |
+    ;
+
+simple_statement: match_stmt          SEMI   { $1 }
     |      print_stmt_simple   SEMI   { Print  }
     |      showmatch_stmt      SEMI   { Show_match }
     |      print_stmt          SEMI   { $1 }
