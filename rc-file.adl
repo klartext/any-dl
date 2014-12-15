@@ -2069,12 +2069,18 @@ start
   print("Jetzt mit Assigments");
   recall("BASEDOC");
   linksa = linkextract;
+#print;
   #show_match;
   show_type;
+  show_variables;
 #print;
-  print("--------");
+  print("PRINT_linksa");
   print($linksa);
   #print($linksa);
+
+  recall("linksa");
+  print("linksa - RECALLED");
+  print;
 end
 
 
