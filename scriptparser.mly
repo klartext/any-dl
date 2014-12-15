@@ -163,8 +163,8 @@ parser_script:                { [] }
 
 statement_list: statement         { [$1]    }
     | statement statement_list    { $1 :: $2 }
-    | assignment                  { (snd $1) :: [ fst $1 ] }
-    | assignment statement_list   { (snd $1) :: (fst $1) :: $2 }
+    | assignment                  { (fst $1) :: [ snd $1 ] }
+    | assignment statement_list   { (fst $1) :: (snd $1) :: $2 }
     ;
 
 /*
