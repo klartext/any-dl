@@ -153,7 +153,7 @@ let rec  to_string  result_value varmap =
       | Match_result  mres         -> raise Wrong_argument_type (* match-res => arr of arr -> recursion on String_array ! *)
       | Url           (href, ref)  -> href
       | Url_list      url_list     -> List.fold_right ( fun a sofar -> "\"" ^ (fst a) ^ "\" " ^ sofar ) url_list ""
-      | Url_array     url_arr      -> let elem = url_arr.(0) in to_string (Url (fst(elem), snd(elem))) varmap (* first Url used *)
+      | Url_array     url_arr      -> to_string  (Url_list ( Array.to_list url_arr)) varmap
       | Empty                      -> ""
       (*
       | Doclist       dl           -> Parsers.convert_doclist_to_htmlstring dl
