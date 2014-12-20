@@ -949,6 +949,28 @@ List of commands/keywords and a short-escription of them:
 
 
 
+New feature (as of december 2014): assignments
+=================================
+
+  It's now also possible to use assignments.
+
+      varname = COMMAND(...);
+
+  assigns the tmpvar that was created by the command
+  (internally via Store-command) to a named variable.
+
+  Using assignments is not different to calling a command
+  and then do store(<varname>);
+
+  It's just syntactic sugar,
+  maybe helpful in situations, where many store/recall comands would be
+  needed.
+
+  The tmpvar will be placed on the tmpvar-stack,
+  so a previous stack-value will be replaced by the new one.
+
+
+
 Prefedined Variables:
 =====================
 
