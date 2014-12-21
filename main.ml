@@ -986,6 +986,15 @@ let evaluate_command_list cmdlst =
 
 
 
+                         | CSV_save                  -> (*  Save the data from a Match_result to a csv-file.                         *)
+                                                        (* Data will be made square (equal number of columns per row) before saving! *)
+                                                        (* ------------------------------------------------------------------------- *)
+                                                         let url = Parsers.url_to_filename (to_string (Varmap.find "STARTURL" varmap) varmap) in
+                                                         command [CSV_save_as [String url; String ".csv"] ] tmpvar varmap; (* do the CSV_save with the created filename *)
+                                                         command tl tmpvar varmap
+
+
+
                          | Save_as      argument_list ->
                                                          verbose_printf "Save_as\n";
                                                          let filename = paste_arglist_to_string  argument_list  varmap in

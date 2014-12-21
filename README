@@ -631,6 +631,15 @@ List of commands/keywords and a short-escription of them:
   csv_save_as
     csv_save does save a *match_result* to a csv-file.
     All data is transformed to have equal number of columns in each row.
+    Arguments of csv_save_as() are appended into a resulting filename.
+
+
+  csv_save
+    csv_save does save a *match_result* to a csv-file.
+    All data is transformed to have equal number of columns in each row.
+    The filename is derived from the used STARTURL.
+    The charcater set is shrinked down to a subset of ASCII.
+    ".csv" is appended automatically.
 
 
   colselect
