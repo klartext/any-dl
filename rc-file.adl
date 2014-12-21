@@ -275,8 +275,7 @@ start
   #print;
   show_match;
 
-  csv_save_as($title, "shownotes.csv");
-  print("OSR Shownote-links saved to file \"", $title, "shownotes.csv\".");
+  csv_save;
 
 end
 
