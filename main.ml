@@ -286,6 +286,18 @@ let evaluate_command_list cmdlst =
   (* -------------------------------------------------------- *)
   and     command commandlist tmpvar varmap =
     flush_all();
+
+    (* For -vv print command name to stdout *)
+    (* ==================================== *)
+    if Cli.opt.Cli.very_verbose
+    then
+      begin
+        try
+          let str = Parsetreetypes.command_to_string (List.hd commandlist) in
+          print_endline ("_Command_ " ^ str)
+        with Failure _ -> () (* catches List.hd [] *)
+      end;
+
     match commandlist with
       | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
       | cmd::tl   -> begin
@@ -903,19 +915,16 @@ let evaluate_command_list cmdlst =
 
 
                          | Paste paste_list            ->
-                                                          verbose_printf "Paste\n";
                                                           let res = paste_arglist_to_string  paste_list  varmap in
                                                           command tl (String res) varmap
 
 
 
                          | Print_args prt_args         ->
-                                                          verbose_printf "Print_args\n";
                                                           command [ Paste( prt_args ); Print ] Empty varmap; (* use the Paste-command and the print-command *)
                                                           command tl tmpvar varmap (* just next command without changed tmpvar *)
 
                          | Print                      ->
-                                                         verbose_printf "Print\n";
                                                          begin
                                                            match tmpvar with
                                                              (* does Varname makes sense at all here? *)
@@ -947,7 +956,6 @@ let evaluate_command_list cmdlst =
 
 
                          | Show_match                -> (* prints "real" matches only (and not the fullmatch with index = 0) *)
-                                                         verbose_printf "Show_match\n";
                                                          begin
                                                            match tmpvar with
                                                              | Match_result mres ->
@@ -973,7 +981,6 @@ let evaluate_command_list cmdlst =
                          | CSV_save_as argument_list -> (*  Save the data from a Match_result to a csv-file.                         *)
                                                         (* Data will be made square (equal number of columns per row) before saving! *)
                                                         (* ------------------------------------------------------------------------- *)
-                                                         verbose_printf "CSV_save_as\n";
                                                          let filename = paste_arglist_to_string  argument_list  varmap in
                                                          begin
                                                            match tmpvar with
@@ -996,7 +1003,6 @@ let evaluate_command_list cmdlst =
 
 
                          | Save_as      argument_list ->
-                                                         verbose_printf "Save_as\n";
                                                          let filename = paste_arglist_to_string  argument_list  varmap in
                                                          begin
                                                            match tmpvar with
@@ -1010,7 +1016,6 @@ let evaluate_command_list cmdlst =
 
 
                          | Save                       ->
-                                                         verbose_printf "Save\n";
                                                          let saver (doc, url) = let fname = Parsers.url_to_filename url in
                                                                              save_string_to_file doc fname
                                                          in
@@ -1025,7 +1030,6 @@ let evaluate_command_list cmdlst =
 
 
                          | Setvar var                 ->
-                                                         verbose_printf "Setvar\n";
                                                          command tl var varmap (* sets the argument of setvar as new tmpvar *)
 
 
@@ -1043,7 +1047,6 @@ let evaluate_command_list cmdlst =
 
 
                          | Uniq                       -> (* uniq: make entries unique: ignore multiple entries with same contents *)
-                                                         verbose_printf "Uniq\n";
                                                          let res =
                                                            begin
                                                              match tmpvar with
@@ -1076,7 +1079,6 @@ let evaluate_command_list cmdlst =
 
 
                          | Basename                   -> 
-                                                         verbose_printf "Basename\n";
                                                          begin
                                                            match tmpvar with
                                                              | String filename -> command tl (String(Filename.basename filename)) varmap
@@ -1114,7 +1116,6 @@ let evaluate_command_list cmdlst =
 
 
                          | Quote                      ->
-                                                         verbose_printf "Quote\n";
                                                          let str = to_string tmpvar varmap in
                                                          let quoted = "\"" ^ str ^ "\"" in
                                                          command tl (String (quoted)) varmap
@@ -1122,7 +1123,6 @@ let evaluate_command_list cmdlst =
                          | To_string                  -> command tl (String (to_string tmpvar varmap)) varmap
 
                          | Dump                       ->
-                                                         verbose_printf "Dump\n";
                                                          begin
                                                          match tmpvar with
                                                            | Document(doc, url)-> Parsers.dump_html_from_string doc
@@ -1131,7 +1131,6 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar varmap
 
                          | Show_tags                  ->
-                                                         verbose_printf "Show_tags\n";
                                                          begin
                                                          match tmpvar with
                                                            | Document(doc, url)-> Parsers.show_tags_from_string doc
@@ -1140,7 +1139,6 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar varmap
 
                          | Show_tags_fullpath         ->
-                                                         verbose_printf "Show_tags_fullpath\n";
                                                          begin
                                                          match tmpvar with
                                                            | Document(doc, url)-> Parsers.show_tags_fullpath_from_string doc
@@ -1149,7 +1147,6 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar varmap
 
                          | Dump_data                  ->
-                                                         verbose_printf "Dump_data\n";
                                                          begin
                                                          match tmpvar with
                                                            | Document(doc, url)-> Parsers.dump_html_data_from_string doc
@@ -1158,7 +1155,6 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar varmap
 
                          | System                     ->
-                                                         verbose_printf "System\n";
                                                          begin
                                                            match tmpvar with
                                                              | String syscmd -> (* verbosity-message *)
@@ -1180,7 +1176,6 @@ let evaluate_command_list cmdlst =
 
 
                          | Html_decode                ->
-                                                         verbose_printf "%s" "Html_decode\n";
                                                          let sd str = Tools.select_decoding_scheme str in
                                                          let newvar =
                                                            begin
