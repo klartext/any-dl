@@ -160,3 +160,20 @@ let transpose arrarr =
   let data = Csv.of_array arrarr in
   let tr = Csv.transpose data in
   Csv.to_array tr
+
+
+
+(* -------------------------------------------------- *)
+(* Paste a stringlist into a string.                  *)
+(* The optional parameter sep is the separator, that  *)
+(* is inserted between the strings of the stringlist. *)
+(* -------------------------------------------------- *)
+let paste ?(sep="\n") stringlist =
+  let rec aux accum liste = match liste with
+    | []     -> accum
+    | hd::[] -> accum ^ sep ^ hd
+    | hd::tl -> aux (accum ^ sep ^ hd) tl
+  in
+    if stringlist = []
+    then ""
+    else aux (List.hd stringlist) (List.tl stringlist)
