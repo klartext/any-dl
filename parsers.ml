@@ -132,12 +132,12 @@ let suffixes = [".jpg"; ".png"; ".txt"; ".pdf"; ".doc"; ".ps"; ".docx"; ".xls"; 
 (* ==================================================== *)
 (* ==================================================== *)
 let url_to_filename url_string =
-  let filename = String.copy url_string in
+  let filename = url_string in (* String.copy removed, because Strings are now immutable in OCaml *)
   for idx = 0 to String.length filename - 1
   do
     match filename.[idx] with
         'a'..'z' | 'A'..'Z' | '0'..'9' | '.' -> ()
-      | _ -> filename.[idx] <- '_'
+      | _ -> Bytes.set filename idx '_' (* changing the immutable strings ;-) via Bytes-module *)
   done;
   filename
 
