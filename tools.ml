@@ -177,3 +177,13 @@ let paste ?(sep="\n") stringlist =
     if stringlist = []
     then ""
     else aux (List.hd stringlist) (List.tl stringlist)
+
+
+
+(* -------------------------------------------------- *)
+(* wrap a string in two strings, one on the left, and *)
+(* one on the right side of a string.                 *)
+(* This is done for each string of a list of string.  *)
+(* -------------------------------------------------- *)
+let wrap_string left right stringlist =
+  List.map ( fun str -> left ^ str ^ right ) stringlist
