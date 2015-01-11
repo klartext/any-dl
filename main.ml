@@ -141,7 +141,6 @@ let rec  to_string  result_value varmap =
   let str =
     match result_value with
       | Varname       varname      -> let res = (Varmap.find varname varmap) in
-                                      prerr_endline "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
                                       begin
                                         match res with
                                           | String str -> str
