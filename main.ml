@@ -1528,6 +1528,12 @@ let main ()  =
 
 
 let _ =
+
+  (* Initialization *)
+  (* ============== *)
+  Nettls_gnutls.init(); (* this is needed for https-support via gnutls-lib *)
+
+
   try
     main()
   with Sys_error msg -> if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
