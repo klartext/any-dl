@@ -240,7 +240,22 @@ start
 end
 
 
+# ----------------------------------------------------
+# ----------------------------------------------------
+# ----------------------------------------------------
+parsername "cookietest": ( )
+start
+  get("http://winware.org/de/cookietest.php");
+  get("http://winware.org/de/cookietest.php?cookie=set");
+  get("http://winware.org/de/cookietest.php");
+  get("http://winware.org/de/cookietest.php?cookie=set");
 
+  # now with using cookies (by copying the cookies from RECEIVED to SEND):
+  # ----------------------------------------------------------------------
+  recall("COOKIES.RECEIVED");
+  store("COOKIES.SEND");
+  get("http://winware.org/de/cookietest.php?cookie=set");
+end
 
 
 
