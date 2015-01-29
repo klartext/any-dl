@@ -243,8 +243,10 @@ end
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ----------------------------------------------------
-parsername "cookietest": ( )
+parsername "cookietest": ( "http://winware.org/de/cookietest.php" )
 start
+  # the rreceived cookies will not be sent back - hence no effect
+  # -------------------------------------------------------------
   get("http://winware.org/de/cookietest.php");
   get("http://winware.org/de/cookietest.php?cookie=set");
   get("http://winware.org/de/cookietest.php");

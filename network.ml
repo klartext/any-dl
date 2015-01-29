@@ -11,6 +11,223 @@ open Nethtml
 open Tools
 
 
+module Simple =
+  struct
+    open Nethttp_client.Convenience
+
+    let get url = http_get url
+  end
+
+
+
+(* type http_options = { ....
+
+      number_of_parallel_connections : int;   (*  The client keeps up to this
+      number of parallel connections to a single content server or proxy. Default: 2
+      You may increase this value if you are mainly connected with an HTTP/1.0 proxy. *)
+
+      }
+
+*)
+
+
+
+
+module Pipelined =
+  struct
+    open Nethttp
+    open Nethttp_client
+
+      let print_cookie  cookie =
+        Printf.printf "cookie-name: %s\n" cookie.cookie_name;
+        Printf.printf "cookie-value: %s\n" cookie.cookie_value;
+        (match cookie.cookie_expires with None -> () | Some ex   -> Printf.printf "cookie-expires: %f\n" ex);
+        (match cookie.cookie_domain  with None -> () | Some dom  -> Printf.printf "cookie-domain: %s\n" dom);
+        (match cookie.cookie_path    with None -> () | Some path -> Printf.printf "cookie-path: %s\n" path);
+        Printf.printf "cookie-secure: %s\n" (if cookie.cookie_secure then "true" else "false");
+        ()
+
+
+      (*if the server does not send DOMAIN- and PATH-fields, fill them from request-url *)
+      (* ------------------------------------------------------------------------------ *)
+      let fill_empty_cookiefields  url cookie =
+        let open Neturl         in
+        let open Parsers.Rebase in
+
+          let syn    = common_syntax_of_url url in
+          let neturl = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syn  url in
+
+          (* a missing DOMAIN-field will be created from the request-url *)
+          (* ----------------------------------------------------------- *)
+          let dom = match cookie.cookie_domain  with
+            | None     -> url_host neturl  (* host-part from url *)
+            | Some dom -> dom              (* original from what the server sent *)
+          in
+
+          (* a missing PATH-field will be created from the request-url *)
+          (* --------------------------------------------------------- *)
+          let path_opt =
+            match cookie.cookie_path    with
+              | Some path -> Some path
+              | None      ->  let pl = url_path neturl in
+                              if List.length pl >= 2 then Some ( "/" ^ (List.nth pl 1) ^ "/" )
+                              else None
+          in
+            { cookie with cookie_domain = Some dom; cookie_path = path_opt } (* updated record *)
+
+
+      (* =============== *)
+      let set_cookie_ct  nscookie =
+        let lst = ref [] in
+        lst := ("Name",  nscookie.cookie_name) :: !lst;
+        lst := ("EXPIRES", match nscookie.cookie_expires with None -> "" | Some flt -> string_of_float flt ) :: !lst;
+        lst := ("DOMAIN", match nscookie.cookie_domain with None -> "" | Some dom -> dom ) :: !lst;
+        lst := ("PATH", match nscookie.cookie_domain with None -> "" | Some path -> path ) :: !lst;
+        lst := ("SECURE", if nscookie.cookie_secure then "TRUE" else "FALSE") :: !lst;
+        !lst
+
+
+
+      (* ==================================================== *)
+      let get_raw url (referer: string option) cookies =
+        let pipeline = new pipeline in
+
+        let get_call  = new get url in (* Referrer? Cookies? *)
+
+        (* set the USER-AGENT string *)
+        (* ------------------------- *)
+        Nethttp.Header.set_user_agent (get_call # request_header `Base) Cli.opt.Cli.user_agent;
+
+        (* set the REFERER string *)
+        (* ---------------------- *)
+        begin
+          match referer with None -> () | Some ref -> Nethttp.Header.set_referer (get_call # request_header `Base) ref
+        end;
+
+        (* set the Cookies *)
+        (* --------------- *)
+        begin
+          match cookies with
+            | None -> ()
+            | Some cook ->
+                            (*
+                            let cookie_ct = set_cookie_ct cook in
+                            Nethttp.Header.set_cookie (get_call # request_header `Base) (set_cookie_ct cook)
+                            *)
+                            Nethttp.Header.set_set_cookie (get_call # request_header `Base) cook
+        end;
+
+
+(*
+ Curl-Lib:  conn#set_sslverifypeer false; (* Zertifikate-Prüfung auschalten! *)
+*)
+
+      
+        (* Get the data from webserver now *)
+        (* =============================== *)
+        pipeline # add get_call;  (* add the get-call to the pipeline *)
+        pipeline # run();         (* process the pipeline (retrieve data) *)
+
+        (* check status *)
+        (* ------------ *)
+        begin
+          match get_call # status with
+             | `Client_error           -> print_endline "Client_error"
+             | `Http_protocol_error  _ -> print_endline "Http_protocol_error"
+             | `Redirection            -> print_endline "Redirection"
+             | `Server_error           -> print_endline "Server_error"
+             | `Successful             -> print_endline "GET-Successful"
+             | `Unserved               -> print_endline "Unserved"
+        end;
+
+        Printf.printf "Status-Code    GET:  %d\n" get_call # response_status_code;
+        Printf.printf "Status-Message GET:  %s\n" get_call # response_status_text;
+
+        (*
+        let open Nethttp        in
+        *)
+          let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
+          print_endline "------------------------------------------";
+          Printf.printf "Length of Cookies-List: %d\n" (List.length cookies);
+          print_endline "=*=*=> COOOKIES:";
+            List.iter print_cookie cookies;
+          print_endline "<=*=*= COOKIES";
+
+          let newcookies = List.map ( fun cookie -> fill_empty_cookiefields url cookie) cookies in
+          List.iter print_cookie newcookies;
+
+
+        Some ( get_call # response_body # value, newcookies )
+
+(*
+            (* Ergebnis-Auswertung *)
+            (* ------------------- *)
+            let http_code = conn#get_responsecode in
+
+            (* if http-code is less than 400, give back result; else print a msg and give back None *)
+            (* ------------------------------------------------------------------------------------ *)
+            if http_code < 400
+            then
+              (* no http-error *)
+              let cookies = conn#get_cookielist in
+              begin
+                if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
+                then
+                  begin
+                    print_endline "=====> COOOKIES:";
+                    List.iter (fun s -> print_string "--> "; print_endline s) cookies;
+                    print_endline "<===== COOKIES"
+                  end;
+                  conn#cleanup; (* CLEAN UP CONNECTION *)
+
+                  (* give back result *)
+                  (* ---------------- *)
+                  let result = Buffer.contents buffer in Some (result, cookies)
+              end
+
+            (* http-error-case *)
+            else
+              begin
+                if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then Printf.eprintf "http-returncode: %d (URL: %s)\n" http_code url;
+                None
+              end
+*)
+
+
+
+
+(*
+
+
+
+====================== OPTIONS ======================
+Options for the whole pipeline. It is recommended to change options the following way:
+
+    let opts = pipeline # get_options in
+    let new_opts = { opts with <field> = <value>; ... } in
+    pipeline # set_options new_opts
+ 
+============================================
+
+
+Printf.printf "Status-Message GET:  %s\n" get_call#response_status_text;
+  
+  (* GET-call *)
+  (* ======== *)
+  (*
+  let body = get_call # response_body # value  in
+  let response_header = get_call # response_header # fields in
+  *)
+
+
+*)
+
+
+  end
+
+
+
+
 module CurlHelp =
   struct
   open Curl

@@ -245,18 +245,30 @@ let evaluate_command_list cmdlst =
   (* "get_document"-function, is used by some of the Get_... commands from "command"-function *)
   (* ---------------------------------------------------------------------------------------- *)
   let rec get_document  url referrer varmap =
+
+    (* if a cookie already has been received/stored                *)
+    (* pick it from the variable-map for sending it back to server *)
+    (* ----------------------------------------------------------- *)
     let send_cookie = if Varmap.exists "COOKIES.SEND" varmap
                      then
-                       Some ( to_string(Varmap.find "COOKIES.SEND" varmap) varmap )
+                       begin match  Varmap.find "COOKIES.SEND" varmap  with Cookies cook -> Some cook | _ -> None end 
                      else
                        None
     in
-    let document_and_cookies = Network.Curly.get url (Some referrer) send_cookie in
+
+    (* retrvieve the document *)
+    (* ====================== *)
+    let document_and_cookies = Network.Pipelined.get_raw url (Some referrer) send_cookie in
+
     begin
      match document_and_cookies with
        | None                -> None
-       | Some (doc, cookies) -> let cook = String_array (Array.of_list cookies) in
-                                let new_varmap = (Varmap.add "COOKIES.RECEIVED" cook varmap) in (* what, if COOKIES.RECEIVED is set and needs to be ADDED? *)
+       | Some (doc, cookies) -> 
+                                print_endline "...received...";
+(*
+if Cli.opt.Cli.very_verbose then List.iter ( fun (k,v) -> Printf.printf "Received Cookie: %s -> %s\n" k v ) cookies; (* REMOVE ! *)
+*)
+                                let new_varmap = (Varmap.add "COOKIES.RECEIVED" (Cookies cookies) varmap) in
                                 Some (doc, url, new_varmap)
     end
     
@@ -1532,6 +1544,12 @@ let _ =
   (* Initialization *)
   (* ============== *)
   Nettls_gnutls.init(); (* this is needed for https-support via gnutls-lib *)
+
+  (*
+  let resp = Network.Pipelined.get_raw "http://www.first.in-berlin.de/" "-" "" in
+  Printf.printf "%s\n" resp;
+  exit(999);
+  *)
 
 
   try

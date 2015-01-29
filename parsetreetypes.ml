@@ -24,6 +24,10 @@ type results_t =
   | Document_array  of (string * string) array      (* (document, url-of-doc) array *)
   | Url             of  string * string             (* (url, referrer) needed for Get-command *)
   | Url_list        of (string * string) list
+  | Cookies         of Nethttp.netscape_cookie list      (* cookies from server / to server *)
+  (*
+  | Cookies         of (string * string) list            (* cookies from server / to server *)
+  *)
   | Url_array       of (string * string) array
   | Dummy_result
   | Match_result    of match_result_t
