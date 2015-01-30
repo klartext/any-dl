@@ -6,7 +6,8 @@ all: native-code
 
 SOURCES :=  cli.ml tools.ml parsetreetypes.ml scriptparser.mly scriptlexer.mll parsers.ml network.ml main.ml
 
-PACKS := pcre netstring netsys netclient nettls-gnutls curl xml-light csv
+PACKS := pcre netstring netsys netclient nettls-gnutls xml-light csv
+#PACKS := pcre netstring netsys netclient nettls-gnutls curl xml-light csv
 
 
 YFLAGS=-v

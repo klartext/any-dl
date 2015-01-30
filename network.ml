@@ -225,6 +225,7 @@ Printf.printf "Status-Message GET:  %s\n" get_call#response_status_text;
 
 
 
+(*
 module CurlHelp =
   struct
   open Curl
@@ -321,8 +322,10 @@ module CurlHelp =
       | Curl.CurlException(curl_code, err_int, message) -> Printf.eprintf "%s, %d, %s\n" (string_of_curlcode curl_code) err_int message
       | exc                                             -> Printf.eprintf "exception found in prerr_curlerror: %s" (Printexc.to_string exc)
   end
+*)
 
 
+(*
 (* ------------------------ *)
 (* networking with CURL-lib *)
 (* ------------------------ *)
@@ -445,4 +448,5 @@ module Curly =
   end
   )
 
+*)
 
