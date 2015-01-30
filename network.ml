@@ -77,13 +77,14 @@ module Pipelined =
 
 
       (* =============== *)
-      let set_cookie_ct  nscookie =
+      let cookie_to_cookie_ct  nscookie =
         let lst = ref [] in
-        lst := ("Name",  nscookie.cookie_name) :: !lst;
-        lst := ("EXPIRES", match nscookie.cookie_expires with None -> "" | Some flt -> string_of_float flt ) :: !lst;
-        lst := ("DOMAIN", match nscookie.cookie_domain with None -> "" | Some dom -> dom ) :: !lst;
-        lst := ("PATH", match nscookie.cookie_domain with None -> "" | Some path -> path ) :: !lst;
-        lst := ("SECURE", if nscookie.cookie_secure then "TRUE" else "FALSE") :: !lst;
+        lst := (nscookie.cookie_name, nscookie.cookie_value) :: !lst;
+
+        (match nscookie.cookie_expires with None -> [] | Some flt  -> (("expires", string_of_float flt ) :: !lst));
+        (match nscookie.cookie_domain  with None -> [] | Some dom  -> (("domain", dom ) :: !lst));
+        (match nscookie.cookie_path    with None -> [] | Some path -> (("path", path ) :: !lst));
+        ("secure", string_of_bool nscookie.cookie_secure) :: !lst;
         !lst
 
 
@@ -113,8 +114,10 @@ module Pipelined =
                             (*
                             let cookie_ct = set_cookie_ct cook in
                             Nethttp.Header.set_cookie (get_call # request_header `Base) (set_cookie_ct cook)
+                            cookie_to_cookie_ct
                             *)
-                            Nethttp.Header.set_set_cookie (get_call # request_header `Base) cook
+                            let c = List.map cookie_to_cookie_ct cook in
+                            List.iter ( fun xx -> Nethttp.Header.set_cookie (get_call # request_header `Base) xx) c
         end;
 
 
