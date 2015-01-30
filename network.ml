@@ -45,6 +45,7 @@ module Pipelined =
         (match cookie.cookie_domain  with None -> () | Some dom  -> Printf.printf "cookie-domain: %s\n" dom);
         (match cookie.cookie_path    with None -> () | Some path -> Printf.printf "cookie-path: %s\n" path);
         Printf.printf "cookie-secure: %s\n" (if cookie.cookie_secure then "true" else "false");
+        print_endline "     ------";
         ()
 
 
@@ -109,14 +110,8 @@ module Pipelined =
         (* --------------- *)
         begin
           match cookies with
-            | None -> ()
-            | Some cook ->
-                            (*
-                            let cookie_ct = set_cookie_ct cook in
-                            Nethttp.Header.set_cookie (get_call # request_header `Base) (set_cookie_ct cook)
-                            cookie_to_cookie_ct
-                            *)
-                            let c = List.map cookie_to_cookie_ct cook in
+            | None      ->  ()
+            | Some cook ->  let c = List.map cookie_to_cookie_ct cook in
                             List.iter ( fun xx -> Nethttp.Header.set_cookie (get_call # request_header `Base) xx) c
         end;
 
@@ -146,21 +141,20 @@ module Pipelined =
         Printf.printf "Status-Code    GET:  %d\n" get_call # response_status_code;
         Printf.printf "Status-Message GET:  %s\n" get_call # response_status_text;
 
-        (*
-        let open Nethttp        in
-        *)
-          let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
-          print_endline "------------------------------------------";
-          Printf.printf "Length of Cookies-List: %d\n" (List.length cookies);
-          print_endline "=*=*=> COOOKIES:";
-            List.iter print_cookie cookies;
-          print_endline "<=*=*= COOKIES";
+        let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
 
-          let newcookies = List.map ( fun cookie -> fill_empty_cookiefields url cookie) cookies in
-          List.iter print_cookie newcookies;
+        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
+        then
+          begin
+            print_endline "------------------------------------------";
+            print_endline "=*=*=> COOOKIES:";
+              List.iter print_cookie cookies;
+            print_endline "<=*=*= COOKIES";
+          end;
+
+        Some ( get_call # response_body # value, cookies )
 
 
-        Some ( get_call # response_body # value, newcookies )
 
 (*
             (* Ergebnis-Auswertung *)
