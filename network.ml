@@ -39,13 +39,13 @@ module Pipelined =
     open Nethttp_client
 
       let print_cookie  cookie =
-        Printf.printf "cookie-name: %s\n" cookie.cookie_name;
-        Printf.printf "cookie-value: %s\n" cookie.cookie_value;
-        (match cookie.cookie_expires with None -> () | Some ex   -> Printf.printf "cookie-expires: %f\n" ex);
-        (match cookie.cookie_domain  with None -> () | Some dom  -> Printf.printf "cookie-domain: %s\n" dom);
-        (match cookie.cookie_path    with None -> () | Some path -> Printf.printf "cookie-path: %s\n" path);
-        Printf.printf "cookie-secure: %s\n" (if cookie.cookie_secure then "true" else "false");
-        print_endline "     ------";
+        Printf.printf "    cookie-name: %s\n" cookie.cookie_name;
+        Printf.printf "    cookie-value: %s\n" cookie.cookie_value;
+        (match cookie.cookie_expires with None -> () | Some ex   -> Printf.printf "    cookie-expires: %f\n" ex);
+        (match cookie.cookie_domain  with None -> () | Some dom  -> Printf.printf "    cookie-domain: %s\n" dom);
+        (match cookie.cookie_path    with None -> () | Some path -> Printf.printf "    cookie-path: %s\n" path);
+        Printf.printf "    cookie-secure: %s\n" (if cookie.cookie_secure then "true" else "false");
+        print_endline "  ------";
         ()
 
 
@@ -130,16 +130,19 @@ module Pipelined =
         (* ------------ *)
         begin
           match get_call # status with
-             | `Client_error           -> print_endline "Client_error"
-             | `Http_protocol_error  _ -> print_endline "Http_protocol_error"
-             | `Redirection            -> print_endline "Redirection"
-             | `Server_error           -> print_endline "Server_error"
-             | `Successful             -> print_endline "GET-Successful"
-             | `Unserved               -> print_endline "Unserved"
+             | `Client_error           -> prerr_endline "Client_error"
+             | `Http_protocol_error  _ -> prerr_endline "Http_protocol_error"
+             | `Redirection            -> prerr_endline "Redirection"
+             | `Server_error           -> prerr_endline "Server_error"
+             | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then prerr_endline "GET-Successful"
+             | `Unserved               -> prerr_endline "Unserved"
         end;
 
-        Printf.printf "Status-Code    GET:  %d\n" get_call # response_status_code;
-        Printf.printf "Status-Message GET:  %s\n" get_call # response_status_text;
+        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
+        begin
+          Printf.eprintf "Status-Code    GET:  %d\n" get_call # response_status_code;
+          Printf.eprintf "Status-Message GET:  %s\n" get_call # response_status_text
+        end;
 
         let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
 
