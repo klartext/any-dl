@@ -39,14 +39,23 @@ module Pipelined =
     open Nethttp_client
 
       let print_cookie  cookie =
-        Printf.printf "    cookie-name: %s\n" cookie.cookie_name;
-        Printf.printf "    cookie-value: %s\n" cookie.cookie_value;
+        Printf.printf "    cookie-name:    %s\n" cookie.cookie_name;
+        Printf.printf "    cookie-value:   %s\n" cookie.cookie_value;
         (match cookie.cookie_expires with None -> () | Some ex   -> Printf.printf "    cookie-expires: %f\n" ex);
-        (match cookie.cookie_domain  with None -> () | Some dom  -> Printf.printf "    cookie-domain: %s\n" dom);
-        (match cookie.cookie_path    with None -> () | Some path -> Printf.printf "    cookie-path: %s\n" path);
-        Printf.printf "    cookie-secure: %s\n" (if cookie.cookie_secure then "true" else "false");
+        (match cookie.cookie_domain  with None -> () | Some dom  -> Printf.printf "    cookie-domain:  %s\n" dom);
+        (match cookie.cookie_path    with None -> () | Some path -> Printf.printf "    cookie-path:    %s\n" path);
+        Printf.printf "    cookie-secure:  %s\n" (if cookie.cookie_secure then "TRUE" else "FALSE");
         print_endline "  ------";
         ()
+
+      (* old format, as printed in curl-version *)
+      (* -------------------------------------- *)
+      (*
+          =====> COOOKIES:
+          --> winware.org FALSE   /de/    FALSE   1422655609      test    1
+          <===== COOKIES
+      *)
+
 
 
       (*if the server does not send DOMAIN- and PATH-fields, fill them from request-url *)
