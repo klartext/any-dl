@@ -264,10 +264,6 @@ let evaluate_command_list cmdlst =
      match document_and_cookies with
        | None                -> None
        | Some (doc, cookies) -> 
-                                print_endline "...received...";
-(*
-if Cli.opt.Cli.very_verbose then List.iter ( fun (k,v) -> Printf.printf "Received Cookie: %s -> %s\n" k v ) cookies; (* REMOVE ! *)
-*)
                                 let new_varmap = (Varmap.add "COOKIES.RECEIVED" (Cookies cookies) varmap) in
                                 Some (doc, url, new_varmap)
     end
