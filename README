@@ -988,5 +988,33 @@ Prefedined Variables:
     The document, that is retrieved via $STARTURL is avaiable as
     names variable BASEDOC.
 
+  COOKIES.RECEIVED
+    Cookies received from a webserver will be stored here.
+
+  COOKIES.SEND
+    Cookies which should be send to the webserver are stored here.
+
+
+
+Using Cookies:
+==============
+  If a server sends cookies, they will be stroed in the named variable
+  "COOKIES.RECEIVED".
+  If you want to send them back to the server, you manually need to copy
+  the contents of "COOKIES.RECEIVED" to "COOKIES.SEND".
+  Just add these two commands between the commands which get cookies and which
+  should send cookies:
+
+    recall("COOKIES.RECEIVED"); # recall the cookies from named variable and put them on the one-var-stack
+    store("COOKIES.SEND");      # store the cookies from the one-var-stack in the variable "COOKIES.SEND"
+
+  This handling seems a bit unconvenient; cookies could be received and sent automagically.
+  But this manual handling gives you more control over the process.
+  Be aware, that the contents of "COOKIES.SEND" is not changed automatically.
+  So, wzhat is stored in that variable will be used again and again in next calls to the webserver.
+  So, you need to keep track of the right cookies by using the above mentioned way of
+  setting "COOKIES.SEND", or delete that variable.
+
+
 
 __END__
