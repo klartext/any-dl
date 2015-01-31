@@ -95,10 +95,10 @@ module Pipelined =
         let lst = ref [] in
         lst := (nscookie.cookie_name, nscookie.cookie_value) :: !lst;
 
-        (match nscookie.cookie_expires with None -> [] | Some flt  -> (("expires", string_of_float flt ) :: !lst));
-        (match nscookie.cookie_domain  with None -> [] | Some dom  -> (("domain", dom ) :: !lst));
-        (match nscookie.cookie_path    with None -> [] | Some path -> (("path", path ) :: !lst));
-        ("secure", string_of_bool nscookie.cookie_secure) :: !lst;
+        ignore( match nscookie.cookie_expires with None -> [] | Some flt  -> (("expires", string_of_float flt ) :: !lst) );
+        ignore( match nscookie.cookie_domain  with None -> [] | Some dom  -> (("domain", dom ) :: !lst) );
+        ignore( match nscookie.cookie_path    with None -> [] | Some path -> (("path", path ) :: !lst) );
+        ignore( ("secure", string_of_bool nscookie.cookie_secure) :: !lst );
         !lst
 
 

@@ -24,13 +24,10 @@ type results_t =
   | Document_array  of (string * string) array      (* (document, url-of-doc) array *)
   | Url             of  string * string             (* (url, referrer) needed for Get-command *)
   | Url_list        of (string * string) list
-  | Cookies         of Nethttp.netscape_cookie list      (* cookies from server / to server *)
-  (*
-  | Cookies         of (string * string) list            (* cookies from server / to server *)
-  *)
   | Url_array       of (string * string) array
   | Dummy_result
   | Match_result    of match_result_t
+  | Cookies         of Nethttp.netscape_cookie list (* cookies from server / to server *)
   (*
   | Doclist         of Nethtml.document list
   *)
@@ -121,6 +118,7 @@ let result_to_string res = match res with
     | Url_array      _ -> "Url_array"
     | Dummy_result     -> "Dummy_result"
     | Match_result   _ -> "Match_result"
+    | Cookies        _ -> "Cookies"
     (*
     | Doclist        _ -> "Doclist"
     *)
@@ -148,6 +146,7 @@ let command_to_string cmd = match cmd with
   | Store           _ -> "Store"
   | Recall          _ -> "Recall"
   | Delete          _ -> "Delete"
+  | Uniq              -> "Uniq"
   | Show_variables    -> "Show_variables"
   | List_variables    -> "List_variables"
   | Print             -> "Print"
@@ -155,7 +154,7 @@ let command_to_string cmd = match cmd with
   | Show_match        -> "Show_match"
   | Print_string    _ -> "Print_string"
   | CSV_save_as     _ -> "CSV_save_as"
-  | CSV_save        _ -> "CSV_save"
+  | CSV_save          -> "CSV_save"
   | Save              -> "Save"
   | Save_as         _ -> "Save_as"
   | Setvar          _ -> "Setvar"
@@ -171,6 +170,7 @@ let command_to_string cmd = match cmd with
   | Subst           _ -> "Subst"
   | To_string         -> "To_string"
   | To_matchres       -> "To_matchres"
+  | Transpose         -> "Transpose"
   | Quote             -> "Quote"
   | Exit_parse        -> "Exit_parse"
   | Dump              -> "Dump"
