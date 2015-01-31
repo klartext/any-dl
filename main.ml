@@ -141,7 +141,6 @@ let rec  to_string  result_value varmap =
   let str =
     match result_value with
       | Varname       varname      -> let res = (Varmap.find varname varmap) in
-                                      prerr_endline "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
                                       begin
                                         match res with
                                           | String str -> str
@@ -1540,13 +1539,6 @@ let _ =
   (* Initialization *)
   (* ============== *)
   Nettls_gnutls.init(); (* this is needed for https-support via gnutls-lib *)
-
-  (*
-  let resp = Network.Pipelined.get_raw "http://www.first.in-berlin.de/" "-" "" in
-  Printf.printf "%s\n" resp;
-  exit(999);
-  *)
-
 
   try
     main()
