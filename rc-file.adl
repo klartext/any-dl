@@ -27,6 +27,15 @@ start
 end
 
 
+# seconds since the unix-epoche ( seconds since 00 h 00 min 00 s, 01.01.1970 )
+# ----------------------------------------------------------------------------
+parsername "unix-time": ( )
+start
+  recall("NOW");
+  print;
+end
+
+
 parsername "linkextract-uniq": ( )
 start
   linkextract;

@@ -35,9 +35,9 @@ FEATUREs:
  a bit of priority
  =================
 
- - timestamp: either as $TIME or $NOW, or as seperate keywd "timestamp" or as
-   cli-switch to prepend a timestamp for each output.
-   (Later would make refactoring of file-writing necessary, I think)
+ - timestamp:
+     cli-switch to prepend a timestamp for each output.
+     (Later would make refactoring of file-writing necessary, I think)
 
  - Implementing a get()-variant that writes directly to file (instead of eating up memory)
      get_to_file()

@@ -115,16 +115,23 @@ module Varmap =
     let iter   = Varmap.iter
     *)
 
-    let exists = Variablemap.mem
+    let exists key map =
+      match key with
+        | "NOW" -> true
+        | _     -> Variablemap.mem key map
 
     let find varname varmap =
-      try Variablemap.find varname varmap with Not_found -> raise (Variable_not_found varname)
+      match varname with
+        | "NOW" -> let open Unix in String( string_of_float ( time() ) )
+        | _     -> try Variablemap.find varname varmap with Not_found -> raise (Variable_not_found varname)
 
     (* find with an exception-default value                                               *)
     (* This function allows to set a default value in case the lookup yields in Not_found *)
     (* ---------------------------------------------------------------------------------- *)
     let find_excdef varname varmap default =
-      try Variablemap.find varname varmap with Not_found -> default
+      match varname with
+        | "NOW" -> let open Unix in String( string_of_float ( time() ) )
+        | _     -> try Variablemap.find varname varmap with Not_found -> default
 
   end
 

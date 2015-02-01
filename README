@@ -994,6 +994,8 @@ Prefedined Variables:
   COOKIES.SEND
     Cookies which should be send to the webserver are stored here.
 
+  NOW
+    Unix-Timestamp (seconds 00h00m00s GMT 01.01.1970) as string.
 
 
 Using Cookies:
