@@ -306,6 +306,31 @@ start
 end
 
 
+# ---------------------------------
+# Resonator
+# ---------------------------------
+parsername "resonator": (  "https://resonator-podcast.de" )
+start
+    # from the resonator-webpage:
+    # <source src="http://files.wrint.de/RES051_Muellim_Meer.m4a" type="audio/mp4"/>
+    # <source src="http://files.wrint.de/RES051_Muellim_Meer.opus" type="audio/opus"/>
+    # <source src="http://files.wrint.de/RES051_Muellim_Meer.mp3" type="audio/mpeg"/>
+
+  # extract the audio-urls
+  # ----------------------
+  tagselect("source"."type" | arg("src") );
+  transpose;
+  #show_match;
+  iselectmatch(0, "RES");
+
+  # download and save
+  # -----------------
+  makeurl;
+  get;
+  save;
+
+end
+
 
 # ---------------------------------
 # ARD 
