@@ -1448,7 +1448,7 @@ end
 # -----------------------------------------------------------
 # 
 # ===========================================================
-parsername "ard_dw-tv": ( "http://www.ardmediathek.de/dw-tv/", "http://www.first.in-berlin.de/" )
+parsername "ard_dw-tv": ( "http://www.ardmediathek.de/dw-tv/" )
 start
 
   match( "http://tv-download.dw.de.*mp4" );
