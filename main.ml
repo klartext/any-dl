@@ -1571,4 +1571,6 @@ rtmp / rtmpt:
 mms:
   mplayer -dumpstream mms://example.com/Globalplayers/GP_14.wmv -dumpfile ./download/test.wmv 
 
+rtsp:
+  cvlc  rtsp://....foobar.mp4 --sout=file/ts:foobar.mp4
  ------------------------------------------------------------------------------------------------------------- *)
