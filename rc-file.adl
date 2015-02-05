@@ -897,11 +897,19 @@ end
 parsername "ZDF-JANZ-NEU": ( "http://www.zdf.de/ZDFmediathek/beitrag/v" )
 start
 
-  linkextract;
-  grep("mov");
+  # ul class="dslChoice"
+#  tagselect("ul"."class"="dslChoice", "li", "a" | dump );
+  tagselect("ul"."class"="dslChoice", "li" | dump );
 
-  print;
-  print("islect() einbauen");
+  show_match;
+
+  #print("islect() einbauen");
+
+exitparse;
+#rtsp:
+#  cvlc  rtsp://....foobar.mp4 --sout=file/ts:foobar.mp4
+
+
   makeurl;
   get;
   print;
@@ -917,16 +925,8 @@ start
 
   basename;
   store("basename");
-
-
- # there are rtsp-files inside
- # have found no toool so far that does work on rtsp-streams well.
-
-
- # http://www.zdf.de/ZDFmediathek/beitrag/video/2241436/Referendum-Wird-Schottland-unabhaengig%253F?bc=sts;stt&flash=off
-
- ####  rtmpdump -a firefox -r rtsp://real2.infn.it/webcast/2012-esploratori-invisibile/esploratori-dell-invisibile.rm -o myfile.rm
- #### mplayer -dumpstream rtsp://real2.infn.it/webcast/2012-esploratori-invisibile/esploratori-dell-invisi‌​bile.rm -dumpfile esploratori-dell-invisibile.rm
+print;
+exitparse;
 
   paste(" rtspdump -r ", $rtspurl, " -o ", $basename );
   print;
