@@ -55,6 +55,7 @@ Overview
   - rtmpdump
   - mplayer
   - ffmpeg      (for rtsp)
+  - vlc         (for rtsp)
 
 
 Compilation / Installation / Setup
