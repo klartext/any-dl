@@ -1631,28 +1631,6 @@ end
 #######################################################
 ###      N   O   T       T   E   S   T   E   D      ###
 #######################################################
-# -----------------------------------------------------------
-# YOUTUBE
-# -----------------------------------------------------------
-# Example: http://www.youtube.com/watch?v=vr1yzc_kI1E     MjamMjam :-)
-# -----------------------------------------------------------
-# 
-# ===========================================================
-parsername "youtube": ( "http://www.youtube.com/watch" )
-start
-
-  #linkextract;
-  #print;
-  #print("----------------------------");
-
-  recall("BASEDOC");
-  show_tags;
-
-
-
-end
-
-
 # (*
 #   Pro-Sieben:
 # 
@@ -1672,15 +1650,15 @@ end
 # ---------------------------------
 # Example: ...
 # =================================
-parsername "pro7_mediathek_get": ( "http://www.prosieben.de" )
-start
-  store("url");
-  match( "(\".*?mp4.*?\")" );
-  show_match;
-
-  # und wie nun weiter?
-
-end
+#parsername "pro7_mediathek_get": ( "http://www.prosieben.de" )
+#start
+#  store("url");
+#  match( "(\".*?mp4.*?\")" );
+#  show_match;
+#
+#  # und wie nun weiter?
+#
+#end
 
 
 
@@ -1774,11 +1752,11 @@ end
 # ---------------------------------
 # Example: 
 # =================================
-parsername "dctp_mediathek_get": ( "http://www.dctp.tv" )
-start
-  match( "(mp4:.*\")" );
-  print;
-end
+#parsername "dctp_mediathek_get": ( "http://www.dctp.tv" )
+#start
+#  match( "(mp4:.*\")" );
+#  print;
+#end
 
 
 # ---------------------------------
@@ -1849,6 +1827,11 @@ end
 # www.mdr.de/mediathek
 # www.swrmediathek.de
 # 
+
+
+################################
+#### BELOW IS TESTING-STUFF ####
+################################
 parsername "try_tagselect": ( )
 start
   print("try tagselect syntax");
