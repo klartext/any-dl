@@ -1435,8 +1435,7 @@ start
   droprow(0);
   droprow(0);
 
-show_type;
-sort;
+  sort; # sort the entries (will be many, if subtext is offered)
   iselectmatch(0,"mp4");
 
   makeurl;
