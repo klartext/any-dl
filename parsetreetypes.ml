@@ -61,6 +61,7 @@ type commands_t =
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
   | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)
   | Delete            of string               (* Delete a named variable (remove it from the varmap *)
+  | Sort                                      (* sort data *)
   | Uniq                                      (* throw out multiple data *)
   | Show_variables                            (* print all named variables (their names and their contents) *)
   | List_variables                            (* print only names of named variables *)
@@ -146,6 +147,7 @@ let command_to_string cmd = match cmd with
   | Store           _ -> "Store"
   | Recall          _ -> "Recall"
   | Delete          _ -> "Delete"
+  | Sort              -> "Sort"
   | Uniq              -> "Uniq"
   | Show_variables    -> "Show_variables"
   | List_variables    -> "List_variables"

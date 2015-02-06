@@ -937,6 +937,10 @@ List of commands/keywords and a short-escription of them:
     This exchanges rows and columns.
 
 
+  sort
+    Sorts entries. (only match-result's so far.)
+
+
   uniq
     From the tmpvar it removes entries with same contents.
     Works like "uniq" from unix-toolbox, but not limited to neighbouring lines;

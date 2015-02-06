@@ -1060,6 +1060,19 @@ let evaluate_command_list cmdlst =
                                                          command tl tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
 
 
+                         | Sort                       -> (* sort entries *)
+                                                         let res =
+                                                           begin
+                                                             match tmpvar with
+                                                               | Match_result mres -> Array.sort compare mres; (* in-place sort; unit type *)
+                                                                                      Match_result mres        (* give back the sorted array *)
+
+                                                               | _ -> raise Wrong_tmpvar_type
+                                                           end
+                                                         in
+                                                           command tl res varmap  (* removes multiple data *)
+
+
                          | Uniq                       -> (* uniq: make entries unique: ignore multiple entries with same contents *)
                                                          let res =
                                                            begin

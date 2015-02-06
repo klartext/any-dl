@@ -1436,6 +1436,7 @@ start
   droprow(0);
 
 show_type;
+sort;
   iselectmatch(0,"mp4");
 
   makeurl;

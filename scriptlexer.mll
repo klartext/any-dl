@@ -44,6 +44,7 @@
                   ("store",          STORE  );
                   ("recall",         RECALL  );
                   ("delete",         DELETE  );
+                  ("sort",           SORT  );
                   ("uniq",           UNIQ  );
                   ("show_variables",   SHOW_VARIABLES  );
                   ("list_variables",   LIST_VARIABLES  );
