@@ -898,45 +898,52 @@ parsername "ZDF-JANZ-NEU": ( "http://www.zdf.de/ZDFmediathek/beitrag/v" )
 start
 
   # ul class="dslChoice"
-#  tagselect("ul"."class"="dslChoice", "li", "a" | dump );
-  tagselect("ul"."class"="dslChoice", "li" | dump );
+  #tagselect("ul"."class"="dslChoice", "li", "a" | argpairs );
+  tagselect("ul"."class"="dslChoice", "li", "a"."href" | arg("href") );
 
   show_match;
+  transpose;
+  grepv(".asx"); # only *.mov
 
-  #print("islect() einbauen");
-
-exitparse;
-#rtsp:
-#  cvlc  rtsp://....foobar.mp4 --sout=file/ts:foobar.mp4
-
-
+  show_match;
   makeurl;
-  get;
-  print;
-  print("..........");
 
-  match("(.*mp4)");
-  dropcol(0); # full-match removed
-  print;
-  iselectmatch(0, ".*mp4");
+  # get the mov-file(s)
+  # -------------------
+  get;
+
+  # extract the rtsp-url's from the received file(s)
+  # ------------------------------------------------
+  grep("rtsp:");
+  to_matchres;
+
+  transpose;
+  show_match;
+  iselectmatch(0, "mov");
   to_string;
 
-  store("rtspurl");
+  store("rtspurl"); # thats the stuff we want to download.
 
   basename;
-  store("basename");
-print;
-exitparse;
+  #print;
+  store("filename");
 
-  paste(" rtspdump -r ", $rtspurl, " -o ", $basename );
-  print;
+  # download the video
+  # ------------------
+  # using vlc here is working.
+  # But one problem arises: ZDF is repeating the broadcast after it has finished,
+  # and the file will be overwritten again from the beginning.
+  # So, if cvlc is not cancelled short before end of the program,
+  # the whole download is gone.
+  #
+  # maybe - if cvlc does close old file and reopens new file,
+  # it might work, renaming the file right after it has been
+  # created by cvlc.
+  # Will need to check that.
+  #
+
+  paste("cvlc ", $rtspurl, " --sout=file/ts:", $filename); # using cvlc (command-line VLC) for downloading RTSP-stream.
   system;
-
-exitparse;
-  paste("rtmpdump --resume  -r ",  $rtmp, " -y ", $mp4, " -o ", $filename );
-  print;
-  system;
-
 
 end
 
@@ -1428,6 +1435,7 @@ start
   droprow(0);
   droprow(0);
 
+show_type;
   iselectmatch(0,"mp4");
 
   makeurl;
