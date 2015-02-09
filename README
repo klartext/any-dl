@@ -541,11 +541,8 @@ List of commands/keywords (not carved in stone so far) by example:
   linkextract_xml;
   match("Regexp-String");
 
-  # Warning: the syntax for TAGSELECT is work under progress so far (2014-08-17)!
-  # The syntax for this command may change sooner or later.
-  # Also the implemented functionality provided by the command is a work in progress.
-  # ----------------------------------------------------------------------------------
   # syntax for tagselection at the moment is this one:
+  # --------------------------------------------------
   tagselect( "a"| dump );    # dumps all <a ...> tags
   tagselect( "br"| dump );   # dumps all <br>-tags
   tagselect( "table", "a"| dump ); # <a ...> inside tables will be dumped
@@ -616,7 +613,7 @@ List of commands/keywords (not carved in stone so far) by example:
 
 
 
-List of commands/keywords and a short-escription of them:
+List of commands/keywords and a short-description of them:
 =========================================================
 
 
@@ -626,7 +623,7 @@ List of commands/keywords and a short-escription of them:
 
 
   csv_save_as
-    csv_save does save a *match_result* to a csv-file.
+    csv_save_as does save a *match_result* to a csv-file.
     All data is transformed to have equal number of columns in each row.
     Arguments of csv_save_as() are appended into a resulting filename.
 
