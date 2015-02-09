@@ -769,6 +769,16 @@ start
 end
 
 
+# ------------------------------------
+# Wrapper-Parser for youtube and vimeo
+# ====================================
+parsername "youtube-and-vimeo": ( "https://www.youtube.com/", "https://vimeo.com/" )
+start
+  paste(" youtube-dl ", $STARTURL );
+  system;
+end
+
+
 # ---------------------------------
 # ZDF 
 # ---------------------------------

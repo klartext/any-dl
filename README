@@ -56,6 +56,7 @@ Overview
   - mplayer
   - ffmpeg      (for rtsp)
   - vlc         (for rtsp)
+  - youtube-dl  (for youtube/vimeo, any-dl has now a parser that is just a wrapper here)
 
 
 Compilation / Installation / Setup
