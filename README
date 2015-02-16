@@ -609,6 +609,8 @@ List of commands/keywords (not carved in stone so far) by example:
   htmldecode;
 
   get;
+  download;
+  download( $filename );
   system;
 
 
@@ -647,6 +649,21 @@ List of commands/keywords and a short-description of them:
     This means: accessing it can result in an error,
     because it's like accessing a variable that was not
     defined at all.
+
+
+  download
+    downloads an entity and storing to a file.
+    That is similar to the sequence
+      get;
+      save;
+    but does store the data directly into the resulting file.
+    The sequence
+      get;
+      save;
+    does load the data into memory first and then afterwards saves it
+    into a file.
+    So, for long files, like the mediadata / videofiles,
+    the download-command would be the better choice.
 
 
   dropcol
