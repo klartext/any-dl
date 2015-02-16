@@ -36,7 +36,9 @@ module Simple =
 module Pipelined =
   struct
     open Nethttp
+    (*
     open Nethttp_client
+    *)
 
 
     exception Get_error   of Nethttp_client.status (* error: can#t be solved   *)
@@ -104,10 +106,12 @@ module Pipelined =
 
 
       (* ==================================================== *)
-      let get_raw url (referer: string option) cookies =
-        let pipeline = new pipeline in
+      let get_raw url (referer: string option) cookies response_storage =
+        let pipeline = new Nethttp_client.pipeline in
 
-        let get_call  = new get url in (* Referrer? Cookies? *)
+        let get_call  = new Nethttp_client.get url in (* Referrer? Cookies? *)
+
+        get_call # set_response_body_storage response_storage;
 
         (* set the USER-AGENT string *)
         (* ------------------------- *)

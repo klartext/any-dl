@@ -264,7 +264,7 @@ let evaluate_command_list cmdlst =
 
     (* retrvieve the document *)
     (* ====================== *)
-    let document_and_cookies = Network.Pipelined.get_raw url (Some referrer) send_cookie in
+    let document_and_cookies = Network.Pipelined.get_raw url (Some referrer) send_cookie `Memory in
 
     begin
      match document_and_cookies with
@@ -316,6 +316,9 @@ let evaluate_command_list cmdlst =
       | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
       | cmd::tl   -> begin
                        match cmd with
+                         | Download                 -> raise NOT_IMPLEMENTED_SO_FAR ; command [] tmpvar varmap
+
+
                          | Get_url (url, referrer)  ->
                                                        begin
                                                        match get_document  url referrer varmap with
