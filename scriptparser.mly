@@ -54,6 +54,7 @@
 %token DOCLIST
 
 %token GET
+%token DOWNLOAD
 %token MAKE_URL
 %token STORE
 %token RECALL
