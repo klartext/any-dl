@@ -250,21 +250,21 @@ let evaluate_command_list cmdlst =
 
   (* "get_document"-function, is used by some of the Get_... commands from "command"-function *)
   (* ---------------------------------------------------------------------------------------- *)
-  let rec get_document  url referrer varmap =
+  let rec get_document  url referrer ?(dst_file="") varmap =
 
     (* if a cookie already has been received/stored                *)
     (* pick it from the variable-map for sending it back to server *)
     (* ----------------------------------------------------------- *)
     let send_cookie = if Varmap.exists "COOKIES.SEND" varmap
                      then
-                       begin match  Varmap.find "COOKIES.SEND" varmap  with Cookies cook -> Some cook | _ -> None end 
+                       begin match  Varmap.find "COOKIES.SEND" varmap  with Cookies cook -> Some cook | _ -> None end
                      else
                        None
     in
 
     (* retrvieve the document *)
     (* ====================== *)
-    let document_and_cookies = Network.Pipelined.get_raw url (Some referrer) send_cookie `Memory in
+    let document_and_cookies =  Network.Pipelined.get_raw url (Some referrer) send_cookie in
 
     begin
      match document_and_cookies with
@@ -274,6 +274,33 @@ let evaluate_command_list cmdlst =
                                 Some (doc, url, new_varmap)
     end
     
+
+  (* "download"-function, is for downloading big files firectly into a destination-file *)
+  (* ---------------------------------------------------------------------------------- *)
+  and download  url referrer  dst_file  varmap =
+
+    (* if a cookie already has been received/stored                *)
+    (* pick it from the variable-map for sending it back to server *)
+    (* ----------------------------------------------------------- *)
+    let send_cookie = if Varmap.exists "COOKIES.SEND" varmap
+                     then
+                       begin match  Varmap.find "COOKIES.SEND" varmap  with Cookies cook -> Some cook | _ -> None end
+                     else
+                       None
+    in
+
+    (* retrvieve the document *)
+    (* ====================== *)
+    let response_cookies = Network.Pipelined.download url (Some referrer) send_cookie dst_file in
+
+    begin
+     match response_cookies with
+       | None         -> None
+       | Some cookies ->
+                         let new_varmap = (Varmap.add "COOKIES.RECEIVED" (Cookies cookies) varmap) in
+                         Some new_varmap
+    end
+
 
   (* -------------------------------------------------------------------------------------- *)
   (* get_document_list: gets a list of documents (bulk-get) *)
@@ -316,7 +343,18 @@ let evaluate_command_list cmdlst =
       | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
       | cmd::tl   -> begin
                        match cmd with
-                         | Download                 -> raise NOT_IMPLEMENTED_SO_FAR ; command [] tmpvar varmap
+                         | Download                 ->
+                                                        begin
+                                                          match tmpvar with
+                                                            | Url (u,r)          -> let auto_filename = Parsers.url_to_filename u in
+                                                                                    let new_varmap_opt = download  u r auto_filename varmap in
+                                                                                    begin
+                                                                                      match new_varmap_opt with
+                                                                                        | None       -> command tl tmpvar varmap
+                                                                                        | Some newvm -> command tl tmpvar newvm
+                                                                                    end
+                                                            | _ -> raise Wrong_tmpvar_type
+                                                          end
 
 
                          | Get_url (url, referrer)  ->

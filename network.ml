@@ -43,6 +43,8 @@ module Pipelined =
 
     exception Get_error   of Nethttp_client.status (* error: can#t be solved   *)
     exception Get_problem of Nethttp_client.status (* problem: might be solved *)
+    exception Download_error   of Nethttp_client.status (* error: can#t be solved   *)
+    exception Download_problem of Nethttp_client.status (* problem: might be solved *)
 
       let print_cookie  cookie =
         Printf.printf "    cookie-name:    %s\n" cookie.cookie_name;
@@ -106,12 +108,10 @@ module Pipelined =
 
 
       (* ==================================================== *)
-      let get_raw url (referer: string option) cookies response_storage =
+      let get_raw url (referer: string option) cookies =
         let pipeline = new Nethttp_client.pipeline in
 
         let get_call  = new Nethttp_client.get url in (* Referrer? Cookies? *)
-
-        get_call # set_response_body_storage response_storage;
 
         (* set the USER-AGENT string *)
         (* ------------------------- *)
@@ -183,6 +183,88 @@ module Pipelined =
           end;
 
         Some ( get_call # response_body # value, cookies )
+
+
+
+      (* ==================================================== *)
+      let download url (referer: string option) cookies dest_filenam =
+        let pipeline = new Nethttp_client.pipeline in
+
+        let get_call  = new Nethttp_client.get url in (* Referrer? Cookies? *)
+
+        get_call # set_response_body_storage (`File ( fun f -> dest_filenam )); (*!*)
+
+        (* set the USER-AGENT string *)
+        (* ------------------------- *)
+        Nethttp.Header.set_user_agent (get_call # request_header `Base) Cli.opt.Cli.user_agent;
+
+        (* set the REFERER string *)
+        (* ---------------------- *)
+        begin
+          match referer with None -> () | Some ref -> Nethttp.Header.set_referer (get_call # request_header `Base) ref
+        end;
+
+        (* set the Cookies *)
+        (* --------------- *)
+        begin
+          match cookies with
+            | None      ->  ()
+            | Some cook ->  let c = List.map cookie_to_cookie_ct cook in
+                            List.iter ( fun xx -> Nethttp.Header.set_cookie (get_call # request_header `Base) xx) c
+        end;
+
+
+(*
+ Curl-Lib:  conn#set_sslverifypeer false; (* Zertifikate-Prüfung auschalten! *)
+*)
+
+      
+        (* Get the data from webserver now *)
+        (* =============================== *)
+        pipeline # add get_call;  (* add the get-call to the pipeline *)
+        pipeline # run();         (* process the pipeline (retrieve data) *)
+
+        (* check status *)
+        (* ------------ *)
+        begin
+          match get_call # status with
+             | `Client_error           -> prerr_endline "Client_error";
+                                          raise (Download_error `Client_error)
+
+             | `Http_protocol_error  _ -> prerr_endline "Http_protocol_error";
+                                          raise (Download_error `Client_error)
+
+             | `Redirection            -> prerr_endline "Redirection";
+                                          raise (Download_problem `Client_error)
+
+             | `Server_error           -> prerr_endline "Server_error";
+                                          raise (Download_error `Client_error)
+
+             | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then prerr_endline "GET-Successful"
+
+             | `Unserved               -> prerr_endline "Unserved";
+                                          raise (Download_problem `Client_error)
+        end;
+
+        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
+        begin
+          Printf.eprintf "Status-Code    GET (DOWNLOAD):  %d\n" get_call # response_status_code;
+          Printf.eprintf "Status-Message GET (DOWNLOAD):  %s\n" get_call # response_status_text
+        end;
+
+        let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
+
+        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
+        then
+          begin
+            print_endline "------------------------------------------";
+            print_endline "=*=*=> COOOKIES:";
+              List.iter print_cookie cookies;
+            print_endline "<=*=*= COOKIES";
+          end;
+
+        Some ( cookies )
+
 
 
 
