@@ -186,6 +186,7 @@ statement: match_stmt          SEMI   { $1 }
     |      selection           SEMI   { $1 }
     |      drop                SEMI   { $1 }
     |      get_stmt            SEMI   { $1 }
+    |      download_stmt       SEMI   { $1 }
     |      make_url_stmt       SEMI   { $1 }
     |      store_stmt          SEMI   { $1 }
     |      recall_stmt         SEMI   { $1 }
@@ -238,6 +239,12 @@ print_stmt: PRINT_STRING LPAREN STRING        RPAREN { Print_string $3 }
 
 get_stmt: GET                           { Get }
     |     GET LPAREN get_args   RPAREN  { $3 }
+    ;
+
+download_stmt: DOWNLOAD                           { Download }
+    /*
+    |     GET LPAREN get_args   RPAREN  { $3 }
+    */
     ;
 
 store_stmt: STORE LPAREN STRING  RPAREN { Store $3 }
