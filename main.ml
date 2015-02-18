@@ -249,8 +249,8 @@ let paste_arglist_to_string  argument_list  varmap =
 let evaluate_command_list cmdlst =
 
   (* "get_document"-function, is used by some of the Get_... commands from "command"-function *)
-  (* ---------------------------------------------------------------------------------------- *)
-  let rec get_document  url referrer ?(dst_file="") varmap =
+  (* ======================================================================================== *)
+  let rec get_document  url referrer varmap =
 
     (* if a cookie already has been received/stored                *)
     (* pick it from the variable-map for sending it back to server *)
@@ -263,7 +263,7 @@ let evaluate_command_list cmdlst =
     in
 
     (* retrvieve the document *)
-    (* ====================== *)
+    (* ---------------------- *)
     let document_and_cookies =  Network.Pipelined.get_raw url (Some referrer) send_cookie in
 
     begin
@@ -276,7 +276,7 @@ let evaluate_command_list cmdlst =
     
 
   (* "download"-function, is for downloading big files firectly into a destination-file *)
-  (* ---------------------------------------------------------------------------------- *)
+  (* ================================================================================== *)
   and download  url referrer  dst_file  varmap =
 
     (* if a cookie already has been received/stored                *)
@@ -290,7 +290,7 @@ let evaluate_command_list cmdlst =
     in
 
     (* retrvieve the document *)
-    (* ====================== *)
+    (* ---------------------- *)
     let response_cookies = Network.Pipelined.download url (Some referrer) send_cookie dst_file in
 
     begin
@@ -302,11 +302,11 @@ let evaluate_command_list cmdlst =
     end
 
 
-  (* -------------------------------------------------------------------------------------- *)
-  (* get_document_list: gets a list of documents (bulk-get) *)
+  (* ====================================================================================== *)
+  (* get_document_list: gets a list of documents (bulk-get)                                 *)
   (* if the sleep-time is set o values > 0, then each get waits this amoubt of milliseconds *)
   (* before the get is executed.                                                            *)
-  (* -------------------------------------------------------------------------------------- *)
+  (* ====================================================================================== *)
   (* at the moment, varmap is not returned  updated *)
   (* ---------------------------------------------- *)
   and get_document_list  urls_refs varmap =
@@ -323,8 +323,10 @@ let evaluate_command_list cmdlst =
       in
         aux urls_refs ([], varmap)
 
+
+
   (* "command"-function is the main commands-parser/evaluator *)
-  (* -------------------------------------------------------- *)
+  (* ======================================================== *)
   and     command commandlist tmpvar varmap =
     flush_all();
 
