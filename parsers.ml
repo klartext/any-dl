@@ -132,7 +132,7 @@ let suffixes = [".jpg"; ".png"; ".txt"; ".pdf"; ".doc"; ".ps"; ".docx"; ".xls"; 
 (* ==================================================== *)
 (* ==================================================== *)
 let url_to_filename url_string =
-  let filename = url_string in (* String.copy removed, because Strings are now immutable in OCaml *)
+  let filename = String.copy url_string in (* String.copy added again, because of strange behaviour of mixing Strings- and Bytes-module *)
   for idx = 0 to String.length filename - 1
   do
     match filename.[idx] with
