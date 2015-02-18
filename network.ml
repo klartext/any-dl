@@ -187,12 +187,12 @@ module Pipelined =
 
 
       (* ==================================================== *)
-      let download url (referer: string option) cookies dest_filenam =
+      let download url (referer: string option) cookies dest_filename =
         let pipeline = new Nethttp_client.pipeline in
 
         let get_call  = new Nethttp_client.get url in (* Referrer? Cookies? *)
 
-        get_call # set_response_body_storage (`File ( fun f -> dest_filenam )); (*!*)
+        get_call # set_response_body_storage (`File ( fun f -> dest_filename )); (*!*)
 
         (* set the USER-AGENT string *)
         (* ------------------------- *)
