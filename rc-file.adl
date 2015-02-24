@@ -1255,8 +1255,9 @@ start
 
  print("Downloading video, please be patient.");
  makeurl;
- get;
- save;
+ download;
+ #get;
+ #save;
 end
 
 
