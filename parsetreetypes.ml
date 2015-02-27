@@ -45,7 +45,7 @@ type commands_t =
   | Get_url       of string * string          (* url, referrer *)
   | Get_urls  (* can be removed maybe *)      (* get via tmpvar *)
   | Get                                       (* get ONE document via tmpvar (Url-type) *)
-  | Download                                  (* Download: get-and-save - data will be written to file directly *)
+  | Download      of results_t list option    (* Download: get-and-save - data will be written to file directly *)
   | Make_url      of (results_t * results_t)  (* create URL-Type-Var from argument-strings *)
   | Make_url_tmpvar                           (* create URL-Type-Var from tmpvar (1-val-stack) *)
   | Match             of string               (* regexp-pattern-string *)
@@ -132,7 +132,7 @@ let command_to_string cmd = match cmd with
   | Get_url         _ -> "Get_url"
   | Get_urls          -> "Get_urls" (* can be removed maybe *)
   | Get               -> "Get"
-  | Download          -> "Download"
+  | Download        _ -> "Download"
   | Make_url        _ -> "Make_url"
   | Make_url_tmpvar   -> "Make_url"
   | Match           _ -> "Match"

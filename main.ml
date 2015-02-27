@@ -345,11 +345,16 @@ let evaluate_command_list cmdlst =
       | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
       | cmd::tl   -> begin
                        match cmd with
-                         | Download                 ->
+                         | Download  fname_arglist_opt      ->
                                                         begin
                                                           match tmpvar with
-                                                            | Url (u,r)          -> let auto_filename = Parsers.url_to_filename u in
-                                                                                    let new_varmap_opt = download  u r auto_filename varmap in
+                                                            | Url (u,r)          -> let filename =
+                                                                                      match fname_arglist_opt with
+                                                                                        | None -> Parsers.url_to_filename u (* auto-filename, from URL    *)
+                                                                                        | Some arg_list -> paste_arglist_to_string arg_list varmap  (* filename given as argument *)
+                                                                                    in
+
+                                                                                    let new_varmap_opt = download  u r filename varmap in
                                                                                     begin
                                                                                       match new_varmap_opt with
                                                                                         | None       -> command tl tmpvar varmap

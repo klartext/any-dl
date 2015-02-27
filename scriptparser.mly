@@ -241,10 +241,8 @@ get_stmt: GET                           { Get }
     |     GET LPAREN get_args   RPAREN  { $3 }
     ;
 
-download_stmt: DOWNLOAD                           { Download }
-    /*
-    |     GET LPAREN get_args   RPAREN  { $3 }
-    */
+download_stmt: DOWNLOAD                           { Download None }
+    |     DOWNLOAD LPAREN argument_list   RPAREN  { Download (Some $3) }
     ;
 
 store_stmt: STORE LPAREN STRING  RPAREN { Store $3 }
