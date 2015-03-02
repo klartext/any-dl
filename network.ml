@@ -7,8 +7,6 @@
   Copyleft:           GNU GENERAL PUBLIC LICENSE  v3 (or higher)
 *)
 
-open Nethtml
-open Tools
 
 
 module Simple =

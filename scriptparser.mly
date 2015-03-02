@@ -136,10 +136,6 @@
 
 %{
 open Parsetreetypes
-open Nethtml
-exception Undefined_value of string
-
-
 %}
 
 

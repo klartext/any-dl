@@ -7,7 +7,6 @@
   Copyleft:           GNU GENERAL PUBLIC LICENSE  v3 (or higher)
 *)
 open Nethtml
-open Parsetreetypes
 open Tools
 
 exception Not_found_Element (* *)
