@@ -629,8 +629,12 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
         traverse_aux doclist;
         List.rev !picked
 
-    (* matcher-functions *)
-    (* ================= *)
+
+    (* ======================== *)
+    (* matcher-functions        *)
+    (* ======================== *)
+    (* (selection-conditionals) *)
+    (* ------------------------ *)
 
     (* matchers with tag-match *)
     (* ----------------------- *)
@@ -651,14 +655,14 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     (* created from "find_elements_by" and the matcher-functions *)
     (* ========================================================= *)
 
-    (* lookup-funcctions with tag-match *)
-    (* -------------------------------- *)
+    (* lookup-functions with tag-match *)
+    (* ------------------------------- *)
     let find_elements_by_tag_argpair tagval argname argvalue = find_elements_by ~tagval:tagval ~argkey:argname ~argval:argvalue  matcher_tag_argpair
     let find_elements_by_tag_argkey  tagval argname          = find_elements_by ~tagval:tagval ~argkey:argname                   matcher_tag_argkey
     let find_elements_by_tag_argval  tagval         argvalue = find_elements_by ~tagval:tagval                 ~argval:argvalue  matcher_tag_argval
 
-    (* lookup-funcctions with tag-match *)
-    (* -------------------------------- *)
+    (* lookup-functions without tag-match *)
+    (* ---------------------------------- *)
     let find_elements_by_argpair argname argvalue     = find_elements_by ~argkey:argname ~argval:argvalue  matcher_argpair
     let find_elements_by_argkey  argname              = find_elements_by ~argkey:argname                   matcher_argkey
     let find_elements_by_argval          argvalue     = find_elements_by                 ~argval:argvalue  matcher_argval
@@ -687,7 +691,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
                       traverse_aux tl (* work on the tail *)
       in
         traverse_aux doclist;
-        String.trim (html_decode (Buffer.contents buf)) (* trimming again will remove the last added "\n" *)
+        String.trim (html_decode (Buffer.contents buf)) (* trimming again to remove the last added "\n" *)
 
 
 
@@ -702,7 +706,11 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
-    (* find elements by .......... *)
+    (* ============================================== *)
+    (* find elements by ..........                    *)
+    (* ---------------------------------------------- *)
+    (* DOM-selection (API like JavaScript / Selenium) *)
+    (* ============================================== *)
     let find_elements_by_class_name  classname  doclist = find_elements_by_argpair  "class" classname  doclist
     let find_elements_by_id          id         doclist = find_elements_by_argpair  "id"    id         doclist
     let find_elements_by_name        name       doclist = find_elements_by_argpair  "name"  name       doclist
