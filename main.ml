@@ -25,24 +25,20 @@ exception No_Match                      (* if a match was tried, but no match co
 exception No_Matchresult_available      (* if Select is used, but there is no match-result available as tmpvar *)
 exception No_Matchable_value_available  (* if Match is used, but there is no matchable tmpvar *)
 
-exception Unknown_parser  (* if a parsername is requested, which does not exist *)
-
 exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... without more detailed info *)
 exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 
 exception Invalid_Row_Index             (* indexing a row that does not exist *)
 exception Invalid_Col_Index             (* indexing a col that does not exist *)
 
-exception No_parser_found_for_this_url  (* *)
-
-exception AutoTry_success               (* in auto-try mode (switch -a), if successful, this exception will be thrown *)
-
 exception Extractor_list_failure
 
 exception Variable_not_found of string  (* a variable-name lookup in the Varname-map failed *)
 
-exception Devel (* exception for developing / testing *)
 
+exception AutoTry_success               (* in auto-try mode (switch -a), if successful, this exception will be thrown *)
+exception No_parser_found_for_this_url  (* *)
+exception Unknown_parser  (* if a parsername is requested, which does not exist *)
 
 
 
