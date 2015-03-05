@@ -37,6 +37,11 @@ let very_verbose_printf  ?(optflag=false) formatstr = very_verbose_fprintf ~optf
 let very_verbose_eprintf formatstr = very_verbose_fprintf stderr formatstr
 *)
 
+(* ------------------------------------------------ *)
+(* ------------------------------------------------ *)
+(* ------------------------------------------------ *)
+let print_warning str = flush stdout; prerr_string "WARNING: "; prerr_endline str
+
 
 
 (* save string to file *)

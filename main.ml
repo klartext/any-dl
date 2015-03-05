@@ -46,11 +46,6 @@ exception Devel (* exception for developing / testing *)
 
 
 (* ------------------------------------------------ *)
-(* ------------------------------------------------ *)
-(* ------------------------------------------------ *)
-let print_warning str = flush stdout; prerr_string "WARNING: "; prerr_endline str
-
-(* ------------------------------------------------ *)
 (* select those items from the row_items, which are *)
 (* indexed by the values in the index_list          *)
 (* ------------------------------------------------ *)
