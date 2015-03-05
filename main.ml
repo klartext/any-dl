@@ -45,21 +45,6 @@ exception Devel (* exception for developing / testing *)
 
 
 
-(* ------------------------------------------------ *)
-(* select those items from the row_items, which are *)
-(* indexed by the values in the index_list          *)
-(* ------------------------------------------------ *)
-let item_selection row_items index_list =
-  let res_len = List.length index_list in
-  let res     = Array.make res_len row_items.(0) in
-  let index_arr = Array.of_list index_list in
-
-  for res_index = 0 to Array.length index_arr - 1
-  do
-    res.(res_index) <- row_items.(index_arr.(res_index))
-  done;
-  res
-
 
 
 (* Module for Variables *)
