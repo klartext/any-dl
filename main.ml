@@ -93,17 +93,11 @@ let parsername_lookup_by_url url lookup_lst =
 
 
 
-
-
-(* this function looks up the right parser for a given url and invokes that parser *)
-(* =============================================================================== *)
-
-let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection =
-
-  (* look up the right parser, either via CLI-given parsername *)
-  (* or via hash-lookup for that url                           *)
-  (* --------------------------------------------------------- *)
-  let parserdef =
+(* ============================================================ *)
+(* Looks up the right parser, either via CLI-given parsername   *)
+(* or via hash-lookup (url from parser-definition) for that url *)
+(* ============================================================ *)
+let get_parserdef url parser_urllist parser_namehash  parser_selection =
       try
         begin
           match parser_selection with
@@ -122,9 +116,21 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
                                  let parsername = parsername_lookup_by_url  url  parser_urllist in
                                  verbose_printf "*** selected parser: %s\n" parsername;
                                  Hashtbl.find parser_namehash  parsername
-         end
+        end
       with Not_found         -> prerr_endline ("No parser found for " ^ url); raise No_parser_found_for_this_url
-  in
+
+
+
+
+
+(* =============================================================================== *)
+(* This function looks up the right parser for a given url and invokes that parser *)
+(* =============================================================================== *)
+
+let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection =
+
+  (* select the parserdef from command line or urls that are attached to the parserdefinitions *)
+  let parserdef = get_parserdef url  parser_urllist  parser_namehash  parser_selection in
 
   try
     let seperator_string = Parsers.activate_controlstrings Cli.opt.Cli.sep in
@@ -142,7 +148,7 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
 
   with (* handle exceptions from the parse-tree-evaluation *)
     | E.No_Match                -> Printf.eprintf "Parser problem: Could not match to pattern!\t Parse will be exited for url %s\n" url
-    | E.Invalid_Row_Index       -> prerr_endline "Error in script! Invalid_Row_Index!\t Parse exited.\n"
+    | E.Invalid_Row_Index       -> Printf.eprintf "Error in script! Invalid_Row_Index!\t Parse exited.\n"
     | E.Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name
     | E.No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url
     | E.Tagselect_empty_list    -> Printf.eprintf "Tagselect_empty_list for URL %s\n" url
