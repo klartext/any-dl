@@ -45,39 +45,6 @@ exception Devel (* exception for developing / testing *)
 
 
 
-module Array2 =
-  struct
-    include Array
-
-    let filter filt arr = Array.of_list ( List.filter filt (Array.to_list arr ))
-
-    let exists filt arr = List.exists filt (Array.to_list arr) 
-
-
-    let filter_row_by_colmatch colmatcher matr =
-      filter ( fun arr -> exists colmatcher arr ) matr
-
-  end
-
-
-
-module Sleep =
-  struct
-    open Unix
-
-    (* sleep a certain amount of time (in seconds as float *)
-    (* --------------------------------------------------- *)
-    let sleep_float  float_seconds =
-      ignore( select [] [] [ stdin ] (abs_float float_seconds) )
-
-    (* sleep ms milliseconds *)
-    (* --------------------- *)
-    let sleep_ms  ms =
-      verbose_printf "sleep %d miliseconds\n" ms; (* devel-debug-info *)
-      sleep_float (float_of_int ms /. 1000.0)
-
-  end
-
 (* ------------------------------------------------ *)
 (* ------------------------------------------------ *)
 (* ------------------------------------------------ *)
