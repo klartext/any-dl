@@ -840,11 +840,21 @@ let evaluate_command_list cmdlst =
                                                                *)
 
                                                                | Document (doc, url) -> select_tags_from_document selector doc 
-                                                                                       
-                                                               (*
-                                                               | Document_array doc_arr -> Array.fold_left ( fun doc aggregation -> select_tags_from_doclist selector doc
-                                                                                             (* ('b -> 'a -> 'a) -> 'b array -> 'a -> 'a = <fun> *)
-                                                               *)
+                                                               | Document_array doc_arr ->
+                                                                                           (* extract all document-strings *)
+                                                                                           let docs = Array.fold_right ( fun docref aggregation -> (fst docref) :: aggregation ) doc_arr [] in
+
+                                                                                           (* create the doclists *)
+                                                                                           let doclists = List.map Parsers.conv_to_doclist docs in
+
+                                                                                           (* selector-function: for given selector: fix the selector and extract tags *)
+                                                                                           (* ------------------------------------------------------------------------ *)
+                                                                                           let select_tags_for_given_selector doclist = select_tags_from_doclist selector doclist
+                                                                                           in
+
+                                                                                           (* for given selector extract the tags *)
+                                                                                           let extractions = List.map ( fun dl -> select_tags_for_given_selector dl ) doclists in
+                                                                                           List.flatten extractions
 
                                                                | _ -> print_warning "Tag_select found non-usable type"; raise Wrong_tmpvar_type
                                                            end
