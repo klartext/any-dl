@@ -811,13 +811,22 @@ let evaluate_command_list cmdlst =
                                                          in
 
 
-                                                         (* --------------------- *)
-                                                         (* tagselection-function *)
-                                                         (* --------------------- *)
+                                                         (* ---------------------- *)
+                                                         (* tagselection-functions *)
+                                                         (* ====================== *)
+
+                                                         (* -------------------------------------- *)
+                                                         (* function for tagselection from doclist *)
+                                                         (* -------------------------------------- *)
                                                          let select_tags_from_doclist selector doclist =
                                                              match selector with
                                                                | Selector_any                     -> Parsers.Htmlparse.find_any_elements doclist
                                                                | Specific_selector selector_liste -> selectloop selector_liste doclist (* the selected tags *)
+                                                         in
+                                                         (* ---------------------------------------------- *)
+                                                         (* function for tagselection from document-string *)
+                                                         (* ---------------------------------------------- *)
+                                                         let select_tags_from_document selector doc = select_tags_from_doclist selector (Parsers.conv_to_doclist doc)
                                                          in
                                                            
                                                            
@@ -830,8 +839,13 @@ let evaluate_command_list cmdlst =
                                                                | Doclist   doclist   -> selectloop selector_liste doclist (* the selected tags *)
                                                                *)
 
-                                                               | Document (doc, url) -> let doclist = Parsers.conv_to_doclist doc in (* convert doc-string to Doclist *)
-                                                                                        select_tags_from_doclist selector doclist
+                                                               | Document (doc, url) -> select_tags_from_document selector doc 
+                                                                                       
+                                                               (*
+                                                               | Document_array doc_arr -> Array.fold_left ( fun doc aggregation -> select_tags_from_doclist selector doc
+                                                                                             (* ('b -> 'a -> 'a) -> 'b array -> 'a -> 'a = <fun> *)
+                                                               *)
+
                                                                | _ -> print_warning "Tag_select found non-usable type"; raise Wrong_tmpvar_type
                                                            end
                                                          in
