@@ -1769,8 +1769,6 @@ end
 # =================================
 parsername "DWN": ( "http://deutsche-wirtschafts-nachrichten.de/2015/" )
 start
-  store("mainurl");
-
   # get the file that contains the video-url
   # ----------------------------------------
   tagselect("iframe"."class" = "vzaar-video-player" | arg( "src" ) ) ;
@@ -1796,7 +1794,6 @@ start
   recall("videourl");
   get;
   save_as( $basename, ".mp4" );
-  #download; # download does not allow Url_list's so far; so not used here.
 end
 
 
