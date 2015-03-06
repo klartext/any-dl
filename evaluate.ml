@@ -299,6 +299,10 @@ let evaluate_command_list cmdlst =
                                                                                         | None       -> command tl tmpvar varmap
                                                                                         | Some newvm -> command tl tmpvar newvm
                                                                                     end
+                                                            | Url_list ul        ->
+                                                                                    (* Download on Url_list necessarily use auto-filenaming *)
+                                                                                    List.iter ( fun (url,ref) -> command [ Download None ] (Url (url, ref)) varmap ) ul
+
                                                             | _ -> raise Wrong_tmpvar_type
                                                           end
 
