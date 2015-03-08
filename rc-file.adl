@@ -556,13 +556,29 @@ end
 parsername "arte-guide": ( "http://www.arte.tv/guide/fr/", "http://www.arte.tv/guide/de/"  )
 start
 
+  # Extract Title
+  # -------------
   titleextract;
   subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
+  print("Title:    ", $title);
+
+  # Extract Subtitle
+  # ----------------
   recall("BASEDOC");
+  tagselect("h2"."class"="text-thin mb-20" | data );
+  rowselect(0);
+  to_string;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("subtitle");
+
+  print("Subtitle: ", $subtitle);
+  print("---");
+
 
   #select the JSON-URL ( e.g. http://org-www.arte.tv/papi/tvguide/videos/stream/player/F/044035-000_PLUS7-F/ALL/ALL.json )
   # ------------------
+  recall("BASEDOC");
 
 
   # Looking for arte_vp_url-entries, which look like these examples:
@@ -584,6 +600,8 @@ start
   # remove unnecessary video-urls
   # -----------------------------
   grep("PLUS7-D"); # here are the videos
+
+  #print("If you want to select a video by hand, please use the \"-i\"-command line switch. (In the first selection j´you can just press enter.)");
 
   iselectmatch(0,"json");
   #rowselect(0);
@@ -620,7 +638,7 @@ start
 
   #get; # geht so nicht. bekommt rtsp:// angeboten... ?! -> debugging wäre sinnvoll
 
-  paste(" wget -O ", $title, ".mp4 ", $videourl );
+  paste(" wget -O ", $title, "_", $subtitle, ".mp4 ", $videourl );
   print;
   system;
 
