@@ -639,7 +639,7 @@ start
   #get; # geht so nicht. bekommt rtsp:// angeboten... ?! -> debugging wäre sinnvoll
 
   #paste(" wget -O ", $title, "_", $subtitle, ".mp4 ", $videourl );
-  paste(" wget -O ", $title, "_", $subtitle, ".mp4 ", $videourl );
+  paste(" wget -O ", $title, ".mp4 ", $videourl );
   print;
   system;
 
