@@ -875,7 +875,9 @@ let evaluate_command_list cmdlst =
                                                          then
                                                            begin
                                                              prerr_endline "tagselect: nothing found";
+                                                             (*
                                                              raise Tagselect_empty_list
+                                                             *)
                                                            end;
 
 
