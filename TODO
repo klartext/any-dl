@@ -39,12 +39,6 @@ FEATUREs:
      cli-switch to prepend a timestamp for each output.
      (Later would make refactoring of file-writing necessary, I think)
 
- - Implementing a get()-variant that writes directly to file (instead of eating up memory)
-     get_to_file()
-     get_to_file_as()
-   (not sure if Curl allows this, but swithcing completely to OCamlnet is in my mind already.)
-
-
  - Array2.colmap / Array2.rowmap  map-functions for Array-data.
    (Should behave non-destructive / functional of course.)
 
