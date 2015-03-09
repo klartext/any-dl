@@ -146,12 +146,6 @@ FEATUREs:
      http://caml.inria.fr/pub/ml-archives/caml-list/2006/04/6d31ef03a5a1f9a182a9ed2422d266a4.en.html
     ... but ocamlnet uses ulex internally? I could just use ocamlnet for reading/parsing files maybe?
 
- - other syntax/grammar:
-     - parser-Definitions only what to do, URLs not (or not necessarily?) at parser-definition.
-     - command for attaching parsers to URLs or vice versa.
-       something like:     attach parser "ard_mediathek_get" to ("http://...", "http://"...")
-                 or        attach_urls "ard_mediathek_get" ("http://...", "http://"...")
-
  - Testsuite would help a lot (example where helpful: linkextract problem in  commit c7f3c1ec98d9c3e88d47c93637a50879c0711d05 )
      - tesing sites as well as testing parsers would be needed.
 
