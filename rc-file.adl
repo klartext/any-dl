@@ -565,15 +565,15 @@ start
 
   # Extract Subtitle
   # ----------------
-  #recall("BASEDOC");
-  #tagselect("h2"."class"="text-thin mb-20" | data );
-  #rowselect(0);
-  #to_string;
-  #subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
-  #store("subtitle");
+  recall("BASEDOC");
+  tagselect("h2"."class"="text-thin mb-20" | data );
+  rowselect(0);
+  to_string;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("subtitle");
 
-  #print("Subtitle: ", $subtitle);
-  #print("---");
+  print("Subtitle: ", $subtitle);
+  print("---");
 
 
   #select the JSON-URL ( e.g. http://org-www.arte.tv/papi/tvguide/videos/stream/player/F/044035-000_PLUS7-F/ALL/ALL.json )
@@ -638,8 +638,7 @@ start
 
   #get; # geht so nicht. bekommt rtsp:// angeboten... ?! -> debugging wäre sinnvoll
 
-  #paste(" wget -O ", $title, "_", $subtitle, ".mp4 ", $videourl );
-  paste(" wget -O ", $title, ".mp4 ", $videourl );
+  paste(" wget -O ", $title, "_", $subtitle, ".mp4 ", $videourl );
   print;
   system;
 
