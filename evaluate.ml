@@ -1175,6 +1175,8 @@ let evaluate_command_list cmdlst =
                                                          begin
                                                          match tmpvar with
                                                            | Document(doc, url)-> Parsers.dump_html_from_string doc
+                                                           | Document_array doc_arr -> let docs = Array.map fst doc_arr in
+                                                                                       Array.iter Parsers.dump_html_from_string docs
                                                            | _ -> raise Wrong_argument_type
                                                          end;
                                                          command tl tmpvar varmap
