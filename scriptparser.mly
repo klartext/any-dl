@@ -77,6 +77,7 @@
 %token SHOW_TAGS
 %token SHOW_TAGS_FULLPATH
 %token HTML_DECODE
+%token URL_DECODE
 %token READLINE
 %token DUMMY
 
@@ -216,6 +217,7 @@ statement: match_stmt          SEMI   { $1 }
     |      SHOW_TAGS           SEMI   { Show_tags }
     |      SHOW_TAGS_FULLPATH  SEMI   { Show_tags_fullpath }
     |      HTML_DECODE         SEMI   { Html_decode }
+    |      URL_DECODE          SEMI   { Url_decode }
     |      readline            SEMI   { $1 }
     |      DUMMY               SEMI   { Dummy }
     ;

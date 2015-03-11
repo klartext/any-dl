@@ -180,6 +180,36 @@ let paste_arglist_to_string  argument_list  varmap =
   pasted
 
 
+
+
+
+(* =================================================================== *)
+(* apply a function to the value, giving back a value of the same type *)
+(* =================================================================== *)
+let default_application variable basefunc varmap =
+  match variable with
+    (*
+    | Varname         vn         -> to_string (Varmap.find vn varmap) varmap
+    *)
+    | String          str        -> String ( basefunc str )
+    | String_array    strarr     -> String_array ( Array.map basefunc strarr )
+    | Document        (doc,url)  -> Document ( basefunc doc, basefunc url )
+    | Document_array  docarr     -> Document_array ( Array.map ( fun (doc,url) -> basefunc doc, basefunc url ) docarr )
+    | Url             (url, ref) -> Url ( basefunc url, basefunc ref )
+    | Url_list        urllist    -> Url_list ( List.map ( fun (u,r) -> basefunc u, basefunc r ) urllist )
+    | Url_array       urlarray   -> Url_array ( Array.map ( fun (u,r) -> basefunc u, basefunc r ) urlarray )
+    | Dummy_result               -> Empty
+    | Match_result    arrarr     -> let res = Array.map (fun arr -> let a = Array.copy arr in Array.map basefunc a ) arrarr in
+                                    (Match_result res)
+    (*
+    | Match_result               -> Empty
+    | Cookies                    -> Empty
+    *)
+    | Empty                     -> Empty
+    | _                         -> raise Wrong_argument_type
+
+
+
 (* ------------------------------------------------- *)
 (* This function evaluates the list of commands that *)
 (* a parser consists of.                             *)
@@ -1248,6 +1278,10 @@ let evaluate_command_list cmdlst =
                                                            end
                                                          in
                                                          command tl newvar varmap
+
+                         | Url_decode                -> let newvar = default_application tmpvar Netencoding.Url.decode varmap in
+                                                        command tl newvar varmap
+
 
                          | Readline  arg_opt          ->
                                                          let read_line = String ( read_line() ) in

@@ -101,6 +101,7 @@ type commands_t =
   | Show_tags_fullpath                        (* Show Tags with full tag-path *)
   | Dump_data                                 (* Dump only data-part if html, not the tags *)
   | Html_decode                               (* decode HTML-quotings back to "normal" chars *)
+  | Url_decode                                (* decode URL-quoting back to "normal" chars *)
   (* -------------- *)
   | Readline of string option                 (* Read line from stdin *)
   (* -------------- *)
@@ -182,6 +183,7 @@ let command_to_string cmd = match cmd with
   | Show_tags_fullpath -> "Show_tags_fullpath"
   | Dump_data         -> "Dump_data"
   | Html_decode       -> "Html_decode"        (* decode HTML-quotings back to "normal" chars *)
+  | Url_decode        -> "Url_decode"         (* decode url-quoting back to "normal" chars   *)
   | Readline        _ -> "Readline"
   | Sleep_ms        _ -> "Sleep_ms"
   | Dummy             -> "Dummy"

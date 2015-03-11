@@ -82,6 +82,7 @@
                   ("show_tags_fullpath",  SHOW_TAGS_FULLPATH  );
 
                   ("htmldecode",  HTML_DECODE  );
+                  ("urldecode",   URL_DECODE  );
 
                   ("readline",       READLINE  );
 
