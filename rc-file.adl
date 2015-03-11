@@ -1776,6 +1776,26 @@ start
   save;  # save all the retrieved documents, that wre elinked to via the main page
 end
 
+# =================================
+# RBB
+# =================================
+parsername "rbb": ( "http://www.rbb-online.de/" )
+start
+  # Example-video: http://www.rbb-online.de/stilbruch/archiv/20150219_2215/thomas-brussig-roman-das-gibts-in-keinem-russenfilm.html
+  #<meta property="og:video" content="http://www.rbb-online.de/basis/jwplayer/5_9/player.swf?file=http%3A%2F%2Fhttp-stream.rbb-online.de%2Frbb%2Fstilbruch%2Fstilbruch_20150219_ddr_m_16_9_512x288.mp4&autostart=true"/>
+  tagselect( "meta"."property"="og:video" | arg("content") );
+
+
+  # extract the file's url
+  # ----------------------
+  urldecode;
+  subst(".*?file=", "");
+  subst("&autostart=true", "");
+
+  makeurl;
+  download;
+
+end
 
 ##################################################################################
 #### BELOW IS OLD STUFF, some infos that might be helpful for parser-devel.
