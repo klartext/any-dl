@@ -35,6 +35,8 @@ FEATUREs:
  a bit of priority
  =================
 
+ - subst: with replacement-*pattern* (instead of just a string-template)
+
  - timestamp:
      cli-switch to prepend a timestamp for each output.
      (Later would make refactoring of file-writing necessary, I think)
