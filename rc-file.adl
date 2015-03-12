@@ -542,7 +542,7 @@ end
 
 
 # ---------------------------------
-# ARTE-GUIDE
+# ARTE-Mediathek-Download
 # ---------------------------------
 # 1. Hauptseite ziehen
 # 2. Titel extrahieren und sichern
@@ -553,7 +553,7 @@ end
 # ---------------------------------
 # Example-URL: http://videos.arte.tv/de/videos/joe-strummer--7161356.html
 # =================================
-parsername "arte-guide": ( "http://www.arte.tv/guide/fr/", "http://www.arte.tv/guide/de/"  )
+parsername "arte-dl": ( "http://www.arte.tv/guide/fr/", "http://www.arte.tv/guide/de/"  )
 start
 
   # Extract Title
