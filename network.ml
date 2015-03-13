@@ -107,6 +107,13 @@ module Pipelined =
 
       (* ==================================================== *)
       let get_raw url (referer: string option) cookies =
+
+        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
+        begin
+          print_endline "------------------------------->";
+          Printf.printf "get_raw: GET URL: %s\n" url;
+        end;
+
         let pipeline = new Nethttp_client.pipeline in
 
         let get_call  = new Nethttp_client.get url in (* Referrer? Cookies? *)
@@ -157,7 +164,8 @@ module Pipelined =
              | `Server_error           -> prerr_endline "Server_error";
                                           raise (Get_error `Client_error)
 
-             | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then prerr_endline "GET-Successful"
+             | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then print_endline "GET-Successful"
+                                                                                             else prerr_endline "GET-Successful"
 
              | `Unserved               -> prerr_endline "Unserved";
                                           raise (Get_problem `Client_error)
@@ -165,8 +173,8 @@ module Pipelined =
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
-          Printf.eprintf "Status-Code    GET:  %d\n" get_call # response_status_code;
-          Printf.eprintf "Status-Message GET:  %s\n" get_call # response_status_text
+          Printf.printf "Status-Code    GET:  %d\n" get_call # response_status_code;
+          Printf.printf "Status-Message GET:  %s\n" get_call # response_status_text
         end;
 
         let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
@@ -174,10 +182,10 @@ module Pipelined =
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
         then
           begin
-            print_endline "------------------------------------------";
             print_endline "=*=*=> COOOKIES:";
               List.iter print_cookie cookies;
             print_endline "<=*=*= COOKIES";
+            print_endline "<-------------------------------"
           end;
 
         Some ( get_call # response_body # value, cookies )
