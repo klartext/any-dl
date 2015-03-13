@@ -789,15 +789,13 @@ let evaluate_command_list cmdlst =
                          | Rebase               ->
                                                          let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
                                                          let rebase   = Parsers.Rebase.try_rebase  starturl                in
-                                                         Printf.printf "STARTURL: %s\n" starturl;
 
                                                          let result =
                                                            begin
                                                              match tmpvar with
                                                                 | String          s          -> String ( rebase s )
                                                                 | String_array    str_arr    -> String_array ( Array.map rebase str_arr )
-                                                                | Match_result    match_res  -> Match_result ( Array.map ( fun x -> Array.iter prerr_endline x;
-                                                                                                                             Array.map rebase x ) match_res )
+                                                                | Match_result    match_res  -> Match_result ( Array.map ( fun x -> Array.map rebase x ) match_res )
 
                                                                 | _ -> print_warning "Rebase found non-usable type"; raise Wrong_tmpvar_type
                                                            end
