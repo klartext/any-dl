@@ -165,7 +165,6 @@ module Pipelined =
                                           raise (Get_error `Client_error)
 
              | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then print_endline "GET-Successful"
-                                                                                             else prerr_endline "GET-Successful"
 
              | `Unserved               -> prerr_endline "Unserved";
                                           raise (Get_problem `Client_error)
