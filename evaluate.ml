@@ -808,6 +808,13 @@ let evaluate_command_list cmdlst =
                                                              | Document (doc, url) ->
                                                                        let result = Array.of_list (Parsers.titleextract_str doc) in
                                                                        command (Subst ("\n", "") :: tl) (String_array result) varmap
+
+                                                             | Document_array docarr ->  let doc_url_list = (Array.to_list docarr)    in
+                                                                                         let titlili      = List.map ( fun (d,u) -> Parsers.titleextract_str d  ) doc_url_list in
+                                                                                         let titli        = List.flatten titlili in
+                                                                                         let result = Array.of_list titli in
+                                                                                         command (Subst ("\n", "") :: tl) (String_array result) varmap
+
                                                              | _ -> print_warning "Title_extract found non-usable type"; raise Wrong_tmpvar_type
                                                          end
 
