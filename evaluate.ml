@@ -84,6 +84,9 @@ module Varmap =
 (* elsewehere be defined                          *)
 (* ---------------------------------------------- *)
 let rec  to_string  result_value varmap =
+
+  let array_string_append str_arr = Array.fold_left ( ^ ) "" str_arr in
+
   let str =
     match result_value with
       | Varname       varname      -> let res = (Varmap.find varname varmap) in
@@ -95,8 +98,8 @@ let rec  to_string  result_value varmap =
       | String        str          -> str 
       | Document      (doc, url)   -> url ^ ":" ^ doc
       | Document_array  arr        -> let strarr = Array.map ( fun (d,u) -> to_string (Document (d,u)) varmap ) arr in to_string (String_array strarr) varmap
-      | String_array  str_arr      -> Array.fold_left ( ^ ) "" str_arr
-      | Match_result  mres         -> raise Wrong_argument_type (* match-res => arr of arr -> recursion on String_array ! *)
+      | String_array  str_arr      -> array_string_append str_arr
+      | Match_result  mres         -> let x = Array.map array_string_append mres in array_string_append x
       | Url           (href, ref)  -> href
       | Url_list      url_list     -> List.fold_right ( fun a sofar -> "\"" ^ (fst a) ^ "\" " ^ sofar ) url_list ""
       | Url_array     url_arr      -> to_string  (Url_list ( Array.to_list url_arr)) varmap
@@ -470,7 +473,7 @@ let evaluate_command_list cmdlst =
                                                          command tl (Match_result matched) varmap
 
 
-                         | Grep pattern               -> 
+                         | Grep pattern_arglist       -> let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
                                                          (*
                                                            if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
                                                          *)
@@ -507,7 +510,10 @@ let evaluate_command_list cmdlst =
                                                          in
                                                            command tl grepped varmap
 
-                         | Grep_v pattern             ->  (* grep -v *)
+                         | Grep_v pattern_arglist     ->  (* grep -v *)
+
+                                                         let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
+
                                                          (*
                                                            if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
                                                          *)
