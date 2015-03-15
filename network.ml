@@ -125,6 +125,20 @@ module Pipelined =
         !lst
 
 
+      (* ======================================================== *)
+      (* if verbose or very_vrbose cli-flag is set, then print    *)
+      (* the cookies, sorrounded by some eye catcher-text.        *)
+      (* ======================================================== *)
+      let if_verbose_print_cookies cookies =
+        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
+        then
+          begin
+            print_endline "=*=*=> COOOKIES:";
+              List.iter print_cookie cookies;
+            print_endline "<=*=*= COOKIES";
+            print_endline "<-------------------------------"
+          end
+
       (* ========================================================================================================== *)
       (* this function judges/checks the status of a get-call and prints messages / raises exceptions, if necessary *)
       (* ========================================================================================================== *)
@@ -200,14 +214,7 @@ module Pipelined =
 
         let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
 
-        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
-        then
-          begin
-            print_endline "=*=*=> COOOKIES:";
-              List.iter print_cookie cookies;
-            print_endline "<=*=*= COOKIES";
-            print_endline "<-------------------------------"
-          end;
+        if_verbose_print_cookies cookies;
 
         Some ( get_call # response_body # value, cookies )
 
@@ -260,14 +267,7 @@ module Pipelined =
 
         let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
 
-        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
-        then
-          begin
-            print_endline "------------------------------------------";
-            print_endline "=*=*=> COOOKIES:";
-              List.iter print_cookie cookies;
-            print_endline "<=*=*= COOKIES";
-          end;
+        if_verbose_print_cookies cookies;
 
         Some ( cookies )
 
