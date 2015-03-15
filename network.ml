@@ -26,6 +26,26 @@ module Simple =
 
       }
 
+====================== OPTIONS ======================
+Options for the whole pipeline. It is recommended to change options the following way:
+
+    let opts = pipeline # get_options in
+    let new_opts = { opts with <field> = <value>; ... } in
+    pipeline # set_options new_opts
+ 
+============================================
+
+
+Printf.printf "Status-Message GET:  %s\n" get_call#response_status_text;
+  
+  (* GET-call *)
+  (* ======== *)
+  (*
+  let body = get_call # response_body # value  in
+  let response_header = get_call # response_header # fields in
+  *)
+
+
 *)
 
 
@@ -34,25 +54,24 @@ module Simple =
 module Pipelined =
   struct
     open Nethttp
-    (*
-    open Nethttp_client
-    *)
-
 
     exception Get_error   of Nethttp_client.status (* error: can#t be solved   *)
     exception Get_problem of Nethttp_client.status (* problem: might be solved *)
     exception Download_error   of Nethttp_client.status (* error: can#t be solved   *)
     exception Download_problem of Nethttp_client.status (* problem: might be solved *)
 
-      let print_cookie  cookie =
-        Printf.printf "    cookie-name:    %s\n" cookie.cookie_name;
-        Printf.printf "    cookie-value:   %s\n" cookie.cookie_value;
-        (match cookie.cookie_expires with None -> () | Some ex   -> Printf.printf "    cookie-expires: %f\n" ex);
-        (match cookie.cookie_domain  with None -> () | Some dom  -> Printf.printf "    cookie-domain:  %s\n" dom);
-        (match cookie.cookie_path    with None -> () | Some path -> Printf.printf "    cookie-path:    %s\n" path);
-        Printf.printf "    cookie-secure:  %s\n" (if cookie.cookie_secure then "TRUE" else "FALSE");
-        print_endline "  ------";
-        ()
+    (* ======================================== *)
+    (* print the contents of a cookie to stdout *)
+    (* ======================================== *)
+    let print_cookie  cookie =
+      Printf.printf "    cookie-name:    %s\n" cookie.cookie_name;
+      Printf.printf "    cookie-value:   %s\n" cookie.cookie_value;
+      (match cookie.cookie_expires with None -> () | Some ex   -> Printf.printf "    cookie-expires: %f\n" ex);
+      (match cookie.cookie_domain  with None -> () | Some dom  -> Printf.printf "    cookie-domain:  %s\n" dom);
+      (match cookie.cookie_path    with None -> () | Some path -> Printf.printf "    cookie-path:    %s\n" path);
+      Printf.printf "    cookie-secure:  %s\n" (if cookie.cookie_secure then "TRUE" else "FALSE");
+      print_endline "  ------";
+      ()
 
       (* old format, as printed in curl-version *)
       (* -------------------------------------- *)
@@ -64,8 +83,8 @@ module Pipelined =
 
 
 
-      (*if the server does not send DOMAIN- and PATH-fields, fill them from request-url *)
-      (* ------------------------------------------------------------------------------ *)
+      (* If the server does not send DOMAIN- and PATH-fields, fill them from request-url *)
+      (* =============================================================================== *)
       let fill_empty_cookiefields  url cookie =
         let open Neturl         in
         let open Parsers.Rebase in
@@ -92,7 +111,9 @@ module Pipelined =
             { cookie with cookie_domain = Some dom; cookie_path = path_opt } (* updated record *)
 
 
-      (* =============== *)
+      (* ======================================================== *)
+      (* convert the cookie-forms function is missing in ocamlnet *)
+      (* ======================================================== *)
       let cookie_to_cookie_ct  nscookie =
         let lst = ref [] in
         lst := (nscookie.cookie_name, nscookie.cookie_value) :: !lst;
@@ -127,7 +148,9 @@ module Pipelined =
                                         raise (Get_problem `Client_error)
 
 
-      (* ==================================================== *)
+      (* ======================================================== *)
+      (* raw get function, without any wrappers to solve problems *)
+      (* ======================================================== *)
       let get_raw url (referer: string option) cookies =
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
@@ -158,11 +181,6 @@ module Pipelined =
             | Some cook ->  let c = List.map cookie_to_cookie_ct cook in
                             List.iter ( fun xx -> Nethttp.Header.set_cookie (get_call # request_header `Base) xx) c
         end;
-
-
-(*
- Curl-Lib:  conn#set_sslverifypeer false; (* Zertifikate-Prüfung auschalten! *)
-*)
 
       
         (* Get the data from webserver now *)
@@ -195,7 +213,9 @@ module Pipelined =
 
 
 
-      (* ==================================================== *)
+      (* ========================================================== *)
+      (* download-function: get file but directly write it to disk! *)
+      (* ========================================================== *)
       let download url (referer: string option) cookies dest_filename =
         let pipeline = new Nethttp_client.pipeline in
 
@@ -221,11 +241,6 @@ module Pipelined =
             | Some cook ->  let c = List.map cookie_to_cookie_ct cook in
                             List.iter ( fun xx -> Nethttp.Header.set_cookie (get_call # request_header `Base) xx) c
         end;
-
-
-(*
- Curl-Lib:  conn#set_sslverifypeer false; (* Zertifikate-Prüfung auschalten! *)
-*)
 
       
         (* Get the data from webserver now *)
@@ -257,111 +272,6 @@ module Pipelined =
         Some ( cookies )
 
 
-
-
-(*
-            (* Ergebnis-Auswertung *)
-            (* ------------------- *)
-            let http_code = conn#get_responsecode in
-
-            (* if http-code is less than 400, give back result; else print a msg and give back None *)
-            (* ------------------------------------------------------------------------------------ *)
-            if http_code < 400
-            then
-              (* no http-error *)
-              let cookies = conn#get_cookielist in
-              begin
-                if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
-                then
-                  begin
-                    print_endline "=====> COOOKIES:";
-                    List.iter (fun s -> print_string "--> "; print_endline s) cookies;
-                    print_endline "<===== COOKIES"
-                  end;
-                  conn#cleanup; (* CLEAN UP CONNECTION *)
-
-                  (* give back result *)
-                  (* ---------------- *)
-                  let result = Buffer.contents buffer in Some (result, cookies)
-              end
-
-            (* http-error-case *)
-            else
-              begin
-                if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then Printf.eprintf "http-returncode: %d (URL: %s)\n" http_code url;
-                None
-              end
-*)
-
-(*
-    let get url referer cookies =
-      verbose_printf "GET %s\n" url; flush stdout;
-
-      let trial_numbers = 3 in
-      let rec get_aux num =
-        if num <= trial_numbers
-        then
-          try get_raw url referer cookies
-          with
-            | Curl.CurlException(curl_code, err_int, "CURLE_COULDNT_CONNECT") as exc -> prerr_curlerror exc;
-                                                                                        prerr_endline "...will, try it again"; get_aux (num+1)
-
-            | Curl.CurlException(curl_code, err_int, "CURLE_OPERATION_TIMEOUTED") as exc -> prerr_curlerror exc;
-                                                                                         prerr_endline "...will try it again"; get_aux (num+1)
-
-            | Curl.CurlException(curl_code, err_int, "CURLE_COULDNT_RESOLVE_HOST") as exc -> prerr_curlerror exc; None
-
-            | Curl.CurlException(curl_code, err_int, "CURLE_GOT_NOTHING") as exc -> prerr_curlerror exc;
-                                                                                    prerr_endline "I now will wait 90 s and then try it again";
-                                                                                    Unix.sleep 90; get_aux (num+1)
-
-            | Curl.CurlException( curl_code, err_int, message ) as exc  -> prerr_curlerror exc; None
-
-        else (prerr_endline ("The following document could not be retrieved:" ^ url); None)
-      in
-        get_aux 1
-
-
-  SIGNATUR:
-  sig 
-    val get : string -> string option -> string option -> (string * string list) option 
-   end 
-
-*)
-
-
-
-(*
-
-
-
-====================== OPTIONS ======================
-Options for the whole pipeline. It is recommended to change options the following way:
-
-    let opts = pipeline # get_options in
-    let new_opts = { opts with <field> = <value>; ... } in
-    pipeline # set_options new_opts
- 
-============================================
-
-
-Printf.printf "Status-Message GET:  %s\n" get_call#response_status_text;
-  
-  (* GET-call *)
-  (* ======== *)
-  (*
-  let body = get_call # response_body # value  in
-  let response_header = get_call # response_header # fields in
-  *)
-
-
-*)
-
-
   end
-
-
-
-
 
 
