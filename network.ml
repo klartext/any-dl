@@ -82,6 +82,20 @@ module Pipelined =
       *)
 
 
+      (* ======================================================== *)
+      (* if verbose or very_vrbose cli-flag is set, then print    *)
+      (* the cookies, sorrounded by some eye catcher-text.        *)
+      (* ======================================================== *)
+      let if_verbose_print_cookies cookies =
+        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
+        then
+          begin
+            print_endline "=*=*=> COOOKIES:";
+              List.iter print_cookie cookies;
+            print_endline "<=*=*= COOKIES";
+            print_endline "<-------------------------------"
+          end
+
 
       (* If the server does not send DOMAIN- and PATH-fields, fill them from request-url *)
       (* =============================================================================== *)
@@ -124,20 +138,6 @@ module Pipelined =
         ignore( ("secure", string_of_bool nscookie.cookie_secure) :: !lst );
         !lst
 
-
-      (* ======================================================== *)
-      (* if verbose or very_vrbose cli-flag is set, then print    *)
-      (* the cookies, sorrounded by some eye catcher-text.        *)
-      (* ======================================================== *)
-      let if_verbose_print_cookies cookies =
-        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
-        then
-          begin
-            print_endline "=*=*=> COOOKIES:";
-              List.iter print_cookie cookies;
-            print_endline "<=*=*= COOKIES";
-            print_endline "<-------------------------------"
-          end
 
       (* ========================================================================================================== *)
       (* this function judges/checks the status of a get-call and prints messages / raises exceptions, if necessary *)
