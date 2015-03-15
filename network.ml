@@ -13,7 +13,8 @@ module Simple =
   struct
     open Nethttp_client.Convenience
 
-    let get url = http_get url
+    let get  url = http_get url
+    let head url = (http_head_message url) # response_header # fields
   end
 
 
