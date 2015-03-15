@@ -104,6 +104,28 @@ module Pipelined =
         !lst
 
 
+      (* ========================================================================================================== *)
+      (* this function judges/checks the status of a get-call and prints messages / raises exceptions, if necessary *)
+      (* ========================================================================================================== *)
+      let judge_getcall_status status =
+        match status with
+           | `Client_error           -> prerr_endline "Client_error";
+                                        raise (Get_error `Client_error)
+
+           | `Http_protocol_error  _ -> prerr_endline "Http_protocol_error";
+                                        raise (Get_error `Client_error)
+
+           | `Redirection            -> prerr_endline "Redirection";
+                                        raise (Get_problem `Client_error)
+
+           | `Server_error           -> prerr_endline "Server_error";
+                                        raise (Get_error `Client_error)
+
+           | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then print_endline "GET-Successful"
+
+           | `Unserved               -> prerr_endline "Unserved";
+                                        raise (Get_problem `Client_error)
+
 
       (* ==================================================== *)
       let get_raw url (referer: string option) cookies =
@@ -150,25 +172,7 @@ module Pipelined =
 
         (* check status *)
         (* ------------ *)
-        begin
-          match get_call # status with
-             | `Client_error           -> prerr_endline "Client_error";
-                                          raise (Get_error `Client_error)
-
-             | `Http_protocol_error  _ -> prerr_endline "Http_protocol_error";
-                                          raise (Get_error `Client_error)
-
-             | `Redirection            -> prerr_endline "Redirection";
-                                          raise (Get_problem `Client_error)
-
-             | `Server_error           -> prerr_endline "Server_error";
-                                          raise (Get_error `Client_error)
-
-             | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then print_endline "GET-Successful"
-
-             | `Unserved               -> prerr_endline "Unserved";
-                                          raise (Get_problem `Client_error)
-        end;
+        judge_getcall_status ( get_call # status );
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
@@ -231,25 +235,7 @@ module Pipelined =
 
         (* check status *)
         (* ------------ *)
-        begin
-          match get_call # status with
-             | `Client_error           -> prerr_endline "Client_error";
-                                          raise (Download_error `Client_error)
-
-             | `Http_protocol_error  _ -> prerr_endline "Http_protocol_error";
-                                          raise (Download_error `Client_error)
-
-             | `Redirection            -> prerr_endline "Redirection";
-                                          raise (Download_problem `Client_error)
-
-             | `Server_error           -> prerr_endline "Server_error";
-                                          raise (Download_error `Client_error)
-
-             | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then prerr_endline "GET-Successful"
-
-             | `Unserved               -> prerr_endline "Unserved";
-                                          raise (Download_problem `Client_error)
-        end;
+        judge_getcall_status ( get_call # status );
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
