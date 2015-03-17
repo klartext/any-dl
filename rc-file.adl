@@ -147,8 +147,7 @@ start
   print( " ======================================================================== ");
   print;
   show_type;
-  get;
-  save;
+  download; # directly writing files to disk
 end
 
 
@@ -167,8 +166,7 @@ start
   makeurl;
   show_type;
   print;
-  get;
-  save;
+  download; # directly writing files to disk
 
 end
 
@@ -185,8 +183,7 @@ start
   show_match;
 #exitparse;
   makeurl;
-  get;
-  save;
+  download; # directly writing files to disk
 end
 
 
@@ -343,8 +340,7 @@ start
   # download and save
   # -----------------
   makeurl;
-  get;
-  save;
+  download; # directly writing files to disk
 
 end
 
@@ -1127,8 +1123,7 @@ print;
   print("Downloading video, please be patient.");
   makeurl;
   print;
-  get;
-  save_as( $filename, ".mp4" );
+  download( $filename, ".mp4" );
 
 
 end
@@ -1529,8 +1524,9 @@ start
   print;
   makeurl;
   print;
-  get;
-  save;
+  #get;
+  #save;
+  downlaod; # get-save, directly writing file to disk (not temp. in mem).
 end
 
 
@@ -1599,8 +1595,9 @@ start
   dropcol(1);
   show_match;
   makeurl;
-  get;
-  save;
+  #get;
+  #save;
+  download;
 end
 
 
@@ -1715,8 +1712,7 @@ start
   # Download and save_as
   # --------------------
   recall("URL");
-  get;
-  save_as( $title, ".mp4" );
+  download( $title, ".mp4" );
 
 end
 
@@ -1749,8 +1745,7 @@ start
   # get video
   # ---------
   recall("videourl");
-  get;
-  save_as( $basename, ".mp4" );
+  download( $basename, ".mp4" );
 end
 
 
