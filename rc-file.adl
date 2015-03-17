@@ -181,6 +181,7 @@ end
 parsername "script-src": ( )
 start
   tagselect( "script" | arg( "src" ) );
+  rebase;
   show_match;
 end
 
