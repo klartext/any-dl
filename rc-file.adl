@@ -183,6 +183,10 @@ start
   tagselect( "script" | arg( "src" ) );
   rebase;
   show_match;
+#exitparse;
+  makeurl;
+  get;
+  save;
 end
 
 
