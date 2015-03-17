@@ -173,6 +173,18 @@ start
 end
 
 
+# ------------------------
+# Show all script-sources
+# ------------------------
+# ( shows js-file-urls )
+# ------------------------
+parsername "script-src": ( )
+start
+  tagselect( "script" | arg( "src" ) );
+  show_match;
+end
+
+
 # --------------------------------------------------------------
 # This parser creates the output for a Gnome-Desktop-File.
 # --------------------------------------------------------------
