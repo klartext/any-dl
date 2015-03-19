@@ -1526,7 +1526,7 @@ start
   print;
   #get;
   #save;
-  downlaod; # get-save, directly writing file to disk (not temp. in mem).
+  download; # get-save, directly writing file to disk (not temp. in mem).
 end
 
 
