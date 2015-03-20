@@ -1199,7 +1199,11 @@ start
  makeurl;
  get;
 
- match("http.*3gp");
+ match("(http.*3gp)|(http.*mp4)");
+ dropcol(2);
+ dropcol(1);
+ grepv("metafilegenerator");
+ grepv("nrodl");
  show_match;
 
  iselectmatch(0,"http.*p5v.*3gp"); # select the highest res.
