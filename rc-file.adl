@@ -2074,4 +2074,9 @@ print;
   print;
 end
 
+defmacro "example-macro":
+start
+  print("example-MACRO-output!");
+end
+
 
