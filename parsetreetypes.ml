@@ -201,3 +201,7 @@ type parserdef_t = { parsername : string; urllist:  string list; commands:  comm
 type macrodef_t = { macroname : string; macro_commands:  commands_t list }
 
 
+(* Definitoion of the returnvalue of the Parser-main-function *)
+(* ---------------------------------------------------------- *)
+type lang_t = Parserdef of parserdef_t | Macrodef of macrodef_t
+

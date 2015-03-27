@@ -239,19 +239,24 @@ let main ()  =
       print_newline()
     end;
 
-    let parserlist = parse_parser_definitions_from_files Cli.opt.Cli.rc_filenames in
+    (* read definitions (of parsers and macros) from rc-file *)
+    (* ----------------------------------------------------- *)
+    let definitions_list = parse_parser_definitions_from_files Cli.opt.Cli.rc_filenames in
 
     (* if cli-switches ask for it, print the number of parser-defintions found *)
     (* ------------------------------------------------------------------------------------ *)
     if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
-      Printf.fprintf stdout "Number of found parser definitions: %d\n" (List.length parserlist);
+      Printf.fprintf stdout "Number of found parser definitions: %d\n" (List.length definitions_list);
 
 
     (* create and initialize hashes for parser-lookup by name / url *)
     (* ------------------------------------------------------------ *)
-    let parser_namehash = Hashtbl.create (List.length parserlist) in
+    let parser_namehash = Hashtbl.create (List.length definitions_list) in
     let parser_urllist_raw  = ref [] in
-    List.iter ( fun parserdef ->
+    List.iter ( fun parse_item->
+                                 match parse_item with
+                                   | Parserdef parserdef ->
+
                                  (* add the parsers to the parser_name-hash (for parser-lookup by name) *)
                                  Hashtbl.add parser_namehash parserdef.parsername parserdef;
 
@@ -281,8 +286,9 @@ let main ()  =
                                     if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
                                       Printf.fprintf stdout "Init: (unbound to URL)%-30s-> parser %s\n"   ""  parserdef.parsername
                                  end
+                                   | Macrodef macrodef -> ()
 
-              ) parserlist;
+              ) definitions_list;
 
     flush stdout; (* all init-stuff should be flushed, before evaluation stage is entered! *)
 

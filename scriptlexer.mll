@@ -11,13 +11,14 @@
   let linenum = ref 1
   let stringbuf = Buffer.create 1000
 
-  let commands_table  = Hashtbl.create 72
-  let parameter_table = Hashtbl.create 20
+  let commands_table  = Hashtbl.create 72 (* commands_table:  keywords for commands, parser- and macro-definitions *)
+  let parameter_table = Hashtbl.create 20 (* parameter_table: keywords for arguments of commands *)
 
   let _ =
     List.iter (fun (kwd, tok) -> Hashtbl.add commands_table kwd tok)
                 [
                   ("parsername",  PARSERNAME  );
+                  ("defmacro",    DEF_MACRO  );
                   ("start",       START  );
                   ("end",         END  );
 

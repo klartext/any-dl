@@ -27,6 +27,7 @@
 %token VBAR
 
 %token PARSERNAME
+%token DEF_MACRO
 %token MATCH
 %token SHOW_MATCH
 %token PRINT
@@ -122,7 +123,7 @@
 
 
 %start main
-%type <Parsetreetypes.parserdef_t> main
+%type <Parsetreetypes.lang_t> main
 
 
 /* nun die Definitionen der Typen fuer non-terminals */
@@ -143,11 +144,15 @@ open Parsetreetypes
 
 
 %%
-main: parsername urlmatches START parser_script END { { parsername = $1; urllist = $2; commands= $4 } }
+main: parsername urlmatches START parser_script END { Parserdef { parsername = $1; urllist = $2; commands= $4 } }
+    | macrodef   /* args */ START parser_script END { Macrodef  { macroname = $1; macro_commands= $3 } }
     | EOF        { (*print_stringlist_endlinehash variable_hash;*) raise End_of_file }
     ;
 
 parsername: PARSERNAME STRING COLON { $2 }
+    ;
+
+macrodef:   DEF_MACRO  STRING COLON { $2 }
     ;
 
 urlmatches: LPAREN string_list RPAREN { $2 }
