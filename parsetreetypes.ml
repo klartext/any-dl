@@ -191,8 +191,13 @@ let command_to_string cmd = match cmd with
 
 
 
-(* Parser( <parser-name>, <url-match-list>, commands-list> *)
+(* Parser( <parser-name>, <url-match-list>, <commands-list> *)
 (* ------------------------------------------------------- *)
 type parserdef_t = { parsername : string; urllist:  string list; commands:  commands_t list }
+
+
+(* Macro( <macro-name>, <commands-list> *)
+(* ------------------------------------------------------- *)
+type macrodef_t = { macroname : string; macro_commands:  commands_t list }
 
 
