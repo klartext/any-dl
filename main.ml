@@ -243,20 +243,25 @@ let main ()  =
     (* ----------------------------------------------------- *)
     let definitions_list = parse_parser_definitions_from_files Cli.opt.Cli.rc_filenames in
 
+
+    let parser_list = List.fold_right ( fun def sofar -> match def with Parserdef pdef -> pdef :: sofar | _ -> sofar ) definitions_list [] in
+    let parser_list = List.rev parser_list in (* as long as no other order is pushed later, let order as is read from file *)
+
+    let macro_list = List.fold_right ( fun def sofar -> match def with Macrodef pdef -> pdef :: sofar | _ -> sofar ) definitions_list [] in
+    let macro_list = List.rev parser_list in (* as long as no other order is pushed later, let order as is read from file *)
+
+
     (* if cli-switches ask for it, print the number of parser-defintions found *)
     (* ------------------------------------------------------------------------------------ *)
     if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
-      Printf.fprintf stdout "Number of found parser definitions: %d\n" (List.length definitions_list);
+      Printf.fprintf stdout "Number of found parser definitions: %d\n" (List.length parser_list);
 
 
     (* create and initialize hashes for parser-lookup by name / url *)
     (* ------------------------------------------------------------ *)
-    let parser_namehash = Hashtbl.create (List.length definitions_list) in
+    let parser_namehash = Hashtbl.create (List.length parser_list) in
     let parser_urllist_raw  = ref [] in
-    List.iter ( fun parse_item->
-                                 match parse_item with
-                                   | Parserdef parserdef ->
-
+    List.iter ( fun parserdef ->
                                  (* add the parsers to the parser_name-hash (for parser-lookup by name) *)
                                  Hashtbl.add parser_namehash parserdef.parsername parserdef;
 
@@ -286,9 +291,8 @@ let main ()  =
                                     if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
                                       Printf.fprintf stdout "Init: (unbound to URL)%-30s-> parser %s\n"   ""  parserdef.parsername
                                  end
-                                   | Macrodef macrodef -> ()
 
-              ) definitions_list;
+              ) parser_list;
 
     flush stdout; (* all init-stuff should be flushed, before evaluation stage is entered! *)
 
