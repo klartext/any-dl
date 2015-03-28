@@ -22,6 +22,8 @@
                   ("start",       START  );
                   ("end",         END  );
 
+                  ("call",        CALL_MACRO  );
+
                   ("show_type",    SHOW_TYPE  );
                   ("match",        MATCH  );
                   ("show_match",   SHOW_MATCH  );

@@ -1308,6 +1308,8 @@ let evaluate_command_list cmdlst =
                          | Sleep_ms  milliseconds     -> Sleep.sleep_ms milliseconds;
                                                          command tl tmpvar varmap
 
+                         | Call_macro     macro_name  -> raise NOT_IMPLEMENTED_SO_FAR (*command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *) *)
+
                          | Dummy                      -> command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *)
 
                      end

@@ -28,6 +28,7 @@
 
 %token PARSERNAME
 %token DEF_MACRO
+%token CALL_MACRO
 %token MATCH
 %token SHOW_MATCH
 %token PRINT
@@ -225,6 +226,9 @@ statement: match_stmt          SEMI   { $1 }
     |      URL_DECODE          SEMI   { Url_decode }
     |      readline            SEMI   { $1 }
     |      DUMMY               SEMI   { Dummy }
+    ;
+
+call_macro: CALL_MACRO LPAREN STRING RPAREN { Call_macro $3 }
     ;
 
 match_stmt: MATCH LPAREN STRING RPAREN { Match $3 }
