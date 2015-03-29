@@ -538,6 +538,8 @@ List of commands/keywords (not carved in stone so far) by example:
   dummy;
   exitparse;
 
+  call("macroname");
+
   linkextract;
   linkextract_xml;
   match("Regexp-String");
@@ -623,6 +625,12 @@ List of commands/keywords and a short-description of them:
   basename
     creates the basename of an url or filename;
     the leading filename or URL-path is removed
+
+
+  call
+    call a macro.
+    The macro is working like textual insertion of the commands of the
+    macro at the place where the "call"-command is used.
 
 
   csv_save_as
