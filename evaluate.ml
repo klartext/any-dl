@@ -218,7 +218,7 @@ let default_application variable basefunc varmap =
 (* a parser consists of.                             *)
 (* this function is doing the main work of any-dl.   *)
 (* ------------------------------------------------- *)
-let evaluate_command_list cmdlst =
+let evaluate_command_list cmdlst macrodefs_lst =
 
   (* "get_document"-function, is used by some of the Get_... commands from "command"-function *)
   (* ======================================================================================== *)
@@ -1304,11 +1304,16 @@ let evaluate_command_list cmdlst =
 
 
 
-
                          | Sleep_ms  milliseconds     -> Sleep.sleep_ms milliseconds;
                                                          command tl tmpvar varmap
 
-                         | Call_macro     macro_name  -> raise NOT_IMPLEMENTED_SO_FAR (*command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *) *)
+
+                         | Call_macro     macro_name  -> (* evaluating the commands of the macro, and afterwards the following commands   *)
+                                                         (* that means: prepend the commands of the macro to the tail of the command-list *)
+                                                         (* ----------------------------------------------------------------------------- *)
+                                                         let macro_commandlist = (List.assoc macro_name macrodefs_lst) in
+                                                         command ( List.append  macro_commandlist  tl ) tmpvar varmap
+
 
                          | Dummy                      -> command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *)
 

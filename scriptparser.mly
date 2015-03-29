@@ -146,7 +146,7 @@ open Parsetreetypes
 
 %%
 main: parsername urlmatches START parser_script END { Parserdef { parsername = $1; urllist = $2; commands= $4 } }
-    | macrodef   /* args */ START parser_script END { Macrodef  { macroname = $1; macro_commands= $3 } }
+    | macrodef   /* args */ START parser_script END { Macrodef  ($1, $3) }
     | EOF        { (*print_stringlist_endlinehash variable_hash;*) raise End_of_file }
     ;
 
@@ -225,6 +225,7 @@ statement: match_stmt          SEMI   { $1 }
     |      HTML_DECODE         SEMI   { Html_decode }
     |      URL_DECODE          SEMI   { Url_decode }
     |      readline            SEMI   { $1 }
+    |      call_macro          SEMI   { $1 }
     |      DUMMY               SEMI   { Dummy }
     ;
 

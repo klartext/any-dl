@@ -127,7 +127,7 @@ let get_parserdef url parser_urllist parser_namehash  parser_selection =
 (* This function looks up the right parser for a given url and invokes that parser *)
 (* =============================================================================== *)
 
-let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection =
+let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection macros_list =
 
   (* select the parserdef from command line or urls that are attached to the parserdefinitions *)
   let parserdef = get_parserdef url  parser_urllist  parser_namehash  parser_selection in
@@ -144,7 +144,7 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
                               Store "STARTURL" ::
                               Get_url(url, Cli.opt.Cli.initial_referrer) ::
                               Store("BASEDOC") ::
-                              parserdef.commands )
+                              parserdef.commands ) macros_list
 
   with (* handle exceptions from the parse-tree-evaluation *)
     | E.No_Match                -> Printf.eprintf "Parser problem: Could not match to pattern!\t Parse will be exited for url %s\n" url
@@ -247,8 +247,7 @@ let main ()  =
     let parser_list = List.fold_right ( fun def sofar -> match def with Parserdef pdef -> pdef :: sofar | _ -> sofar ) definitions_list [] in
     let parser_list = List.rev parser_list in (* as long as no other order is pushed later, let order as is read from file *)
 
-    let macro_list = List.fold_right ( fun def sofar -> match def with Macrodef pdef -> pdef :: sofar | _ -> sofar ) definitions_list [] in
-    let macro_list = List.rev parser_list in (* as long as no other order is pushed later, let order as is read from file *)
+    let macro_list = List.fold_right ( fun def sofar -> match def with Macrodef mdef -> mdef :: sofar | _ -> sofar ) definitions_list [] in
 
 
     (* if cli-switches ask for it, print the number of parser-defintions found *)
@@ -331,7 +330,7 @@ let main ()  =
                                try
                                  List.iter ( fun parsername -> prerr_endline ("========================> Parser: " ^ parsername ^ " <========================");
                                                                try
-                                                                 invoke_parser_on_url  url  parser_urllist  parser_namehash  (Some parsername);
+                                                                 invoke_parser_on_url  url  parser_urllist  parser_namehash  (Some parsername) macro_list;
                                                                  if Cli.opt.Cli.auto_try_stop then raise AutoTry_success
                                                                with
                                                                  | AutoTry_success -> raise AutoTry_success
@@ -342,7 +341,7 @@ let main ()  =
                   ) list_of_urls
       end
     else (* non-auto (normal mode) *)
-      List.iter ( fun url -> invoke_parser_on_url  url  parser_urllist  parser_namehash  Cli.opt.Cli.parser_selection ) list_of_urls
+      List.iter ( fun url -> invoke_parser_on_url  url  parser_urllist  parser_namehash  Cli.opt.Cli.parser_selection macro_list ) list_of_urls
 
 
 let _ =

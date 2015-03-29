@@ -1039,4 +1039,37 @@ Using Cookies:
 
 
 
+Macros
+======
+  A new feature was added in end of march 2015: macros.
+
+  It's now posible to define macros, so that repeating sequences don't need to
+  be coded again and again. Instead a macro can be defined that allows
+  factoring-out common command sequences into macros, and then call these
+  macros with the "call"-command. (See call-command above, in the
+  parserdef-language description.)
+
+  Macros can be defined anywhere in a rc-file.
+  They don't need to be defined before they are used.
+
+
+  The syntax of macro definitons can be seen in this example:
+
+
+  defmacro "FooBar":
+  start
+    tagselect( "a"."href" | arg("href") );
+  end
+
+
+  This macro would be called with the command
+    call("FooBar");
+
+
+
+This macro would be called with the command
+  call("FooBar");
+
+
+
 __END__

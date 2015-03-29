@@ -200,7 +200,8 @@ type parserdef_t = { parsername : string; urllist:  string list; commands:  comm
 
 (* Macro( <macro-name>, <commands-list> *)
 (* ------------------------------------------------------- *)
-type macrodef_t = { macroname : string; macro_commands:  commands_t list }
+(* type macrodef_t = { macroname : string; macro_commands:  commands_t list } *)
+type macrodef_t = string * commands_t list
 
 
 (* Definitoion of the returnvalue of the Parser-main-function *)
