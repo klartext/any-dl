@@ -33,14 +33,6 @@ let if_match_give_group_of_groups str ~regexp_str =
     None
 
 
-
-(* this stuff can be done with Neturl-module also!!! *)
-let re_url_scheme  = Pcre.regexp "^([a-zA-Z]+://[^/]+)"
-(* this stuff can be done with Neturl-module also!!! *)
-let url_get_baseurl url = (Pcre.extract ~rex:re_url_scheme ~flags:[] url).(0)
-(* this stuff can be done with Neturl-module also!!! *)
-
-
 (* index of first non-blank will be returned.      *)
 (* additionally spaces and newlines up t the first *)
 (* non-nblank char will be counted                 *)
