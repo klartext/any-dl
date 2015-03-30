@@ -37,10 +37,6 @@ FEATUREs:
 
  - subst: with replacement-*pattern* (instead of just a string-template)
 
- - timestamp:
-     cli-switch to prepend a timestamp for each output.
-     (Later would make refactoring of file-writing necessary, I think)
-
  - Array2.colmap / Array2.rowmap  map-functions for Array-data.
    (Should behave non-destructive / functional of course.)
 
@@ -116,11 +112,6 @@ FEATUREs:
 
  - javascript engine
 
- - call/use command, to call a different parser? ==>   parsername "parsefoobar": ( "url" ) begin call "ard_mediathek_get" end
-   This way, not only an URL can be added, but also a name, or a distinct parser that just calls another parser.
-   Not checked so far, how much effort for implementing this would be.
-   But it looks reasonable to invest that effort for this feature.
-
  - Logfile for sucessful and failed downloads
 
  - more sophisticated selection menue? (enhancing, what iselectmatch offers).
@@ -158,16 +149,12 @@ FEATUREs:
 QUESTIONS:
 ==========
 
- - Parsername as predefined named Variable also?  ( $PARSERNAME ?? ) 
-
  - how detailed/verbose or how non-verbose should the commands be?
    e.g.  should print; print onl ythe url or url and referrer?
    Should there be more specific commands?
    Or should print get parameters?
    Or should there be something like
       print with referrer;
-
- - Implementing macros or not?
 
  - the interactive loop for menue-item selection catches failing int_of_string: default-pattern is used.
    It could also ask again for correct selection.
