@@ -51,7 +51,6 @@ Overview
   As any-dl does delegate the stream-downloads to certain tools,
   it will make sense to have the following tools also installed:
 
-  - wget        (maybe later not necessary, but it is a nice tool, you should have)
   - rtmpdump
   - mplayer
   - ffmpeg      (for rtsp)
