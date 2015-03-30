@@ -59,6 +59,13 @@ let item_selection row_items index_list =
   res
 
 
+(* returns size of file in bytes *)
+(* ----------------------------- *)
+let filesize filename =
+  let open Unix in
+  let size = (stat filename).st_size in
+  size
+
 
 (* save string to file *)
 (* ------------------- *)
@@ -66,6 +73,17 @@ let save_string_to_file str filename =
   let oc = open_out filename in
   output_string oc str;
   close_out oc
+
+
+
+(* read file *)
+(* --------- *)
+let read_file  filename =
+  let size = filesize filename in
+  let ic = open_in filename in
+  let contents = really_input_string ic size in
+  contents
+
 
 
 
