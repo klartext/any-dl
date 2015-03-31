@@ -320,7 +320,7 @@ end
 # ---------------------------------
 # Resonator
 # ---------------------------------
-parsername "resonator": (  "https://resonator-podcast.de" )
+parsername "resonator": (  "https://resonator-podcast.de", "http://resonator-podcast.de" )
 start
     # from the resonator-webpage:
     # <source src="http://files.wrint.de/RES051_Muellim_Meer.m4a" type="audio/mp4"/>
@@ -332,7 +332,7 @@ start
   tagselect("source"."type" | arg("src") );
   transpose;
   #show_match;
-  iselectmatch(0, "RES");
+  iselectmatch(0, "RES", "RES");
 
   # download and save
   # -----------------
@@ -351,7 +351,7 @@ parsername "ard_mediathek_get": ("http://www.ardmediathek.de" )
 start
   match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)"<<< );
   store("match");
-  iselectmatch(2, "hd");
+  iselectmatch(2, "hd", "hd");
   store("high");
 
   #show_type;
@@ -410,7 +410,7 @@ start
 
   # Quality selection
   # -----------------
-  iselectmatch(3, "Web-M"); # match on third column and default to middle quality
+  iselectmatch(3, "Web-M", "Web-M"); # match on third column and default to middle quality
   store("select"); # this is the selected quality and we need to save it for later
 
   # select the rtmp-part
@@ -487,7 +487,7 @@ start
 
   # Quality selection
   # -----------------
-  iselectmatch(0, "hi.mp4"); # match on column 0 and default to 2nd highest quality
+  iselectmatch(0, "hi.mp4", "hi.mp4"); # match on column 0 and default to 2nd highest quality
   select(0);
   store("select"); # this is the selected quality and we need to save it for later
 
@@ -522,7 +522,7 @@ parsername "ard_tagesthemen": ( "http://www.tagesschau.de/multimedia/video/",
 start
   match( >>>http://(.*?).mp4<<< );
   dropcol(1);
-  iselectmatch(0,"webm.h264.mp4");
+  iselectmatch(0,"webm.h264.mp4", "webm.h264.mp4");
   select(0);
 print;
   store("mp4url");
@@ -605,7 +605,7 @@ start
 
   #print("If you want to select a video by hand, please use the \"-i\"-command line switch. (In the first selection j´you can just press enter.)");
 
-  iselectmatch(0,"json");
+  iselectmatch(0,"json", "json");
   #rowselect(0);
   #select(0);
 
@@ -631,7 +631,7 @@ start
 
   # now selection by the user
   # -------------------------
-  iselectmatch(1,"mp4"); # Do the match on column 1 (urls)
+  iselectmatch(1,"mp4", "mp4"); # Do the match on column 1 (urls)
   select(1); # index 1: the URL
   #print;
 
@@ -658,7 +658,7 @@ parsername "ndr_mediathek_get": ( "http://www.ndr.de", "http://www.ardmediathek.
 start
   match( "http://.*?mp4" );
   show_match;
-  iselectmatch(0, ".hi.mp4" );
+  iselectmatch(0, ".hi.mp4", ".hi.mp4" );
   #iselectmatch(0, ".mp4" );
   select(0);
   store("url");
@@ -690,7 +690,7 @@ start
 
   # select quality
   # --------------
-  iselectmatch(0, "webm.h264.mp4");
+  iselectmatch(0, "webm.h264.mp4", "webm.h264.mp4");
   store("url");
 
   # build filename
@@ -822,7 +822,7 @@ start
   # now match for the filenames
   # ---------------------------
   match("http:.*mp4");
-  iselectmatch(0, "http:.*mp4");
+  iselectmatch(0, "http:.*mp4", "http:.*mp4");
   select(0);
   makeurl;
   store("url");
@@ -867,7 +867,7 @@ start
 
   transpose;
   show_match;
-  iselectmatch(0, "mov");
+  iselectmatch(0, "mov", "mov");
   to_string;
 
   store("rtspurl"); # thats the stuff we want to download.
@@ -946,7 +946,7 @@ start
   match("(rtmp://.*?(web-.).mp4)");
   show_match;
 
-  iselectmatch(2,".*?web-m.mp4");
+  iselectmatch(2,".*?web-m.mp4", ".*?web-m.mp4");
 
   select(1); # use item with index 1 (rtmp-url)
   #show_type;
@@ -1004,7 +1004,7 @@ start
 print;
   #rowselect(2);
   show_match;
-  iselectmatch(0, "");
+  iselectmatch(0, "", "");
 #to_matchres;
 #show_match;
   store("url");
@@ -1044,7 +1044,7 @@ start
   match("(rtmp://.*?.mp4)");
   #show_match;
 
-  iselectmatch(1,".*?web-m.mp4");
+  iselectmatch(1,".*?web-m.mp4", ".*?web-m.mp4");
 
   select(1); # use item with index 1 (rtmp-url)
   subst(>>>", "<<<, "/");
@@ -1088,7 +1088,7 @@ start
   #show_match;
 
   #iselectmatch(1,".*?B.mp4");  #   http://.*?B.mp4  is of acceptable size, so it's used as default
-  iselectmatch(1,".*?mp4");  #   http://.*?B.mp4  is of acceptable size, so it's used as default
+  iselectmatch(1, ".*?mp4", ".*?mp4");  #   http://.*?B.mp4  is of acceptable size, so it's used as default
 print("=======================");
 print;
 
@@ -1125,7 +1125,7 @@ start
 
   # select the right match, according to the wished quality
   # -------------------------------------------------------
-  iselectmatch(2,".*.mp4");
+  #!electmatch(2,".*.mp4");
 
   # get the rtmp-part from the selected match
   # -----------------------------------------
@@ -1187,7 +1187,7 @@ start
  grepv("nrodl");
  show_match;
 
- iselectmatch(0,"http.*p5v.*3gp"); # select the highest res.
+ #!electmatch(0,"http.*p5v.*3gp"); # select the highest res.
  select(0);
 
  print("Downloading video, please be patient.");
@@ -1306,7 +1306,7 @@ start
 
   # select quality here (default: high)
   # -------------------
-  iselectmatch(3, "high");
+  #!electmatch(3, "high");
 
 
   # select the mp4-filename
@@ -1384,7 +1384,7 @@ start
   droprow(0);
 
   sort; # sort the entries (will be many, if subtext is offered)
-  iselectmatch(0,"mp4");
+  #!electmatch(0,"mp4");
 
   makeurl;
 
@@ -1460,7 +1460,7 @@ parsername "mp4": ( "http://www.ardmediathek.de/das-erste/report-muenchen/" )
 start
   match("(http://.*?mp4)");
 show_match;
-  iselectmatch(0,"mp4");
+  #!electmatch(0,"mp4");
   select(1);
 
   store("url");
@@ -1596,7 +1596,7 @@ start
   match( "http://.*?mp4" );
   print;
   #exitparse;
-  iselectmatch(0, ".*?A.mp4");
+  #!electmatch(0, ".*?A.mp4");
   makeurl;
   store("url");
   basename;
@@ -1638,7 +1638,7 @@ start
   match("<downloadUrl>(http.*?.mp4)");
   # <downloadUrl>http://cdn-storage.br.de/MUJIuUOVBwQIbtC2uKJDM6OhuLnC_2rc5U1S/_-iS/_ykg_AN6/d41a6800-ff14-44e1-9e47-f8c742cd10f7_0.mp4
   # http://cdn-storage.br.de/MUJIuUOVBwQIbtC2uKJDM6OhuLnC_2rc5U1S/_-iS/_ykg_AN6/d41a6800-ff14-44e1-9e47-f8c742cd10f7_B.mp4
-  iselectmatch(1, "http.*?B.mp4");
+  #!electmatch(1, "http.*?B.mp4");
   select(1);
 
   print;
