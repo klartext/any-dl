@@ -332,7 +332,7 @@ start
   tagselect("source"."type" | arg("src") );
   transpose;
   #show_match;
-  iselectmatch(0, "RES", "RES");
+  iselectmatch(0, "RES", "mp3");
 
   # download and save
   # -----------------
