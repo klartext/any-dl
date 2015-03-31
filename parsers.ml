@@ -71,6 +71,19 @@ module Rebase =
     let common_syntax_of_url url = Hashtbl.find common_url_syntax (guess_scheme url)
 
 
+    (* this function would better be not inside rebase-module... *)
+    (* --------------------------------------------------------- *)
+    (* but it's here, because some needed helper-functions are inside here at  the momen *)
+    (* --------------------------------------------------------- *)
+    let remove_scheme_from_url url =
+      let syntax = common_syntax_of_url url in
+      let neturl        = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  url in
+      let stripped = Neturl.remove_from_url ~scheme:true neturl in
+      Neturl.string_of_url stripped
+
+
+
+
 
     (* reabse: rebasing an url: make relative urls absolute urls *)
     (* --------------------------------------------------------- *)

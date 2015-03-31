@@ -340,12 +340,25 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                           end
 
 
-                         | Get_url (url, referrer)  ->
-                                                       begin
-                                                       match get_document  url referrer varmap with
-                                                         | Some ( doc, url, new_varmap ) -> command tl (Document (doc, url)) new_varmap (* $URL *)
-                                                         | None                          -> raise No_document_found
-                                                       end
+                         | Get_url (url, referrer)  -> if Neturl.extract_url_scheme url = "file"
+                                                       then
+                                                         begin
+                                                           let fname = Parsers.Rebase.remove_scheme_from_url url in
+                                                           print_endline fname; exit 99;
+                                                           (*
+                                                           let neturl_url = Neturl.parse_url url in
+                                                           let filename   = Neturl.string_of_url ( Neturl.remove_from_url ~scheme:true neturl_url ) in
+                                                      print_endline filename; exit 99;
+                                                           let contents   = Tools.read_file filename in
+                                                           command tl (Document (contents, "-")) varmap
+                                                           *)
+                                                         end
+                                                       else
+                                                         begin
+                                                         match get_document  url referrer varmap with
+                                                           | Some ( doc, url, new_varmap ) -> command tl (Document (doc, url)) new_varmap (* $URL *)
+                                                           | None                          -> raise No_document_found
+                                                         end
 
 
                          | Get             -> (* This is not directly downloading the data; just inserting    *)
