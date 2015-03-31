@@ -518,7 +518,9 @@ parsername "ard_tagesthemen": ( "http://www.tagesschau.de/multimedia/video/",
                                 "http://www.ardmediathek.de/das-erste/tagesthemen",
                                 "http://mediathek.rbb-online.de/rbb-fernsehen/rbb-praxis/",
                                 "http://www.ardmediathek.de/das-erste/tagesschau-in-100-sek",
-                                "http://www.ardmediathek.de/das-erste/" )
+                                "http://www.ardmediathek.de/das-erste/",
+                                "http://www.tagesschau.de/sendung/tagesthemen"
+                                )
 start
   match( >>>http://(.*?).mp4<<< );
   dropcol(1);
