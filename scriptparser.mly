@@ -299,7 +299,7 @@ selection: COLSELECT LPAREN   INT_NUM   RPAREN { ColSelect $3 }
     |      SELECT    LPAREN   INT_NUM   RPAREN { Select    $3 }
     |      MSELECT   LPAREN   selection_list   RPAREN { MSelect   $3 }
     |      SELECT_MATCH   LPAREN   INT_NUM COMMA STRING   RPAREN { Select_match ( $3, $5) }
-    |      ISELECT_MATCH  LPAREN   INT_NUM COMMA STRING   RPAREN { I_Select_match ( $3, $5) }
+    |      ISELECT_MATCH  LPAREN   INT_NUM COMMA STRING COMMA STRING  RPAREN { I_Select_match ( $3, $5, $7 ) }
     |      GREP      LPAREN   argument_list  RPAREN                      { Grep $3 }
     |      GREPV     LPAREN   argument_list  RPAREN                      { Grep_v $3 }
     ;

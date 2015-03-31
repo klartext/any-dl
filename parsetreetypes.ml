@@ -87,7 +87,7 @@ type commands_t =
   | DropRow    of int  (* drop a row from a m atchresult *)
   (* -------------- *)
   | Select_match    of int * string  (* selects a match from a match-result-matrix: args: row-index, match-pattern *)
-  | I_Select_match  of int * string  (* interactive version of Select_match *)
+  | I_Select_match  of int * string * string      (* interactive version of Select_match *)
   | System
   | Basename                                  (* get the basename of a file or url *)
   | Subst      of string * string             (* substitution *)

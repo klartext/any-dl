@@ -646,7 +646,16 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                  end
 
 
-                         | I_Select_match ( col_idx, matchpat) -> (* select match is a row-select, where the index *)
+(*
+ - iselectmatch with 3 parameters would be good:
+     * selection-source
+     * selection-match-string
+     * default-selection
+*)
+
+                         | I_Select_match ( col_idx, matchpat, default_pattern )
+
+                                                             -> (* select match is a row-select, where the index *)
                                                                   (* first match wins *)
                                                                    begin
                                                                      match tmpvar with
@@ -681,7 +690,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                                 then
                                                                                   interactive_string_select col matchpat
                                                                                 else
-                                                                                  matchpat
+                                                                                  default_pattern
                                                                               in
                                                                                 verbose_printf "selected pattern: \"%s\"\n" match_pattern;
 
