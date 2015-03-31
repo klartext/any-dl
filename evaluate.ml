@@ -335,6 +335,9 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                             | Url_list ul        ->
                                                                                     (* Download on Url_list necessarily use auto-filenaming *)
                                                                                     List.iter ( fun (url,ref) -> command [ Download None ] (Url (url, ref)) varmap ) ul
+                                                            | Url_array ua        ->
+                                                                                    (* Download on Url_array necessarily use auto-filenaming *)
+                                                                                    Array.iter ( fun (url,ref) -> command [ Download None ] (Url (url, ref)) varmap ) ua
 
                                                             | _ -> raise Wrong_tmpvar_type
                                                           end
@@ -688,7 +691,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                                 if
                                                                                   Cli.opt.Cli.interactive = true
                                                                                 then
-                                                                                  interactive_string_select col matchpat
+                                                                                  interactive_string_select col default_pattern
                                                                                 else
                                                                                   default_pattern
                                                                               in
