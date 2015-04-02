@@ -546,6 +546,20 @@ end
 
 
 
+# =========================================================== #
+# get the overview-xml files on the whole program / mediathek #
+# =========================================================== #
+parsername "arte-rss":  ( "http://www.arte.tv/sites/de/aktuelles/rss-feeds/" )
+start
+  linkextract;
+  grep("xml");
+
+  makeurl;
+  get;
+  save;
+  print;
+end
+
 
 # ---------------------------------
 # ARTE-Mediathek-Download
