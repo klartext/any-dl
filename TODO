@@ -35,7 +35,32 @@ FEATUREs:
  a bit of priority
  =================
 
+   ******************************************************************************************************************************
+ - * new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
+   * new command: astore("NAME");  (autostore() -> store current value like matrix -> NAME.(x).(y) or something like that
+   * syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
+   ******************************************************************************************************************************
+     [ -> I have this option in mind since long, and it pops up again and again... ]
+
  - subst: with replacement-*pattern* (instead of just a string-template)
+
+ - if/then/else?
+
+ - exceptions?
+     * exceptions as part of the language?
+     * try/catch?
+     * raise/try/catch?
+     * Or just a function to raise an exception, which than is not handled by the language but the invoking loop?
+
+ - while-loop
+   [ -> for some certain things like parsing one webpage, which links to a
+        "next page", and this page also links to a "next page",
+        something like while-loop, or recursive calling of macros
+        would be very helpful.
+     -> For classical video-download this maybe would be unhnecessary.
+        It rather goes in the direction of more general web-scraping.
+        (But this tendency already is here...)
+   ]
 
  - Array2.colmap / Array2.rowmap  map-functions for Array-data.
    (Should behave non-destructive / functional of course.)
@@ -48,6 +73,14 @@ FEATUREs:
               maybe giving back matrix instead of array/list?
 
  - tagselect: regexp's for selection-pattern  (extraction-pattern also?)
+     [ -> Patterns instead of strings also can bring problems. Using '^' and '$' all too often, to avoid wrong matches,
+          can become annyoing too.
+          So, maybe using a cli-switch to activate a regexp-patterns? But this might break some parsers, depending on CLI-switches,
+          which is a bad idea.
+          So, adding a new command, that also allows patterns?
+          But this would be bad for tagselect, there should better not be another tagselect-like command.
+          So, maybe adding another argument to tagselect, that can switch to regexp-patterns? 
+     ]
 
  - tagselect / csv_save: things like tagselect( ... | argpairs)
                          would make sense to be converted to a table of the form
@@ -63,16 +96,10 @@ FEATUREs:
                        So, this scheme would make sense.
                        But the scheme in use now also make sense to get a good and fast overview.
                        So, maybe, and option for selecting the deparsing scheme would make sense.
+   [ -> why not let it as it is, and in script then just add a to_matchres? (Would that way fit in, what I have in mind here?) ]
 
 
- - iselectmatch with 3 parameters would be good:
-     * selection-source
-     * selection-match-string
-     * default-selection
-
-   At the moment, selection-source and default-selection are both the same!
-
- - slurping the URL-list from the command line, getting it into TMPVAR.
+ - slurping the URL-list from the command line, getting it into TMPVAR. (as Url_list)
    Must be clear, that the URL-list then is shortened, or that an exception
    for ending any-dl after the parser has finished is called.
    (exc. caught and normal exit)
@@ -80,10 +107,13 @@ FEATUREs:
  - converting HTML to named variables (like it also was planned for XML)
    This would make it easier to select certain data from a docoment / doclist.
    (DOM-to-string as varnames)
+    [ -> not sure if this is necessary anymore, because of tagselect-command ]
 
  - tagselect: allow Doclist argument as tmpvar to work on
+     [ -> looks not to be really necessary at the moment ]
 
  - DropCol / DropRow also for other data-structures, like Doc_array, Url_list and so on.
+      [ -> what do I mean by that? Adding other Parsetree-Types to DropCol/DropRow-command? ]
 
  - Special variable for the  tmpvar? maybe $TMPVAR ? || First exploration: there seems to be a problem with internally called Subst (?)
                                                         Must Clean Code there!
@@ -99,10 +129,17 @@ FEATUREs:
    via "-a" CLI switch, because some parsers download anything, not
    a certain video-file (because they are more general, like general
    parsers that download all pics or so.)
+     [ -> something like "this parser is intended to be invoked, if a certain command is explicitly looked for.
+          So, using it with "-a" would not make sense, beacuse intention of "-a" switch is just to try out
+          all available parsers, in case it is not known, which one is able to download the needed data (videos).
+       -> But if one wants to download videos and try, which parser might work, using a link-extract-parser or a
+          parser that explicitly downloads pdf-files would not make sense here.
+          But "-a" measns: try ALL parsers. So, why should a pragma destroy the command from cli, saying "try ALL"?
+       -> Maybe another switch would be necessary, to allow to differentiate here between
+          "all" and "all but those which don't want to be used"?
+       -> Maybe "-a" and "-aa" (like "-v" and "-vv") ? Or something like that?
+     ]
 
- - * new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
-   * new command: astore("NAME");  (autostore() -> store current value like matrix -> NAME.(x).(y) or something like that
-   * syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
 
 
 
@@ -116,8 +153,11 @@ FEATUREs:
 
  - more sophisticated selection menue? (enhancing, what iselectmatch offers).
    (Should be text-only interface, and even ncurses will be overhead. KISS)
+   [ -> hmhh, I think it's not that bad at the moment... remind KISS-principle... ]
 
  - !!!! XML-deparse -> get values from XML via name :-)
+   [ -> not that bad, maybe making it higher priority?
+     ->
 
  - matches and assignments -> each match-group one varname... like   (url,vidname,foobar) = match("^(.*)xyz(lala).*?(foobar)")
 
@@ -132,8 +172,6 @@ FEATUREs:
    (but how to achieve this? by using fork/exec to the tools used via system() at the moment?
    Or using stream-reading libraries for this? Are there any such libs and/or OCaml bindings?)
 
- - if/then/else?  try/catch?
-
  - possibly switch to ulex instead of ocamllex:
      http://alain.frisch.fr/soft.html#ulex
      http://caml.inria.fr/pub/ml-archives/caml-list/2006/04/6d31ef03a5a1f9a182a9ed2422d266a4.en.html
@@ -141,6 +179,7 @@ FEATUREs:
 
  - Testsuite would help a lot (example where helpful: linkextract problem in  commit c7f3c1ec98d9c3e88d47c93637a50879c0711d05 )
      - tesing sites as well as testing parsers would be needed.
+     [ -> maybe using OUnit for uinit-testing? ]
 
 
 
