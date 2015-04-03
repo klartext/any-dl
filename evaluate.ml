@@ -335,6 +335,9 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                             | Url_list ul        ->
                                                                                     (* Download on Url_list necessarily use auto-filenaming *)
                                                                                     List.iter ( fun (url,ref) -> command [ Download None ] (Url (url, ref)) varmap ) ul
+                                                            | Url_array ua        ->
+                                                                                    (* Download on Url_array necessarily use auto-filenaming *)
+                                                                                    Array.iter ( fun (url,ref) -> command [ Download None ] (Url (url, ref)) varmap ) ua
 
                                                             | _ -> raise Wrong_tmpvar_type
                                                           end
@@ -659,7 +662,16 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                  end
 
 
-                         | I_Select_match ( col_idx, matchpat) -> (* select match is a row-select, where the index *)
+(*
+ - iselectmatch with 3 parameters would be good:
+     * selection-source
+     * selection-match-string
+     * default-selection
+*)
+
+                         | I_Select_match ( col_idx, matchpat, default_pattern )
+
+                                                             -> (* select match is a row-select, where the index *)
                                                                   (* first match wins *)
                                                                    begin
                                                                      match tmpvar with
@@ -692,9 +704,9 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                                 if
                                                                                   Cli.opt.Cli.interactive = true
                                                                                 then
-                                                                                  interactive_string_select col matchpat
+                                                                                  interactive_string_select col default_pattern
                                                                                 else
-                                                                                  matchpat
+                                                                                  default_pattern
                                                                               in
                                                                                 verbose_printf "selected pattern: \"%s\"\n" match_pattern;
 
