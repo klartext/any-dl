@@ -1472,23 +1472,26 @@ end
 # =================================
 # mp4-files matched and downloaed =
 # =================================
-parsername "mp4": ( "http://www.ardmediathek.de/das-erste/report-muenchen/" )
+parsername "mp4": ( "http://www.ardmediathek.de/das-erste/report-muenchen/", "http://www.sueddeutsche.de/"  )
 start
   match("(http://.*?mp4)");
-show_match;
-  #!electmatch(0,"mp4");
-  select(1);
+  transpose;
+  uniq;
+  iselectmatch(0,"mp4", "mp4");
+  select(0);
+  #show_type;
 
   store("url");
   basename;
   store("basename");
 
   recall("BASEDOC");
-  call("_extract-and-save-title_");
+  call("_extract-and-save-title-htmldecode_");
 
-  #paste("wget -O ", $title, "_", $basename, " ",  $url);
-  paste("wget -O ", $title, ".mp4", " ",  $url);
-  system;
+  recall("url");
+  makeurl;
+
+  download( $title, "_", $basename );
 end
 
 
@@ -1787,6 +1790,14 @@ end
 defmacro "_extract-and-save-title_":
 start
   titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+end
+
+defmacro "_extract-and-save-title-htmldecode_":
+start
+  titleextract;
+  htmldecode;
   subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
 end
