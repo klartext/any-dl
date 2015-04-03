@@ -8,8 +8,6 @@ BUGs:
 =====
 
 
- - using linkextract on "file:///"-urls does not work.
-
  - "http://www.ardmediathek.de/das-erste/menschen-bei-maischberger/(...)"
    lässt sich mit -i -p mp4
               und anderen Parsern, evbenfalls mit -i

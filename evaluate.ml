@@ -346,15 +346,22 @@ let evaluate_command_list cmdlst macrodefs_lst =
                          | Get_url (url, referrer)  -> if Neturl.extract_url_scheme url = "file"
                                                        then
                                                          begin
-                                                           let fname = Parsers.Rebase.remove_scheme_from_url url in
-                                                           print_endline fname; exit 99;
-                                                           (*
-                                                           let neturl_url = Neturl.parse_url url in
-                                                           let filename   = Neturl.string_of_url ( Neturl.remove_from_url ~scheme:true neturl_url ) in
-                                                      print_endline filename; exit 99;
+
+                                                           (* extract the filename from the url *)
+                                                           (* --------------------------------- *)
+                                                           let url_strlen = String.length url in
+                                                           let scheme_strlen = String.length "file:///" in 
+
+                                                           let filename = if String.sub url 0 scheme_strlen = "file:///"
+                                                                          then String.sub url (String.length "file://") (url_strlen - 7)
+                                                                          else (prerr_endline "Get_url - file-urlscheme problem! "; flush stderr; raise No_document_found) (* other exception better? *)
+                                                           in
+
+                                                           (* read file and go on with Document from file as tmpvar *)
+                                                           (* ----------------------------------------------------- *)
                                                            let contents   = Tools.read_file filename in
                                                            command tl (Document (contents, "-")) varmap
-                                                           *)
+
                                                          end
                                                        else
                                                          begin
