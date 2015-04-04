@@ -351,9 +351,10 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                            (* --------------------------------- *)
                                                            let url_strlen = String.length url in
                                                            let scheme_strlen = String.length "file:///" in 
+                                                           let scheme_short_strlen = String.length "file://" in
 
                                                            let filename = if String.sub url 0 scheme_strlen = "file:///"
-                                                                          then String.sub url (String.length "file://") (url_strlen - 7)
+                                                                          then String.sub url scheme_short_strlen (url_strlen - scheme_short_strlen )
                                                                           else (prerr_endline "Get_url - file-urlscheme problem! "; flush stderr; raise No_document_found) (* other exception better? *)
                                                            in
 
