@@ -295,7 +295,7 @@ parsername "OSR-shownotes-2-csv": (  "http://www.openscienceradio.de/" )
 start
 
   # extract title, for usage as part of the filename
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
 
   recall("BASEDOC");
 # html.body.div.div.div.div.article.div.div.p.a.target
@@ -435,7 +435,7 @@ start
   # grab the title
   # --------------
   recall("BASEDOC");
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
 
   # get the video
   # -------------
@@ -465,7 +465,7 @@ show_match;
   # -------------------------------------------------------------------------------------
   recall("BASEDOC");
   htmldecode;
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
   print; # show title to user
 
   recall("link");
@@ -494,7 +494,7 @@ start
   # grab the title
   # --------------
   recall("BASEDOC");
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
 
   # get the video
   # -------------
@@ -578,7 +578,7 @@ start
 
   # Extract Title
   # -------------
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
   print("Title:    ", $title);
 
   # Extract Subtitle
@@ -683,7 +683,7 @@ start
   store("origname");
 
   recall("BASEDOC");
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
   print("Title: ", $title);
 
   # download the video
@@ -818,7 +818,7 @@ end
 parsername "zdf_mediathek_new": ( "http://www.zdf.de/ZDFmediathek/beitrag/", "http://www.tagesschau.de/sendung/tagesthemen/" )
 start
 
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
   print("Title: ", $title, "\n");
 
 
@@ -940,7 +940,7 @@ start
   store("basename");
 
   recall("BASEDOC");
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
 
   paste("wget ", $videourl, " -O ", $title, $basename );
   print;
@@ -998,7 +998,7 @@ start
   # extract and "beautify" the title
   # --------------------------------
   recall("BASEDOC");
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
 
   # get the file via wget
   # ---------------------
@@ -1437,7 +1437,7 @@ start
   # create title
   # -------------
   recall("BASEDOC");
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
 
   print("URL: ", $url, "\nTitle: ", $title, "\nFilename: ", $filename);
 
@@ -1486,7 +1486,7 @@ start
   store("basename");
 
   recall("BASEDOC");
-  call("_extract-and-save-title-htmldecode_");
+  call("_extract-and-store-title-htmldecode_");
 
   recall("url");
   makeurl;
@@ -1509,7 +1509,7 @@ end
 # =================================
 parsername "ndr_feature": ( "http://www.ndr.de/info/programm/sendungen/feature/", "http://www.ndr.de/info/" )
 start
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
   print;
   paste($title, ".mp3");
   store("filename");
@@ -1575,7 +1575,7 @@ start
   store("basename");
 
   recall("BASEDOC");
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
 
   #paste("wget -O ", $title, "_", $basename, " ",  $url);
   paste("wget -O ", $title, ".mp3", " ",  $url);
@@ -1622,7 +1622,7 @@ start
   store("url_name");
 
   recall("BASEDOC");
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
   print;
 
   paste("wget ", $url, " -O ", $title, "__", $url_name ); 
@@ -1670,7 +1670,7 @@ start
   # extract title and convert to make it useful for filenames
   # ---------------------------------------------------------
   recall("BASEDOC");
-  call("_extract-and-save-title_");
+  call("_extract-and-store-title_");
 
   print;
 
@@ -1787,14 +1787,14 @@ end
 # Extract title-tag and suvstitute non-alnum chars by "-" =
 # and store the result in variable "title".
 # =========================================================
-defmacro "_extract-and-save-title_":
+defmacro "_extract-and-store-title_":
 start
   titleextract;
   subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
 end
 
-defmacro "_extract-and-save-title-htmldecode_":
+defmacro "_extract-and-store-title-htmldecode_":
 start
   titleextract;
   htmldecode;
