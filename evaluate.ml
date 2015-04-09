@@ -542,7 +542,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                          let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
 
                                                          let test_match_on_string = test_pattern_match_on_string  pattern in (* partially application to the pattern *)
-                                                         let test_nonmatch_on_string str = not (test_match_on_string str)  in (* partially application to the pattern *)
+                                                         let test_nonmatch_on_string str = not (test_match_on_string str)  in (* negation of test_match_on_string    *)
 
                                                          (*
                                                            if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
