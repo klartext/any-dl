@@ -506,7 +506,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                          (* ----------------------------------------------------------------------------------- *)
                                                          let grep_lines_from_string  str =
                                                            let lines = Tools.lines_of_string str in
-                                                           List.filter ( fun line -> Pcre.pmatch ~pat:pattern line ) lines
+                                                           List.filter ( fun line -> match_pattern_on_string pattern line ) lines
                                                          in
 
                                                          (* do the grep *)
@@ -522,12 +522,12 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                                             Array.fold_left ( fun sofar (d,r) -> Array.append sofar (Array.of_list (grep_lines_from_string d)) ) [||] docarr in
                                                                                           String_array res
 
-                                                               | String_array str_arr -> String_array( Array2.filter ( fun elem -> Pcre.pmatch ~pat:pattern elem ) str_arr)
+                                                               | String_array str_arr -> String_array( Array2.filter ( fun elem -> match_pattern_on_string pattern elem ) str_arr)
 
-                                                               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> Pcre.pmatch ~pat:pattern url ||
-                                                                                                                          Pcre.pmatch ~pat:pattern ref ) url_arr )
+                                                               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> match_pattern_on_string pattern url ||
+                                                                                                                                     match_pattern_on_string pattern ref ) url_arr )
 
-                                                               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch ( fun x -> Pcre.pmatch ~pat:pattern x ) mres )
+                                                               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch ( fun x -> match_pattern_on_string pattern x ) mres )
 
                                                                | _            -> prerr_endline "Grep: nothing to match"; raise No_Matchresult_available
                                                            end
@@ -545,15 +545,15 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                            begin
                                                              match tmpvar with
                                                                | Document (doc, url) -> let lines = Tools.lines_of_string doc in
-                                                                                        let selected_lines = ( List.filter ( fun line -> not (Pcre.pmatch ~pat:pattern line) ) lines ) in
+                                                                                        let selected_lines = ( List.filter ( fun line -> not (match_pattern_on_string pattern line) ) lines ) in
                                                                                         String_array (Array.of_list selected_lines )
 
-                                                               | String_array str_arr -> String_array( Array2.filter ( fun elem -> not (Pcre.pmatch ~pat:pattern elem) ) str_arr)
-                                                               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> not (Pcre.pmatch ~pat:pattern url ||
-                                                                                                                          Pcre.pmatch ~pat:pattern ref) ) url_arr )
+                                                               | String_array str_arr -> String_array( Array2.filter ( fun elem -> not (match_pattern_on_string pattern elem) ) str_arr)
+                                                               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> not (match_pattern_on_string pattern url ||
+                                                                                                                                          match_pattern_on_string pattern ref) ) url_arr )
 
                                                                | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch
-                                                                                                         ( fun x -> not (Pcre.pmatch ~pat:pattern x )) mres )
+                                                                                                         ( fun x -> not (match_pattern_on_string pattern x )) mres )
                                                                | _            -> prerr_endline "Grep_v: nothing to match"; raise No_Matchresult_available
                                                            end
                                                          in
@@ -660,7 +660,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                             let rows     = Array.to_list mres in
 
                                                                             (* here is the selection: via string match of the lookup-pattern *)
-                                                                            let selected = List.filter ( fun item -> Pcre.pmatch ~pat:matchpat item.(col_idx)  ) rows in
+                                                                            let selected = List.filter ( fun item -> match_pattern_on_string matchpat item.(col_idx)  ) rows in
                                                                             if List.length selected = 0 then raise No_Match;
 
                                                                             verbose_printf "found: %d items \n" (List.length selected);
@@ -718,7 +718,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                               in
                                                                                 verbose_printf "selected pattern: \"%s\"\n" match_pattern;
 
-                                                                                let selected = List.filter ( fun item -> Pcre.pmatch ~pat:match_pattern item.(col_idx)  ) rows in
+                                                                                let selected = List.filter ( fun item -> match_pattern_on_string match_pattern item.(col_idx)  ) rows in
                                                                                 if List.length selected = 0 then raise No_Match;
 
                                                                                 verbose_printf "found: %d items \n" (List.length selected);
