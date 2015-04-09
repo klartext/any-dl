@@ -525,12 +525,12 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                                             Array.fold_left ( fun sofar (d,r) -> Array.append sofar (Array.of_list (grep_lines_from_string d)) ) [||] docarr in
                                                                                           String_array res
 
-                                                               | String_array str_arr -> String_array( Array2.filter ( fun elem -> test_match_on_string elem ) str_arr)
+                                                               | String_array str_arr -> String_array( Array2.filter test_match_on_string str_arr)
 
                                                                | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_match_on_string url ||
                                                                                                                                      test_match_on_string ref ) url_arr )
 
-                                                               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch ( fun x -> test_match_on_string x ) mres )
+                                                               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_match_on_string mres )
 
                                                                | _            -> prerr_endline "Grep: nothing to match"; raise No_Matchresult_available
                                                            end
@@ -542,6 +542,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                          let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
 
                                                          let test_match_on_string = test_pattern_match_on_string  pattern in (* partially application to the pattern *)
+                                                         let test_nonmatch_on_string str = not (test_match_on_string str)  in (* partially application to the pattern *)
 
                                                          (*
                                                            if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
@@ -550,15 +551,15 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                            begin
                                                              match tmpvar with
                                                                | Document (doc, url) -> let lines = Tools.lines_of_string doc in
-                                                                                        let selected_lines = ( List.filter ( fun line -> not (test_match_on_string line) ) lines ) in
+                                                                                        let selected_lines = ( List.filter test_nonmatch_on_string lines ) in
                                                                                         String_array (Array.of_list selected_lines )
 
-                                                               | String_array str_arr -> String_array( Array2.filter ( fun elem -> not (test_match_on_string elem) ) str_arr)
-                                                               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> not (test_match_on_string url ||
-                                                                                                                                          test_match_on_string ref) ) url_arr )
+                                                               | String_array str_arr -> String_array( Array2.filter ( fun elem -> test_nonmatch_on_string elem ) str_arr)
+                                                               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_nonmatch_on_string url &&
+                                                                                                                                          test_nonmatch_on_string ref ) url_arr )
 
                                                                | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch
-                                                                                                         ( fun x -> not (test_match_on_string x )) mres )
+                                                                                                         ( fun x -> test_nonmatch_on_string x ) mres )
                                                                | _            -> prerr_endline "Grep_v: nothing to match"; raise No_Matchresult_available
                                                            end
                                                          in
