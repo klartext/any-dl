@@ -554,12 +554,11 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                                         let selected_lines = ( List.filter test_nonmatch_on_string lines ) in
                                                                                         String_array (Array.of_list selected_lines )
 
-                                                               | String_array str_arr -> String_array( Array2.filter ( fun elem -> test_nonmatch_on_string elem ) str_arr)
+                                                               | String_array str_arr -> String_array( Array2.filter test_nonmatch_on_string str_arr)
                                                                | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_nonmatch_on_string url &&
                                                                                                                                           test_nonmatch_on_string ref ) url_arr )
 
-                                                               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch
-                                                                                                         ( fun x -> test_nonmatch_on_string x ) mres )
+                                                               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_nonmatch_on_string mres )
                                                                | _            -> prerr_endline "Grep_v: nothing to match"; raise No_Matchresult_available
                                                            end
                                                          in
