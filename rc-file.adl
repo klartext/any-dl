@@ -137,6 +137,19 @@ start
 end
 
 
+# show video-files
+parsername "videolinks": ( )
+start
+  tagselect( "a"."href" | argpairs );
+  grep("mkv"); # here match on all filenames would be needed
+  #match( "(.*mp4)|(.*flv)|(.*swf)|(.*mpg)|(.*m4v)|(.*mp4)|(.*rtmp)|(.*f4v)|(.*3gp)|(.*mkv)" );
+  print;
+  #match( "(.*mp4)|(.*flv)|(.*swf)|(.*mpg)|(.*m4v)|(.*mp4)|(.*rtmp)|(.*f4v)|(.*3gp)|(.*mkv)" );
+  uniq;
+  print;
+end
+
+
 # downloading picture-files
 parsername "pics": ( )
 start
@@ -1203,8 +1216,7 @@ start
  grepv("nrodl");
  show_match;
 
- #!electmatch(0,"http.*p5v.*3gp"); # select the highest res.
- select(0);
+ iselectmatch(0,"http.*p5v.*3gp", "http.*p5v.*3gp");
 
  print("Downloading video, please be patient.");
  makeurl;
