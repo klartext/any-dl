@@ -12,6 +12,18 @@ exception Invalid_Index                 (* indexing a col/row that does not exis
 
 
 
+(* "apply_on_pair" applies a function to both elements of a pair and gives back the transformed pair *)
+(* ------------------------------------------------------------------------------------------------- *)
+let apply_on_pair  apply  pair =
+  (apply (fst pair), apply (snd pair))
+
+
+(* example:  apply_on_pair_and_combine_with  test_foobar pair  ( || ) *)
+(* ------------------------------------------------------------------ *)
+let apply_on_pair_and_combine_with  apply  pair  (combinewith : bool -> bool -> bool) =
+  combinewith (apply (fst pair)) (apply (snd pair))
+
+
 
 
 (* CLI-VERBOSE-dependent print functions ! *)
