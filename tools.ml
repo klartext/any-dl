@@ -174,7 +174,7 @@ let html_decode ?(inenc=`Enc_utf8) str =
 let lines_of_string  str = Pcre.split ~pat:"\n" str
 
 (* ======================================= *)
-let match_pattern_on_string  pat str = Pcre.pmatch ~pat:pat str
+let test_pattern_match_on_string  pat str = Pcre.pmatch ~pat:pat str
 
 
 (* ---------------------------------------------- *)
