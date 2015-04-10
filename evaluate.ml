@@ -1168,6 +1168,11 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                | Match_result mres -> Array.sort compare mres; (* in-place sort; unit type *)
                                                                                       Match_result mres        (* give back the sorted array *)
 
+                                                               | Url_list  liste   -> Url_list ( List.sort compare liste )
+
+                                                               | Url_array arr     -> Array.sort compare arr;  (* in-place sort; unit type *)
+                                                                                      Url_array arr            (* give back the sorted array *)
+
                                                                | _ -> raise Wrong_tmpvar_type
                                                            end
                                                          in
