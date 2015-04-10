@@ -44,6 +44,15 @@ start
 end
 
 
+parsername "linkextract-uniq-sorted": ( )
+start
+  linkextract;
+  uniq;
+  sort;
+  print;
+end
+
+
 parsername "linkextract2csv": ( )
 start
   linkextract;
