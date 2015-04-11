@@ -173,6 +173,18 @@ start
 end
 
 
+# downloads the img-src
+# ---------------------
+parsername "get-img-src": ( )
+start
+  tagselect( "img" | arg("src") );
+  rebase;
+  makeurl;
+  download;
+end
+
+
+
 # get pdf-docs
 # ------------
 parsername "pdfs": ( )
