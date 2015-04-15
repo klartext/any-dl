@@ -532,9 +532,9 @@ start
 
   # get the video
   # -------------
-  paste( "wget ", $select, " -O ", $title, ".mp4" );
-  system;
-
+  recall( "select" );
+  makeurl;
+  download( $title, ".mp4" );
 
 end
 
@@ -574,8 +574,9 @@ print;
   print;
   store("title");
  
-  paste(" wget -O ", $title, "_", $basename, " ", $mp4url );
-  system;
+  recall( "mp4url" );
+  makeurl;
+  download( $title, "_", $basename );
 end
 
 
@@ -690,9 +691,8 @@ start
 
   #get; # geht so nicht. bekommt rtsp:// angeboten... ?! -> debugging wäre sinnvoll
 
-  paste(" wget -O ", $title, "_", $subtitle, ".mp4 ", $videourl );
-  print;
-  system;
+  recall( "videourl" );
+  download( $title, "_", $subtitle, ".mp4 " );
 
 end
 
@@ -711,6 +711,7 @@ start
   iselectmatch(0, ".hi.mp4", ".hi.mp4" );
   #iselectmatch(0, ".mp4" );
   select(0);
+  makeurl;
   store("url");
 
   basename;
@@ -722,9 +723,8 @@ start
 
   # download the video
   # ------------------
-  paste("wget -c ",  $url, " -O ", $title, $origname );
-  print;
-  system;
+  recall( "url" );
+  download( $title, $origname );
 end
 
 
@@ -741,6 +741,7 @@ start
   # select quality
   # --------------
   iselectmatch(0, "webm.h264.mp4", "webm.h264.mp4");
+  makeurl;
   store("url");
 
   # build filename
@@ -753,9 +754,8 @@ start
 
   # download the video
   # ------------------
-  paste("wget -c ",  $url, " -O ", $filename );
-  print;
-  system;
+  recall("url");
+  download( $filename );
 end
 
 
@@ -880,9 +880,8 @@ start
   print;
   basename;
   store("basename");
-  paste( "wget -c ",  $url, " -O ", $title, "_", $basename );
-  print;
-  system;
+  recall("url");
+  download( $title, "_", $basename );
 end
 
 
@@ -967,6 +966,7 @@ start
   makeurl;
   to_string;
   subst("\"", ""); # necessary because of stupid match?
+  makeurl;
   store("videourl");
 
   to_string;
@@ -976,9 +976,8 @@ start
   recall("BASEDOC");
   call("_extract-and-store-title_");
 
-  paste("wget ", $videourl, " -O ", $title, $basename );
-  print;
-  system;
+  recall( "videourl" );
+  download( $title, $basename );
 
 end
 
@@ -1036,8 +1035,8 @@ start
 
   # get the file via wget
   # ---------------------
-  paste( "wget -c ",  $mp4url, " -O ", $title, ".mp4" );
-  system;
+  recall( "mp4url" );
+  download( $title, ".mp4" );
 end
 
 
@@ -1057,6 +1056,7 @@ print;
   iselectmatch(0, "", "");
 #to_matchres;
 #show_match;
+  makeurl;
   store("url");
 
   # make a better outfilename with title
@@ -1077,9 +1077,8 @@ print;
 
   # download the video
   # ------------------
-  paste( "wget -c ",  $url, " -O ", $outfilename );
-  print;
-  system;
+  recall( "url" );
+  download( $outfilename );
 end
 
 
@@ -1433,14 +1432,10 @@ start
   droprow(0);
 
   sort; # sort the entries (will be many, if subtext is offered)
-  #!electmatch(0,"mp4");
+  #selectmatch(0,"mp4");
 
   makeurl;
-
-  store("url");
-  paste("wget -c -np ", $url);
-  print;
-  system;
+  download;
 end
 
 
@@ -1474,9 +1469,8 @@ start
 
   print("URL: ", $url, "\nTitle: ", $title, "\nFilename: ", $filename);
 
-  paste("wget -c -np ", $url, " -O ", $title, "_", $filename );
-  print;
-  system;
+  recall( "url" );
+  download( $title, "_", $filename );
 end
 
 
@@ -1523,7 +1517,6 @@ start
 
   recall("url");
   makeurl;
-
   download( $title, "_", $basename );
 end
 
@@ -1553,10 +1546,9 @@ start
   show_match;
   colselect(1);
   print;
+
   makeurl;
   print;
-  #get;
-  #save;
   download; # get-save, directly writing file to disk (not temp. in mem).
 end
 
@@ -1571,8 +1563,8 @@ start
   select(1);
   store("url");
   print("mp3-URL: ", $url);
-  paste("wget ", $url);
-  system;
+  makeurl;
+  download;
 end
 
 
@@ -1584,10 +1576,11 @@ start
   match("(http://ondemand-mp3.*?mp3)");
   rowselect(0);
   select(1);
+
   store("url");
   print("mp3-URL: ", $url);
-  paste("wget ", $url);
-  system;
+  makeurl;
+  download;
 end
 
 
@@ -1603,6 +1596,7 @@ start
   rowselect(0);
   select(1);
 
+  makeurl;
   store("url");
   basename;
   store("basename");
@@ -1610,9 +1604,8 @@ start
   recall("BASEDOC");
   call("_extract-and-store-title_");
 
-  #paste("wget -O ", $title, "_", $basename, " ",  $url);
-  paste("wget -O ", $title, ".mp3", " ",  $url);
-  system;
+  recall( "url" );
+  download( $title, "_", $basename  );
 end
 
 
@@ -1630,8 +1623,6 @@ start
   dropcol(1);
   show_match;
   makeurl;
-  #get;
-  #save;
   download;
 end
 
