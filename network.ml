@@ -83,12 +83,12 @@ module Pipelined =
       *)
 
 
-      (* ======================================================== *)
-      (* if verbose or very_vrbose cli-flag is set, then print    *)
-      (* the cookies, sorrounded by some eye catcher-text.        *)
-      (* ======================================================== *)
-      let if_verbose_print_cookies cookies =
-        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
+      (* ================================================== *)
+      (* if very_verbose cli-flag is set, then print        *)
+      (* the cookies, sorrounded by some eye catcher-text.  *)
+      (* ================================================== *)
+      let if_veryverbose_print_cookies cookies =
+        if Cli.opt.Cli.very_verbose
         then
           begin
             print_endline "=*=*=> COOOKIES:";
@@ -215,7 +215,7 @@ module Pipelined =
 
         let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
 
-        if_verbose_print_cookies cookies;
+        if_veryverbose_print_cookies cookies;
 
         Some ( get_call # response_body # value, cookies )
 
@@ -268,7 +268,7 @@ module Pipelined =
 
         let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
 
-        if_verbose_print_cookies cookies;
+        if_veryverbose_print_cookies cookies;
 
         Some ( cookies )
 
