@@ -692,7 +692,7 @@ start
   #get; # geht so nicht. bekommt rtsp:// angeboten... ?! -> debugging wäre sinnvoll
 
   recall( "videourl" );
-  download( $title, "_", $subtitle, ".mp4 " );
+  download( $title, "_", $subtitle, ".mp4" );
 
 end
 
