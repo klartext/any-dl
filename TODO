@@ -2,6 +2,7 @@ ENHANCEMENT:
 ============
 
 
+ - switch to -safe-string (seperate String and Bytes)
 
 
 BUGs:
