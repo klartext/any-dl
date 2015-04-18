@@ -139,7 +139,7 @@ let url_to_filename url_string =
   let filename = Bytes.of_string url_string in (* String.copy added again, because of strange behaviour of mixing Strings- and Bytes-module *)
   for idx = 0 to Bytes.length filename - 1
   do
-    match Bytes. get filename idx with
+    match Bytes.get filename idx with
         'a'..'z' | 'A'..'Z' | '0'..'9' | '.' -> ()
       | _ -> Bytes.set filename idx '_' (* changing the immutable strings ;-) via Bytes-module *)
   done;
