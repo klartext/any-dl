@@ -136,14 +136,14 @@ let suffixes = [".jpg"; ".png"; ".txt"; ".pdf"; ".doc"; ".ps"; ".docx"; ".xls"; 
 (* ==================================================== *)
 (* ==================================================== *)
 let url_to_filename url_string =
-  let filename = String.copy url_string in (* String.copy added again, because of strange behaviour of mixing Strings- and Bytes-module *)
-  for idx = 0 to String.length filename - 1
+  let filename = Bytes.of_string url_string in (* String.copy added again, because of strange behaviour of mixing Strings- and Bytes-module *)
+  for idx = 0 to Bytes.length filename - 1
   do
-    match filename.[idx] with
+    match Bytes. get filename idx with
         'a'..'z' | 'A'..'Z' | '0'..'9' | '.' -> ()
       | _ -> Bytes.set filename idx '_' (* changing the immutable strings ;-) via Bytes-module *)
   done;
-  filename
+  Bytes.to_string filename
 
 (* ==================================================== *)
 (* ==================================================== *)
