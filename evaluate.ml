@@ -213,6 +213,26 @@ let default_application variable basefunc varmap =
 
 
 
+(* ========================================================================================== *)
+(* evaluates to true, if the value is interpreted as being empty, or false, if it's not empty *)
+(* ========================================================================================== *)
+let rec var_is_empty value varmap =
+  match value with
+    | Varname         vn         -> var_is_empty (Varmap.find vn varmap) varmap
+    | String          str        -> if str = "" then true else false
+    | String_array    strarr     -> if Array.length strarr   = 0 then true else false
+    | Document        (doc,url)  -> if doc = "" then true else false
+    | Document_array  docarr     -> if Array.length docarr   = 0 then true else false (* also if all Docs are empty ? *)
+    | Url             (url, ref) -> if url = "" then true else false
+    | Url_list        urllist    -> if List.length urllist   = 0 then true else false
+    | Url_array       urlarray   -> if Array.length urlarray = 0 then true else false
+    | Dummy_result               -> false (* Dummy_result is to have a (dummy) result; so it is seen as non-empty. Empty is the opposite *)
+    | Match_result    arrarr     -> if Array.length arrarr   = 0 then true else false
+    | Cookies         cl         -> if List.length cl        = 0 then true else false
+    | Empty                      -> true
+
+
+
 (* ------------------------------------------------- *)
 (* This function evaluates the list of commands that *)
 (* a parser consists of.                             *)
