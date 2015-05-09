@@ -167,99 +167,104 @@ parser_script:                { [] }
 
 
 
-statement_list: statement         { [$1]    }
-    | statement statement_list    { $1 :: $2 }
+statement_list: command           { [$1]    }
+    | command statement_list      { $1 :: $2 }
     | assignment                  { (fst $1) :: [ snd $1 ] }
     | assignment statement_list   { (fst $1) :: (snd $1) :: $2 }
     ;
 
 /*
-statement: simple_statement { $1 }
+command: simple_statement { $1 }
     ;
 */
 
-assignment: IDENTIFIER EQUALS statement { ($3, Store $1) }
+assignment: IDENTIFIER EQUALS command { ($3, Store $1) }
     ;
 
-statement: match_stmt          SEMI   { $1 }
-    |      print_stmt_simple   SEMI   { Print  }
-    |      showmatch_stmt      SEMI   { Show_match }
-    |      print_stmt          SEMI   { $1 }
-    |      EXITPARSE           SEMI   { Exit_parse }
-    |      selection           SEMI   { $1 }
-    |      drop                SEMI   { $1 }
-    |      get_stmt            SEMI   { $1 }
-    |      download_stmt       SEMI   { $1 }
-    |      make_url_stmt       SEMI   { $1 }
-    |      store_stmt          SEMI   { $1 }
-    |      recall_stmt         SEMI   { $1 }
-    |      delete_stmt         SEMI   { $1 }
-    |      SORT                SEMI   { Sort }
-    |      UNIQ                SEMI   { Uniq }
-    |      paste_stmt          SEMI   { $1 }
-    |      show_variables_stmt SEMI   { $1 }
-    |      list_variables_stmt SEMI   { $1 }
-    |      subst_stmt          SEMI   { $1 }
-    |      QUOTE               SEMI   { Quote     }
-    |      TO_STRING           SEMI   { To_string }
-    |      TO_MATCHRES         SEMI   { To_matchres }
-    |      TRANSPOSE           SEMI   { Transpose }
-    |      BASENAME            SEMI   { Basename }
-    |      SYSTEM              SEMI   { System }
-    |      LINKEXTRACT         SEMI   { Link_extract }
-    |      REBASE              SEMI   { Rebase }
-    |      LINKEXTRACT_XML     SEMI   { Link_extract_xml }
-    |      titleextract_stmt   SEMI   { Title_extract }
+
+
+command: command_base SEMI { $1 }
+    ;
+
+command_base: match_cmd         { $1 }
     /*
     */
-    |      tagselect_stmt      SEMI   { $1 }
-    |      SHOW_TYPE           SEMI   { Show_type }
-    |      SAVE                SEMI   { Save }
-    |      save_as             SEMI   { $1 }
-    |      csv_save_as         SEMI   { $1 }
-    |      csv_save            SEMI   { $1 }
-    |      DUMP                SEMI   { Dump }
-    |      DUMP_DATA           SEMI   { Dump_data }
-    |      SHOW_TAGS           SEMI   { Show_tags }
-    |      SHOW_TAGS_FULLPATH  SEMI   { Show_tags_fullpath }
-    |      HTML_DECODE         SEMI   { Html_decode }
-    |      URL_DECODE          SEMI   { Url_decode }
-    |      readline            SEMI   { $1 }
-    |      call_macro          SEMI   { $1 }
-    |      DUMMY               SEMI   { Dummy }
+    |      BASENAME             { Basename    }
+    |      DUMMY                { Dummy       }
+    |      DUMP                 { Dump        }
+    |      DUMP_DATA            { Dump_data   }
+    |      EXITPARSE            { Exit_parse  }
+    |      HTML_DECODE          { Html_decode }
+    |      LINKEXTRACT          { Link_extract  }
+    |      LINKEXTRACT_XML      { Link_extract_xml }
+    |      QUOTE                { Quote       }
+    |      REBASE               { Rebase      }
+    |      SAVE                 { Save        }
+    |      SHOW_TAGS            { Show_tags   }
+    |      SHOW_TAGS_FULLPATH   { Show_tags_fullpath }
+    |      SHOW_TYPE            { Show_type   }
+    |      SORT                 { Sort        }
+    |      SYSTEM               { System      }
+    |      TO_MATCHRES          { To_matchres }
+    |      TO_STRING            { To_string   }
+    |      TRANSPOSE            { Transpose   }
+    |      UNIQ                 { Uniq        }
+    |      URL_DECODE           { Url_decode  }
+    |      call_macro           { $1 }
+    |      csv_save             { $1 }
+    |      csv_save_as          { $1 }
+    |      delete_cmd           { $1 }
+    |      download_cmd         { $1 }
+    |      drop_cmd             { $1 }
+    |      get_cmd              { $1 }
+    |      list_variables_cmd   { $1 }
+    |      make_url_cmd         { $1 }
+    |      paste_cmd            { $1 }
+    |      print_cmd            { $1 }
+    |      print_cmd_simple     { Print  }
+    |      readline             { $1 }
+    |      recall_cmd           { $1 }
+    |      save_as              { $1 }
+    |      selection            { $1 }
+    |      show_variables_cmd   { $1 }
+    |      showmatch_cmd        { Show_match }
+    |      store_cmd            { $1 }
+    |      subst_cmd            { $1 }
+    |      tagselect_cmd        { $1 }
+    |      titleextract_cmd     { Title_extract }
     ;
 
 call_macro: CALL_MACRO LPAREN STRING RPAREN { Call_macro $3 }
     ;
 
-match_stmt: MATCH LPAREN STRING RPAREN { Match $3 }
+match_cmd: MATCH LPAREN STRING RPAREN { Match $3 }
     ;
 
-print_stmt_simple: PRINT               { Print }
+print_cmd_simple: PRINT               { Print }
     ;
 
-showmatch_stmt: SHOW_MATCH { Show_match }
+showmatch_cmd: SHOW_MATCH { Show_match }
     ;
 
-print_stmt: PRINT_STRING LPAREN STRING        RPAREN { Print_string $3 }
+print_cmd: PRINT_STRING  LPAREN STRING        RPAREN { Print_string $3 }
     |       PRINT        LPAREN argument_list RPAREN { Print_args $3   }
     ;
 
-get_stmt: GET                           { Get }
-    |     GET LPAREN get_args   RPAREN  { $3 }
+get_cmd: GET                           { Get }
+    |    GET LPAREN get_args   RPAREN  { $3 }
     ;
 
-download_stmt: DOWNLOAD                           { Download None }
-    |     DOWNLOAD LPAREN argument_list   RPAREN  { Download (Some $3) }
+download_cmd: DOWNLOAD                                { Download None }
+    |         DOWNLOAD LPAREN argument_list   RPAREN  { Download (Some $3) }
     ;
 
-store_stmt: STORE LPAREN STRING  RPAREN { Store $3 }
+store_cmd: STORE LPAREN STRING  RPAREN { Store $3 }
     ;
 
-recall_stmt: RECALL LPAREN STRING   RPAREN    { Recall $3 }
+recall_cmd: RECALL LPAREN STRING   RPAREN    { Recall $3 }
     ;
 
-delete_stmt: DELETE LPAREN STRING   RPAREN    { Delete $3 }
+delete_cmd: DELETE LPAREN STRING   RPAREN    { Delete $3 }
     ;
 
 csv_save_as:    CSV_SAVE_AS  LPAREN  argument_list  RPAREN     { CSV_save_as ( $3 ) }
@@ -275,21 +280,21 @@ readline: READLINE LPAREN STRING RPAREN    { Readline (Some $3) }
     |     READLINE                         { Readline None      }
     ;
 
-paste_stmt: PASTE LPAREN argument_list RPAREN    { Paste $3 }
+paste_cmd: PASTE LPAREN argument_list RPAREN    { Paste $3 }
     ;
 
-subst_stmt: SUBSTITUTE LPAREN STRING COMMA STRING RPAREN { Subst( $3, $5 ) }
+subst_cmd: SUBSTITUTE LPAREN STRING COMMA STRING RPAREN { Subst( $3, $5 ) }
     ;
 
-show_variables_stmt: SHOW_VARIABLES           { Show_variables }
+show_variables_cmd: SHOW_VARIABLES           { Show_variables }
     ;
 
-list_variables_stmt: LIST_VARIABLES           { List_variables }
+list_variables_cmd: LIST_VARIABLES           { List_variables }
     ;
 
-make_url_stmt: MAKE_URL LPAREN argument_item RPAREN             { Make_url( $3, String "-") }
-    | MAKE_URL LPAREN argument_item COMMA argument_item RPAREN  { Make_url( $3, $5) }
-    | MAKE_URL                                                  { Make_url_tmpvar }
+make_url_cmd: MAKE_URL LPAREN argument_item RPAREN                      { Make_url( $3, String "-") }
+    |         MAKE_URL LPAREN argument_item COMMA argument_item RPAREN  { Make_url( $3, $5) }
+    |         MAKE_URL                                                  { Make_url_tmpvar }
     ;
 
 
@@ -304,20 +309,20 @@ selection: COLSELECT LPAREN   INT_NUM   RPAREN { ColSelect $3 }
     |      GREPV     LPAREN   argument_list  RPAREN                      { Grep_v $3 }
     ;
 
-drop: DROPCOL LPAREN   INT_NUM   RPAREN { DropCol $3 }
-    | DROPROW LPAREN   INT_NUM   RPAREN { DropRow $3 }
+drop_cmd: DROPCOL LPAREN   INT_NUM   RPAREN { DropCol $3 }
+    |     DROPROW LPAREN   INT_NUM   RPAREN { DropRow $3 }
     ;
 
-titleextract_stmt: TITLEEXTRACT   { Title_extract }
+titleextract_cmd: TITLEEXTRACT   { Title_extract }
     ;
 
 
 
 
-tagselect_stmt: TAGSELECT LPAREN tag_selector VBAR extractor_list RPAREN { Tag_select( $3, Single_extr $5 ) }
-    |           TAGSELECT LPAREN tag_selector VBAR ARG_PAIRS      RPAREN { Tag_select( $3, Pair_extr `Arg_pairs ) }
-    |           TAGSELECT LPAREN tag_selector VBAR ARG_KEYS       RPAREN { Tag_select( $3, Pair_extr `Arg_keys ) }
-    |           TAGSELECT LPAREN tag_selector VBAR ARG_VALS       RPAREN { Tag_select( $3, Pair_extr `Arg_vals ) }
+tagselect_cmd: TAGSELECT LPAREN tag_selector VBAR extractor_list RPAREN { Tag_select( $3, Single_extr $5 )       }
+    |          TAGSELECT LPAREN tag_selector VBAR ARG_PAIRS      RPAREN { Tag_select( $3, Pair_extr `Arg_pairs ) }
+    |          TAGSELECT LPAREN tag_selector VBAR ARG_KEYS       RPAREN { Tag_select( $3, Pair_extr `Arg_keys )  }
+    |          TAGSELECT LPAREN tag_selector VBAR ARG_VALS       RPAREN { Tag_select( $3, Pair_extr `Arg_vals )  }
     ;
 
 
