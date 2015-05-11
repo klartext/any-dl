@@ -42,7 +42,7 @@ type pair_extractor_t   = [ `Arg_keys | `Arg_vals | `Arg_pairs ]
 type extractor_t        = Single_extr of single_extractor_t list | Pair_extr of pair_extractor_t
 
 
-type commands_t =
+type command_t =
   | Get_url       of string * string          (* url, referrer *)
   | Get_urls  (* can be removed maybe *)      (* get via tmpvar *)
   | Get                                       (* get ONE document via tmpvar (Url-type) *)
@@ -193,18 +193,21 @@ let command_to_string cmd = match cmd with
   | Dummy             -> "Dummy"
 
 
-type statements_t = Plain of commands_t  |  Cond of commands_t * commands_t * commands_t option  | Loop of commands_t * commands_t
+
+type cmd_list = command_t list
+
+type statements_t = Plain of cmd_list  |  Conditional of cmd_list * cmd_list * cmd_list option  | Loop of cmd_list * cmd_list
 
 
 (* Parser( <parser-name>, <url-match-list>, <commands-list> *)
 (* ------------------------------------------------------- *)
-type parserdef_t = { parsername : string; urllist:  string list; commands:  commands_t list }
+type parserdef_t = { parsername : string; urllist:  string list; commands:  command_t list }
 
 
 (* Macro( <macro-name>, <commands-list> *)
 (* ------------------------------------------------------- *)
-(* type macrodef_t = { macroname : string; macro_commands:  commands_t list } *)
-type macrodef_t = string * commands_t list
+(* type macrodef_t = { macroname : string; macro_commands:  command_t list } *)
+type macrodef_t = string * command_t list
 
 
 (* Definitoion of the returnvalue of the Parser-main-function *)

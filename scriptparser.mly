@@ -161,7 +161,7 @@ urlmatches: LPAREN string_list RPAREN { $2 }
     ;
 
 parser_script: statement_list { $1 }
-parser_script:                { [] }
+    |                         { [] }
     ;
 
 
@@ -176,7 +176,13 @@ statement_list: command           { [$1]    }
 /*
 command: simple_statement { $1 }
     ;
+    | conditional                 { $1 }
+    | conditional statement_list  { $1 }
 */
+
+conditional: IF statement_list THEN statement_list                     ENDIF { [ Empty ] }
+    |        IF statement_list THEN statement_list ELSE statement_list ENDIF { [ Empty ] }
+    ;
 
 assignment: IDENTIFIER EQUALS command { ($3, Store $1) }
     ;

@@ -232,6 +232,8 @@ let rec var_is_empty value varmap =
     | Empty                      -> true
     | Unit            _          -> true
 
+let var_is_empty2 value =
+  var_is_empty value Varmap.empty
 
 
 (* ------------------------------------------------- *)
@@ -1392,6 +1394,35 @@ let evaluate_command_list cmdlst macrodefs_lst =
       command cmdlst Empty Varmap.empty
 
 
+
+let evaluate_statement statement macrodefs_lst varmap =
+  begin
+    match statement with
+      | Plain        commands                                -> evaluate_command_list  commands  macrodefs_lst
+
+      | Conditional  (if_cmdlst, then_cmdlist, else_cmdlist_opt) -> let testresult =  evaluate_command_list  if_cmdlst macrodefs_lst in
+                                                                (* if the variable has Unit-type, then it is always true-empty *)
+                                                                if not ( var_is_empty2 testresult )
+                                                                then evaluate_command_list then_cmdlist macrodefs_lst
+                                                                else
+                                                                begin
+                                                                  match else_cmdlist_opt with
+                                                                    | None               -> evaluate_command_list then_cmdlist macrodefs_lst
+                                                                    | Some else_commands -> evaluate_command_list else_commands macrodefs_lst
+                                                                end
+
+      | Loop        (test_cmdlst, todo_cmdslst)               -> while ( not ( var_is_empty2 ( evaluate_command_list test_cmdlst macrodefs_lst ) ) )
+                                                                 do
+                                                                  Unit ( ignore ( evaluate_command_list todo_cmdslst macrodefs_lst ) )
+                                                                 done; Unit ()
+
+                                                                (* if the variable has Unit-type, then it is always true-empty => possibly endless loop! *) (* TODO ! *)
+  end
+
+
+
 let evaluate_statements_list statements_list macrodefs_lst =
   ()
+
+
 
