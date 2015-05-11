@@ -230,6 +230,7 @@ let rec var_is_empty value varmap =
     | Match_result    arrarr     -> if Array.length arrarr   = 0 then true else false
     | Cookies         cl         -> if List.length cl        = 0 then true else false
     | Empty                      -> true
+    | Unit            _          -> true
 
 
 
@@ -334,7 +335,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
       end;
 
     match commandlist with
-      | []        -> () (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
+      | []        -> tmpvar (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
       | cmd::tl   -> begin
                        match cmd with
                          | Download  fname_arglist_opt      ->
@@ -354,13 +355,15 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                                                     end
                                                             | Url_list ul        ->
                                                                                     (* Download on Url_list necessarily use auto-filenaming *)
-                                                                                    List.iter ( fun (url,ref) -> command [ Download None ] (Url (url, ref)) varmap ) ul
+                                                                                    Unit ( List.iter ( fun (url,ref) -> ignore ( command [ Download None ] (Url (url, ref)) varmap ) ) ul )
                                                             | Url_array ua        ->
                                                                                     (* Download on Url_array necessarily use auto-filenaming *)
-                                                                                    Array.iter ( fun (url,ref) -> command [ Download None ] (Url (url, ref)) varmap ) ua
+                                                                                    Unit ( Array.iter ( fun (url,ref) -> ignore ( command [ Download None ] (Url (url, ref)) varmap ) ) ua )
 
                                                             | _ -> raise Wrong_tmpvar_type
                                                           end
+(*
+*)
 
 
                          | Get_url (url, referrer)  -> if Neturl.extract_url_scheme url = "file"
@@ -1056,7 +1059,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
 
 
                          | Print_args prt_args         ->
-                                                          command [ Paste( prt_args ); Print ] Empty varmap; (* use the Paste-command and the print-command *)
+                                                          ignore ( command [ Paste( prt_args ); Print ] Empty varmap ); (* use the Paste-command and the print-command *)
                                                           command tl tmpvar varmap (* just next command without changed tmpvar *)
 
                          | Print                      ->
@@ -1064,28 +1067,30 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                            match tmpvar with
                                                              (* does Varname makes sense at all here? *)
                                                              | Varname  varname  -> Printf.printf "\n\tVarname  varname => varname = \"%s\"\n" varname;
-                                                                                    command [Print] (Varmap.find varname varmap) varmap (* CHECK FUNCTIONALITY, PLEASE *)
+                                                                                    Unit ( ignore (command [Print] (Varmap.find varname varmap) varmap) ) (* CHECK FUNCTIONALITY, PLEASE *)
 
-                                                             | String   str      -> print_endline str 
-                                                             | Document(doc, url)-> print_endline doc  (* only print the document, without referrer *)
+                                                             | String   str      -> Unit ( print_endline str )
+                                                             | Document(doc, url)-> Unit( print_endline doc )  (* only print the document, without referrer *)
 
                                                              | Document_array doc_arr -> (* only print the documents, without referrer *)
+                                                                                         Unit(
                                                                                          Array.iter (fun (doc,ref) -> print_endline doc;
                                                                                                                       print_endline "----------------------------------" ) doc_arr
+                                                                                         )
 
-                                                             | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
-                                                                                                          print_newline() ) mres
-                                                             | String_array     str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr
-                                                             | Url (href, ref)   -> Printf.printf "%s   # Referrer:  %s\n" href ref
-                                                             | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
-                                                             | Url_array arr      -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) arr
+                                                             | Match_result mres -> Unit( Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
+                                                                                                          print_newline() ) mres )
+                                                             | String_array     str_arr -> Unit ( Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr )
+                                                             | Url (href, ref)   -> Unit( Printf.printf "%s   # Referrer:  %s\n" href ref )
+                                                             | Url_list  liste    -> Unit ( List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste )
+                                                             | Url_array arr      -> Unit ( Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) arr )
 
                                                              (*
                                                              | Doclist   doclist  -> let string_of_dl dl = Parsers.convert_doclist_to_htmlstring [dl] in
                                                                                      List.iter ( fun doc -> print_endline ( string_of_dl doc ) ) doclist (* one per line *)
                                                              *)
 
-                                                             | _ -> print_warning "Print-command found non-printable type"
+                                                             | _ -> Unit ( print_warning "Print-command found non-printable type" )
                                                          end;
                                                          command tl tmpvar varmap
 
@@ -1132,7 +1137,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                         (* Data will be made square (equal number of columns per row) before saving! *)
                                                         (* ------------------------------------------------------------------------- *)
                                                          let url = Parsers.url_to_filename (to_string (Varmap.find "STARTURL" varmap) varmap) in
-                                                         command [CSV_save_as [String url; String ".csv"] ] tmpvar varmap; (* do the CSV_save with the created filename *)
+                                                         ignore ( command [CSV_save_as [String url; String ".csv"] ] tmpvar varmap ); (* do the CSV_save with the created filename *)
                                                          command tl tmpvar varmap
 
 
@@ -1221,7 +1226,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
 
 
                          | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;
-                                                                                            command [Print; Print_string "\n"] value varmap ) varmap;
+                                                                                            ignore (command [Print; Print_string "\n"] value varmap ) ) varmap;
                                                          command tl tmpvar varmap
 
                          | List_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\"\n" varname ) varmap;
@@ -1387,4 +1392,6 @@ let evaluate_command_list cmdlst macrodefs_lst =
       command cmdlst Empty Varmap.empty
 
 
+let evaluate_statements_list statements_list macrodefs_lst =
+  ()
 

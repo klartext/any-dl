@@ -32,6 +32,7 @@ type results_t =
   | Doclist         of Nethtml.document list
   *)
   | Empty
+  | Unit            of unit (* type for unit-type operations *)
 
 
 type specific_selector_t = { tag_sel: string option; argkey_sel: string option; argval_sel: string option }
@@ -127,6 +128,7 @@ let result_to_string res = match res with
     | Doclist        _ -> "Doclist"
     *)
     | Empty            -> "Empty"
+    | Unit           _ -> "Unit"
 
 
 
@@ -191,6 +193,7 @@ let command_to_string cmd = match cmd with
   | Dummy             -> "Dummy"
 
 
+type statements_t = Plain of commands_t  |  Cond of commands_t * commands_t * commands_t option  | Loop of commands_t * commands_t
 
 
 (* Parser( <parser-name>, <url-match-list>, <commands-list> *)

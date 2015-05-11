@@ -140,11 +140,13 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
     (* we evaluate the parse-tree, and start with a first, implicit get *)
     (* with the url we got from the command line                        *)
     (* ---------------------------------------------------------------- *)
-    E.evaluate_command_list ( Setvar(Url(url, Cli.opt.Cli.initial_referrer)) ::
-                              Store "STARTURL" ::
-                              Get_url(url, Cli.opt.Cli.initial_referrer) ::
-                              Store("BASEDOC") ::
-                              parserdef.commands ) macros_list
+    ignore(
+      E.evaluate_command_list ( Setvar(Url(url, Cli.opt.Cli.initial_referrer)) ::
+                                Store "STARTURL" ::
+                                Get_url(url, Cli.opt.Cli.initial_referrer) ::
+                                Store("BASEDOC") ::
+                                parserdef.commands ) macros_list
+          )
 
   with (* handle exceptions from the parse-tree-evaluation *)
     | E.No_Match                -> Printf.eprintf "Parser problem: Could not match to pattern!\t Parse will be exited for url %s\n" url
