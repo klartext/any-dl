@@ -232,9 +232,6 @@ let rec var_is_empty value varmap =
     | Empty                      -> true
     | Unit            _          -> true
 
-let var_is_empty2 value =
-  var_is_empty value Varmap.empty
-
 
 (* ------------------------------------------------- *)
 (* This function evaluates the list of commands that *)
@@ -319,7 +316,34 @@ let evaluate_command_list cmdlst macrodefs_lst =
         aux urls_refs ([], varmap)
 
 
+  (* ======================================================== *)
+  and evaluate_statement statement tmpvar varmap =
+    begin
+      match statement with
+        | Plain        commands                                -> command  commands tmpvar varmap
 
+        | Conditional  (if_cmdlst, then_cmdlist, else_cmdlist_opt) -> let testresult =  command  if_cmdlst tmpvar varmap in
+                                                                  (* if the variable has Unit-type, then it is always true-empty *)
+                                                                  if not ( var_is_empty testresult varmap )
+                                                                  then command then_cmdlist tmpvar varmap
+                                                                  else
+                                                                  begin
+                                                                    match else_cmdlist_opt with
+                                                                      | None               -> command then_cmdlist tmpvar varmap
+                                                                      | Some else_commands -> command else_commands tmpvar varmap
+                                                                  end
+
+        | Loop        (test_cmdlst, todo_cmdslst)               -> while ( not ( var_is_empty ( command test_cmdlst tmpvar varmap ) varmap ) )
+                                                                   do
+                                                                    Unit ( ignore ( command todo_cmdslst tmpvar varmap ) )
+                                                                   done; Unit ()
+
+                                                                  (* if the variable has Unit-type, then it is always true-empty => possibly endless loop! *) (* TODO ! *)
+    end
+
+(*
+macrodefs_lst  wird in command benutzt. => Parameterübergabe?
+*)
   (* "command"-function is the main commands-parser/evaluator *)
   (* ======================================================== *)
   and     command commandlist tmpvar varmap =
@@ -1391,33 +1415,10 @@ let evaluate_command_list cmdlst macrodefs_lst =
 
 
     in
-      command cmdlst Empty Varmap.empty
+      command cmdlst Empty Varmap.empty (* hier geht's los *)
 
 
 
-let evaluate_statement statement macrodefs_lst varmap =
-  begin
-    match statement with
-      | Plain        commands                                -> evaluate_command_list  commands  macrodefs_lst
-
-      | Conditional  (if_cmdlst, then_cmdlist, else_cmdlist_opt) -> let testresult =  evaluate_command_list  if_cmdlst macrodefs_lst in
-                                                                (* if the variable has Unit-type, then it is always true-empty *)
-                                                                if not ( var_is_empty2 testresult )
-                                                                then evaluate_command_list then_cmdlist macrodefs_lst
-                                                                else
-                                                                begin
-                                                                  match else_cmdlist_opt with
-                                                                    | None               -> evaluate_command_list then_cmdlist macrodefs_lst
-                                                                    | Some else_commands -> evaluate_command_list else_commands macrodefs_lst
-                                                                end
-
-      | Loop        (test_cmdlst, todo_cmdslst)               -> while ( not ( var_is_empty2 ( evaluate_command_list test_cmdlst macrodefs_lst ) ) )
-                                                                 do
-                                                                  Unit ( ignore ( evaluate_command_list todo_cmdslst macrodefs_lst ) )
-                                                                 done; Unit ()
-
-                                                                (* if the variable has Unit-type, then it is always true-empty => possibly endless loop! *) (* TODO ! *)
-  end
 
 
 
