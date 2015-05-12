@@ -196,7 +196,7 @@ let command_to_string cmd = match cmd with
 
 type cmd_list = command_t list
 
-type statements_t = Plain of cmd_list  |  Conditional of cmd_list * cmd_list * cmd_list option  | Loop of cmd_list * cmd_list
+type statements_t = Plain of cmd_list | Assignment of string * cmd_list | Conditional of cmd_list * cmd_list * cmd_list option  | Loop of cmd_list * cmd_list
 
 
 (* Parser( <parser-name>, <url-match-list>, <commands-list> *)
