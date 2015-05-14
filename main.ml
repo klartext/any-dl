@@ -141,7 +141,7 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
     (* with the url we got from the command line                        *)
     (* ---------------------------------------------------------------- *)
     ignore(
-      E.evaluate_command_list ( Setvar(Url(url, Cli.opt.Cli.initial_referrer)) ::
+      E.evaluate_statement_list ( Setvar(Url(url, Cli.opt.Cli.initial_referrer)) ::
                                 Store "STARTURL" ::
                                 Get_url(url, Cli.opt.Cli.initial_referrer) ::
                                 Store("BASEDOC") ::

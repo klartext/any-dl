@@ -238,7 +238,7 @@ let rec var_is_empty value varmap =
 (* a parser consists of.                             *)
 (* this function is doing the main work of any-dl.   *)
 (* ------------------------------------------------- *)
-let evaluate_command_list cmdlst macrodefs_lst =
+let evaluate_statement_list cmdlst macrodefs_lst =
 
   (* "get_document"-function, is used by some of the Get_... commands from "command"-function *)
   (* ======================================================================================== *)
@@ -361,7 +361,7 @@ macrodefs_lst  wird in command benutzt. => Parameterübergabe?
       end;
 
     match commandlist with
-      | []        -> tmpvar (* Printf.printf "<========================== BACK. Leave evaluate_command_list() now!\n"*)
+      | []        -> tmpvar (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
       | cmd::tl   -> begin
                        match cmd with
                          | Download  fname_arglist_opt      ->
