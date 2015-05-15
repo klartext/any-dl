@@ -238,7 +238,7 @@ let rec var_is_empty value varmap =
 (* a parser consists of.                             *)
 (* this function is doing the main work of any-dl.   *)
 (* ------------------------------------------------- *)
-let evaluate_statement_list cmdlst macrodefs_lst =
+let evaluate_statement_list (stmtlst : statements_t list) (macrodefs_lst : macrodef_t list) =
 
   (* "get_document"-function, is used by some of the Get_... commands from "command"-function *)
   (* ======================================================================================== *)
@@ -317,29 +317,49 @@ let evaluate_statement_list cmdlst macrodefs_lst =
 
 
   (* ======================================================== *)
-  and evaluate_statement statement tmpvar varmap =
-    begin
-      match statement with
-        | Plain        commands                                -> command  commands tmpvar varmap
+  and evaluate_statement (statement_list : statements_t list) tmpvar varmap =
 
-        | Conditional  (if_cmdlst, then_cmdlist, else_cmdlist_opt) -> let testresult =  command  if_cmdlst tmpvar varmap in
-                                                                  (* if the variable has Unit-type, then it is always true-empty *)
-                                                                  if not ( var_is_empty testresult varmap )
-                                                                  then command then_cmdlist tmpvar varmap
-                                                                  else
-                                                                  begin
-                                                                    match else_cmdlist_opt with
-                                                                      | None               -> command then_cmdlist tmpvar varmap
-                                                                      | Some else_commands -> command else_commands tmpvar varmap
-                                                                  end
+    (* For -vv print command name to stdout *)
+    (* ==================================== *)
+    if Cli.opt.Cli.very_verbose then Printf.printf "Length of statement_list: %d\n" (List.length statement_list);
 
-        | Loop        (test_cmdlst, todo_cmdslst)               -> while ( not ( var_is_empty ( command test_cmdlst tmpvar varmap ) varmap ) )
-                                                                   do
-                                                                    Unit ( ignore ( command todo_cmdslst tmpvar varmap ) )
-                                                                   done; Unit ()
+    if Cli.opt.Cli.very_verbose
+    then
+      begin
+        try
+          let str = Parsetreetypes.statement_type_to_string (List.hd statement_list) in
+          Printf.printf "evaluate_statement: %s\n" str;
+        with Failure _ -> () (* catches List.hd [] *)
+      end;
+    match statement_list with
+      | []            -> Empty
+      | statement::tl ->
+                        let res =
+                          begin
+                            match statement with
+                              | Command     cmd                                        -> command  [ cmd ] tmpvar varmap
+                              | Assignment  (varname, cmd)                             -> command  ( cmd :: [ (Store varname) ] )  tmpvar varmap
 
-                                                                  (* if the variable has Unit-type, then it is always true-empty => possibly endless loop! *) (* TODO ! *)
-    end
+                              | Conditional  (if_stmtlist, then_stmtlist, else_stmtlist_opt) -> let testresult =  evaluate_statement  if_stmtlist tmpvar varmap in
+                                                                                        (* if the variable has Unit-type, then it is always true-empty *)
+                                                                                        if not ( var_is_empty testresult varmap )
+                                                                                        then evaluate_statement then_stmtlist tmpvar varmap
+                                                                                        else
+                                                                                        begin
+                                                                                          match else_stmtlist_opt with
+                                                                                            | None               -> evaluate_statement then_stmtlist tmpvar varmap
+                                                                                            | Some else_commands -> evaluate_statement else_commands tmpvar varmap
+                                                                                        end
+
+                              | Loop        (test_cmdlst, todo_cmdslst)               -> while ( not ( var_is_empty ( evaluate_statement test_cmdlst tmpvar varmap ) varmap ) )
+                                                                                         do
+                                                                                          Unit ( ignore ( evaluate_statement todo_cmdslst tmpvar varmap ) )
+                                                                                         done; Unit ()
+
+                                                                                        (* if the variable has Unit-type, then it is always true-empty => possibly endless loop! *) (* TODO ! *)
+                          end
+                        in
+                        evaluate_statement tl res varmap (* result of the command-calls is new tmpvar *)
 
 (*
 macrodefs_lst  wird in command benutzt. => Parameterübergabe?
@@ -1402,11 +1422,13 @@ macrodefs_lst  wird in command benutzt. => Parameterübergabe?
                                                          command tl tmpvar varmap
 
 
+                         (*
                          | Call_macro     macro_name  -> (* evaluating the commands of the macro, and afterwards the following commands   *)
                                                          (* that means: prepend the commands of the macro to the tail of the command-list *)
                                                          (* ----------------------------------------------------------------------------- *)
                                                          let macro_commandlist = (List.assoc macro_name macrodefs_lst) in
                                                          command ( List.append  macro_commandlist  tl ) tmpvar varmap
+                         *)
 
 
                          | Dummy                      -> command tl tmpvar varmap (* does nothing; just a Dummy (NOP) *)
@@ -1415,7 +1437,7 @@ macrodefs_lst  wird in command benutzt. => Parameterübergabe?
 
 
     in
-      command cmdlst Empty Varmap.empty (* hier geht's los *)
+      evaluate_statement stmtlst Empty Varmap.empty (* hier geht's los *)
 
 
 

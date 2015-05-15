@@ -196,18 +196,25 @@ let command_to_string cmd = match cmd with
 
 type cmd_list = command_t list
 
-type statements_t = Plain of cmd_list | Assignment of string * cmd_list | Conditional of cmd_list * cmd_list * cmd_list option  | Loop of cmd_list * cmd_list
+type statements_t = Command of command_t | Assignment of string * command_t | Conditional of statements_t list * statements_t list * statements_t list option  | Loop of statements_t list * statements_t list
+
+let statement_type_to_string stmt =
+  match stmt with
+    | Command     _ -> "Command"
+    | Assignment  _ -> "Assignment"
+    | Conditional _ -> "Conditional"
+    | Loop        _ -> "Loop"
 
 
 (* Parser( <parser-name>, <url-match-list>, <commands-list> *)
 (* ------------------------------------------------------- *)
-type parserdef_t = { parsername : string; urllist:  string list; commands:  command_t list }
+type parserdef_t = { parsername : string; urllist:  string list; statements:  statements_t list }
 
 
 (* Macro( <macro-name>, <commands-list> *)
 (* ------------------------------------------------------- *)
 (* type macrodef_t = { macroname : string; macro_commands:  command_t list } *)
-type macrodef_t = string * command_t list
+type macrodef_t = string * statements_t list
 
 
 (* Definitoion of the returnvalue of the Parser-main-function *)

@@ -127,7 +127,7 @@ let get_parserdef url parser_urllist parser_namehash  parser_selection =
 (* This function looks up the right parser for a given url and invokes that parser *)
 (* =============================================================================== *)
 
-let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection macros_list =
+let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection (macros_list : macrodef_t list ) =
 
   (* select the parserdef from command line or urls that are attached to the parserdefinitions *)
   let parserdef = get_parserdef url  parser_urllist  parser_namehash  parser_selection in
@@ -141,11 +141,11 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
     (* with the url we got from the command line                        *)
     (* ---------------------------------------------------------------- *)
     ignore(
-      E.evaluate_statement_list ( Setvar(Url(url, Cli.opt.Cli.initial_referrer)) ::
-                                Store "STARTURL" ::
-                                Get_url(url, Cli.opt.Cli.initial_referrer) ::
-                                Store("BASEDOC") ::
-                                parserdef.commands ) macros_list
+      E.evaluate_statement_list ( Command ( Setvar(Url(url, Cli.opt.Cli.initial_referrer)) ) ::
+                                  Command ( Store "STARTURL" ) ::
+                                  Command ( Get_url(url, Cli.opt.Cli.initial_referrer) ) ::
+                                  Command ( Store("BASEDOC") ) ::
+                                  parserdef.statements ) macros_list
           )
 
   with (* handle exceptions from the parse-tree-evaluation *)
@@ -249,7 +249,7 @@ let main ()  =
     let parser_list = List.fold_right ( fun def sofar -> match def with Parserdef pdef -> pdef :: sofar | _ -> sofar ) definitions_list [] in
     let parser_list = List.rev parser_list in (* as long as no other order is pushed later, let order as is read from file *)
 
-    let macro_list = List.fold_right ( fun def sofar -> match def with Macrodef mdef -> mdef :: sofar | _ -> sofar ) definitions_list [] in
+    let (macro_list : macrodef_t list) = List.fold_right ( fun def sofar -> match def with Macrodef mdef -> mdef :: sofar | _ -> sofar ) definitions_list [] in
 
 
     (* if cli-switches ask for it, print the number of parser-defintions found *)

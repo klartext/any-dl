@@ -145,7 +145,7 @@ open Parsetreetypes
 
 
 %%
-main: parsername urlmatches START parser_script END { Parserdef { parsername = $1; urllist = $2; commands= $4 } }
+main: parsername urlmatches START parser_script END { Parserdef { parsername = $1; urllist = $2; statements = $4 } }
     | macrodef   /* args */ START parser_script END { Macrodef  ($1, $3) }
     | EOF        { (*print_stringlist_endlinehash variable_hash;*) raise End_of_file }
     ;
@@ -167,10 +167,10 @@ parser_script: statement_list { $1 }
 
 
 
-statement_list: command           { [$1]    }
-    | command statement_list      { $1 :: $2 }
-    | assignment                  { (fst $1) :: [ snd $1 ] }
-    | assignment statement_list   { (fst $1) :: (snd $1) :: $2 }
+statement_list: command           { [ Command $1]     }
+    | command statement_list      { (Command $1) :: $2 }
+    | assignment                  { [ $1 ]   }
+    | assignment statement_list   { $1 :: $2 }
     ;
 
 /*
@@ -184,7 +184,7 @@ conditional: IF statement_list THEN statement_list                     ENDIF { [
     |        IF statement_list THEN statement_list ELSE statement_list ENDIF { [ Empty ] }
     ;
 
-assignment: IDENTIFIER EQUALS command { ($3, Store $1) }
+assignment: IDENTIFIER EQUALS command { Assignment ( $1 , $3 ) (* ($3, Store $1) *) }
     ;
 
 
