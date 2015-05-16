@@ -11,7 +11,7 @@
 *)
 
 
-open Parsetreetypes
+include Parsetreetypes
 open Tools
 
 
