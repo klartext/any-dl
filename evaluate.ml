@@ -236,12 +236,6 @@ let rec var_is_empty value (varmap : varmap_t) =
     | Unit            _          -> true
 
 
-(* ------------------------------------------------- *)
-(* This function evaluates the list of commands that *)
-(* a parser consists of.                             *)
-(* this function is doing the main work of any-dl.   *)
-(* ------------------------------------------------- *)
-let evaluate_statement_list (stmtlst : statements_t list) (macrodefs_lst : macrodef_t list) =
 
   (* "get_document"-function, is used by some of the Get_... commands from "command"-function *)
   (* ======================================================================================== *)
@@ -1441,16 +1435,14 @@ macrodefs_lst  wird in command benutzt. => Parameterübergabe?
                      end
 
 
-    in
+
+
+(* ================================================== *)
+(* This function is the entry-point to the functions, *)
+(* that perform the statement-/command-evaluation.    *)
+(* ================================================== *)
+let evaluate_statement_list (stmtlst : statements_t list) (macrodefs_lst : macrodef_t list) = 
       evaluate_statement stmtlst Empty Varmap.empty (* hier geht's los *)
-
-
-
-
-
-
-let evaluate_statements_list statements_list macrodefs_lst =
-  ()
 
 
 
