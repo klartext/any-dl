@@ -1129,7 +1129,7 @@ macrodefs_lst  wird in command benutzt. => Parameterübergabe?
                                                              | Match_result mres -> Unit( Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
                                                                                                           print_newline() ) mres )
                                                              | String_array     str_arr -> Unit ( Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr )
-                                                             | Url (href, ref)    -> Unit ( print_url (href,url) )
+                                                             | Url (href, ref)    -> Unit ( print_url (href,ref) )
                                                              | Url_list  liste    -> Unit ( List.iter  print_url liste )
                                                              | Url_array arr      -> Unit ( Array.iter print_url arr )
 
