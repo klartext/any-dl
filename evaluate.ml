@@ -1109,6 +1109,8 @@ macrodefs_lst  wird in command benutzt. => Parameterübergabe?
                                                           command tl tmpvar varmap (* just next command without changed tmpvar *)
 
                          | Print                      ->
+                                                         let print_url url =  Printf.printf "%s   # Referrer:  %s\n" (fst url) (snd url) in
+
                                                          begin
                                                            match tmpvar with
                                                              (* does Varname makes sense at all here? *)
@@ -1127,9 +1129,9 @@ macrodefs_lst  wird in command benutzt. => Parameterübergabe?
                                                              | Match_result mres -> Unit( Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
                                                                                                           print_newline() ) mres )
                                                              | String_array     str_arr -> Unit ( Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr )
-                                                             | Url (href, ref)   -> Unit( Printf.printf "%s   # Referrer:  %s\n" href ref )
-                                                             | Url_list  liste    -> Unit ( List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste )
-                                                             | Url_array arr      -> Unit ( Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) arr )
+                                                             | Url (href, ref)    -> Unit ( print_url (href,url) )
+                                                             | Url_list  liste    -> Unit ( List.iter  print_url liste )
+                                                             | Url_array arr      -> Unit ( Array.iter print_url arr )
 
                                                              (*
                                                              | Doclist   doclist  -> let string_of_dl dl = Parsers.convert_doclist_to_htmlstring [dl] in
