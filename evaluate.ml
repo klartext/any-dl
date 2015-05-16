@@ -74,6 +74,9 @@ module Varmap =
 
   end
 
+type varmap_t = Parsetreetypes.results_t Varmap.Variablemap.t
+
+type command_fun_res_t = Parsetreetypes.results_t * varmap_t
 
 
 
@@ -83,7 +86,7 @@ module Varmap =
 (* more fancy converters for other purposes might *)
 (* elsewehere be defined                          *)
 (* ---------------------------------------------- *)
-let rec  to_string  result_value varmap =
+let rec  to_string  result_value (varmap : varmap_t) =
 
   let array_string_append str_arr = Array.fold_left ( ^ ) "" str_arr in
 
@@ -120,7 +123,7 @@ let rec  to_string  result_value varmap =
 (* Convert to Urls/Url-arrays and so on.          *)
 (* Should replace "to_string", if Url is wanted.  *)
 (* ---------------------------------------------- *)
-let rec  urlify  result_value varmap =
+let rec  urlify  result_value (varmap : varmap_t) =
   let make_referrer () = to_string ( Varmap.find_excdef "REFERRER" varmap (String "-") ) varmap in
   let str =
     match result_value with
@@ -177,7 +180,7 @@ let interactive_string_select str_arr default_pattern =
 (* ===================================================== *)
 (* Used by the paste-command, as well as others.         *)
 (* ----------------------------------------------------- *)
-let paste_arglist_to_string  argument_list  varmap =
+let paste_arglist_to_string  argument_list  (varmap : varmap_t) =
   let str_lst = List.map (fun item ->  to_string item varmap) argument_list in (* convert to string  *)
   let pasted  = List.fold_left ( ^ ) "" str_lst in                             (* append all strings *)
   pasted
@@ -189,7 +192,7 @@ let paste_arglist_to_string  argument_list  varmap =
 (* =================================================================== *)
 (* apply a function to the value, giving back a value of the same type *)
 (* =================================================================== *)
-let default_application variable basefunc varmap =
+let default_application variable basefunc (varmap : varmap_t) =
   match variable with
     (*
     | Varname         vn         -> to_string (Varmap.find vn varmap) varmap
@@ -216,7 +219,7 @@ let default_application variable basefunc varmap =
 (* ========================================================================================== *)
 (* evaluates to true, if the value is interpreted as being empty, or false, if it's not empty *)
 (* ========================================================================================== *)
-let rec var_is_empty value varmap =
+let rec var_is_empty value (varmap : varmap_t) =
   match value with
     | Varname         vn         -> var_is_empty (Varmap.find vn varmap) varmap
     | String          str        -> if str = "" then true else false
@@ -242,7 +245,7 @@ let evaluate_statement_list (stmtlst : statements_t list) (macrodefs_lst : macro
 
   (* "get_document"-function, is used by some of the Get_... commands from "command"-function *)
   (* ======================================================================================== *)
-  let rec get_document  url referrer varmap =
+  let rec get_document  url referrer (varmap : varmap_t) =
 
     (* if a cookie already has been received/stored                *)
     (* pick it from the variable-map for sending it back to server *)
@@ -269,7 +272,7 @@ let evaluate_statement_list (stmtlst : statements_t list) (macrodefs_lst : macro
 
   (* "download"-function, is for downloading big files firectly into a destination-file *)
   (* ================================================================================== *)
-  and download  url referrer  dst_file  varmap =
+  and download  url referrer  dst_file  (varmap : varmap_t) =
 
     (* if a cookie already has been received/stored                *)
     (* pick it from the variable-map for sending it back to server *)
@@ -301,7 +304,7 @@ let evaluate_statement_list (stmtlst : statements_t list) (macrodefs_lst : macro
   (* ====================================================================================== *)
   (* at the moment, varmap is not returned  updated *)
   (* ---------------------------------------------- *)
-  and get_document_list  urls_refs varmap =
+  and get_document_list  urls_refs (varmap : varmap_t) =
     let rec aux urllist (result, vmap) =
       if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep; (* call sleep-function if > 0 ms to wait *)
       match urllist with
@@ -317,7 +320,7 @@ let evaluate_statement_list (stmtlst : statements_t list) (macrodefs_lst : macro
 
 
   (* ======================================================== *)
-  and evaluate_statement (statement_list : statements_t list) tmpvar varmap =
+  and evaluate_statement (statement_list : statements_t list) tmpvar (varmap : varmap_t) =
 
     (* For -vv print command name to stdout *)
     (* ==================================== *)
