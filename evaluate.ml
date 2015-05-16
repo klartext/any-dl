@@ -1060,6 +1060,8 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                           command tl tmpvar varmap (* just next command without changed tmpvar *)
 
                          | Print                      ->
+                                                         let print_url url =  Printf.printf "%s   # Referrer:  %s\n" (fst url) (snd url) in
+
                                                          begin
                                                            match tmpvar with
                                                              (* does Varname makes sense at all here? *)
@@ -1076,9 +1078,9 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                              | Match_result mres -> Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
                                                                                                           print_newline() ) mres
                                                              | String_array     str_arr -> Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr
-                                                             | Url (href, ref)   -> Printf.printf "%s   # Referrer:  %s\n" href ref
-                                                             | Url_list  liste    -> List.iter  ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) liste
-                                                             | Url_array arr      -> Array.iter ( fun (href, ref) -> Printf.printf "%s  # Referrer:  %s\n" href ref) arr
+                                                             | Url     (href,url) -> print_url (href,url)
+                                                             | Url_list  liste    -> List.iter  print_url liste
+                                                             | Url_array arr      -> Array.iter print_url arr
 
                                                              (*
                                                              | Doclist   doclist  -> let string_of_dl dl = Parsers.convert_doclist_to_htmlstring [dl] in
