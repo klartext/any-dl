@@ -190,6 +190,19 @@ start
 end
 
 
+parsername "teststorerecall": ( )
+start
+  store("doc");
+  linkextract;
+  store("links");
+
+  recall("doc");
+  print;
+
+  recall("links");
+  print;
+end
+
 parsername "testassign": ( )
 start
   linkextract;
@@ -218,4 +231,28 @@ print;
 end
 
 
+parsername "testdummy": ( )
+start
+  dummy;
+end
+
+parsername "testemptydummy": ( )
+start
+  emptydummy;
+end
+
+parsername "testifthenelse": ( )
+start
+  linkextract;
+  store("links");
+
+
+  if( emptydummy; )
+  then
+      print("Not empty");
+  else
+      print("Empty");
+  fi
+
+end
 
