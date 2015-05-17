@@ -329,7 +329,7 @@ and evaluate_statement (statement_list : statements_t list) (macrodefs_lst : mac
       with Failure _ -> () (* catches List.hd [] *)
     end;
   match statement_list with
-    | []            -> Empty, varmap
+    | []            -> tmpvar, varmap
     | statement::tl ->
                       let res, newvarmap =
                         begin
