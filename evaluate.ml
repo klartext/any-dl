@@ -314,7 +314,7 @@ and get_document_list  urls_refs (varmap : varmap_t) =
 
 
 (* ======================================================== *)
-and evaluate_statement (statement_list : statements_t list) (macrodefs_lst : macrodef_t list) tmpvar (varmap : varmap_t) =
+and evaluate_statement (statement_list : statements_t list) (macrodefs_lst : macrodef_t list) tmpvar (varmap : varmap_t) : results_t * varmap_t =
 
   (* For -vv print command name to stdout *)
   (* ==================================== *)
@@ -329,15 +329,15 @@ and evaluate_statement (statement_list : statements_t list) (macrodefs_lst : mac
       with Failure _ -> () (* catches List.hd [] *)
     end;
   match statement_list with
-    | []            -> Empty
+    | []            -> Empty, varmap
     | statement::tl ->
-                      let res =
+                      let res, newvarmap =
                         begin
                           match statement with
                             | Command     cmd                                        -> command  [ cmd ] macrodefs_lst tmpvar varmap
                             | Assignment  (varname, cmd)                             -> command  ( cmd :: [ (Store varname) ] ) macrodefs_lst tmpvar varmap
 
-                            | Conditional  (if_stmtlist, then_stmtlist, else_stmtlist_opt) -> let testresult =  evaluate_statement  if_stmtlist macrodefs_lst tmpvar varmap in
+                            | Conditional  (if_stmtlist, then_stmtlist, else_stmtlist_opt) -> let testresult =  fst ( evaluate_statement  if_stmtlist macrodefs_lst tmpvar varmap ) in
                                                                                       (* if the variable has Unit-type, then it is always true-empty *)
                                                                                       if not ( var_is_empty testresult varmap )
                                                                                       then evaluate_statement then_stmtlist macrodefs_lst tmpvar varmap
@@ -348,10 +348,10 @@ and evaluate_statement (statement_list : statements_t list) (macrodefs_lst : mac
                                                                                           | Some else_commands -> evaluate_statement else_commands macrodefs_lst tmpvar varmap
                                                                                       end
 
-                            | Loop        (test_cmdlst, todo_cmdslst)               -> while ( not ( var_is_empty ( evaluate_statement test_cmdlst macrodefs_lst tmpvar varmap ) varmap ) )
+                            | Loop        (test_cmdlst, todo_cmdslst)               -> while ( not ( var_is_empty (fst ( evaluate_statement test_cmdlst macrodefs_lst tmpvar varmap )) varmap ) )
                                                                                        do
-                                                                                        Unit ( ignore ( evaluate_statement todo_cmdslst macrodefs_lst tmpvar varmap ) )
-                                                                                       done; Unit ()
+                                                                                        Unit ( ignore ( evaluate_statement todo_cmdslst macrodefs_lst tmpvar varmap ) ), varmap
+                                                                                       done; Unit (), varmap
 
                                                                                       (* if the variable has Unit-type, then it is always true-empty => possibly endless loop! *) (* TODO ! *)
                         end
@@ -363,7 +363,7 @@ macrodefs_lst  wird in command benutzt. => Parameterübergabe?
 *)
 (* "command"-function is the main commands-parser/evaluator *)
 (* ======================================================== *)
-and     command commandlist macrodefs_lst tmpvar varmap =
+and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t =
   flush_all();
 
   (* For -vv print command name to stdout *)
@@ -378,7 +378,7 @@ and     command commandlist macrodefs_lst tmpvar varmap =
     end;
 
   match commandlist with
-    | []        -> tmpvar (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
+    | []        -> tmpvar, varmap (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
     | cmd::tl   -> begin
                      match cmd with
                        | Download  fname_arglist_opt      ->
@@ -398,10 +398,10 @@ and     command commandlist macrodefs_lst tmpvar varmap =
                                                                                   end
                                                           | Url_list ul        ->
                                                                                   (* Download on Url_list necessarily use auto-filenaming *)
-                                                                                  Unit ( List.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap ) ) ul )
+                                                                                  Unit ( List.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap ) ) ul ) , varmap
                                                           | Url_array ua        ->
                                                                                   (* Download on Url_array necessarily use auto-filenaming *)
-                                                                                  Unit ( Array.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap ) ) ua )
+                                                                                  Unit ( Array.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap ) ) ua ) , varmap
 
                                                           | _ -> raise Wrong_tmpvar_type
                                                         end
