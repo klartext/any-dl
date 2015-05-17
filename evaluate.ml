@@ -356,7 +356,7 @@ and evaluate_statement (statement_list : statements_t list) (macrodefs_lst : mac
                                                                                       (* if the variable has Unit-type, then it is always true-empty => possibly endless loop! *) (* TODO ! *)
                         end
                       in
-                      evaluate_statement tl  macrodefs_lst res varmap (* result of the command-calls is new tmpvar *)
+                      evaluate_statement tl  macrodefs_lst res newvarmap (* result of the command-calls is new tmpvar *)
 
 (*
 macrodefs_lst  wird in command benutzt. => Parameterübergabe?
