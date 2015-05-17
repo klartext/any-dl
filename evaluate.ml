@@ -74,9 +74,9 @@ module Varmap =
 
   end
 
-type varmap_t = Parsetreetypes.results_t Varmap.Variablemap.t
+type varmap_t = results_t Varmap.Variablemap.t
 
-type command_fun_res_t = Parsetreetypes.results_t * varmap_t
+type command_fun_res_t = results_t * varmap_t
 
 
 
