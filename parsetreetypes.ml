@@ -109,6 +109,7 @@ type command_t =
   | Sleep_ms    of int                        (* sleep a certain number of milli-seconds *)
   | Call_macro  of string                     (* call a macro *)
   | Dummy
+  | Empty_dummy                               (* dummy-command that creates Empty as result *)
 
 
 
@@ -191,6 +192,7 @@ let command_to_string cmd = match cmd with
   | Sleep_ms        _ -> "Sleep_ms"
   | Call_macro      _ -> "Call_macro"
   | Dummy             -> "Dummy"
+  | Empty_dummy       -> "EmptyDummy"
 
 
 

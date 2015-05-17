@@ -325,7 +325,7 @@ and evaluate_statement (statement_list : statements_t list) (macrodefs_lst : mac
     begin
       try
         let str = Parsetreetypes.statement_type_to_string (List.hd statement_list) in
-        Printf.printf "evaluate_statement: %s\n" str;
+        Printf.printf "evaluate_statement: *** %s ***\n" str;
       with Failure _ -> () (* catches List.hd [] *)
     end;
   match statement_list with
@@ -1431,6 +1431,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
 
                        | Dummy                      -> command tl macrodefs_lst tmpvar varmap (* does nothing; just a Dummy (NOP) *)
+                       | Empty_dummy                -> command tl macrodefs_lst Empty  varmap (* gives back Empty as result/tmpvar *)
 
                    end
 

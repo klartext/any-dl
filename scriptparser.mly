@@ -82,6 +82,7 @@
 %token URL_DECODE
 %token READLINE
 %token DUMMY
+%token EMPTYDUMMY
 
 %token COLSELECT
 %token ROWSELECT
@@ -171,6 +172,8 @@ statement_list: command           { [ Command $1]     }
     | command statement_list      { (Command $1) :: $2 }
     | assignment                  { [ $1 ]   }
     | assignment statement_list   { $1 :: $2 }
+    | conditional                  { [ $1 ]   }
+    | conditional statement_list   { $1 :: $2 }
     ;
 
 /*
@@ -180,8 +183,8 @@ command: simple_statement { $1 }
     | conditional statement_list  { $1 }
 */
 
-conditional: IF statement_list THEN statement_list                     ENDIF { [ Empty ] }
-    |        IF statement_list THEN statement_list ELSE statement_list ENDIF { [ Empty ] }
+conditional: IF LPAREN statement_list RPAREN THEN statement_list                     ENDIF { Conditional ( $3,  $6, None ) }
+    |        IF LPAREN statement_list RPAREN THEN statement_list ELSE statement_list ENDIF { Conditional ( $3, $6, Some $8 ) }
     ;
 
 assignment: IDENTIFIER EQUALS command { Assignment ( $1 , $3 ) (* ($3, Store $1) *) }
@@ -197,6 +200,7 @@ command_base: match_cmd         { $1 }
     */
     |      BASENAME             { Basename    }
     |      DUMMY                { Dummy       }
+    |      EMPTYDUMMY           { Empty_dummy }
     |      DUMP                 { Dump        }
     |      DUMP_DATA            { Dump_data   }
     |      EXITPARSE            { Exit_parse  }
