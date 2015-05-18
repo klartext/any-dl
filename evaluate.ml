@@ -1106,7 +1106,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                         command tl macrodefs_lst tmpvar varmap (* just next command without changed tmpvar *)
 
                        | Print                      ->
-                                                       let print_url url =  Printf.printf "%s   # Referrer:  %s\n" (fst url) (snd url) in
+                                                       let print_url url =  Printf.printf "%s  # Referrer:  %s\n" (fst url) (snd url) in
 
                                                        begin
                                                          match tmpvar with
