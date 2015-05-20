@@ -699,6 +699,11 @@ List of commands/keywords and a short-description of them:
     Works like un-tag html, or like a html-2-text.
 
 
+  emptydummy
+    just a dummy command (something like a NOP of processors),
+    but gives back Empty as tmpvar
+
+
   end
     end-keyword for the parser-definition
 
