@@ -1060,7 +1060,7 @@ let evaluate_command_list cmdlst macrodefs_lst =
                                                           command tl tmpvar varmap (* just next command without changed tmpvar *)
 
                          | Print                      ->
-                                                         let print_url url =  Printf.printf "%s   # Referrer:  %s\n" (fst url) (snd url) in
+                                                         let print_url url =  Printf.printf "%s  # Referrer:  %s\n" (fst url) (snd url) in
 
                                                          begin
                                                            match tmpvar with
