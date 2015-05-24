@@ -247,7 +247,7 @@ start
   store("links");
 
 
-  if( emptydummy; )
+  ifnotempty( emptydummy; )
   then
       print("Not empty");
   else

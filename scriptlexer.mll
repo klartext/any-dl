@@ -89,7 +89,9 @@
 
                   ("readline",       READLINE  );
 
-                  ("if",       IF  );
+                  ("if",          IFNE  );
+                  ("ifne",        IFNE  );
+                  ("ifnotempty",  IFNE  );
                   ("fi",       ENDIF  );
                   ("endif",    ENDIF  );
                   ("then",     THEN  );
