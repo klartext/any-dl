@@ -256,3 +256,15 @@ start
 
 end
 
+
+
+
+parsername "macro-test": ( )
+start
+  call("mymacro");
+end
+
+defmacro "mymacro":
+start
+  print("Macro was called successfully!");
+end
