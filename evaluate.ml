@@ -1421,13 +1421,12 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        command tl macrodefs_lst tmpvar varmap
 
 
-                       (*
                        | Call_macro     macro_name  -> (* evaluating the commands of the macro, and afterwards the following commands   *)
                                                        (* that means: prepend the commands of the macro to the tail of the command-list *)
                                                        (* ----------------------------------------------------------------------------- *)
                                                        let macro_commandlist = (List.assoc macro_name macrodefs_lst) in
-                                                       command ( List.append  macro_commandlist  tl ) macrodefs_lst tmpvar varmap
-                       *)
+                                                       let stmts_tl = List.map ( fun cmd -> Command cmd ) tl in
+                                                       evaluate_statement ( List.append  macro_commandlist  stmts_tl ) macrodefs_lst tmpvar varmap
 
 
                        | Dummy                      -> command tl macrodefs_lst tmpvar varmap (* does nothing; just a Dummy (NOP) *)
