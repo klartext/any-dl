@@ -257,9 +257,9 @@ module Htmlparse =
 
       let remove_empty_data doclist = List.filter is_not_empty_data_element doclist in
 
-      let rec traverse dl ndl =
+      let rec traverse dl newdl =
         match dl with
-          | []       -> ndl
+          | []       -> List.rev newdl     (* result with corrected order of aggregated / stripped elements *)
           | hd :: tl -> let stripped =
                           begin
                             match hd with
@@ -268,7 +268,7 @@ module Htmlparse =
                               | Data d                 -> Data (String.trim d)
                           end
                         in
-                          (traverse tl (List.rev (stripped::ndl))) (* List.rev on each call looks costly; maybe optimize it later *)
+                          (traverse tl (stripped::newdl)) (* go on with tail, prepend stripped to newdl *)
       in
         traverse doclist []
 
