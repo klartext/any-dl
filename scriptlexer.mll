@@ -89,8 +89,17 @@
 
                   ("readline",       READLINE  );
 
+                  ("if",          IFNE  );
+                  ("ifne",        IFNE  );
+                  ("ifnotempty",  IFNE  );
+                  ("fi",       ENDIF  );
+                  ("endif",    ENDIF  );
+                  ("then",     THEN  );
+                  ("else",     ELSE  );
 
-                  ("dummy",  DUMMY  );
+
+                  ("dummy",       DUMMY  );
+                  ("emptydummy",  EMPTYDUMMY  );
                 ];
 
     List.iter (fun (kwd, tok) -> Hashtbl.add parameter_table kwd tok)

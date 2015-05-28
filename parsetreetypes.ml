@@ -32,6 +32,7 @@ type results_t =
   | Doclist         of Nethtml.document list
   *)
   | Empty
+  | Unit            of unit (* type for unit-type operations *)
 
 
 type specific_selector_t = { tag_sel: string option; argkey_sel: string option; argval_sel: string option }
@@ -41,7 +42,7 @@ type pair_extractor_t   = [ `Arg_keys | `Arg_vals | `Arg_pairs ]
 type extractor_t        = Single_extr of single_extractor_t list | Pair_extr of pair_extractor_t
 
 
-type commands_t =
+type command_t =
   | Get_url       of string * string          (* url, referrer *)
   | Get_urls  (* can be removed maybe *)      (* get via tmpvar *)
   | Get                                       (* get ONE document via tmpvar (Url-type) *)
@@ -108,6 +109,7 @@ type commands_t =
   | Sleep_ms    of int                        (* sleep a certain number of milli-seconds *)
   | Call_macro  of string                     (* call a macro *)
   | Dummy
+  | Empty_dummy                               (* dummy-command that creates Empty as result *)
 
 
 
@@ -127,6 +129,7 @@ let result_to_string res = match res with
     | Doclist        _ -> "Doclist"
     *)
     | Empty            -> "Empty"
+    | Unit           _ -> "Unit"
 
 
 
@@ -189,19 +192,31 @@ let command_to_string cmd = match cmd with
   | Sleep_ms        _ -> "Sleep_ms"
   | Call_macro      _ -> "Call_macro"
   | Dummy             -> "Dummy"
+  | Empty_dummy       -> "EmptyDummy"
 
 
+
+type cmd_list = command_t list
+
+type statements_t = Command of command_t | Assignment of string * command_t | Conditional of statements_t list * statements_t list * statements_t list option  | Loop of statements_t list * statements_t list
+
+let statement_type_to_string stmt =
+  match stmt with
+    | Command     _ -> "Command"
+    | Assignment  _ -> "Assignment"
+    | Conditional _ -> "Conditional"
+    | Loop        _ -> "Loop"
 
 
 (* Parser( <parser-name>, <url-match-list>, <commands-list> *)
 (* ------------------------------------------------------- *)
-type parserdef_t = { parsername : string; urllist:  string list; commands:  commands_t list }
+type parserdef_t = { parsername : string; urllist:  string list; statements:  statements_t list }
 
 
 (* Macro( <macro-name>, <commands-list> *)
 (* ------------------------------------------------------- *)
-(* type macrodef_t = { macroname : string; macro_commands:  commands_t list } *)
-type macrodef_t = string * commands_t list
+(* type macrodef_t = { macroname : string; macro_commands:  command_t list } *)
+type macrodef_t = string * statements_t list
 
 
 (* Definitoion of the returnvalue of the Parser-main-function *)

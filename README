@@ -699,6 +699,11 @@ List of commands/keywords and a short-description of them:
     Works like un-tag html, or like a html-2-text.
 
 
+  emptydummy
+    just a dummy command (something like a NOP of processors),
+    but gives back Empty as tmpvar
+
+
   end
     end-keyword for the parser-definition
 
@@ -1001,6 +1006,24 @@ New feature (as of december 2014): assignments
   The tmpvar will be placed on the tmpvar-stack,
   so a previous stack-value will be replaced by the new one.
 
+
+
+Control Structures:
+===================
+
+  if( ... )
+  then ...
+  else ...
+  endif
+
+    Here the "..." stands for statements that can be used there.
+
+    Instead of "if" also "ifnotempty" and "ifne" can be used.
+    All three behavethe same way, but some people may prefer more
+    specific keywords.
+    So, if the tmpvar that the statements-list inside the "if"-command (in the paranteheses)
+    lefts behind, is not empty, the condition is true.
+    (Thats like in otherlanguages like C or Perl).
 
 
 Prefedined Variables:
