@@ -764,26 +764,18 @@ List of commands/keywords and a short-description of them:
   makeurl
     tries to make an url from a string
 
+
   match
     tries to match to the used pattern.
     PCRE-matches are used.
     The result is a matrix, containing of
     rows-of-"column"-elements.
 
-  select
-    selects ONE ELEMENT from a row or a column.
-    The row/column must already have been selected with rowselect() or colselect().
-    select() does NOT allow matches on match-results (which are a matrix internally).
-
-  selectmatch
-    allows to select a row from a match-result, by specifiying
-    a column-index and a string-matching-pattern for this certain
-    element.
-    So, this is a more advanced rowselect() with additional matching capabilities.
 
   mselect
     a multiple-select, like select, but the result will be an array
     of items (Strings or URls) not a single element.
+
 
   parsername
     this keywords starts the definition of a parser.
@@ -840,6 +832,19 @@ List of commands/keywords and a short-description of them:
 
   save_as
     saves a document to a file with filename as argument.
+
+
+  select
+    selects ONE ELEMENT from a row or a column.
+    The row/column must already have been selected with rowselect() or colselect().
+    select() does NOT allow matches on match-results (which are a matrix internally).
+
+
+  selectmatch
+    allows to select a row from a match-result, by specifiying
+    a column-index and a string-matching-pattern for this certain
+    element.
+    So, this is a more advanced rowselect() with additional matching capabilities.
 
 
   show_match
@@ -924,10 +929,6 @@ List of commands/keywords and a short-description of them:
     This is a depth-first selection, with each element being a top-element.
     This way you can access all descendants and analyse them, fr example
     extract all argpairs from all the tags of the whole document.
-
-
-
-
 
 
   titleextract
