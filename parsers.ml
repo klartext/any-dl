@@ -244,6 +244,37 @@ module Htmlparse =
 
 
     (* ======================================================================================= *)
+    (* strip (trim) Data-Elements: String.trim used on Data-Elements.                          *)
+    (* Therefore leading and trailing blanks will be removed from the Data-Elements.           *)
+    (* Additionally, if String.trim results in "", then the whole Data-Element will be removed.*)
+    (* --------------------------------------------------------------------------------------- *)
+    (*                                                                                         *)
+    (* ======================================================================================= *)
+    let strip_html_data doclist =
+
+      let is_empty_data_element     elem = match elem with  Data d -> if d = "" then true else false  |  Element _ -> false in
+      let is_not_empty_data_element elem = not ( is_empty_data_element elem ) in
+
+      let remove_empty_data doclist = List.filter is_not_empty_data_element doclist in
+
+      let rec traverse dl ndl =
+        match dl with
+          | []       -> ndl
+          | hd :: tl -> let stripped =
+                          begin
+                            match hd with
+                              | Element (tag, arg, dl) -> let deeperlist = traverse dl [] in
+                                                          Element (tag, arg, remove_empty_data deeperlist)
+                              | Data d                 -> Data (String.trim d)
+                          end
+                        in
+                          (traverse tl (List.rev (stripped::ndl))) (* List.rev on each call looks costly; maybe optimize it later *)
+      in
+        traverse doclist []
+
+
+
+    (* ======================================================================================= *)
     (* dumping html-document to stdout: displaying contents ("payload") as well as tag-names   *)
     (* --------------------------------------------------------------------------------------- *)
     (* The stuff is indented, depending on the depth of where the tag was found in the doctree *)
