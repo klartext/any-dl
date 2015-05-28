@@ -660,17 +660,6 @@ List of commands/keywords and a short-description of them:
 
   download
     downloads an entity and storing to a file.
-    That is similar to the sequence
-      get;
-      save;
-    but does store the data directly into the resulting file.
-    The sequence
-      get;
-      save;
-    does load the data into memory first and then afterwards saves it
-    into a file.
-    So, for long files, like the mediadata / videofiles,
-    the download-command would be the better choice.
 
 
   dropcol

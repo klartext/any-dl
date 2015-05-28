@@ -453,6 +453,33 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
 
                        | Get_urls        ->
+                                            (*
+                                               DISCLAIMER 2015-05-28: since implementing the ControlCtructures,
+                                               the auto-save-feature ( get-command immediately followed by save-command saves
+                                               files automatically, if downloading a list of files/urls)
+                                               is no longer guaranteed. I think it will not work anymore.
+                                               But using the download-command instead does solve that problem.
+                                               So, if you rely on autosave files for bulk-downloads in
+                                                 get;
+                                                 save;
+
+                                               commands, then please use
+
+                                                 download;
+
+                                               instead of get;save;
+                                               The download-command has also the advantage, that the file is saved to
+                                               disk immediately; get-save does first use memory and save the file, before
+                                               loading the neixt one to memory.
+                                               (the get-save could be activated again with some lines of code.
+                                               But I doubt that it makes sense. This was a workaround at the time,
+                                               when download was not implemented.
+                                               So, the auto-save-after-get fpr bulk-downloads will be removed soon,
+                                               to clean up the code.
+                                               (if you disagree and want that featire, let me know.)
+                                             *)
+
+
                                             (* If a list or array of URLs must be downloaded, this could be done   *)
                                             (* directly, and data be stored in memory.                             *)
                                             (* But if a save-command follows the get-command in the rc-file,       *)
