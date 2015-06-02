@@ -178,6 +178,8 @@ module Pipelined =
 
         let get_call  = new Nethttp_client.get url in (* Referrer? Cookies? *)
 
+        get_call # set_response_body_storage `Memory; (*!*)
+
         (* set the USER-AGENT string *)
         (* ------------------------- *)
         Nethttp.Header.set_user_agent (get_call # request_header `Base) Cli.opt.Cli.user_agent;
@@ -225,6 +227,13 @@ module Pipelined =
       (* download-function: get file but directly write it to disk! *)
       (* ========================================================== *)
       let download url (referer: string option) cookies dest_filename =
+
+        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
+        begin
+          print_endline "------------------------------->";
+          Printf.printf "get_raw: GET (DOWNLOAD) URL: %s\n" url;
+        end;
+
         let pipeline = new Nethttp_client.pipeline in
 
         let get_call  = new Nethttp_client.get url in (* Referrer? Cookies? *)
