@@ -230,12 +230,12 @@ module Pipelined =
 
         ( Some (get_call # response_body # value) , Some cookies )
 (* ----------- *)
-      let get_raw_new url (referer: string option) cookies =
+      let get_raw url (referer: string option) cookies =
         match ( get_raw_or_download url referer cookies None ) with
           | Some body, Some cookies -> Some ( body, cookies )
           | _, _                    -> None
 
-      let download_new url (referer: string option) cookies dest_filename =
+      let download url (referer: string option) cookies dest_filename =
         match ( get_raw_or_download url referer cookies (Some dest_filename) ) with
           | _, cookies -> cookies
 
@@ -244,7 +244,7 @@ module Pipelined =
       (* ======================================================== *)
       (* raw get function, without any wrappers to solve problems *)
       (* ======================================================== *)
-      let get_raw url (referer: string option) cookies =
+      let get_raw_old url (referer: string option) cookies =
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
@@ -304,7 +304,7 @@ module Pipelined =
       (* ========================================================== *)
       (* download-function: get file but directly write it to disk! *)
       (* ========================================================== *)
-      let download url (referer: string option) cookies dest_filename =
+      let download_old url (referer: string option) cookies dest_filename =
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
