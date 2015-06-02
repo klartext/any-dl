@@ -163,6 +163,84 @@ module Pipelined =
                                         raise (Get_problem `Client_error)
 
 
+(* ----------- *)
+      (* ======================================================== *)
+      (* raw get function, without any wrappers to solve problems *)
+      (* ======================================================== *)
+      let get_raw_or_download url (referer: string option) cookies opt_outfilename =
+
+        let verbose_message = match opt_outfilename with None -> "get_raw: GET URL" | Some _ -> "get_raw: GET (DOWNLOAD) URL" in
+
+        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
+        begin
+          print_endline "------------------------------->";
+          Printf.printf "%s: %s\n" verbose_message url;
+        end;
+
+        let pipeline = new Nethttp_client.pipeline in
+
+        let get_call  = new Nethttp_client.get url in (* Referrer? Cookies? *)
+
+        (* If there is Some outfilename (for download), then set it as set_response_body_storage *)
+        (* ------------------------------------------------------------------------------------- *)
+        begin
+          match opt_outfilename with
+            | None               -> get_call # set_response_body_storage `Memory
+            | Some dest_filename -> get_call # set_response_body_storage (`File ( fun f -> dest_filename ))
+        end;
+
+        (* set the USER-AGENT string *)
+        (* ------------------------- *)
+        Nethttp.Header.set_user_agent (get_call # request_header `Base) Cli.opt.Cli.user_agent;
+
+        (* set the REFERER string *)
+        (* ---------------------- *)
+        begin
+          match referer with None -> () | Some ref -> Nethttp.Header.set_referer (get_call # request_header `Base) ref
+        end;
+
+        (* set the Cookies *)
+        (* --------------- *)
+        begin
+          match cookies with
+            | None      ->  ()
+            | Some cook ->  let c = List.map cookie_to_cookie_ct cook in
+                            List.iter ( fun xx -> Nethttp.Header.set_cookie (get_call # request_header `Base) xx) c
+        end;
+
+
+        (* Get the data from webserver now *)
+        (* =============================== *)
+        pipeline # add get_call;  (* add the get-call to the pipeline *)
+        pipeline # run();         (* process the pipeline (retrieve data) *)
+
+        (* check status *)
+        (* ------------ *)
+        judge_getcall_status ( get_call # status );
+
+        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
+        begin
+          Printf.printf "Status-Code    GET:  %d\n" get_call # response_status_code;
+          Printf.printf "Status-Message GET:  %s\n" get_call # response_status_text
+        end;
+
+        let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
+
+        if_veryverbose_print_cookies cookies;
+
+        ( Some (get_call # response_body # value) , Some cookies )
+(* ----------- *)
+      let get_raw_new url (referer: string option) cookies =
+        match ( get_raw_or_download url referer cookies None ) with
+          | Some body, Some cookies -> Some ( body, cookies )
+          | _, _                    -> None
+
+      let download_new url (referer: string option) cookies dest_filename =
+        match ( get_raw_or_download url referer cookies (Some dest_filename) ) with
+          | _, cookies -> cookies
+
+
+
       (* ======================================================== *)
       (* raw get function, without any wrappers to solve problems *)
       (* ======================================================== *)
