@@ -19,7 +19,6 @@ BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
 
- - URL-analysis in network.ml: wouldn#t it be better in parsers.ml?
  - maybe remove print_string(), because print() does the same now.
  - dump is rather a deparse; dump_data is dump-like or deparse-like too;
    possibly better names should be used here
@@ -28,6 +27,21 @@ BETTER STRUCTURE, CLEANER CODE:
 
 FEATUREs:
 =========
+
+ coming soon / already partially implemented
+ ===========================================
+
+ - while-loop
+   [ -> for some certain things like parsing one webpage, which links to a
+        "next page", and this page also links to a "next page",
+        something like while-loop, or recursive calling of macros
+        would be very helpful.
+     -> For classical video-download this maybe would be unhnecessary.
+        It rather goes in the direction of more general web-scraping.
+        (But this tendency already is here...)
+   ]
+
+
 
  a bit of priority
  =================
@@ -39,9 +53,19 @@ FEATUREs:
    ******************************************************************************************************************************
      [ -> I have this option in mind since long, and it pops up again and again... ]
 
- - subst: with replacement-*pattern* (instead of just a string-template)
 
- - if/then/else?
+
+ - Special variable for the  tmpvar? maybe $TMPVAR ? || First exploration: there seems to be a problem with internally called Subst (?)
+                                                        Must Clean Code there!
+
+
+ - converting HTML to named variables (like it also was planned for XML)
+   This would make it easier to select certain data from a docoment / doclist.
+   (DOM-to-string as varnames)
+    [ -> not sure if this is necessary anymore, because of tagselect-command ]
+
+
+ - subst: with replacement-*pattern* (instead of just a string-template)
 
  - exceptions?
      * exceptions as part of the language?
@@ -49,15 +73,6 @@ FEATUREs:
      * raise/try/catch?
      * Or just a function to raise an exception, which than is not handled by the language but the invoking loop?
 
- - while-loop
-   [ -> for some certain things like parsing one webpage, which links to a
-        "next page", and this page also links to a "next page",
-        something like while-loop, or recursive calling of macros
-        would be very helpful.
-     -> For classical video-download this maybe would be unhnecessary.
-        It rather goes in the direction of more general web-scraping.
-        (But this tendency already is here...)
-   ]
 
  - Array2.colmap / Array2.rowmap  map-functions for Array-data.
    (Should behave non-destructive / functional of course.)
@@ -101,19 +116,11 @@ FEATUREs:
    for ending any-dl after the parser has finished is called.
    (exc. caught and normal exit)
 
- - converting HTML to named variables (like it also was planned for XML)
-   This would make it easier to select certain data from a docoment / doclist.
-   (DOM-to-string as varnames)
-    [ -> not sure if this is necessary anymore, because of tagselect-command ]
-
  - tagselect: allow Doclist argument as tmpvar to work on
      [ -> looks not to be really necessary at the moment ]
 
  - DropCol / DropRow also for other data-structures, like Doc_array, Url_list and so on.
       [ -> what do I mean by that? Adding other Parsetree-Types to DropCol/DropRow-command? ]
-
- - Special variable for the  tmpvar? maybe $TMPVAR ? || First exploration: there seems to be a problem with internally called Subst (?)
-                                                        Must Clean Code there!
 
  - JSON-parser implementing or using lib for it.
    Some videofile-meta-data is saved in json-format,
