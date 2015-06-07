@@ -11,21 +11,6 @@
 exception Invalid_Index                 (* indexing a col/row that does not exist *)
 
 
-(* ============================================== *)
-(* PIPE-Operator                                  *)
-(* ---------------------------------------------- *)
-(*    let example foo = fun1 foo |> fun2 |> fun3
-
-   is aequivalent to
-
-      let example foo = fun3 ( fun2 ( fun1 foo) )
-
-  This works, because of precedence properties of ( |> ).
-*)
-(* ============================================== *)
-let ( |> ) x f = f x
-
-
 
 (* "apply_on_pair" applies a function to both elements of a pair and gives back the transformed pair *)
 (* ------------------------------------------------------------------------------------------------- *)
