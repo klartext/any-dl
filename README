@@ -1007,13 +1007,32 @@ Control Structures:
   endif
 
     Here the "..." stands for statements that can be used there.
+    (statement-list / command-list; each command needs to be followed by a semicolon)
 
     Instead of "if" also "ifnotempty" and "ifne" can be used.
-    All three behavethe same way, but some people may prefer more
+    All three behave the same way, but some people may prefer more
     specific keywords.
     So, if the tmpvar that the statements-list inside the "if"-command (in the paranteheses)
     lefts behind, is not empty, the condition is true.
     (Thats like in otherlanguages like C or Perl).
+
+
+  while( ... )
+  do
+    ...
+  done
+
+    Here the "..." stands for statements that can be used there.
+    (statement-list / command-list; each command needs to be followed by a semicolon)
+
+    Instead of "while" also "whilenotempty" and "whilene" can be used.
+    All three behave the same way, but some people may prefer more
+    specific keywords.
+    So, if the tmpvar that the statements-list inside the "if"-command (in the paranteheses)
+    lefts behind, is not empty, the condition is true and the statementlist
+    between "do" and "done" will be evaluated.
+    This is repeated, as long as the statement-list between the while-parantheses
+    evaluates to the empty value.
 
 
 Prefedined Variables:

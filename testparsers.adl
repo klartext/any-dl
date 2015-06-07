@@ -258,6 +258,33 @@ end
 
 
 
+# TEST While-Loop
+# ===============
+parsername "while-empty": ( )
+start
+  print("while ( emptydummy ) - should not print dots");
+  while( emptydummy; )
+  do
+    print(".");
+  done
+  print("ready! Success, if no dots printed.");
+end
+
+
+# TEST While-Loop
+# ===============
+parsername "while-endless": ( )
+start
+  print("should print dots - use Ctrl-C to stop!" );
+  while( dummy; )
+  do
+    print_string(".");
+  done
+end
+
+
+
+
 
 parsername "macro-test": ( )
 start

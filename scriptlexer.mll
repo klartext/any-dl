@@ -89,13 +89,18 @@
 
                   ("readline",       READLINE  );
 
-                  ("if",          IFNE  );
-                  ("ifne",        IFNE  );
-                  ("ifnotempty",  IFNE  );
-                  ("fi",       ENDIF  );
-                  ("endif",    ENDIF  );
-                  ("then",     THEN  );
-                  ("else",     ELSE  );
+                  ("if",          IFNE  );  (* IF *)
+                  ("ifne",        IFNE  );  (* IF *)
+                  ("ifnotempty",  IFNE  );  (* IF *)
+                  ("fi",       ENDIF  );    (* IF *)
+                  ("endif",    ENDIF  );    (* IF *)
+                  ("then",     THEN  );     (* IF *)
+                  ("else",     ELSE  );     (* IF *)
+                  ("while",            WHILE  );    (* WHILE *)
+                  ("whilene",          WHILE  );    (* WHILE *)
+                  ("whilenotequal",    WHILE  );    (* WHILE *)
+                  ("do",               DO    );     (* WHILE *)
+                  ("done",             DONE  );     (* WHILE *)
 
 
                   ("dummy",       DUMMY  );

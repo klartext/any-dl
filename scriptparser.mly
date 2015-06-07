@@ -14,6 +14,9 @@
 %token THEN
 %token ELSE
 %token ENDIF
+%token WHILE
+%token DO
+%token DONE
 
 %token DOT
 
@@ -174,6 +177,8 @@ statement_list: command           { [ Command $1]     }
     | assignment statement_list   { $1 :: $2 }
     | conditional                  { [ $1 ]   }
     | conditional statement_list   { $1 :: $2 }
+    | while_loop                  { [ $1 ] }
+    | while_loop statement_list   { $1 :: $2 }
     ;
 
 /*
@@ -190,6 +195,9 @@ conditional: IFNE LPAREN statement_list RPAREN THEN statement_list              
 assignment: IDENTIFIER EQUALS command { Assignment ( $1 , $3 ) (* ($3, Store $1) *) }
     ;
 
+
+while_loop: WHILE LPAREN statement_list RPAREN   DO statement_list DONE { Loop ( $3, $6 ) }
+    ;
 
 
 command: command_base SEMI { $1 }
