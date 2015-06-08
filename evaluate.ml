@@ -147,7 +147,7 @@ let rec  urlify  result_value (varmap : varmap_t) =
       | Dummy_result               -> raise Wrong_argument_type
       (*
       *)
-      | _ -> print_warning "to_string-function found non-convertable type"; raise Wrong_argument_type (* just in case more cases will be added *)
+      | _ -> print_warning "urlify-function found non-convertable type"; raise Wrong_argument_type (* just in case more cases will be added *)
 
   in
     str
