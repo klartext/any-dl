@@ -170,6 +170,38 @@ module Pipelined =
                                         raise (Get_problem `Client_error)
 
 
+      (* ============================================================================= *)
+      (* set the response-body-storage to write to a file, if Some <filename> is given *)
+      (* ============================================================================= *)
+      let set_response_body_storage_of_call  call  opt_filename =
+          match opt_filename with
+            | None               -> call # set_response_body_storage `Memory
+            | Some dest_filename -> call # set_response_body_storage (`File ( fun f -> dest_filename ))
+
+
+      (* =================================== *)
+      (* set the USER-AGENT string of a call *)
+      (* =================================== *)
+      let set_useragent_of_call  call  useragent_string =
+        Nethttp.Header.set_user_agent (call # request_header `Base) useragent_string
+
+
+      (* ================================ *)
+      (* set the REFERER string of a call *)
+      (* ================================ *)
+      let set_referrer_of_call call opt_referer =
+          match opt_referer with
+            | None     -> ()
+            | Some ref -> Nethttp.Header.set_referer (call # request_header `Base) ref
+
+
+      (* ================================ *)
+      let set_cookies_of_call  call opt_cookies =
+          match opt_cookies with
+            | None      ->  ()
+            | Some cook ->  let cookies_ct = List.map cookie_to_cookie_ct cook in
+                            List.iter ( fun cookie -> Nethttp.Header.set_cookie (call # request_header `Base) cookie ) cookies_ct
+
       (* ==================================================================================== *)
       (* This function allows "raw get" (no error-wrappers, as were necessary with curl-libs) *)
       (* as well as "download" (get with directly writing the data to disk                    *)
@@ -191,32 +223,23 @@ module Pipelined =
         let pipeline = new Nethttp_client.pipeline in
         let get_call = new Nethttp_client.get url  in (* Referrer? Cookies? Will be set below. *)
 
-        (* If there is Some outfilename (for download), then set it as set_response_body_storage *)
-        (* ------------------------------------------------------------------------------------- *)
-        begin
-          match opt_outfilename with
-            | None               -> get_call # set_response_body_storage `Memory
-            | Some dest_filename -> get_call # set_response_body_storage (`File ( fun f -> dest_filename ))
-        end;
+        set_response_body_storage_of_call get_call opt_outfilename; (* If there is Some outfilename (for download), then set it as set_response_body_storage *)
 
-        (* set the USER-AGENT string *)
-        (* ------------------------- *)
-        Nethttp.Header.set_user_agent (get_call # request_header `Base) Cli.opt.Cli.user_agent;
+        set_useragent_of_call get_call Cli.opt.Cli.user_agent;      (* set the USER-AGENT string *)
 
-        (* set the REFERER string *)
-        (* ---------------------- *)
-        begin
-          match referer with None -> () | Some ref -> Nethttp.Header.set_referer (get_call # request_header `Base) ref
-        end;
+        set_referrer_of_call get_call referer;                      (* set the REFERER string *)
 
         (* set the Cookies *)
         (* --------------- *)
+        set_cookies_of_call get_call cookies;
+        (*
         begin
           match cookies with
             | None      ->  ()
             | Some cook ->  let cookies_ct = List.map cookie_to_cookie_ct cook in
                             List.iter ( fun cookie -> Nethttp.Header.set_cookie (get_call # request_header `Base) cookie ) cookies_ct
         end;
+        *)
 
 
         (* Get the data from webserver now *)
