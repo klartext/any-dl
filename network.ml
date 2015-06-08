@@ -50,16 +50,9 @@ Printf.printf "Status-Message GET:  %s\n" get_call#response_status_text;
 *)
 
 
-
-
-module Pipelined =
+module Cookies =
   struct
     open Nethttp
-
-    exception Get_error   of Nethttp_client.status (* error: can#t be solved   *)
-    exception Get_problem of Nethttp_client.status (* problem: might be solved *)
-    exception Download_error   of Nethttp_client.status (* error: can#t be solved   *)
-    exception Download_problem of Nethttp_client.status (* problem: might be solved *)
 
     (* ======================================== *)
     (* print the contents of a cookie to stdout *)
@@ -138,6 +131,20 @@ module Pipelined =
         ignore( match nscookie.cookie_path    with None -> [] | Some path -> (("path", path ) :: !lst) );
         ignore( ("secure", string_of_bool nscookie.cookie_secure) :: !lst );
         !lst
+
+  end
+
+
+
+
+module Pipelined =
+  struct
+    open Cookies
+
+    exception Get_error   of Nethttp_client.status (* error: can#t be solved   *)
+    exception Get_problem of Nethttp_client.status (* problem: might be solved *)
+    exception Download_error   of Nethttp_client.status (* error: can#t be solved   *)
+    exception Download_problem of Nethttp_client.status (* problem: might be solved *)
 
 
       (* ========================================================================================================== *)
