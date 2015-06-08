@@ -398,10 +398,12 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                                                   end
                                                           | Url_list ul        ->
                                                                                   (* Download on Url_list necessarily use auto-filenaming *)
-                                                                                  Unit ( List.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap ) ) ul ) , varmap
+                                                                                  Unit ( List.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap );
+                                                                                                                      if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep ) ul ) , varmap
                                                           | Url_array ua        ->
                                                                                   (* Download on Url_array necessarily use auto-filenaming *)
-                                                                                  Unit ( Array.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap ) ) ua ) , varmap
+                                                                                  Unit ( Array.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap );
+                                                                                                                       if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep ) ua ) , varmap
 
                                                           | _ -> raise Wrong_tmpvar_type
                                                         end
