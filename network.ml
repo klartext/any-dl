@@ -179,17 +179,17 @@ module Pipelined =
       (* ==================================================================================== *)
       let get_raw_or_download url (referer: string option) cookies opt_outfilename =
 
-        let verbose_message = match opt_outfilename with None -> "get_raw: GET URL" | Some _ -> "get_raw: GET (DOWNLOAD) URL" in
+        let cmd_string      = match opt_outfilename with None -> "GET" | Some _ -> "DOWNLOAD" in
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
           print_endline "------------------------------->";
-          Printf.printf "%s: %s\n" verbose_message url;
+          Printf.printf "%s URL: %s\n" cmd_string url;
         end;
 
-        let pipeline = new Nethttp_client.pipeline in
 
-        let get_call  = new Nethttp_client.get url in (* Referrer? Cookies? *)
+        let pipeline = new Nethttp_client.pipeline in
+        let get_call = new Nethttp_client.get url  in (* Referrer? Cookies? Will be set below. *)
 
         (* If there is Some outfilename (for download), then set it as set_response_body_storage *)
         (* ------------------------------------------------------------------------------------- *)
@@ -214,8 +214,8 @@ module Pipelined =
         begin
           match cookies with
             | None      ->  ()
-            | Some cook ->  let c = List.map cookie_to_cookie_ct cook in
-                            List.iter ( fun xx -> Nethttp.Header.set_cookie (get_call # request_header `Base) xx) c
+            | Some cook ->  let cookies_ct = List.map cookie_to_cookie_ct cook in
+                            List.iter ( fun cookie -> Nethttp.Header.set_cookie (get_call # request_header `Base) cookie ) cookies_ct
         end;
 
 
@@ -230,8 +230,8 @@ module Pipelined =
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
-          Printf.printf "Status-Code    GET:  %d\n" get_call # response_status_code;
-          Printf.printf "Status-Message GET:  %s\n" get_call # response_status_text
+          Printf.printf "Status-Code    %s:  %d\n" cmd_string (get_call # response_status_code);
+          Printf.printf "Status-Message %s:  %s\n" cmd_string (get_call # response_status_text)
         end;
 
         let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
