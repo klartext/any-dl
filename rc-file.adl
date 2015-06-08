@@ -260,6 +260,7 @@ print;
 end
 
 
+# ----------------------------------------------------
 # parser for testing cookies
 # ----------------------------------------------------
 # Some tests of cookies can be found here:
@@ -270,30 +271,28 @@ end
 # ----------------------------------------------------
 parsername "cookieecho": ( )
 start
-  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
-
-  print("Preparing cookies for get");
-  recall("COOKIES.RECEIVED");
-  store("COOKIES.SEND");
-
-  recall("STARTURL");
-  print;
-  get;
-
-  print("COOKIES.SEND: ", $COOKIES.SEND );
-  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
+  call("cookieecho");
+end
 
 
-  print("Preparing cookies for second get");
-  recall("COOKIES.RECEIVED");
-  store("COOKIES.SEND");
+# ---------------------------------------------
+# parser for testing cookies, using a testpage,
+# so enforcing cookies to be set.
+# the URL on the command line will be ignored!
+# ---------------------------------------------
+parsername "cookieecho-forced": ( )
+start
+  print("The URL provided via command line will be ignored.");
+  print("The test-url   http://winware.org/de/cookietest.php?cookie=set  will be used instead!\n");
 
-  recall("STARTURL");
-  print;
-  get;
+  paste("http://winware.org/de/cookietest.php?cookie=set"); # use this test-url to check the COOKIE-functionality!
+  makeurl;
+  store("STARTURL");
 
-  print("COOKIES.SEND: ", $COOKIES.SEND );
-  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
+  get; # use this test-url (INSTEAD of the one given by to check the COOKIE-functionality!
+
+  call("cookieecho");
+
 end
 
 
@@ -1824,4 +1823,42 @@ start
   htmldecode;
   subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
   store("title");
+end
+
+
+# ----------------------------------------------------
+# Macro for testing cookies
+# ----------------------------------------------------
+# Some tests of cookies can be found here:
+#   http://winware.org/de/cookietest.php
+#
+# Used testpage for setting/reflecting a cookie:
+#   http://winware.org/de/cookietest.php?cookie=set
+# ----------------------------------------------------
+defmacro "cookieecho":
+start
+  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
+
+  print("Preparing cookies for get");
+  recall("COOKIES.RECEIVED");
+  store("COOKIES.SEND");
+
+  recall("STARTURL");
+  print;
+  get;
+
+  print("COOKIES.SEND: ", $COOKIES.SEND );
+  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
+
+
+  print("Preparing cookies for second get");
+  recall("COOKIES.RECEIVED");
+  store("COOKIES.SEND");
+
+  recall("STARTURL");
+  print;
+  get;
+
+  print("COOKIES.SEND: ", $COOKIES.SEND );
+  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
 end
