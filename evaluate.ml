@@ -36,6 +36,9 @@ exception Extractor_list_failure
 exception Variable_not_found of string  (* a variable-name lookup in the Varname-map failed *)
 
 
+exception Parse_exit                    (* user exit of a parse *)
+
+
 
 
 
@@ -79,6 +82,18 @@ type varmap_t = results_t Varmap.Variablemap.t
 type command_fun_res_t = results_t * varmap_t
 
 
+(* special converter for the cookies: create string for to-string-function *)
+(* ======================================================================= *)
+let cookie_to_string  (cookie : Nethttp.netscape_cookie ) =
+  let open Nethttp in
+  Printf.sprintf "    cookie-name:    %s\n" cookie.cookie_name ^
+  Printf.sprintf "    cookie-value:   %s\n" cookie.cookie_value ^
+  (match cookie.cookie_expires with None -> "" | Some ex   -> Printf.sprintf "    cookie-expires: %f\n" ex) ^
+  (match cookie.cookie_domain  with None -> "" | Some dom  -> Printf.sprintf "    cookie-domain:  %s\n" dom) ^
+  (match cookie.cookie_path    with None -> "" | Some path -> Printf.sprintf "    cookie-path:    %s\n" path) ^
+  Printf.sprintf "    cookie-secure:  %s\n" (if cookie.cookie_secure then "TRUE" else "FALSE") ^
+  "  ------"
+
 
 (* ---------------------------------------------- *)
 (* functional, not thorough nifty-details printer *)
@@ -89,6 +104,7 @@ type command_fun_res_t = results_t * varmap_t
 let rec  to_string  result_value (varmap : varmap_t) =
 
   let array_string_append str_arr = Array.fold_left ( ^ ) "" str_arr in
+  let list_string_append str_lst  = List.fold_left  ( ^ ) "" str_lst in
 
   let str =
     match result_value with
@@ -110,6 +126,7 @@ let rec  to_string  result_value (varmap : varmap_t) =
       (*
       | Doclist       dl           -> Parsers.convert_doclist_to_htmlstring dl
       *)
+      | Cookies        clist       -> list_string_append ( List.map cookie_to_string clist )
       | Dummy_result               -> ""
       (*
       *)
@@ -147,7 +164,7 @@ let rec  urlify  result_value (varmap : varmap_t) =
       | Dummy_result               -> raise Wrong_argument_type
       (*
       *)
-      | _ -> print_warning "to_string-function found non-convertable type"; raise Wrong_argument_type (* just in case more cases will be added *)
+      | _ -> print_warning "urlify-function found non-convertable type"; raise Wrong_argument_type (* just in case more cases will be added *)
 
   in
     str
@@ -1406,7 +1423,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        command tl macrodefs_lst tmpvar varmap
 
-                       | Exit_parse                 -> flush stdout; prerr_endline "Parse was exited."; command [] macrodefs_lst tmpvar varmap (* call again with nothing-left-to-do *)
+                       | Exit_parse                 -> flush stdout; raise Parse_exit
 
 
                        | Html_decode                ->
