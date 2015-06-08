@@ -154,6 +154,7 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
     | E.Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name
     | E.No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url
     | E.Tagselect_empty_list    -> Printf.eprintf "Tagselect_empty_list for URL %s\n" url
+    | E.Parse_exit              -> Printf.eprintf "Parser exited via exitparse-command\n"
 
 
 
