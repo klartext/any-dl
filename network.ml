@@ -19,35 +19,6 @@ module Simple =
 
 
 
-(* type http_options = { ....
-
-      number_of_parallel_connections : int;   (*  The client keeps up to this
-      number of parallel connections to a single content server or proxy. Default: 2
-      You may increase this value if you are mainly connected with an HTTP/1.0 proxy. *)
-
-      }
-
-====================== OPTIONS ======================
-Options for the whole pipeline. It is recommended to change options the following way:
-
-    let opts = pipeline # get_options in
-    let new_opts = { opts with <field> = <value>; ... } in
-    pipeline # set_options new_opts
- 
-============================================
-
-
-Printf.printf "Status-Message GET:  %s\n" get_call#response_status_text;
-  
-  (* GET-call *)
-  (* ======== *)
-  (*
-  let body = get_call # response_body # value  in
-  let response_header = get_call # response_header # fields in
-  *)
-
-
-*)
 
 
 module Cookies =
@@ -133,6 +104,7 @@ module Cookies =
         !lst
 
   end
+
 
 
 
@@ -229,17 +201,7 @@ module Pipelined =
 
         set_referrer_of_call get_call referer;                      (* set the REFERER string *)
 
-        (* set the Cookies *)
-        (* --------------- *)
-        set_cookies_of_call get_call cookies;
-        (*
-        begin
-          match cookies with
-            | None      ->  ()
-            | Some cook ->  let cookies_ct = List.map cookie_to_cookie_ct cook in
-                            List.iter ( fun cookie -> Nethttp.Header.set_cookie (get_call # request_header `Base) cookie ) cookies_ct
-        end;
-        *)
+        set_cookies_of_call get_call cookies;                       (* set the Cookies *)
 
 
         (* Get the data from webserver now *)
