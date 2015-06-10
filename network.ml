@@ -175,11 +175,14 @@ module Pipelined =
                             List.iter ( fun cookie -> Nethttp.Header.set_cookie (call # request_header `Base) cookie ) cookies_ct
 
       (* ==================================================================================== *)
-      (* This function allows "raw get" (no error-wrappers, as were necessary with curl-libs) *)
-      (* as well as "download" (get with directly writing the data to disk                    *)
+      (* This function allows GET as well as POST,                                            *)
+      (* and the data can be loaded to MEM as well as saved do file (DOWNLOAD)                *)
       (* ------------------------------------------------------------------------------------ *)
-      (* the real get_raw- and download-functions can call this function and pick out the     *)
-      (* data that is expected.                                                               *)
+      (* To select GET,  opt_postdata is set to None.                                         *)
+      (* To select POST, opt_postdata is set to Some (post_data).                             *)
+      (*                                                                                      *)
+      (* To load the data to memory, set opt_outfilename to None.                             *)
+      (* To save the data to a file, set opt_outfilename to Some (filename).                  *)
       (* ==================================================================================== *)
       let get_or_post_to_mem_or_file url (referer: string option) opt_postdata cookies opt_outfilename =
 
