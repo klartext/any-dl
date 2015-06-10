@@ -246,14 +246,9 @@ module Pipelined =
 
 
       (* ============================================================================ *)
-      (* get_raw: get a document from a webserver, into memory                        *)
-      (* ---------------------------------------------------------------------------- *)
-      (* The "raw" means: purely the http-stuff, without wrapper for error reecovery. *)
-      (* OCamlNet does auto-retry by default, and the results are nice. ocaml-curl    *)
-      (* yielded in many connection-errors and error-handling-wrappers were needed    *)
-      (* (unraw). Possibly changing name of this function makes sense later.          *)
+      (* get: get a document from a webserver, into memory                            *)
       (* ============================================================================ *)
-      let get_raw url (referer: string option) cookies =
+      let get url (referer: string option) cookies =
         match ( get_or_post_to_mem_or_file url referer None cookies None ) with
           | Some body, Some cookies -> Some ( body, cookies )
           | _, _                    -> None

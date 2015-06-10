@@ -270,7 +270,7 @@ let rec get_document  url referrer (varmap : varmap_t) =
 
   (* retrvieve the document *)
   (* ---------------------- *)
-  let document_and_cookies =  Network.Pipelined.get_raw url (Some referrer) send_cookie in
+  let document_and_cookies =  Network.Pipelined.get url (Some referrer) send_cookie in
 
   begin
    match document_and_cookies with
