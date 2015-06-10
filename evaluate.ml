@@ -297,7 +297,7 @@ and download  url referrer  dst_file  (varmap : varmap_t) =
 
   (* retrvieve the document *)
   (* ---------------------- *)
-  let response_cookies = Network.Pipelined.download url (Some referrer) send_cookie dst_file in
+  let response_cookies = Network.Pipelined.get_download url (Some referrer) send_cookie dst_file in
 
   begin
    match response_cookies with

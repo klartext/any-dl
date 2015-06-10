@@ -246,7 +246,7 @@ module Pipelined =
 
 
       (* ============================================================================ *)
-      (* get: get a document from a webserver, into memory                            *)
+      (* get: get a document from a webserver with http-get, into memory              *)
       (* ============================================================================ *)
       let get url (referer: string option) cookies =
         match ( get_or_post_to_mem_or_file url referer None cookies None ) with
@@ -254,12 +254,30 @@ module Pipelined =
           | _, _                    -> None
 
 
+      (* ============================================================================ *)
+      (* download: get a document from a webserver with http-get,                     *)
+      (* save it directly to disk.                                                    *)
+      (* ============================================================================ *)
+      let get_download url (referer: string option) cookies dest_filename =
+        match ( get_or_post_to_mem_or_file url referer None cookies (Some dest_filename) ) with
+          | _, cookies_opt -> cookies_opt
+
 
       (* ============================================================================ *)
-      (* download: get a document from a webserver, save it directly to disk.         *)
+      (* post: get a document from a webserver with http-post, into memory            *)
       (* ============================================================================ *)
-      let download url (referer: string option) cookies dest_filename =
-        match ( get_or_post_to_mem_or_file url referer None cookies (Some dest_filename) ) with
+      let post url (referer: string option) post_data cookies =
+        match ( get_or_post_to_mem_or_file url referer (Some post_data) cookies None ) with
+          | Some body, Some cookies -> Some ( body, cookies )
+          | _, _                    -> None
+
+
+      (* ============================================================================ *)
+      (* download: get a document from a webserver with http-post,                    *)
+      (* save it directly to disk.                                                    *)
+      (* ============================================================================ *)
+      let post_download url (referer: string option) post_data cookies dest_filename =
+        match ( get_or_post_to_mem_or_file url referer (Some post_data) cookies (Some dest_filename) ) with
           | _, cookies_opt -> cookies_opt
 
 
