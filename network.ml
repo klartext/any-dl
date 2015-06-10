@@ -181,9 +181,14 @@ module Pipelined =
       (* the real get_raw- and download-functions can call this function and pick out the     *)
       (* data that is expected.                                                               *)
       (* ==================================================================================== *)
-      let get_raw_or_download url (referer: string option) cookies opt_outfilename =
+      let get_or_post_to_mem_or_file url (referer: string option) opt_postdata cookies opt_outfilename =
 
-        let cmd_string      = match opt_outfilename with None -> "GET" | Some _ -> "DOWNLOAD" in
+        let cmd_string      = match opt_postdata, opt_outfilename with
+          | None,   None   -> "GET  (MEM)"
+          | None,   Some _ -> "GET  (DOWNLOAD)"
+          | Some _, None   -> "POST (MEM)"
+          | Some _, Some _ -> "POST (DOWNLOAD)"
+        in
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
@@ -192,38 +197,48 @@ module Pipelined =
         end;
 
 
+        (* the Pipeline to run the call *)
+        (* ---------------------------- *)
         let pipeline = new Nethttp_client.pipeline in
-        let get_call = new Nethttp_client.get url  in (* Referrer? Cookies? Will be set below. *)
 
-        set_response_body_storage_of_call get_call opt_outfilename; (* If there is Some outfilename (for download), then set it as set_response_body_storage *)
 
-        set_useragent_of_call get_call Cli.opt.Cli.user_agent;      (* set the USER-AGENT string *)
+        (* the call-object - it can either be an object for GET or for POST *)
+        (* ---------------------------------------------------------------- *)
+        let call_obj = match opt_postdata with
+          | None           -> new Nethttp_client.get  url            (* Referrer? Cookies? Will be set below. *)
+          | Some post_data -> new Nethttp_client.post url post_data  (* Referrer? Cookies? Will be set below. *)
+        in
 
-        set_referrer_of_call get_call referer;                      (* set the REFERER string *)
 
-        set_cookies_of_call get_call cookies;                       (* set the Cookies *)
+        set_response_body_storage_of_call call_obj opt_outfilename; (* If there is Some outfilename (for download), then set it as set_response_body_storage *)
+
+        set_useragent_of_call call_obj Cli.opt.Cli.user_agent;      (* set the USER-AGENT string *)
+
+        set_referrer_of_call call_obj referer;                      (* set the REFERER string *)
+
+        set_cookies_of_call call_obj cookies;                       (* set the Cookies *)
 
 
         (* Get the data from webserver now *)
         (* =============================== *)
-        pipeline # add get_call;  (* add the get-call to the pipeline *)
+        pipeline # add call_obj;  (* add the get-call to the pipeline *)
         pipeline # run();         (* process the pipeline (retrieve data) *)
 
         (* check status *)
         (* ------------ *)
-        judge_getcall_status ( get_call # status );
+        judge_getcall_status ( call_obj # status );
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
-          Printf.printf "Status-Code    %s:  %d\n" cmd_string (get_call # response_status_code);
-          Printf.printf "Status-Message %s:  %s\n" cmd_string (get_call # response_status_text)
+          Printf.printf "Status-Code    %s:  %d\n" cmd_string (call_obj # response_status_code);
+          Printf.printf "Status-Message %s:  %s\n" cmd_string (call_obj # response_status_text)
         end;
 
-        let cookies = Nethttp.Header.get_set_cookie  (get_call # response_header) in
+        let cookies = Nethttp.Header.get_set_cookie  (call_obj # response_header) in
 
         if_veryverbose_print_cookies cookies;
 
-        ( Some (get_call # response_body # value) , Some cookies )
+        ( Some (call_obj # response_body # value) , Some cookies )
 
 
 
@@ -236,7 +251,7 @@ module Pipelined =
       (* (unraw). Possibly changing name of this function makes sense later.          *)
       (* ============================================================================ *)
       let get_raw url (referer: string option) cookies =
-        match ( get_raw_or_download url referer cookies None ) with
+        match ( get_or_post_to_mem_or_file url referer None cookies None ) with
           | Some body, Some cookies -> Some ( body, cookies )
           | _, _                    -> None
 
@@ -246,7 +261,7 @@ module Pipelined =
       (* download: get a document from a webserver, save it directly to disk.         *)
       (* ============================================================================ *)
       let download url (referer: string option) cookies dest_filename =
-        match ( get_raw_or_download url referer cookies (Some dest_filename) ) with
+        match ( get_or_post_to_mem_or_file url referer None cookies (Some dest_filename) ) with
           | _, cookies_opt -> cookies_opt
 
 
