@@ -122,7 +122,7 @@ module Pipelined =
       (* ========================================================================================================== *)
       (* this function judges/checks the status of a get-call and prints messages / raises exceptions, if necessary *)
       (* ========================================================================================================== *)
-      let judge_getcall_status status =
+      let judge_getcall_status command_name status =
         match status with
            | `Client_error           -> prerr_endline "Client_error";
                                         raise (Get_error `Client_error)
@@ -136,7 +136,7 @@ module Pipelined =
            | `Server_error           -> prerr_endline "Server_error";
                                         raise (Get_error `Client_error)
 
-           | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then print_endline "GET-Successful"
+           | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then ( print_string command_name; print_endline "-Successful" )
 
            | `Unserved               -> prerr_endline "Unserved";
                                         raise (Get_problem `Client_error)
@@ -229,7 +229,7 @@ module Pipelined =
 
         (* check status *)
         (* ------------ *)
-        judge_getcall_status ( call_obj # status );
+        judge_getcall_status cmd_string ( call_obj # status );
 
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
