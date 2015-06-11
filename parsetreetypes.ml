@@ -134,6 +134,29 @@ let result_to_string res = match res with
 
 
 
+let arr_len_info arr = Printf.sprintf "(len = %d)" (Array.length arr)
+let lst_len_info lst = Printf.sprintf "(len = %d)" (List.length lst)
+
+let result_to_string_with_info  res = match res with
+    | Varname        _   -> "Varname"
+    | String         _   -> "String"
+    | String_array   arr -> "String_array" ^ ( arr_len_info arr )
+    | Document       _   -> "Document"
+    | Document_array arr -> "Document_array"
+    | Url            _   -> "Url"
+    | Url_list       lst -> "Url_list" ^ ( lst_len_info lst )
+    | Url_array      arr -> "Url_array" ^  ( arr_len_info arr )
+    | Dummy_result       -> "Dummy_result"
+    | Match_result   mat -> "Match_result" ^ ( Printf.sprintf "(len: %d)" (Array.length mat) )
+    | Cookies        _   -> "Cookies"
+    (*
+    | Doclist        _   -> "Doclist"
+    *)
+    | Empty              -> "Empty"
+    | Unit           _   -> "Unit"
+
+
+
 let command_to_string cmd = match cmd with
   | Get_url         _ -> "Get_url"
   | Get_urls          -> "Get_urls" (* can be removed maybe *)
