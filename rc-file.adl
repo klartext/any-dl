@@ -1862,3 +1862,23 @@ start
   print("COOKIES.SEND: ", $COOKIES.SEND );
   print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
 end
+
+
+
+# show form's arg-pairs
+# =====================
+defmacro "showforms":
+start
+  tagselect("form" | argpairs);
+  print;
+end
+
+
+# show input's arg-pairs
+# ======================
+defmacro "showinputs":
+start
+  tagselect("input" | argpairs);
+  print;
+end
+
