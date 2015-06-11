@@ -59,6 +59,7 @@
 %token DOCLIST
 
 %token GET
+%token POST
 %token DOWNLOAD
 %token MAKE_URL
 %token STORE
@@ -270,6 +271,9 @@ print_cmd: PRINT_STRING  LPAREN STRING        RPAREN { Print_string $3 }
 
 get_cmd: GET                           { Get }
     |    GET LPAREN get_args   RPAREN  { $3 }
+    ;
+
+post_cmd: POST LPAREN argument_list RPAREN  { Post $3 }
     ;
 
 download_cmd: DOWNLOAD                                { Download None }

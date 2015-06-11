@@ -46,6 +46,7 @@ type command_t =
   | Get_url       of string * string          (* url, referrer *)
   | Get_urls  (* can be removed maybe *)      (* get via tmpvar *)
   | Get                                       (* get ONE document via tmpvar (Url-type) *)
+  | Post          of results_t list           (* get ONE document via http-post; tmpvar: url; arguments: post-variables *)
   | Download      of results_t list option    (* Download: get-and-save - data will be written to file directly *)
   | Make_url      of (results_t * results_t)  (* create URL-Type-Var from argument-strings *)
   | Make_url_tmpvar                           (* create URL-Type-Var from tmpvar (1-val-stack) *)

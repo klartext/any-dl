@@ -398,6 +398,9 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
     | []        -> tmpvar, varmap (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
     | cmd::tl   -> begin
                      match cmd with
+                       | Post  fname_arglist       -> Unit (), varmap; raise NOT_IMPLEMENTED_SO_FAR;
+
+
                        | Download  fname_arglist_opt      ->
                                                       begin
                                                         match tmpvar with

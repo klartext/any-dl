@@ -42,6 +42,7 @@
                   ("rebase",           REBASE  );
 
                   ("get",            GET  );
+                  ("post",           POST  );
                   ("download",       DOWNLOAD  );
                   ("makeurl",        MAKE_URL  );
 
