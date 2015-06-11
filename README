@@ -612,6 +612,7 @@ List of commands/keywords (not carved in stone so far) by example:
   get;
   download;
   download( $filename );
+  post("valname_1", "valname_2", "valname_3"); # the values must be set as named variables before.
   system;
 
 
@@ -784,6 +785,20 @@ List of commands/keywords and a short-description of them:
   paste
     the paste()-command creates a string from strings and variable-names (-notation).
     paste() accepts a list of items, seperated by commas (",").
+
+
+  post
+    post does make a post-request (instead of get-request) to a webserver.
+
+    The post-data is stored in named variables; the names of the variables
+    will be given to post as arguments, e.g.:
+      post( "name_1", "name_2" );
+    and the values will be looked up internally.
+    For that purpose, the post-data has to be stored in named variables,
+    before the post-command is called, so that the value for a variable
+    can be looked up by the post-command.
+
+    The URL for the post-command is taken from tmpvar.
 
 
   print
