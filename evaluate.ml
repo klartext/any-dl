@@ -254,8 +254,34 @@ let rec var_is_empty value (varmap : varmap_t) =
 
 
 
-(* "get_document"-function, is used by some of the Get_... commands from "command"-function *)
-(* ======================================================================================== *)
+(* "post_document"-function, is used by Post-command *)
+(* ================================================= *)
+let rec post_document  url referrer post_params (varmap : varmap_t) =
+
+  (* if a cookie already has been received/stored                *)
+  (* pick it from the variable-map for sending it back to server *)
+  (* ----------------------------------------------------------- *)
+  let send_cookie = if Varmap.exists "COOKIES.SEND" varmap
+                   then
+                     begin match  Varmap.find "COOKIES.SEND" varmap  with Cookies cook -> Some cook | _ -> None end
+                   else
+                     None
+  in
+
+  (* retrvieve the document *)
+  (* ---------------------- *)
+  let document_and_cookies =  Network.Pipelined.post url (Some referrer) post_params send_cookie in
+
+  begin
+   match document_and_cookies with
+     | None                -> None
+     | Some (doc, cookies) ->
+                              let new_varmap = (Varmap.add "COOKIES.RECEIVED" (Cookies cookies) varmap) in
+                              Some (doc, url, new_varmap)
+  end
+
+
+
 let rec get_document  url referrer (varmap : varmap_t) =
 
   (* if a cookie already has been received/stored                *)
@@ -275,7 +301,7 @@ let rec get_document  url referrer (varmap : varmap_t) =
   begin
    match document_and_cookies with
      | None                -> None
-     | Some (doc, cookies) -> 
+     | Some (doc, cookies) ->
                               let new_varmap = (Varmap.add "COOKIES.RECEIVED" (Cookies cookies) varmap) in
                               Some (doc, url, new_varmap)
   end
@@ -400,6 +426,21 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                      match cmd with
                        | Post  fname_arglist       -> Unit (), varmap; raise NOT_IMPLEMENTED_SO_FAR;
 
+                                            begin
+                                              match tmpvar with
+                                                | Url (url,referrer) ->
+                                                               begin
+                                                               match post_document  url referrer [("staat","deutschland")]  varmap with
+                                                               (*
+                                                               match post_document  url referrer (urlify fname_arglist) varmap with
+                                                               *)
+                                                                 | Some ( doc, url, new_varmap ) -> command tl macrodefs_lst (Document (doc, url)) new_varmap (* $URL *)
+                                                                 | None                          -> raise No_document_found
+                                                               end
+
+                                                | _ -> raise Wrong_tmpvar_type
+                                            end
+
 
                        | Download  fname_arglist_opt      ->
                                                       begin
@@ -432,7 +473,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
 
                        | Get_url (url, referrer)  -> if Neturl.extract_url_scheme url = "file"
-                                                     then
+
+                                                     then     (* FILE://... *)
                                                        begin
 
                                                          (* extract the filename from the url *)
@@ -452,7 +494,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                          command tl macrodefs_lst (Document (contents, "-")) varmap
 
                                                        end
-                                                     else
+
+                                                     else     (* HTTP://... *)
                                                        begin
                                                        match get_document  url referrer varmap with
                                                          | Some ( doc, url, new_varmap ) -> command tl macrodefs_lst (Document (doc, url)) new_varmap (* $URL *)
