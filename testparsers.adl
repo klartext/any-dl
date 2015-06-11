@@ -310,7 +310,8 @@ end
 # would yield in an error.
 #
 # So, for testing, you should give any other
-# valid URL to the command line.
+# valid URL to the command line, for example:
+#  $ any-dl -f testparsers.adl -p post http://www.w3.org
 # ------------------------------------------------------
 parsername "post" : ( )
 start
