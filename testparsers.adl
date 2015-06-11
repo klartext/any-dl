@@ -295,3 +295,36 @@ defmacro "mymacro":
 start
   print("Macro was called successfully!");
 end
+
+
+
+# ===============================
+# Testparser for the post-command
+# ===============================
+# The test-url does not accept get-requests,
+# it's only accepting POST-requests.
+# So it can / have to be called directly,
+# without any other pages to be parsed.
+# This means, that this URl should not be used as command-line
+# argument to any-dl, because the initial, impicit get-command
+# would yield in an error.
+#
+# So, for testing, you should give any other
+# valid URL to the command line.
+# ------------------------------------------------------
+parsername "post" : ( )
+start
+  # Set the POST-Data
+  # =================
+  paste("Germany"); store("country");
+  paste("Berlin"); store("city");
+
+  paste("http://httpbin.org/post"); # This URL will be accessed with POST-request
+  makeurl;
+
+  post("country", "city"); # Post uses "country" and "city" variables
+  print;
+
+end
+
+
