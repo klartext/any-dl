@@ -511,8 +511,21 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                             begin
                                               match tmpvar with
                                                 | Url (u,r)          -> command (Get_url (u,r) :: tl) macrodefs_lst tmpvar varmap
-                                                | Url_list  urllist  -> command (Get_urls :: tl) macrodefs_lst tmpvar varmap
-                                                | Url_array urlarray -> command (Get_urls :: tl) macrodefs_lst tmpvar varmap
+                                                | Url_list  urllist  -> if List.length urllist > 1
+                                                                        then command (Get_urls :: tl) macrodefs_lst tmpvar varmap
+                                                                        else
+                                                                          begin
+                                                                            let (u,r) = List.hd urllist in
+                                                                            command (Get_url (u,r) :: tl) macrodefs_lst tmpvar varmap
+                                                                          end
+
+                                                | Url_array urlarray -> if Array.length urlarray > 1
+                                                                        then command (Get_urls :: tl) macrodefs_lst tmpvar varmap
+                                                                        else
+                                                                          begin
+                                                                            let (u,r) = urlarray.(0) in
+                                                                            command (Get_url (u,r) :: tl) macrodefs_lst tmpvar varmap
+                                                                          end
                                                 (* MATCHRES ???
                                                 *)
                                                 | _ -> raise Wrong_tmpvar_type
