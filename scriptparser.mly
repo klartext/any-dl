@@ -236,6 +236,7 @@ command_base: match_cmd         { $1 }
     |      download_cmd         { $1 }
     |      drop_cmd             { $1 }
     |      get_cmd              { $1 }
+    |      post_cmd             { $1 }
     |      list_variables_cmd   { $1 }
     |      make_url_cmd         { $1 }
     |      paste_cmd            { $1 }

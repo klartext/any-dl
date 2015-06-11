@@ -424,16 +424,18 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
     | []        -> tmpvar, varmap (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
     | cmd::tl   -> begin
                      match cmd with
-                       | Post  fname_arglist       -> Unit (), varmap; raise NOT_IMPLEMENTED_SO_FAR;
+                       | Post  fname_arglist       -> (* Unit (), varmap; raise NOT_IMPLEMENTED_SO_FAR;*)
+
+                                            let create_keyval_pair        key         = (key, to_string (Varmap.find key varmap) varmap ) in
+                                            let create_post_argumentlist  varnamelist = List.map create_keyval_pair varnamelist in
+
+                                            let post_arglist = create_post_argumentlist (List.map (fun x -> to_string x varmap) fname_arglist)  in (* the argument-list for POST-call *)
 
                                             begin
                                               match tmpvar with
                                                 | Url (url,referrer) ->
                                                                begin
-                                                               match post_document  url referrer [("staat","deutschland")]  varmap with
-                                                               (*
-                                                               match post_document  url referrer (urlify fname_arglist) varmap with
-                                                               *)
+                                                               match post_document  url referrer post_arglist  varmap with
                                                                  | Some ( doc, url, new_varmap ) -> command tl macrodefs_lst (Document (doc, url)) new_varmap (* $URL *)
                                                                  | None                          -> raise No_document_found
                                                                end
