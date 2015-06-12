@@ -28,23 +28,11 @@ BETTER STRUCTURE, CLEANER CODE:
 FEATUREs:
 =========
 
- coming soon / already partially implemented
- ===========================================
-
- - while-loop
-   [ -> for some certain things like parsing one webpage, which links to a
-        "next page", and this page also links to a "next page",
-        something like while-loop, or recursive calling of macros
-        would be very helpful.
-     -> For classical video-download this maybe would be unhnecessary.
-        It rather goes in the direction of more general web-scraping.
-        (But this tendency already is here...)
-   ]
-
-
 
  a bit of priority
  =================
+
+ - tagselect: unparse a table should be possible...
 
    ******************************************************************************************************************************
  - * new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
@@ -52,6 +40,20 @@ FEATUREs:
    * syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
    ******************************************************************************************************************************
      [ -> I have this option in mind since long, and it pops up again and again... ]
+
+ - append_to_matchresult - command that allows collecting of data.
+   (e.g. extracting data from pages, where the data is spread over many webpages;
+   the data extracted from each page could then be collected into ONE matchresult
+   and the whole thing saved then).
+
+ - Internal Data structure, which represents the data better, and to which
+   will be converted from the parsetreetypes.
+   From Parsetreetypes to an internal Type.
+   This was in mind for along time, and it was the reason why the
+   parsetreetypes were named PARSEtreetype.
+   Would need preprocessing of the AST, and give a lot of possibilities
+   for optimisation of the data processing flow.
+
 
 
 
@@ -78,8 +80,6 @@ FEATUREs:
    (Should behave non-destructive / functional of course.)
 
  - Refactoring code, using colmap/rowmap functions
-
- - tagselect: unparse a table should be possible...
 
  - tagselect: argpairs: different deparsing scheme also would make sense.
               maybe giving back matrix instead of array/list?
@@ -143,8 +143,6 @@ FEATUREs:
           "all" and "all but those which don't want to be used"?
        -> Maybe "-a" and "-aa" (like "-v" and "-vv") ? Or something like that?
      ]
-
-
 
 
 
