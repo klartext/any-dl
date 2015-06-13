@@ -64,6 +64,7 @@ type command_t =
   | Store             of string               (* Store the tmpvar (1-val-stack) to a named variable *)
   | Recall            of string               (* Recall a named variable and store it back to the tmpvar (1-val-stack) *)
   | Delete            of string               (* Delete a named variable (remove it from the varmap *)
+  | Storematch        of string               (* Store the tmpvar (1-val-stack) as Storematch to a named variable, as MyName.(col).(row) *)
   | Sort                                      (* sort data *)
   | Uniq                                      (* throw out multiple data *)
   | Show_variables                            (* print all named variables (their names and their contents) *)
@@ -162,6 +163,7 @@ let command_to_string cmd = match cmd with
   | Get_url         _ -> "Get_url"
   | Get_urls          -> "Get_urls" (* can be removed maybe *)
   | Get               -> "Get"
+  | Post            _ -> "Post"
   | Download        _ -> "Download"
   | Make_url        _ -> "Make_url"
   | Make_url_tmpvar   -> "Make_url"
@@ -179,6 +181,7 @@ let command_to_string cmd = match cmd with
   | Store           _ -> "Store"
   | Recall          _ -> "Recall"
   | Delete          _ -> "Delete"
+  | Storematch      _ -> "Storematch"
   | Sort              -> "Sort"
   | Uniq              -> "Uniq"
   | Show_variables    -> "Show_variables"

@@ -1357,6 +1357,16 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        command tl macrodefs_lst tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
 
 
+                       | Storematch  varname        ->  raise NOT_IMPLEMENTED_SO_FAR;
+                                                        verbose_printf "Storematch tmpvar to varname \"%s\"\n" varname;
+                                                        let new_varmap = Varmap.empty in
+                                                        (*
+                                                        let new_varmap =
+                                                           for all rows and all cols: add Item to Varmap.
+                                                        *)
+                                                        command tl macrodefs_lst tmpvar new_varmap (* stores tmpvar as named variable *)
+
+
                        | Sort                       -> (* sort entries *)
                                                        let res =
                                                          begin

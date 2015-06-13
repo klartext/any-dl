@@ -907,6 +907,14 @@ List of commands/keywords and a short-description of them:
     (use recall() for getting it back to the one-val-stack, or
      $-notation in some of the commnds that accept this notatiom).
 
+
+  storematch
+    Stores the tmpvar (must be match-result) to a named variable,
+    with Row- and Column-Indexes as part of the name:
+      storematch("MyName"); # stores matchresult as  MyName.(col).(row)
+      (for all col's and row's as indexes of the match-result)
+
+
   subst
     string-substiturion.
     Uses Pcre.replace internally.

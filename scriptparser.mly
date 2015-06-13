@@ -65,6 +65,7 @@
 %token STORE
 %token RECALL
 %token DELETE
+%token STORE_MATCH
 %token SORT
 %token UNIQ
 %token SHOW_VARIABLES
@@ -235,6 +236,7 @@ command_base: match_cmd         { $1 }
     |      csv_save             { $1 }
     |      csv_save_as          { $1 }
     |      delete_cmd           { $1 }
+    |      storematch_cmd       { $1 }
     |      download_cmd         { $1 }
     |      drop_cmd             { $1 }
     |      get_cmd              { $1 }
@@ -293,6 +295,9 @@ recall_cmd: RECALL LPAREN STRING   RPAREN    { Recall $3 }
     ;
 
 delete_cmd: DELETE LPAREN STRING   RPAREN    { Delete $3 }
+    ;
+
+storematch_cmd: STORE_MATCH LPAREN STRING  RPAREN { Storematch $3 }
     ;
 
 csv_save_as:    CSV_SAVE_AS  LPAREN  argument_list  RPAREN     { CSV_save_as ( $3 ) }
