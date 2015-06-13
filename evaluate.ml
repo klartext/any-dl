@@ -941,6 +941,22 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                        command tl macrodefs_lst new_var varmap
 
+                       | Append_to  varname         -> (* append tmpvar to a Matchres, adressed by varname *)
+
+                                                       let extract_matchres value = match value with Match_result mr -> mr | _ -> raise Wrong_argument_type in
+
+                                                       let tmp_arr = extract_matchres tmpvar in
+                                                       let known_arr = extract_matchres (Varmap.find varname varmap) in
+
+                                                       let res = Match_result ( Array.append known_arr tmp_arr ) in
+
+                                                       let new_varmap = Varmap.add varname res varmap in
+
+                                                       command tl macrodefs_lst tmpvar new_varmap (* tmpvar is not touched *)
+
+
+
+
                        | Transpose                  ->
                                                        let result =
                                                        begin

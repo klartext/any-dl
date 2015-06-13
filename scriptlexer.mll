@@ -75,6 +75,7 @@
                   ("quote",          QUOTE      );
                   ("to_string",      TO_STRING  );
                   ("to_matchres",    TO_MATCHRES  );
+                  ("appendto",       APPEND_TO  );
                   ("transpose",      TRANSPOSE  );
 
                   ("system",         SYSTEM  );

@@ -622,6 +622,15 @@ List of commands/keywords and a short-description of them:
 =========================================================
 
 
+  appendto
+    Appends tmpvar to a named variable, which has been created already.
+    Only works on match-results.
+    Two match results will be concatenated this way, and be saved in the
+    named variable.
+    The itmes will be concatenated as Rows, so adding two matchres'
+    will add the second matchres as appending it's rows.
+
+
   basename
     creates the basename of an url or filename;
     the leading filename or URL-path is removed

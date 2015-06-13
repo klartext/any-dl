@@ -75,6 +75,7 @@
 %token QUOTE
 %token TO_STRING
 %token TO_MATCHRES
+%token APPEND_TO
 %token TRANSPOSE
 %token BASENAME
 %token EXITPARSE
@@ -229,6 +230,7 @@ command_base: match_cmd         { $1 }
     |      TRANSPOSE            { Transpose   }
     |      UNIQ                 { Uniq        }
     |      URL_DECODE           { Url_decode  }
+    |      append_to            { $1 }
     |      call_macro           { $1 }
     |      csv_save             { $1 }
     |      csv_save_as          { $1 }
@@ -252,6 +254,9 @@ command_base: match_cmd         { $1 }
     |      subst_cmd            { $1 }
     |      tagselect_cmd        { $1 }
     |      titleextract_cmd     { Title_extract }
+    ;
+
+append_to: APPEND_TO   LPAREN  STRING  RPAREN { Append_to $3 }
     ;
 
 call_macro: CALL_MACRO LPAREN STRING RPAREN { Call_macro $3 }

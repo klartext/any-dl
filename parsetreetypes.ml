@@ -95,6 +95,7 @@ type command_t =
   | Subst      of string * string             (* substitution *)
   | To_string                                 (* convert to string *)
   | To_matchres                               (* convert to matchresult (array) *)
+  | Append_to     of string                   (* Append tmpvar to a known variable (denoted by string (varname)) *)
   | Transpose                                 (* transposes a Match-result (array-array) *)
   | Quote                                     (* wraps '"' around the string in tmpvar *)
   | Exit_parse
@@ -203,6 +204,7 @@ let command_to_string cmd = match cmd with
   | Subst           _ -> "Subst"
   | To_string         -> "To_string"
   | To_matchres       -> "To_matchres"
+  | Append_to       _ -> "Append_to"
   | Transpose         -> "Transpose"
   | Quote             -> "Quote"
   | Exit_parse        -> "Exit_parse"
