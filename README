@@ -623,12 +623,18 @@ List of commands/keywords and a short-description of them:
 
 
   appendto
-    Appends tmpvar to a named variable, which has been created already.
-    Only works on match-results.
+    Appends tmpvar to a named variable.
+    If that variable does not exist already, it's internally created as empty match-result
+    (which means the appendto-command then creates the varable itself with the new data.)
+
+    "appendto" only works on match-results.
+
     Two match results will be concatenated this way, and be saved in the
-    named variable.
+    named variable automatically. (No store-command is needed after append.)
+
     The itmes will be concatenated as Rows, so adding two matchres'
-    will add the second matchres as appending it's rows.
+    will add the second matchres as appending it's rows to the matchres in the
+    named variable.
 
 
   basename

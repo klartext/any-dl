@@ -942,18 +942,23 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        command tl macrodefs_lst new_var varmap
 
                        | Append_to  varname         -> (* append tmpvar to a Matchres, adressed by varname *)
+                                                       (* if that variable is unknown, create it anew.     *)
 
                                                        let extract_matchres value = match value with Match_result mr -> mr | _ -> raise Wrong_argument_type in
 
                                                        let tmp_arr = extract_matchres tmpvar in
-                                                       let known_arr = extract_matchres (Varmap.find varname varmap) in
 
-                                                       let res = Match_result ( Array.append known_arr tmp_arr ) in
+                                                       (* if known, extract array; if unknown, create empty array *)
+                                                       let known_arr = if Varmap.mem varname varmap
+                                                                       then extract_matchres (Varmap.find varname varmap)
+                                                                       else [| |]
+                                                       in
+
+                                                       let res = Match_result ( Array.append known_arr tmp_arr ) in (* append the tmpvar-array to the known array *)
 
                                                        let new_varmap = Varmap.add varname res varmap in
 
                                                        command tl macrodefs_lst tmpvar new_varmap (* tmpvar is not touched *)
-
 
 
 
@@ -966,8 +971,6 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        in
                                                        command tl macrodefs_lst result varmap
-
-
 
 
 
