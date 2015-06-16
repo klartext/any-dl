@@ -424,7 +424,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
     | []        -> tmpvar, varmap (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
     | cmd::tl   -> begin
                      match cmd with
-                       | Post  fname_arglist       -> (* Unit (), varmap; raise NOT_IMPLEMENTED_SO_FAR;*)
+                       | Post  fname_arglist       ->
 
                                             let create_keyval_pair        key         = (key, to_string (Varmap.find key varmap) varmap ) in
                                             let create_post_argumentlist  varnamelist = List.map create_keyval_pair varnamelist in
@@ -1357,8 +1357,42 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        command tl macrodefs_lst tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
 
 
-                       | Storematch  varname        ->  raise NOT_IMPLEMENTED_SO_FAR;
+                       | Storematch  varname        ->
+                                                        raise NOT_IMPLEMENTED_SO_FAR;
                                                         verbose_printf "Storematch tmpvar to varname \"%s\"\n" varname;
+                                                        let mat = match tmpvar with Match_result mat -> mat | _ ->  raise Wrong_tmpvar_type in
+
+                                                        (* generator-function for the name for the named var from idex-values and var-basename *)
+                                                        (* ----------------------------------------------------------------------------------- *)
+                                                        let create_name  basename rowidx colidx = Printf.sprintf "%s.(%d).(%d)" basename rowidx colidx in
+
+                                                        (* function to add one item to the varmap *)
+                                                        (* -------------------------------------- *)
+                                                        let add_item_to_map basename rowidx colidx matr map =
+                                                            let name = create_name basename rowidx colidx in
+                                                            Varmap.add name matr.(rowidx).(colidx) map
+                                                        in
+
+                                                        let add_column_to_varmap = () in
+
+
+                                                        (* foldi_left/ foldi_right wird gebraucht
+                                                        let create_variables  varname matr map =
+                                                          let aux rows resmap =
+                                                            Array.fold
+                                                          in
+                                                            aux (Array2.max_row_idx mat) map
+                                                        *)
+
+
+                                                        for rowidx = 0 to Array2.max_row_idx mat
+                                                        do
+                                                          for colidx = 0 to Array.length mat.(rowidx)
+                                                          do
+                                                            ()
+                                                          done
+                                                        done;
+
                                                         let new_varmap = Varmap.empty in
                                                         (*
                                                         let new_varmap =

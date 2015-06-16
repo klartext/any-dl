@@ -257,6 +257,9 @@ module Array2 =
     let filter_row_by_colmatch colmatcher matr =
       filter ( fun arr -> exists colmatcher arr ) matr
 
+    let num_rows mat    = Array.length mat
+    let max_row_idx mat = Array.length mat - 1
+
   end
 
 
