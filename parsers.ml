@@ -852,3 +852,23 @@ let xml_get_href  = Xmlparse.get_href_from_xml
         find_elements_by_partial_link_text(link_text)
         find_elements_by_xpath(xpath)
 *)
+
+
+
+
+
+(* ************************************************** *)
+(* Higher-Level parsers                               *)
+(* ************************************************** *)
+
+
+(* ================================== *)
+(* table-unparse                      *)
+(* ================================== *)
+let table_unparse  dl =
+  let tagname = extract_tagname_from_doc dl in
+  tagname
+
+
+
+
