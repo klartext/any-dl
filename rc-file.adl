@@ -221,6 +221,19 @@ start
 end
 
 
+# ------------------------
+# Download all source-src
+# ------------------------
+parsername "source-src": ( )
+start
+  tagselect( "source" | arg( "src" ) );
+  rebase;
+  show_match;
+  makeurl;
+  download; # directly writing files to disk
+end
+
+
 # --------------------------------------------------------------
 # This parser creates the output for a Gnome-Desktop-File.
 # --------------------------------------------------------------
