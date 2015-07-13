@@ -177,7 +177,23 @@ val parse_document : ?dtd:simplified_dtd ->
 
 module Xmlparse =
   struct
-    open Xml
+
+    module A =
+    struct
+      type tree = XmlElement of Xmlm.tag * tree list | PCData of string
+
+      let input_tree i =
+        let el tag childs = XmlElement (tag, childs)  in
+        let data d = PCData d in
+        Xmlm.input_doc_tree ~el ~data i
+
+      let create_xmltree_from_string str =
+        let inp = Xmlm.make_input (`String (0, str)) in
+        let tree =  input_tree inp in
+        tree
+
+    end
+    open A
 
     (* ==================================================== *)
     (* ==================================================== *)
@@ -194,15 +210,16 @@ module Xmlparse =
     let traverse_print xml =
       print_endline "------------------------------------------------";
       let rec aux xml_elem = match xml_elem with
-        | Element (tagname, attrl, chldl) -> Printf.printf "Tagname: %s\n" tagname;
-                                             List.iter (fun attr -> Printf.printf "\t (attrname,attrval) = (%s,%s)\n"
-                                                                    (fst attr) (snd attr)) attrl;
-                                             List.iter aux chldl
+        | XmlElement ((name,attrlst), childs) -> Printf.printf "Tagname: %s%s\n" (fst name) (snd name);
+                                                 List.iter (fun ((ref,local),attrval) -> Printf.printf "\t (attrname,attrval) = (%s,%s)\n"
+                                                                                         (ref ^ local) attrval
+                                                           ) attrlst;
+                                                 List.iter aux childs
         | PCData str -> Printf.printf "PCata: \"%s\"\n" str
       in
         aux xml
 
-    let parse_string = parse_string
+    let parse_string = A.create_xmltree_from_string
 
 
     (* ==================================================== *)
@@ -211,12 +228,12 @@ module Xmlparse =
     let get_href_from_xml xml = 
       let href_list = ref [] in
       let rec aux xml_elem = match xml_elem with
-        | Element (tagname, attrl, chldl) -> (* only select ref *) (* IST DAS ALLGEMEINGUELTIG????? *)
-                                             List.iter (fun attr ->
-                                                                    if fst attr = "href" then href_list := snd attr :: !href_list
-                                                       ) attrl;
-                                             List.iter aux chldl
-        | PCData str -> () (*Printf.printf "PCata: \"%s\"\n" str*)
+        | XmlElement ( (name, attrlst), chlds) ->  List.iter
+                                                      (fun ((ref,local),attrval) ->
+                                                                          if local = "href" then href_list := attrval :: !href_list
+                                                      ) attrlst;
+                                                   List.iter aux chlds
+        | PCData str -> ()
       in
         aux xml;
         !href_list
@@ -821,7 +838,7 @@ let find_elements_by_argpair_str  argname  argval  str = find_elements_by_argpai
 (* --------------------------------------------------------------------------- *)
 (* or in short: feed in xml-document as plain string, and get out list of href *)
 (* --------------------------------------------------------------------------- *)
-let xml_get_href_from_string  str = Xmlparse.get_href_from_xml ( Xmlparse.parse_string str )
+let xml_get_href_from_string  str = Xmlparse.get_href_from_xml (snd ( Xmlparse.parse_string str )) (* ignoring DTD, select just the XML-stuff *)
 
 
 
