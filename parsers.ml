@@ -728,7 +728,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
     (* ---------------- *)
     (* html_decode used *)
     (* ================ *)
-    let collect_data  doclist =
+    let collect_data  ?(sep = '\n') doclist =
       let buf = Buffer.create 10000 in
 
       let rec traverse_aux doclist =
@@ -738,7 +738,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
                         match hd with
                           | Element (tag, args, dl)                  -> traverse_aux dl
                           | Data    data                             -> Buffer.add_string buf (String.trim data);
-                                                                        Buffer.add_char buf '\n'
+                                                                        Buffer.add_char buf sep
                       end;
 
                       traverse_aux tl (* work on the tail *)
