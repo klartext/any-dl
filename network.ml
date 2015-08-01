@@ -241,7 +241,9 @@ module Pipelined =
 
         if_veryverbose_print_cookies cookies;
 
-        ( Some (call_obj # response_body # value) , Some cookies )
+        match opt_outfilename with
+          | None   -> ( Some (call_obj # response_body # value) , Some cookies )
+          | Some _ -> (None, Some cookies)
 
 
 
