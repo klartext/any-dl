@@ -94,6 +94,7 @@ let read_file  filename =
   let size = filesize filename in
   let ic = open_in filename in
   let contents = really_input_string ic size in
+  close_in ic;
   contents
 
 
