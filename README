@@ -85,10 +85,13 @@ Compilation / Installation / Setup
         libocamlnet-ocaml-bin
         libocamlnet-ocaml-dev
 
-      xml-light:
-        libxml-light-ocaml-dev
+      xmlm:
+        ?
 
       ocaml-csv:
+        ?
+
+      yojson:
         ?
 
 
