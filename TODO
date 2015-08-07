@@ -7,14 +7,6 @@ BUGs:
 =====
 
 
- - "http://www.ardmediathek.de/das-erste/menschen-bei-maischberger/(...)"
-   lässt sich mit -i -p mp4
-              und anderen Parsern, evbenfalls mit -i
-              downloaden. Aber ohne -i nicht!
-
-
-
-
 BETTER STRUCTURE, CLEANER CODE:
 ===============================
 
