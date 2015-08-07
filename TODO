@@ -114,13 +114,6 @@ FEATUREs:
  - DropCol / DropRow also for other data-structures, like Doc_array, Url_list and so on.
       [ -> what do I mean by that? Adding other Parsetree-Types to DropCol/DropRow-command? ]
 
- - JSON-parser implementing or using lib for it.
-   Some videofile-meta-data is saved in json-format,
-   so adding it would make sense.
-   Very likely that access will be easier than with simple regexp-matching.
-
- - JSON-files for saving data with some structure?
-
  - possibly an option/pragma, that allows parsers to be *not* invoked
    via "-a" CLI switch, because some parsers download anything, not
    a certain video-file (because they are more general, like general
