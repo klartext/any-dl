@@ -28,6 +28,8 @@ exception No_Matchable_value_available  (* if Match is used, but there is no mat
 exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... without more detailed info *)
 exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 
+exception Conversion_error              (* for example: string (correct type) for json_prettify is not a json-string (wrong content) *)
+
 exception Invalid_Row_Index             (* indexing a row that does not exist *)
 exception Invalid_Col_Index             (* indexing a col that does not exist *)
 
@@ -1545,6 +1547,23 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                        | Sleep_ms  milliseconds     -> Sleep.sleep_ms milliseconds;
                                                        command tl macrodefs_lst tmpvar varmap
+
+
+                       | Json_prettify              ->
+                                                       let newval =
+                                                         match tmpvar with
+                                                           | String str ->
+                                                                           begin
+                                                                             try
+                                                                               String (Yojson.Safe.prettify str)
+                                                                             with
+                                                                               Yojson.Json_error _ -> (* if conversion fails string has wrong contents *)
+                                                                                                      prerr_endline "Json_prettify failed";
+                                                                                                      raise Conversion_error
+                                                                           end
+                                                           | _ -> raise Wrong_argument_type
+                                                       in
+                                                         command tl macrodefs_lst newval varmap
 
 
                        | Call_macro     macro_name  -> (* evaluating the commands of the macro, and afterwards the following commands   *)

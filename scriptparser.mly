@@ -103,6 +103,7 @@
 %token ISELECT_MATCH
 
 %token PRINT_STRING
+%token JSON_PRETTIFY
 
 
 
@@ -230,6 +231,7 @@ command_base: match_cmd         { $1 }
     |      TRANSPOSE            { Transpose   }
     |      UNIQ                 { Uniq        }
     |      URL_DECODE           { Url_decode  }
+    |      JSON_PRETTIFY        { Json_prettify }
     |      append_to            { $1 }
     |      call_macro           { $1 }
     |      csv_save             { $1 }

@@ -30,6 +30,8 @@
                   ("print",        PRINT  );
                   ("print_string", PRINT_STRING  );
 
+                  ("json_prettify",       JSON_PRETTIFY  );
+
                   ("csv_save_as",     CSV_SAVE_AS );
                   ("csv_save",        CSV_SAVE    );
                   ("save",     SAVE     );

@@ -109,6 +109,7 @@ type command_t =
   | Readline of string option                 (* Read line from stdin *)
   (* -------------- *)
   | Sleep_ms    of int                        (* sleep a certain number of milli-seconds *)
+  | Json_prettify                             (* pretty-print a json-string *)
   | Call_macro  of string                     (* call a macro *)
   | Dummy
   | Empty_dummy                               (* dummy-command that creates Empty as result *)
@@ -216,6 +217,7 @@ let command_to_string cmd = match cmd with
   | Url_decode        -> "Url_decode"         (* decode url-quoting back to "normal" chars   *)
   | Readline        _ -> "Readline"
   | Sleep_ms        _ -> "Sleep_ms"
+  | Json_prettify     -> "Json_prettify"
   | Call_macro      _ -> "Call_macro"
   | Dummy             -> "Dummy"
   | Empty_dummy       -> "EmptyDummy"
