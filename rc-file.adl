@@ -234,6 +234,35 @@ start
 end
 
 
+# ------------------------
+# Show all meta-tags
+# ------------------------
+parsername "show-meta": ( )
+start
+  tagselect( "meta" | dump );
+end
+
+
+# ------------------------
+# Save all meta-tags
+# ------------------------
+parsername "save-meta": ( )
+start
+  tagselect( "meta" | htmlstring );
+  to_string;
+  store("META");
+
+  paste($STARTURL);
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("BASENAME");
+  paste($BASENAME, ".meta");
+  store("FILENAME");
+
+  recall("META");
+  save_as( $FILENAME );
+end
+
+
 # --------------------------------------------------------------
 # This parser creates the output for a Gnome-Desktop-File.
 # --------------------------------------------------------------
