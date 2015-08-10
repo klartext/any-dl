@@ -1319,6 +1319,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        let filename = paste_arglist_to_string  argument_list  varmap in
                                                        begin
                                                          match tmpvar with
+                                                           | String  str              -> save_string_to_file str filename
                                                            | Document(doc, url)       -> save_string_to_file doc filename
                                                            | Document_array doc_array ->
                                                                                          print_warning "Only the first document is saved with save_as!";
@@ -1335,6 +1336,10 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                                                        begin
                                                          match tmpvar with
+                                                           | String  str              -> let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
+                                                                                         let filename = Parsers.url_to_filename starturl in
+                                                                                          save_string_to_file str filename
+
                                                            | Document(doc, url)       -> saver (doc, url)
                                                            | Document_array doc_array -> Array.iter saver doc_array
                                                            | _ -> raise Wrong_tmpvar_type
