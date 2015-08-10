@@ -24,6 +24,12 @@ FEATUREs:
  a bit of priority
  =================
 
+ - adding XPATH-notation / XPATH-conversion for compatibility with other tools seems to make sense. (really?)
+
+ - add the possibility to interpret scraperJSON for compatibility,
+   possibly convenient way to define scrapers/parsers: https://github.com/ContentMine/scraperjSON
+
+
  - tagselect: unparse a table should be possible...
 
    ******************************************************************************************************************************
