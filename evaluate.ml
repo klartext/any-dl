@@ -1031,6 +1031,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        let result =
                                                          begin
                                                            match tmpvar with
+                                                              | Url             (u,r)      -> Url ( rebase u, r )
+                                                              | Url_list        urllist    -> Url_list ( List.map ( fun (u,r) -> (rebase u, r)) urllist )
                                                               | String          s          -> String ( rebase s )
                                                               | String_array    str_arr    -> String_array ( Array.map rebase str_arr )
                                                               | Match_result    match_res  -> Match_result ( Array.map ( fun x -> Array.map rebase x ) match_res )
