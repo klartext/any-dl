@@ -1272,7 +1272,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        begin
                                                          match tmpvar with
                                                            | Match_result mres ->
-                                                                      print_endline "for real matches: show_match: Col 0 is the whole match, all others are the groups\n";
+                                                                      verbose_fprintf stdout "for real matches: show_match: Col 0 is the whole match, all others are the groups\n";
                                                                       Array.iteri ( fun idx x -> 
                                                                                              Printf.printf "Row %2d:\n" idx;
                                                                                              Printf.printf "-------\n";

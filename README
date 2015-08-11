@@ -790,6 +790,15 @@ List of commands/keywords and a short-description of them:
     The result is a matrix, containing of
     rows-of-"column"-elements.
 
+    Please note:
+      For real matches: Col 0 is the whole match, all others are the groups of a match.
+      For match_results, thatare just "arrays of arrays" (not coming from a match,
+      this obviously does not hold.
+      If you do a match, and want only the selected groups to appear in your
+      result, use
+          dropcol(0);
+      to kick out the whole-match.
+
 
   mselect
     a multiple-select, like select, but the result will be an array
