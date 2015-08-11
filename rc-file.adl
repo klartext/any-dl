@@ -280,6 +280,24 @@ start
   sort;
 
   print("Meta-Tags (alphabetically sorted) from site ", $STARTURL);
+
+  show_match;
+end
+
+
+
+
+# ---------------------------------------------
+# show all argkey-combinations of meta-tags
+# ---------------------------------------------
+parsername "show-meta-argkeys": ( )
+start
+  tagselect( "meta"."name" | argkeys );
+
+  uniq;
+  sort;
+
+  print("Meta-Tag argkey-combinations: (alphabetically sorted) from site ", $STARTURL);
   print("--------------------------------------------------------------------");
   show_match;
 end
