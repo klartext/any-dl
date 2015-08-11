@@ -279,7 +279,7 @@ start
   transpose; uniq; transpose;
   sort;
 
-  print("Meta-Tags (alphabetically sorted) from site ", $STARTURL);
+  print("Meta-Tags (alphabetically sorted) from site ", $STARTURL, "\n");
 
   show_match;
 end
@@ -297,8 +297,7 @@ start
   uniq;
   sort;
 
-  print("Meta-Tag argkey-combinations: (alphabetically sorted) from site ", $STARTURL);
-  print("--------------------------------------------------------------------");
+  print("Meta-Tag argkey-combinations: (alphabetically sorted) from site ", $STARTURL, "\n");
   show_match;
 end
 
