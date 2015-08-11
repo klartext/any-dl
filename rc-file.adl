@@ -263,6 +263,30 @@ start
 end
 
 
+
+
+# ---------------------------------------------
+# Show all name-attributes of meta-tags
+# ---------------------------------------------
+# This can be used to extract all meta-names
+# from a webpage, for example to easier create
+# scraperJSON-Files (ContentMine).
+# ---------------------------------------------
+parsername "show-meta-names": ( )
+start
+  tagselect( "meta"."name" | arg("name") );
+
+  transpose; uniq; transpose;
+  sort;
+
+  print("Meta-Tags (alphabetically sorted) from site ", $STARTURL);
+  print("--------------------------------------------------------------------");
+  show_match;
+end
+
+
+
+
 # --------------------------------------------------------------
 # This parser creates the output for a Gnome-Desktop-File.
 # --------------------------------------------------------------
