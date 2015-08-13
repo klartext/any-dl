@@ -163,6 +163,7 @@ let command_to_string cmd = match cmd with
   | Get_url         _ -> "Get_url"
   | Get_urls          -> "Get_urls" (* can be removed maybe *)
   | Get               -> "Get"
+  | Post            _ -> "Post"
   | Download        _ -> "Download"
   | Make_url        _ -> "Make_url"
   | Make_url_tmpvar   -> "Make_url"
