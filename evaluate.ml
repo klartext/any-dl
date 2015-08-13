@@ -149,7 +149,7 @@ let rec  urlify  result_value (varmap : varmap_t) =
       | Varname       varname      -> let res = (Varmap.find varname varmap) in
                                       urlify res varmap
       | String        str          -> Url(str, make_referrer() )
-      | Document      (doc, url)   -> raise Value_conversion_unknown (* like Wrong_argument_type *)
+      | Document      (doc, url)   -> Url ( url, "-" )
       | Document_array  arr        -> raise Value_conversion_unknown
                       (*
                       let strarr = Array.map ( fun (d,u) -> to_string (Document (d,u)) varmap ) arr in to_string (String_array strarr) varmap
@@ -1438,6 +1438,9 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                                                          | Url_array   url_arr  -> let changed = Array.map ( fun (u,r) -> (replacer u, replacer r) ) url_arr in
                                                                                     command tl macrodefs_lst ( Url_array changed ) varmap
+
+                                                         | Url_list    url_lst  -> let changed = List.map ( fun (u,r) -> (replacer u, replacer r) ) url_lst in
+                                                                                    command tl macrodefs_lst ( Url_list changed ) varmap
 
                                                          | Document(doc, ref)   -> let newdoc = Document( replacer doc, replacer ref ) in
                                                                                    command tl macrodefs_lst (newdoc) varmap
