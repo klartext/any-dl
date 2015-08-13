@@ -97,6 +97,23 @@ let cookie_to_string  (cookie : Nethttp.netscape_cookie ) =
   "  ------"
 
 
+(* ================================================================ *)
+(* this function "boils down" a aggregation-tmpvar to simpler types *)
+(* For example: A Url_list of length 1 is transfomed to url         *)
+(* For example: A String_list of length 1 is transfomed to String   *)
+(* and so forth.                                                    *)
+(* ---------------------------------------------------------------- *)
+(* boil_down is an un-aggregate                                     *)
+(* ================================================================ *)
+let boil_down value =
+  match value with
+    | Document_array  arr        -> if Array.length arr      = 1 then ( Document ((fst arr.(0)), (snd arr.(0))) ) else value
+    | String_array    str_arr    -> if Array.length str_arr  = 1 then ( String str_arr.(0) ) else value
+    | Url_list        url_list   -> if List.length url_list  = 1  then  ( let (u,r) = List.hd url_list in Url (u,r) ) else value
+    | Url_array       url_arr    -> if Array.length url_arr  = 1  then  ( let (u,r) = url_arr.(0) in Url (u,r) ) else value
+    | _                          -> value (* value of all other types will not be changed *)
+
+
 (* ---------------------------------------------- *)
 (* functional, not thorough nifty-details printer *)
 (* intended to make basic functionality working   *)
@@ -170,23 +187,6 @@ let rec  urlify  result_value (varmap : varmap_t) =
 
   in
     str
-
-
-(* ================================================================ *)
-(* this function "boils down" a aggregation-tmpvar to simpler types *)
-(* For example: A Url_list of length 1 is transfomed to url         *)
-(* For example: A String_list of length 1 is transfomed to String   *)
-(* and so forth.                                                    *)
-(* ---------------------------------------------------------------- *)
-(* boil_down is an un-aggregate                                     *)
-(* ================================================================ *)
-let boil_down value =
-  match value with
-    | Document_array  arr        -> if Array.length arr      = 1 then ( Document ((fst arr.(0)), (snd arr.(0))) ) else value
-    | String_array    str_arr    -> if Array.length str_arr  = 1 then ( String str_arr.(0) ) else value
-    | Url_list        url_list   -> if List.length url_list  = 1  then  ( let (u,r) = List.hd url_list in Url (u,r) ) else value
-    | Url_array       url_arr    -> if Array.length url_arr  = 1  then  ( let (u,r) = url_arr.(0) in Url (u,r) ) else value
-    | _                          -> value (* value of all other types will not be changed *)
 
 
 (* Menue to select an item from a string-list; accepts only valid inputs *)
