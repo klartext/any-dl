@@ -162,7 +162,7 @@ let rec  to_string  result_value (varmap : varmap_t) =
 let rec  urlify  result_value (varmap : varmap_t) =
   let make_referrer () = to_string ( Varmap.find_excdef "REFERRER" varmap (String "-") ) varmap in
   let str =
-    match result_value with
+    match boil_down result_value with
       | Varname       varname      -> let res = (Varmap.find varname varmap) in
                                       urlify res varmap
       | String        str          -> Url(str, make_referrer() )
