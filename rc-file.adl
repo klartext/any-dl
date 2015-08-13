@@ -664,6 +664,52 @@ end
 
 
 # =========================================================== #
+# Eins-Festival-Parser
+# =========================================================== #
+# Example: http://www.einsfestival.de/mediathek/player.jsp?vid=658125 <http://www.einsfestival.de/mediathek/player.jsp?vid=658125
+# -------------------------------------------------------------------------------------------------------------------------
+# jQuery(video).attr('src','http://http-ras.wdr.de//CMS2010/mdb/ondemand/weltweit/fsk0/78/781378/781378_8442663.mp4');
+# -------------------------------------------------------------------------------------------------------------------------
+parsername "einsfestival":  ( "http://www.einsfestival.de/mediathek/player" )
+start
+
+  # extract and store the title
+  call("_extract-and-store-title_");
+
+  # extract mp4-url
+  # ---------------
+  recall("BASEDOC");
+  match(>>>jQuery\(video\).attr\(\'src\',\'(http.*?mp4)<<<);
+  dropcol(0);
+  subst("de//", "de/" ); # stupid malformed url-part removed
+
+  makeurl;
+  store("url");
+
+  # create file-basename
+  # --------------------
+  to_string;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  subst("_mp4", ".mp4");        # correct extension
+  store("filename");
+
+  # Extract title (for filename)
+  # ----------------------------
+  recall("BASEDOC");
+  titleextract;
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("title");
+
+  # download the mp4-file
+  # ---------------------
+  recall("url");
+  print("Saving video to file: ", $title, "_", $filename);
+  download($title, "_", $filename);
+end
+
+
+
+# =========================================================== #
 # get the overview-xml files on the whole program / mediathek #
 # =========================================================== #
 parsername "arte-rss":  ( "http://www.arte.tv/sites/de/aktuelles/rss-feeds/" )
