@@ -161,8 +161,8 @@ let rec  to_string  result_value (varmap : varmap_t) =
 (* ---------------------------------------------- *)
 let rec  urlify  result_value (varmap : varmap_t) =
   let make_referrer () = to_string ( Varmap.find_excdef "REFERRER" varmap (String "-") ) varmap in
-  let str =
-    match boil_down result_value with
+  let converted =
+    match result_value with
       | Varname       varname      -> let res = (Varmap.find varname varmap) in
                                       urlify res varmap
       | String        str          -> Url(str, make_referrer() )
@@ -186,7 +186,7 @@ let rec  urlify  result_value (varmap : varmap_t) =
       | _ -> print_warning "urlify-function found non-convertable type"; raise Wrong_argument_type (* just in case more cases will be added *)
 
   in
-    str
+    boil_down converted
 
 
 (* Menue to select an item from a string-list; accepts only valid inputs *)
