@@ -897,181 +897,45 @@ start
 end
 
 
-# ---------------------------------
-# ZDF 
-# ---------------------------------
-# (* Webpage -> ASX-Link -> ASX-Page -> MMS-Link *)
-# ---------------------------------
-# Example: http://www.zdf.de/ZDFmediathek/beitrag/video/1800812/Das-Adlon.-Eine-Familiensaga-%25281%2529?bc=sts;stt&flash=off
-# =================================
-parsername "zdf_mediathek_get": ( "http://www.zdf.de" )
+# ==========================================
+# Download ZDF-Mediathek-Videos (webm-Files)
+# ------------------------------------------
+# Use the -i switch on command-line, to
+# interactively select one of the files.
+# ==========================================
+parsername "zdf": ( "http://www.zdf.de/ZDFmediathek/beitrag/video/" )
 start
-  match( "http://.*?asx" );
-  rowselect(0);
-  select(0);
+  # first extract the video-ID from the URL:
+  # ----------------------------------------
+  recall( "STARTURL" );
+  to_string;
+  print;
+  match( "[0-9]+" );
+  store("videoid");
 
-  # get the ASX-file (URL should be grabbed from last action... so this is a workaround here *)
+  # now get the info-xml for this video:
+  # ------------------------------------
+  paste("http://www.zdf.de/ZDFmediathek/xmlservice/web/beitragsDetails?ak=web&id=", $videoid);
   makeurl;
   get;
-  print("ASX-file downloaded.\n");
 
-  linkextract_xml;
+  # extract the webm-file-urls and select one:
+  # ------------------------------------------
+  match("(http:.*?webm)");
+  dropcol(0);
+  show_match;
+  iselectmatch(0, "webm", "webm");
 
-  select(0);
-  store("mms");
+  # message to user on the selection
+  # --------------------------------
+  print("Selected: ");
+  print;
 
-  # create filename
-  to_string;
-  basename;
-  store("filename");
-
-  # download the video
+  # download the file:
   # ------------------
-  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
-  print;
-  system;
-
-end
-
-# Sendungstitel:
-# http://www.zdf.de/ZDFmediathek/beitrag/video/1778740/Mars-Mega-Rover?flash=off
-# <title>Mars Mega Rover - ZDFinfo - ZDFmediathek - ZDF Mediathek</title>
-#
-# </div>  
-# <!-- EndeBreadcrumbNavigation --><!-- StartHeadlineDesBeitrags -->
-# <h1 class="beitragHeadline">Mars Mega Rover</h1>
-# <!-- EndeHeadlineDesBeitrags -->
-# <img src="/ZDFmediathek/contentblob/1778740/timg485x273blob/7360575" title="Curiosity" alt="Mars Mega Rover"/>
-
-
-
-# ----------------------------------------------------------------
-# ---------------------------------
-# ZDF 
-# ---------------------------------
-# Example: http://wstreaming.zdf.de/zdf/veryhigh/130106_teileins_fs_adl.asx
-# =================================
-parsername "zdf_mediathek_asx": ( "http://wstreaming.zdf.de")
-start
-  linkextract_xml;
-  select(0);
-  store("mms");
-
-  # create filename
-  to_string;
-  basename;
-  store("filename");
-
-  paste("mplayer -dumpstream  \"",  $mms, "\" -dumpfile ", $filename );
-  print;
-  system;
-end
-
-
-
-
-# ----------------------------------------------------------------
-# ---------------------------------
-# ZDF 
-# ---------------------------------
-# =================================
-# mp4: http://www.zdf.de/ZDFmediathek/beitrag/video/2060152/drehscheibe-am-3.-Januar-2014?bc=svp;sv1&ipad=true"
-# mov: http://www.zdf.de/ZDFmediathek/beitrag/video/2060152/drehscheibe-am-3.-Januar-2014?flash=off
-parsername "zdf_mediathek_new": ( "http://www.zdf.de/ZDFmediathek/beitrag/", "http://www.tagesschau.de/sendung/tagesthemen/" )
-start
-
-  call("_extract-and-store-title_");
-  print("Title: ", $title, "\n");
-
-
-  # make sure, the URL is an iPAD-url, because then we get mp4-files
-  # ----------------------------------------------------------------
-  recall("STARTURL"); 
-  print("Starturl:             ", $STARTURL);
-
-  to_string;
-  subst(>>>\?.*$<<<, "?bc=svp;sv1&ipad=true"); # remove old ?-parameters, insert ipad-params
-
   makeurl;
-  store("new_url");
-  print("Changed to this URL:  ", $new_url );
-  get; # get this document
-
-  # now match for the filenames
-  # ---------------------------
-  match("http:.*mp4");
-  iselectmatch(0, "http:.*mp4", "http:.*mp4");
-  select(0);
-  makeurl;
-  store("url");
-
-  print;
-  basename;
-  store("basename");
-  recall("url");
-  download( $title, "_", $basename );
+  download;
 end
-
-
-
-# ---------------------------------
-# ZDF  NEWEST ;-)
-# ---------------------------------
-# Example: http://www.zdf.de/ZDFmediathek/beitrag/video/2232650/
-#parsername "ZDF-NEU": ( "http://www.zdf.de/ZDFmediathek/beitrag/video" )
-parsername "ZDF-JANZ-NEU": ( "http://www.zdf.de/ZDFmediathek/beitrag/v" )
-start
-
-  # ul class="dslChoice"
-  #tagselect("ul"."class"="dslChoice", "li", "a" | argpairs );
-  tagselect("ul"."class"="dslChoice", "li", "a"."href" | arg("href") );
-
-  show_match;
-  transpose;
-  grepv(".asx"); # only *.mov
-
-  show_match;
-  makeurl;
-
-  # get the mov-file(s)
-  # -------------------
-  get;
-
-  # extract the rtsp-url's from the received file(s)
-  # ------------------------------------------------
-  grep("rtsp:");
-  to_matchres;
-
-  transpose;
-  show_match;
-  iselectmatch(0, "mov", "mov");
-  to_string;
-
-  store("rtspurl"); # thats the stuff we want to download.
-
-  basename;
-  #print;
-  store("filename");
-
-  # download the video
-  # ------------------
-  # using vlc here is working.
-  # But one problem arises: ZDF is repeating the broadcast after it has finished,
-  # and the file will be overwritten again from the beginning.
-  # So, if cvlc is not cancelled short before end of the program,
-  # the whole download is gone.
-  #
-  # maybe - if cvlc does close old file and reopens new file,
-  # it might work, renaming the file right after it has been
-  # created by cvlc.
-  # Will need to check that.
-  #
-
-  paste("cvlc ", $rtspurl, " --sout=file/ts:", $filename); # using cvlc (command-line VLC) for downloading RTSP-stream.
-  system;
-
-end
-
 
 
 # ---------------------------------
