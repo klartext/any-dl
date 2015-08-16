@@ -879,6 +879,25 @@ List of commands/keywords and a short-description of them:
     the one-val-stack.
 
 
+  table_to_matchres  (expermental feature so far)
+    converts a html-table to a match-result.
+    This conversion works for single tables.
+    So, a selection of a table should be as specific as possible, so that
+    only one table will be seleted with tagselect.
+    Then the conversion works.
+    If more than one table has been extracted by tagselect, then
+    they all will becoerced into ONE mathc-result.
+    If that's, what is wanted, anything is fine. Otherwise, seperate table-selection will be necessary.
+
+    Use tagselect with "htmlstring"-extractor, like this:
+
+       # Example:
+       # --------
+         tagselect("table"."id"="foobar" | htmlstring );
+         table_to_matchres;
+         csv_save;
+
+
   tagselect
     selects tags and "subtags" from a document tree and gives back
     data accordingly.

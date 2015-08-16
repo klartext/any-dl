@@ -872,6 +872,8 @@ let xml_get_href  = Xmlparse.get_href_from_xml
 
 
 
+let dump_elements_as_seperate_doclists dl =
+  List.iter ( fun elem -> dump_html [elem] ; print_endline "\n--------" ) dl
 
 
 (* ************************************************** *)
@@ -885,9 +887,13 @@ let xml_get_href  = Xmlparse.get_href_from_xml
 let table_unparse  dl =
   let tagname = extract_tagname_from_doc (List.hd dl) in
   if tagname <> "table" then raise Not_found_Element;
-  let stuff = find_elements_by_tag_name "tr" dl in
-  dump_html_data stuff;
-  [|[||]|]
+
+  let tr  = find_elements_by_tag_name "tr" dl in (* this doclist contains the tr *)
+  let tra = Array.of_list tr in
+
+  let td = Array.map ( fun tr_elem -> find_elements_by_tag_name "td" [tr_elem] |> collect_data_per_doc |> Array.of_list ) tra in
+
+  td
 
 
 

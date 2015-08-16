@@ -355,7 +355,7 @@ start
 show_type;
 to_string;
   table_to_matchres;
-exitparse;
+#exitparse;
   show_match;
 end
 
