@@ -921,10 +921,13 @@ start
 
   # extract the webm-file-urls and select one:
   # ------------------------------------------
-  match("(http:.*?webm)");
-  dropcol(0);
-  show_match;
-  iselectmatch(0, "webm", "webm");
+  match("((http:.*?webm)|(http:.*?mp4))"); # match file-url's
+  colselect(0); # gives back StringArray
+  to_matchres;  # for selection again matchres is needed.
+  transpose;    # ttransposition to have the correct orientation for iselectmatch
+  grepv("metafilegen"); # non-working url removed
+  sort;
+  iselectmatch(0, "http", "webm");
 
   # message to user on the selection
   # --------------------------------
