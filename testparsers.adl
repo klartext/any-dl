@@ -329,3 +329,20 @@ start
 end
 
 
+
+
+# --------------------------------------------------------
+# print a json-string directly and again after prettifying
+# --------------------------------------------------------
+parsername "jsonpp": ( "http://www.arte.tv/guide/de/057372-010/x-enius?autoplay=1" )
+start
+  tagselect( "script"."id"="json-config", ."type"="application/json" | data );
+  to_string;
+  print;
+  json_prettify;
+  print("-------------------------");
+  print;
+
+end
+
+

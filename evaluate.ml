@@ -28,6 +28,8 @@ exception No_Matchable_value_available  (* if Match is used, but there is no mat
 exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... without more detailed info *)
 exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 
+exception Conversion_error              (* for example: string (correct type) for json_prettify is not a json-string (wrong content) *)
+
 exception Invalid_Row_Index             (* indexing a row that does not exist *)
 exception Invalid_Col_Index             (* indexing a col that does not exist *)
 
@@ -95,6 +97,23 @@ let cookie_to_string  (cookie : Nethttp.netscape_cookie ) =
   "  ------"
 
 
+(* ================================================================ *)
+(* this function "boils down" a aggregation-tmpvar to simpler types *)
+(* For example: A Url_list of length 1 is transfomed to url         *)
+(* For example: A String_list of length 1 is transfomed to String   *)
+(* and so forth.                                                    *)
+(* ---------------------------------------------------------------- *)
+(* boil_down is an un-aggregate                                     *)
+(* ================================================================ *)
+let boil_down value =
+  match value with
+    | Document_array  arr        -> if Array.length arr      = 1 then ( Document ((fst arr.(0)), (snd arr.(0))) ) else value
+    | String_array    str_arr    -> if Array.length str_arr  = 1 then ( String str_arr.(0) ) else value
+    | Url_list        url_list   -> if List.length url_list  = 1  then  ( let (u,r) = List.hd url_list in Url (u,r) ) else value
+    | Url_array       url_arr    -> if Array.length url_arr  = 1  then  ( let (u,r) = url_arr.(0) in Url (u,r) ) else value
+    | _                          -> value (* value of all other types will not be changed *)
+
+
 (* ---------------------------------------------- *)
 (* functional, not thorough nifty-details printer *)
 (* intended to make basic functionality working   *)
@@ -142,12 +161,12 @@ let rec  to_string  result_value (varmap : varmap_t) =
 (* ---------------------------------------------- *)
 let rec  urlify  result_value (varmap : varmap_t) =
   let make_referrer () = to_string ( Varmap.find_excdef "REFERRER" varmap (String "-") ) varmap in
-  let str =
+  let converted =
     match result_value with
       | Varname       varname      -> let res = (Varmap.find varname varmap) in
                                       urlify res varmap
       | String        str          -> Url(str, make_referrer() )
-      | Document      (doc, url)   -> raise Value_conversion_unknown (* like Wrong_argument_type *)
+      | Document      (doc, url)   -> Url ( url, "-" )
       | Document_array  arr        -> raise Value_conversion_unknown
                       (*
                       let strarr = Array.map ( fun (d,u) -> to_string (Document (d,u)) varmap ) arr in to_string (String_array strarr) varmap
@@ -167,8 +186,7 @@ let rec  urlify  result_value (varmap : varmap_t) =
       | _ -> print_warning "urlify-function found non-convertable type"; raise Wrong_argument_type (* just in case more cases will be added *)
 
   in
-    str
-
+    boil_down converted
 
 
 (* Menue to select an item from a string-list; accepts only valid inputs *)
@@ -1029,6 +1047,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        let result =
                                                          begin
                                                            match tmpvar with
+                                                              | Url             (u,r)      -> Url ( rebase u, r )
+                                                              | Url_list        urllist    -> Url_list ( List.map ( fun (u,r) -> (rebase u, r)) urllist )
                                                               | String          s          -> String ( rebase s )
                                                               | String_array    str_arr    -> String_array ( Array.map rebase str_arr )
                                                               | Match_result    match_res  -> Match_result ( Array.map ( fun x -> Array.map rebase x ) match_res )
@@ -1270,7 +1290,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        begin
                                                          match tmpvar with
                                                            | Match_result mres ->
-                                                                      print_endline "for real matches: show_match: Col 0 is the whole match, all others are the groups\n";
+                                                                      verbose_fprintf stdout "for real matches: show_match: Col 0 is the whole match, all others are the groups\n";
                                                                       Array.iteri ( fun idx x -> 
                                                                                              Printf.printf "Row %2d:\n" idx;
                                                                                              Printf.printf "-------\n";
@@ -1317,6 +1337,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        let filename = paste_arglist_to_string  argument_list  varmap in
                                                        begin
                                                          match tmpvar with
+                                                           | String  str              -> save_string_to_file str filename
                                                            | Document(doc, url)       -> save_string_to_file doc filename
                                                            | Document_array doc_array ->
                                                                                          print_warning "Only the first document is saved with save_as!";
@@ -1333,6 +1354,10 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                                                        begin
                                                          match tmpvar with
+                                                           | String  str              -> let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
+                                                                                         let filename = Parsers.url_to_filename starturl in
+                                                                                          save_string_to_file str filename
+
                                                            | Document(doc, url)       -> saver (doc, url)
                                                            | Document_array doc_array -> Array.iter saver doc_array
                                                            | _ -> raise Wrong_tmpvar_type
@@ -1429,6 +1454,9 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                                                          | Url_array   url_arr  -> let changed = Array.map ( fun (u,r) -> (replacer u, replacer r) ) url_arr in
                                                                                     command tl macrodefs_lst ( Url_array changed ) varmap
+
+                                                         | Url_list    url_lst  -> let changed = List.map ( fun (u,r) -> (replacer u, replacer r) ) url_lst in
+                                                                                    command tl macrodefs_lst ( Url_list changed ) varmap
 
                                                          | Document(doc, ref)   -> let newdoc = Document( replacer doc, replacer ref ) in
                                                                                    command tl macrodefs_lst (newdoc) varmap
@@ -1545,6 +1573,23 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                        | Sleep_ms  milliseconds     -> Sleep.sleep_ms milliseconds;
                                                        command tl macrodefs_lst tmpvar varmap
+
+
+                       | Json_prettify              ->
+                                                       let newval =
+                                                         match tmpvar with
+                                                           | String str ->
+                                                                           begin
+                                                                             try
+                                                                               String (Yojson.Safe.prettify str)
+                                                                             with
+                                                                               Yojson.Json_error _ -> (* if conversion fails string has wrong contents *)
+                                                                                                      prerr_endline "Json_prettify failed";
+                                                                                                      raise Conversion_error
+                                                                           end
+                                                           | _ -> raise Wrong_argument_type
+                                                       in
+                                                         command tl macrodefs_lst newval varmap
 
 
                        | Call_macro     macro_name  -> (* evaluating the commands of the macro, and afterwards the following commands   *)
