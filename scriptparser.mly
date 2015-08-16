@@ -75,6 +75,7 @@
 %token QUOTE
 %token TO_STRING
 %token TO_MATCHRES
+%token TABLE_TO_MATCHRES
 %token APPEND_TO
 %token TRANSPOSE
 %token BASENAME
@@ -227,6 +228,7 @@ command_base: match_cmd         { $1 }
     |      SORT                 { Sort        }
     |      SYSTEM               { System      }
     |      TO_MATCHRES          { To_matchres }
+    |      TABLE_TO_MATCHRES    { Table_to_matchres }
     |      TO_STRING            { To_string   }
     |      TRANSPOSE            { Transpose   }
     |      UNIQ                 { Uniq        }

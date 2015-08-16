@@ -346,3 +346,17 @@ start
 end
 
 
+# --------------------------------------------
+# parse html-table and convert to Match_result
+# --------------------------------------------
+parsername "tabletomatchres": ( )
+start
+  tagselect( "table" | htmlstring );
+show_type;
+to_string;
+  table_to_matchres;
+exitparse;
+  show_match;
+end
+
+

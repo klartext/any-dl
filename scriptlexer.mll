@@ -79,6 +79,7 @@
                   ("to_matchres",    TO_MATCHRES  );
                   ("appendto",       APPEND_TO  );
                   ("transpose",      TRANSPOSE  );
+                  ("table_to_matchres",  TABLE_TO_MATCHRES  );
 
                   ("system",         SYSTEM  );
                   ("exitparse",      EXITPARSE  );

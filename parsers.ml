@@ -583,8 +583,8 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
 
 
 
-    (* extracts tagnames of ONE document-element *)
-    (* ========================================= *)
+    (* extracts tagnames of ONE document-element (the topmost) *)
+    (* ======================================================= *)
     let extract_tagname_from_doc doc = match doc with
       | Data _              -> raise Not_found_Element
       | Element (tag, _, _) -> tag
@@ -883,8 +883,11 @@ let xml_get_href  = Xmlparse.get_href_from_xml
 (* table-unparse                      *)
 (* ================================== *)
 let table_unparse  dl =
-  let tagname = extract_tagname_from_doc dl in
-  tagname
+  let tagname = extract_tagname_from_doc (List.hd dl) in
+  if tagname <> "table" then raise Not_found_Element;
+  let stuff = find_elements_by_tag_name "tr" dl in
+  dump_html_data stuff;
+  [|[||]|]
 
 
 

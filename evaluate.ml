@@ -959,6 +959,17 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                        command tl macrodefs_lst new_var varmap
 
+                       | Table_to_matchres          ->
+                                                       let matchres =
+                                                         match tmpvar with
+                                                           | String   str -> let dl = Parsers.conv_to_doclist str in
+                                                                             let u = Parsers.table_unparse dl in
+                                                                             Match_result u
+                                                           | _ -> raise Wrong_argument_type
+                                                       in
+                                                       command tl macrodefs_lst matchres varmap
+
+
                        | Append_to  varname         -> (* append tmpvar to a Matchres, adressed by varname *)
                                                        (* if that variable is unknown, create it anew.     *)
 
