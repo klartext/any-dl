@@ -911,6 +911,7 @@ start
   to_string;
   print;
   match( "[0-9]+" );
+  rowselect(0); # selecting video-id, if more numbers are following (e.g. "sv1")
   store("videoid");
 
   # now get the info-xml for this video:
