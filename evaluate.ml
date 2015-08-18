@@ -40,6 +40,7 @@ exception Variable_not_found of string  (* a variable-name lookup in the Varname
 
 exception Parse_exit                    (* user exit of a parse *)
 
+exception RC_values of (int*int)
 
 
 
@@ -1394,47 +1395,43 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
 
                        | Storematch  varname        ->
+                                                        (*
                                                         raise NOT_IMPLEMENTED_SO_FAR;
+                                                        *)
                                                         verbose_printf "Storematch tmpvar to varname \"%s\"\n" varname;
+                                                        Printf.printf "Storematch tmpvar to varname \"%s\"\n" varname;
                                                         let mat = match tmpvar with Match_result mat -> mat | _ ->  raise Wrong_tmpvar_type in
 
-                                                        (* generator-function for the name for the named var from idex-values and var-basename *)
-                                                        (* ----------------------------------------------------------------------------------- *)
+                                                        (* generator-function for the name for the named var from idx-values and var-basename *)
+                                                        (* ---------------------------------------------------------------------------------- *)
                                                         let create_name  basename rowidx colidx = Printf.sprintf "%s.(%d).(%d)" basename rowidx colidx in
 
                                                         (* function to add one item to the varmap *)
                                                         (* -------------------------------------- *)
                                                         let add_item_to_map basename rowidx colidx matr map =
                                                             let name = create_name basename rowidx colidx in
-                                                            Varmap.add name matr.(rowidx).(colidx) map
+                                                            Varmap.add name ( String matr.(rowidx).(colidx) ) map
                                                         in
 
-                                                        let add_column_to_varmap = () in
-
-
-                                                        (* foldi_left/ foldi_right wird gebraucht
-                                                        let create_variables  varname matr map =
-                                                          let aux rows resmap =
-                                                            Array.fold
+                                                        let add_items_to_map basename max_rowidx max_colidx matr map =
+                                                          let rec aux rowidx colidx map_acc =
+                                                            match rowidx, colidx with
+                                                              | r, c when r <= max_rowidx && c < max_colidx -> let newmap = add_item_to_map varname rowidx colidx mat map_acc
+                                                                                                               in aux rowidx (colidx + 1) newmap
+                                                              | r, c when r <  max_rowidx && c = max_colidx -> let newmap = add_item_to_map varname rowidx colidx mat map_acc
+                                                                                                               in aux (rowidx+1) 0 newmap
+                                                              | r, c when r =  max_rowidx && c = max_colidx -> add_item_to_map varname rowidx colidx mat map_acc (* done *)
+                                                              | r,c -> Printf.eprintf "r: %d   c: %d\n" r c; raise (RC_values (r, c))
                                                           in
-                                                            aux (Array2.max_row_idx mat) map
-                                                        *)
+                                                            aux 0 0 map
+                                                        in
 
+                                                        Printf.printf "max_row_idx = %d \n" (Array2.max_row_idx mat);
+                                                        Printf.printf "max_col_idx = %d \n" (Array2.max_col_idx mat);
 
-                                                        for rowidx = 0 to Array2.max_row_idx mat
-                                                        do
-                                                          for colidx = 0 to Array.length mat.(rowidx)
-                                                          do
-                                                            ()
-                                                          done
-                                                        done;
+                                                        let newmap = add_items_to_map varname (Array2.max_row_idx mat) (Array2.max_col_idx mat) mat varmap in
 
-                                                        let new_varmap = Varmap.empty in
-                                                        (*
-                                                        let new_varmap =
-                                                           for all rows and all cols: add Item to Varmap.
-                                                        *)
-                                                        command tl macrodefs_lst tmpvar new_varmap (* stores tmpvar as named variable *)
+                                                        command tl macrodefs_lst tmpvar newmap (* stores tmpvar as named variable *)
 
 
                        | Sort                       -> (* sort entries *)

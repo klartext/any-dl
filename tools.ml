@@ -261,6 +261,9 @@ module Array2 =
     let num_rows mat    = Array.length mat
     let max_row_idx mat = Array.length mat - 1
 
+    let num_cols mat    = Array.length mat.(0)
+    let max_col_idx mat = Array.length mat.(0) - 1
+
   end
 
 
