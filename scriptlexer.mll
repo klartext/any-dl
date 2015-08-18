@@ -30,6 +30,8 @@
                   ("print",        PRINT  );
                   ("print_string", PRINT_STRING  );
 
+                  ("json_prettify",       JSON_PRETTIFY  );
+
                   ("csv_save_as",     CSV_SAVE_AS );
                   ("csv_save",        CSV_SAVE    );
                   ("save",     SAVE     );
@@ -78,6 +80,7 @@
                   ("to_matchres",    TO_MATCHRES  );
                   ("appendto",       APPEND_TO  );
                   ("transpose",      TRANSPOSE  );
+                  ("table_to_matchres",  TABLE_TO_MATCHRES  );
 
                   ("system",         SYSTEM  );
                   ("exitparse",      EXITPARSE  );

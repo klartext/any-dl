@@ -85,10 +85,13 @@ Compilation / Installation / Setup
         libocamlnet-ocaml-bin
         libocamlnet-ocaml-dev
 
-      xml-light:
-        libxml-light-ocaml-dev
+      xmlm:
+        ?
 
       ocaml-csv:
+        ?
+
+      yojson:
         ?
 
 
@@ -525,99 +528,6 @@ Examples:
 
 
 
-
-
-List of commands/keywords (not carved in stone so far) by example:
-==================================================================
-
-  parsername
-  start
-  end
-
-  dummy;
-  exitparse;
-
-  call("macroname");
-
-  linkextract;
-  linkextract_xml;
-  match("Regexp-String");
-
-  # syntax for tagselection at the moment is this one:
-  # --------------------------------------------------
-  tagselect( "a"| dump );    # dumps all <a ...> tags
-  tagselect( "br"| dump );   # dumps all <br>-tags
-  tagselect( "table", "a"| dump ); # <a ...> inside tables will be dumped
-  tagselect( "img"."src"| dump );  # <img src="...">   wil be dumped
-
-  tagselect("table", "a", "img"."align"="top"| dump); # all img-tags with "align"="top" will be selected,
-                                                      # if they appear inside a table; the stuff is dumped to screen
-
-  tagselect( "table", "a" | argpairs );      # extract argpairs from the stuff that was selected
-  tagselect( "table", "a" | arg("href") );   # extract value for the arg with key/name "href" from the stuff that was selected
-
-  # the pair-extratcors ( "argpairs", "argkeys", "argvals" ) can be used as single-extractor-arguments
-  # the other selectros select one item only (not pairs) and can be given as list, like this:
-
-  tagselect("img"."src" | arg("src"), arg("alt") );
-
-  # tagselect used with "anytags"-selector 
-  # --------------------------------------
-  # the "anytags"-selector selects ANY tags,
-  # which means that ALL tags from the document are
-  # picked up in depth-first manner.
-  # without anytags, a match does pick a tag with all descendants.
-  # But these descendants will not be extracted with a extractor-pattern!
-  # --------------------------------------
-  tagselect( anytags | argpairs ); # shows argpairs of ANY / ALL tags found (depth-first)
-
-
-
-
-  print;
-  print("string");
-  print_string("My string");
-
-  show_match;
-  show_type;
-  show_variables;
-  dump;
-
-
-  store("varname");
-  recall("varname");
-
-  rowselect(0);
-  colselect(2);
-  select(1);
-  mselect(1,2);
-
-  selectmatch
-  iselectmatch
-
-  paste( "literal string", $varname, "foo", $bar );
-  makeurl;
-  quote;
-  subst("pattern", "subst-string");
-
-  readline;
-  readline("VarnameForInputLine");
-
-  basename;
-  titleextract;
-  to_string;
-  to_matchres;
-  htmldecode;
-
-  get;
-  download;
-  download( $filename );
-  post("valname_1", "valname_2", "valname_3"); # the values must be set as named variables before.
-  system;
-
-
-
-
 List of commands/keywords and a short-description of them:
 =========================================================
 
@@ -664,6 +574,9 @@ List of commands/keywords and a short-description of them:
 
   colselect
     selects columns from a match-result
+        # Example:
+        # --------
+        colselect(2);
 
 
   delete
@@ -676,6 +589,10 @@ List of commands/keywords and a short-description of them:
 
   download
     downloads an entity and storing to a file.
+        # Examples:
+        # ---------
+        download;
+        download( $filename );
 
 
   dropcol
@@ -760,6 +677,9 @@ List of commands/keywords and a short-description of them:
     of a selectmatch().
     So, in most cases it would make sense to use iselectmatch()
     instead of selectmatch().
+        # Example:
+        # --------
+        iselectmatch( <col_idx>, <matchpat>, <default_pattern>);
 
 
   linkextract
@@ -787,10 +707,26 @@ List of commands/keywords and a short-description of them:
     The result is a matrix, containing of
     rows-of-"column"-elements.
 
+    Please note:
+      For real matches: Col 0 is the whole match, all others are the groups of a match.
+      For match_results, thatare just "arrays of arrays" (not coming from a match,
+      this obviously does not hold.
+      If you do a match, and want only the selected groups to appear in your
+      result, use
+          dropcol(0);
+      to kick out the whole-match.
+
+        # examples:
+        match("Regexp-String");
+        match(>>>another "Regex"-String<<<);
+
 
   mselect
     a multiple-select, like select, but the result will be an array
     of items (Strings or URls) not a single element.
+        # Example:
+        # --------
+        mselect(1,2);
 
 
   parsername
@@ -800,6 +736,9 @@ List of commands/keywords and a short-description of them:
   paste
     the paste()-command creates a string from strings and variable-names (-notation).
     paste() accepts a list of items, seperated by commas (",").
+        # Example:
+        # --------
+        paste( "literal string", $varname, "foo", $bar );
 
 
   post
@@ -814,6 +753,10 @@ List of commands/keywords and a short-description of them:
     can be looked up by the post-command.
 
     The URL for the post-command is taken from tmpvar.
+
+        # Example:
+        # --------
+        post("valname_1", "valname_2", "valname_3"); # the values must be set as named variables before.
 
 
   print
@@ -845,13 +788,24 @@ List of commands/keywords and a short-description of them:
     With argument, the argument is used as variable-name,
     and the input is stored in this named variable.
 
+        # Examples:
+        # ---------
+        readline;
+        readline("VarnameForInputLine");
+
 
   recall
     get a named value and store it on the one-val-stack.
+        # Example:
+        # --------
+        recall("varname");
 
 
   rowselect
     selects a certain row from a match-result.
+        # Example:
+        # --------
+        rowselect(0);
 
 
   save
@@ -868,6 +822,9 @@ List of commands/keywords and a short-description of them:
     selects ONE ELEMENT from a row or a column.
     The row/column must already have been selected with rowselect() or colselect().
     select() does NOT allow matches on match-results (which are a matrix internally).
+      # Example:
+      # --------
+      select(2);
 
 
   selectmatch
@@ -906,6 +863,8 @@ List of commands/keywords and a short-description of them:
     store the value from the one-val-stack as named variable.
     (use recall() for getting it back to the one-val-stack, or
      $-notation in some of the commnds that accept this notatiom).
+       # Example:
+       store("varname");
 
 
   storematch
@@ -918,11 +877,33 @@ List of commands/keywords and a short-description of them:
   subst
     string-substiturion.
     Uses Pcre.replace internally.
+        # Example:
+        # --------
+        subst("pattern", "subst-string");
 
 
   system
     calls the system() command with the string that is hold in
     the one-val-stack.
+
+
+  table_to_matchres  (expermental feature so far)
+    converts a html-table to a match-result.
+    This conversion works for single tables.
+    So, a selection of a table should be as specific as possible, so that
+    only one table will be seleted with tagselect.
+    Then the conversion works.
+    If more than one table has been extracted by tagselect, then
+    they all will becoerced into ONE mathc-result.
+    If that's, what is wanted, anything is fine. Otherwise, seperate table-selection will be necessary.
+
+    Use tagselect with "htmlstring"-extractor, like this:
+
+       # Example:
+       # --------
+         tagselect("table"."id"="foobar" | htmlstring );
+         table_to_matchres;
+         csv_save;
 
 
   tagselect
@@ -967,6 +948,34 @@ List of commands/keywords and a short-description of them:
     This is a depth-first selection, with each element being a top-element.
     This way you can access all descendants and analyse them, fr example
     extract all argpairs from all the tags of the whole document.
+
+        # Examples, showing the allowed syntax:
+        # -------------------------------------
+        tagselect( "a"| dump );    # dumps all <a ...> tags
+        tagselect( "br"| dump );   # dumps all <br>-tags
+        tagselect( "table", "a"| dump ); # <a ...> inside tables will be dumped
+        tagselect( "img"."src"| dump );  # <img src="...">   wil be dumped
+
+        tagselect("table", "a", "img"."align"="top"| dump); # all img-tags with "align"="top" will be selected,
+                                                            # if they appear inside a table; the stuff is dumped to screen
+
+        tagselect( "table", "a" | argpairs );      # extract argpairs from the stuff that was selected
+        tagselect( "table", "a" | arg("href") );   # extract value for the arg with key/name "href" from the stuff that was selected
+
+        # the pair-extratcors ( "argpairs", "argkeys", "argvals" ) can be used as single-extractor-arguments
+        # the other selectros select one item only (not pairs) and can be given as list, like this:
+
+        tagselect("img"."src" | arg("src"), arg("alt") );
+
+        # tagselect used with "anytags"-selector 
+        # --------------------------------------
+        # the "anytags"-selector selects ANY tags,
+        # which means that ALL tags from the document are
+        # picked up in depth-first manner.
+        # without anytags, a match does pick a tag with all descendants.
+        # But these descendants will not be extracted with a extractor-pattern!
+        # --------------------------------------
+        tagselect( anytags | argpairs ); # shows argpairs of ANY / ALL tags found (depth-first)
 
 
   titleextract

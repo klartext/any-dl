@@ -76,6 +76,7 @@
 %token QUOTE
 %token TO_STRING
 %token TO_MATCHRES
+%token TABLE_TO_MATCHRES
 %token APPEND_TO
 %token TRANSPOSE
 %token BASENAME
@@ -104,6 +105,7 @@
 %token ISELECT_MATCH
 
 %token PRINT_STRING
+%token JSON_PRETTIFY
 
 
 
@@ -227,10 +229,12 @@ command_base: match_cmd         { $1 }
     |      SORT                 { Sort        }
     |      SYSTEM               { System      }
     |      TO_MATCHRES          { To_matchres }
+    |      TABLE_TO_MATCHRES    { Table_to_matchres }
     |      TO_STRING            { To_string   }
     |      TRANSPOSE            { Transpose   }
     |      UNIQ                 { Uniq        }
     |      URL_DECODE           { Url_decode  }
+    |      JSON_PRETTIFY        { Json_prettify }
     |      append_to            { $1 }
     |      call_macro           { $1 }
     |      csv_save             { $1 }

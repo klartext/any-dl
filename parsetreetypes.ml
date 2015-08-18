@@ -96,6 +96,7 @@ type command_t =
   | Subst      of string * string             (* substitution *)
   | To_string                                 (* convert to string *)
   | To_matchres                               (* convert to matchresult (array) *)
+  | Table_to_matchres                         (* parse html-table and create Matcch_reslt from it *)
   | Append_to     of string                   (* Append tmpvar to a known variable (denoted by string (varname)) *)
   | Transpose                                 (* transposes a Match-result (array-array) *)
   | Quote                                     (* wraps '"' around the string in tmpvar *)
@@ -110,6 +111,7 @@ type command_t =
   | Readline of string option                 (* Read line from stdin *)
   (* -------------- *)
   | Sleep_ms    of int                        (* sleep a certain number of milli-seconds *)
+  | Json_prettify                             (* pretty-print a json-string *)
   | Call_macro  of string                     (* call a macro *)
   | Dummy
   | Empty_dummy                               (* dummy-command that creates Empty as result *)
@@ -207,6 +209,7 @@ let command_to_string cmd = match cmd with
   | Subst           _ -> "Subst"
   | To_string         -> "To_string"
   | To_matchres       -> "To_matchres"
+  | Table_to_matchres -> "Table_to_matchres"
   | Append_to       _ -> "Append_to"
   | Transpose         -> "Transpose"
   | Quote             -> "Quote"
@@ -219,6 +222,7 @@ let command_to_string cmd = match cmd with
   | Url_decode        -> "Url_decode"         (* decode url-quoting back to "normal" chars   *)
   | Readline        _ -> "Readline"
   | Sleep_ms        _ -> "Sleep_ms"
+  | Json_prettify     -> "Json_prettify"
   | Call_macro      _ -> "Call_macro"
   | Dummy             -> "Dummy"
   | Empty_dummy       -> "EmptyDummy"
