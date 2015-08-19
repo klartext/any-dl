@@ -40,7 +40,6 @@ exception Variable_not_found of string  (* a variable-name lookup in the Varname
 
 exception Parse_exit                    (* user exit of a parse *)
 
-exception RC_values of (int*int)
 
 
 
@@ -1395,12 +1394,11 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
 
                        | Storematch  varname        ->
-                                                        (*
-                                                        raise NOT_IMPLEMENTED_SO_FAR;
-                                                        *)
                                                         verbose_printf "Storematch tmpvar to varname \"%s\"\n" varname;
-                                                        Printf.printf "Storematch tmpvar to varname \"%s\"\n" varname;
                                                         let mat = match tmpvar with Match_result mat -> mat | _ ->  raise Wrong_tmpvar_type in
+                                                        let mat = Tools.Array2.remove_empty_arrays_from_matrix ~message:true
+                                                                                                               ~msgtxt:"Storematch changed tmpvar! (removed empty cols)"
+                                                                                                               mat     in (* remove empty arrays from matrix *)
 
                                                         (* generator-function for the name for the named var from idx-values and var-basename *)
                                                         (* ---------------------------------------------------------------------------------- *)
@@ -1413,25 +1411,28 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                             Varmap.add name ( String matr.(rowidx).(colidx) ) map
                                                         in
 
-                                                        let add_items_to_map basename max_rowidx max_colidx matr map =
+                                                        (* add_items_to_map adds items to the Variable-map *)
+                                                        (* ----------------------------------------------- *)
+                                                        let add_items_to_map basename matr map =
+                                                          let max_rowidx = Array2.max_row_idx mat in
+
                                                           let rec aux rowidx colidx map_acc =
+                                                            let max_colidx = Array2.max_col_idx_of_row rowidx mat in
                                                             match rowidx, colidx with
                                                               | r, c when r <= max_rowidx && c < max_colidx -> let newmap = add_item_to_map varname rowidx colidx mat map_acc
                                                                                                                in aux rowidx (colidx + 1) newmap
                                                               | r, c when r <  max_rowidx && c = max_colidx -> let newmap = add_item_to_map varname rowidx colidx mat map_acc
                                                                                                                in aux (rowidx+1) 0 newmap
                                                               | r, c when r =  max_rowidx && c = max_colidx -> add_item_to_map varname rowidx colidx mat map_acc (* done *)
-                                                              | r,c -> Printf.eprintf "r: %d   c: %d\n" r c; raise (RC_values (r, c))
+                                                              | r,c -> Printf.eprintf "r: %d   c: %d\n" r c;
+                                                                       raise ( Invalid_argument "Empty matrix - should not never occur (storematch)" )
                                                           in
                                                             aux 0 0 map
                                                         in
 
-                                                        Printf.printf "max_row_idx = %d \n" (Array2.max_row_idx mat);
-                                                        Printf.printf "max_col_idx = %d \n" (Array2.max_col_idx mat);
+                                                        let newmap = add_items_to_map varname mat varmap in
 
-                                                        let newmap = add_items_to_map varname (Array2.max_row_idx mat) (Array2.max_col_idx mat) mat varmap in
-
-                                                        command tl macrodefs_lst tmpvar newmap (* stores tmpvar as named variable *)
+                                                        command tl macrodefs_lst (Match_result mat) newmap (* stores tmpvar as named variable *)
 
 
                        | Sort                       -> (* sort entries *)

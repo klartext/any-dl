@@ -32,13 +32,6 @@ FEATUREs:
 
  - tagselect: unparse a table should be possible...
 
-   ******************************************************************************************************************************
- - * new built-in needed:  storematch("MyName"); # stores match.-array under   MyName.(col).(row)
-   * new command: astore("NAME");  (autostore() -> store current value like matrix -> NAME.(x).(y) or something like that
-   * syntacttic sugar: access to Array.items via  Dot-notation... eg.  $STACK.0, $STACK.1, $STACK.2 and so on.
-   ******************************************************************************************************************************
-     [ -> I have this option in mind since long, and it pops up again and again... ]
-
  - append_to_matchresult - command that allows collecting of data.
    (e.g. extracting data from pages, where the data is spread over many webpages;
    the data extracted from each page could then be collected into ONE matchresult

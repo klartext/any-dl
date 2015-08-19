@@ -261,8 +261,57 @@ module Array2 =
     let num_rows mat    = Array.length mat
     let max_row_idx mat = Array.length mat - 1
 
-    let num_cols mat    = Array.length mat.(0)
-    let max_col_idx mat = Array.length mat.(0) - 1
+    let num_cols_of_row    row mat = Array.length mat.(row)
+    let max_col_idx_of_row row mat = Array.length mat.(row) - 1
+
+
+    (* --------------------------------------------------------- *)
+    (* This function gives back a matrix without empty inner     *)
+    (* arrays.                                                   *)
+    (* All inner arrays that have len < 1 will be removed.       *)
+    (* --------------------------------------------------------- *)
+    (* If the outer array is of length 0, an exception will be   *)
+    (* raised.                                                   *)
+    (* --------------------------------------------------------- *)
+    (* If the matrix is changed and message=true, then a message *)
+    (* will be printed to stderr.                                *)
+    (* The message can also be set.                              *)
+    (* --------------------------------------------------------- *)
+    let remove_empty_arrays_from_matrix  ?(message=false) ?(msgtxt="matrix has been changed!") mat =
+
+      let matlen = Array.length mat in (* length of _outer_ matrix *)
+
+      if matlen = 0 then raise ( Invalid_argument "Empty matrix" ); (* outer matrix MUST have len > 0 *)
+
+      (* calculate count of inner arrays that have len = 0 *)
+      (* ------------------------------------------------- *)
+      let count = ref 0 in
+      for idx = 0 to Array.length mat - 1
+      do
+        if Array.length mat.(idx) = 0 then incr count
+      done;
+
+      if !count = 0
+      then
+        mat (* return orig *)
+      else
+        begin (* shorten matrix *)
+
+          if message then prerr_endline msgtxt; (* optional message *)
+
+          let newmat = Array.make ( matlen - !count ) [||] in (* result-matrix *)
+          let newidx = ref 0 in (* the index for the newmat / result *)
+
+          for idx = 0 to matlen - 1
+          do
+            if Array.length mat.(idx) > 0 then begin
+                                                 newmat.(!newidx) <- Array.copy mat.(idx);
+                                                 incr newidx
+                                               end
+          done;
+          newmat (* return the newly created, shortened matrix *)
+        end
+
 
   end
 
