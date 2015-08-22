@@ -124,22 +124,22 @@ module Pipelined =
       (* ========================================================================================================== *)
       let judge_getcall_status command_name status =
         match status with
-           | `Client_error           -> prerr_endline "Client_error";
+           | `Client_error           -> prerr_endline "Get_error: Client_error";
                                         raise (Get_error `Client_error)
 
-           | `Http_protocol_error  exc -> prerr_string "Http_protocol_error";
+           | `Http_protocol_error  exc -> prerr_string "Get_error: Http_protocol_error";
                                           prerr_endline (Printexc.to_string exc);
                                           raise (Get_error (`Http_protocol_error exc))
 
-           | `Redirection            -> prerr_endline "Redirection";
+           | `Redirection            -> prerr_endline "Get_problem: Redirection";
                                         raise (Get_problem `Redirection)
 
-           | `Server_error           -> prerr_endline "Server_error";
+           | `Server_error           -> prerr_endline "Get_error: Server_error";
                                         raise (Get_error `Server_error)
 
            | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then ( print_string command_name; print_endline "-Successful" )
 
-           | `Unserved               -> prerr_endline "Unserved";
+           | `Unserved               -> prerr_endline "Get_problem: Unserved";
                                         raise (Get_problem `Unserved)
 
 
@@ -228,15 +228,19 @@ module Pipelined =
         pipeline # add call_obj;  (* add the get-call to the pipeline *)
         pipeline # run();         (* process the pipeline (retrieve data) *)
 
-        (* check status *)
-        (* ------------ *)
-        judge_getcall_status cmd_string ( call_obj # status );
 
+        (* verbosity-message with status-infos for call-object *)
+        (* --------------------------------------------------- *)
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
           Printf.printf "Status-Code    %s:  %d\n" cmd_string (call_obj # response_status_code);
           Printf.printf "Status-Message %s:  %s\n" cmd_string (call_obj # response_status_text)
         end;
+
+        (* check status (throws exceptions if not `Success) *)
+        (* ------------------------------------------------ *)
+        judge_getcall_status cmd_string ( call_obj # status );
+
 
         let cookies = Nethttp.Header.get_set_cookie  (call_obj # response_header) in
 
