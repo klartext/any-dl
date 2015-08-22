@@ -127,19 +127,20 @@ module Pipelined =
            | `Client_error           -> prerr_endline "Client_error";
                                         raise (Get_error `Client_error)
 
-           | `Http_protocol_error  _ -> prerr_endline "Http_protocol_error";
-                                        raise (Get_error `Client_error)
+           | `Http_protocol_error  exc -> prerr_string "Http_protocol_error";
+                                          prerr_endline (Printexc.to_string exc);
+                                          raise (Get_error (`Http_protocol_error exc))
 
            | `Redirection            -> prerr_endline "Redirection";
-                                        raise (Get_problem `Client_error)
+                                        raise (Get_problem `Redirection)
 
            | `Server_error           -> prerr_endline "Server_error";
-                                        raise (Get_error `Client_error)
+                                        raise (Get_error `Server_error)
 
            | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then ( print_string command_name; print_endline "-Successful" )
 
            | `Unserved               -> prerr_endline "Unserved";
-                                        raise (Get_problem `Client_error)
+                                        raise (Get_problem `Unserved)
 
 
       (* ============================================================================= *)
