@@ -155,6 +155,8 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
     | E.No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url
     | E.Tagselect_empty_list    -> Printf.eprintf "Tagselect_empty_list for URL %s\n" url
     | E.Parse_exit              -> Printf.eprintf "Parser exited via exitparse-command\n"
+    | Network.Pipelined.Get_error   status -> Printf.eprintf "Parser abandoned, because of Get_error\n"
+    | Network.Pipelined.Get_problem status -> Printf.eprintf "Parser abandoned, because of Get_problem\n"
 
 
 
