@@ -78,6 +78,7 @@ type command_t =
   | Print_string of string
   | CSV_save_as       of results_t list               (* save data as csv-file *)
   | CSV_save                                          (* save data as csv-file - filename will be created automatically *)
+  | CSV_read          of results_t list               (* read data as csv-data from csv-file *)
   | Save                                      (* save data (filename derived from document-url) *)
   | Save_as           of results_t list       (* save data, explicit filename *)
   | Setvar       of results_t
@@ -194,6 +195,7 @@ let command_to_string cmd = match cmd with
   | Print_string    _ -> "Print_string"
   | CSV_save_as     _ -> "CSV_save_as"
   | CSV_save          -> "CSV_save"
+  | CSV_read        _ -> "CSV_read"
   | Save              -> "Save"
   | Save_as         _ -> "Save_as"
   | Setvar          _ -> "Setvar"

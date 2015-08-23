@@ -558,6 +558,11 @@ List of commands/keywords and a short-description of them:
     macro at the place where the "call"-command is used.
 
 
+  csv_read
+    csv_read reads in a file as csv-file.
+    The result is placed in tmpvar as Match_result.
+
+
   csv_save_as
     csv_save_as does save a *match_result* to a csv-file.
     All data is transformed to have equal number of columns in each row.

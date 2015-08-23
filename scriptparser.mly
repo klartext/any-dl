@@ -38,6 +38,7 @@
 %token SHOW_TYPE
 %token CSV_SAVE_AS
 %token CSV_SAVE
+%token CSV_READ
 %token SAVE
 %token SAVE_AS
 %token LINKEXTRACT
@@ -239,6 +240,7 @@ command_base: match_cmd         { $1 }
     |      call_macro           { $1 }
     |      csv_save             { $1 }
     |      csv_save_as          { $1 }
+    |      csv_read             { $1 }
     |      delete_cmd           { $1 }
     |      storematch_cmd       { $1 }
     |      download_cmd         { $1 }
@@ -308,6 +310,9 @@ csv_save_as:    CSV_SAVE_AS  LPAREN  argument_list  RPAREN     { CSV_save_as ( $
     ;
 
 csv_save:    CSV_SAVE  { CSV_save        }
+    ;
+
+csv_read:    CSV_READ    LPAREN argument_list RPAREN { CSV_read  $3 }
     ;
 
 save_as:     SAVE_AS  LPAREN  argument_list  RPAREN     { Save_as $3 }

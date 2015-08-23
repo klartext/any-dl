@@ -34,6 +34,7 @@
 
                   ("csv_save_as",     CSV_SAVE_AS );
                   ("csv_save",        CSV_SAVE    );
+                  ("csv_read",        CSV_READ    );
                   ("save",     SAVE     );
                   ("save_as",  SAVE_AS  );
 

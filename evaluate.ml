@@ -40,6 +40,8 @@ exception Variable_not_found of string  (* a variable-name lookup in the Varname
 
 exception Parse_exit                    (* user exit of a parse *)
 
+exception Csv_read_error of string            (* csv_read-command: error *)
+
 
 
 
@@ -1341,6 +1343,16 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        let url = Parsers.url_to_filename (to_string (Varmap.find "STARTURL" varmap) varmap) in
                                                        ignore ( command [CSV_save_as [String url; String ".csv"] ] macrodefs_lst tmpvar varmap ); (* do the CSV_save with the created filename *)
                                                        command tl macrodefs_lst tmpvar varmap
+
+
+
+                       | CSV_read  filename_arglist -> (*  Read data from file <filename> (given as arglist) as csv-data to Match_result *)
+                                                       let csv = try
+                                                                   Csv.load (paste_arglist_to_string filename_arglist varmap)
+                                                                 with Sys_error msg -> raise (Csv_read_error msg)
+                                                       in
+                                                       let result = Match_result (Csv.to_array csv) in
+                                                       command tl macrodefs_lst result varmap
 
 
 
