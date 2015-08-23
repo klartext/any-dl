@@ -149,14 +149,14 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
           )
 
   with (* handle exceptions from the parse-tree-evaluation *)
-    | E.No_Match                -> Printf.eprintf "Parser problem: Could not match to pattern!\t Parse will be exited for url %s\n" url
-    | E.Invalid_Row_Index       -> Printf.eprintf "Error in script! Invalid_Row_Index!\t Parse exited.\n"
-    | E.Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name
-    | E.No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url
-    | E.Tagselect_empty_list    -> Printf.eprintf "Tagselect_empty_list for URL %s\n" url
-    | E.Parse_exit              -> Printf.eprintf "Parser exited via exitparse-command\n"
-    | Network.Pipelined.Get_error   status -> Printf.eprintf "Parser abandoned, because of Get_error (URL: %s)\n" url
-    | Network.Pipelined.Get_problem status -> Printf.eprintf "Parser abandoned, because of Get_problem (URL: %s)\n" url
+    | E.No_Match                -> Printf.eprintf "Parser problem: Could not match to pattern!\t Parse will be exited for url %s\n" url; flush stderr
+    | E.Invalid_Row_Index       -> Printf.eprintf "Error in script! Invalid_Row_Index!\t Parse exited.\n"; flush stderr
+    | E.Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name; flush stderr
+    | E.No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url; flush stderr
+    | E.Tagselect_empty_list    -> Printf.eprintf "Tagselect_empty_list for URL %s\n" url; flush stderr
+    | E.Parse_exit              -> Printf.eprintf "Parser exited via exitparse-command\n"; flush stderr
+    | Network.Pipelined.Get_error   status -> Printf.eprintf "Parser abandoned, because of Get_error ( URL: %s )\n" url ; flush stderr
+    | Network.Pipelined.Get_problem status -> Printf.eprintf "Parser abandoned, because of Get_problem ( URL: %s )\n" url ; flush stderr
 
 
 
