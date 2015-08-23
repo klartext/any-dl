@@ -824,12 +824,31 @@ List of commands/keywords and a short-description of them:
 
 
   select
-    selects ONE ELEMENT from a row or a column.
-    The row/column must already have been selected with rowselect() or colselect().
-    select() does NOT allow matches on match-results (which are a matrix internally).
-      # Example:
-      # --------
-      select(2);
+    selects ONE part of a tmpvar.
+
+    Examples: select(0);
+              select(3);
+
+    For rows and columns:
+
+    document:
+    ---------
+      0 selects the document,
+      1 selects the url of the document
+
+      any other value  selects the document too
+
+    document-array:
+    ---------------
+    selects document with index (starting at 0)
+    rows/columns:
+    -------------
+      selects ONE ELEMENT from a row or a column.
+      The row/column must already have been selected with rowselect() or colselect().
+      select() does NOT allow matches on match-results (which are a matrix internally).
+        # Example:
+        # --------
+        select(2);
 
 
   selectmatch
