@@ -119,15 +119,18 @@ type command_t =
 
 
 
-let result_to_string res = match res with
+let result_to_string ?(details=false) res =
+  let opt_with_details str length = if details then str ^ (" (with " ^ string_of_int length ^ " elements)") else str
+  in
+  match res with
     | Varname        _ -> "Varname"
     | String         _ -> "String"
-    | String_array   _ -> "String_array"
+    | String_array   a -> opt_with_details "String_array" (Array.length a)
     | Document       _ -> "Document"
-    | Document_array _ -> "Document_array"
+    | Document_array a -> opt_with_details "Document_array" (Array.length a)
     | Url            _ -> "Url"
-    | Url_list       _ -> "Url_list"
-    | Url_array      _ -> "Url_array"
+    | Url_list       l -> opt_with_details "Url_list" (List.length l)
+    | Url_array      a -> opt_with_details "Url_array"  (Array.length a)
     | Dummy_result     -> "Dummy_result"
     | Match_result   _ -> "Match_result"
     | Cookies        _ -> "Cookies"
