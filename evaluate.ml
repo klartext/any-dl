@@ -1496,7 +1496,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                        | List_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\"\n" varname ) varmap;
                                                        command tl macrodefs_lst tmpvar varmap
 
-                       | Show_type                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string tmpvar);
+                       | Show_type                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string ~details:true tmpvar);
                                                        command tl macrodefs_lst tmpvar varmap
 
 
