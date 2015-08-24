@@ -765,6 +765,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            | Document_array docarr -> command tl macrodefs_lst ( Document (fst docarr.(index), snd docarr.(index)) ) varmap
                                                            | String_array rowitems -> command tl macrodefs_lst (String(rowitems.(index))) varmap
                                                            | Url_array    rowitems -> command tl macrodefs_lst (Url( fst(rowitems.(index)), snd(rowitems.(index)))) varmap
+                                                           | Url_list     rowitems -> command tl macrodefs_lst (Url( fst(List.nth rowitems index), snd(List.nth rowitems index))) varmap
                                                            | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                        end
 
