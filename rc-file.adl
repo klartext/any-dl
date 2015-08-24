@@ -1796,6 +1796,34 @@ start
 end
 
 
+# =================================
+# focus.de
+# =================================
+parsername "focus": ( "http://www.focus.de/gesundheit/videos/" )
+start
+  match(>>>((sdurl)|(hdurl)) = "(http.*?)"<<<);
+  #show_match;
+  dropcol(1);
+  dropcol(1);
+  dropcol(1);
+  #show_match;
+  iselectmatch(0, "sdurl", "sdurl" ); # SD is default (for HD use -i and select it by hand)
+  select(1); # select the url
+  store("urlstring");
+
+  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
+  store("urlname");
+
+  recall("BASEDOC");
+  call("_extract-and-store-title_");
+
+  recall("urlstring");
+  makeurl;
+  download( $title, "_", $urlname );
+
+end
+
+
 
 
 
