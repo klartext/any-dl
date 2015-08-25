@@ -491,7 +491,7 @@ Printf.printf " ##### TAGMATCH: %s\n" tagmatch;
                         if debug then List.iter (fun str -> Printf.printf "sample ===> %s\n" str) sample;
                         traverse_aux tl (depth+0) (List.append sample  collected) cur_tag
         in
-          traverse_aux doclist 0 [] ""
+          List.rev (traverse_aux doclist 0 [] "")
 
 
     (* ================================================================================================================================== *)
