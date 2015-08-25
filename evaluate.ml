@@ -407,7 +407,7 @@ and evaluate_statement (statement_list : statements_t list) (macrodefs_lst : mac
                                                                                       else
                                                                                       begin
                                                                                         match else_stmtlist_opt with
-                                                                                          | None               -> evaluate_statement then_stmtlist macrodefs_lst tmpvar varmap
+                                                                                          | None               -> evaluate_statement [] macrodefs_lst tmpvar varmap
                                                                                           | Some else_commands -> evaluate_statement else_commands macrodefs_lst tmpvar varmap
                                                                                       end
 
