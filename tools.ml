@@ -166,6 +166,7 @@ let select_decoding_scheme str =
   (* "the W3C recommends UTF-8 as the default encoding in XML and HTML." ( https://en.wikipedia.org/wiki/UTF-8  (2015-08-28) ) *)
   match String.lowercase scheme with
     | "iso-88-59-1" -> `Enc_iso88591
+    | "iso-8859-1"  -> `Enc_iso88591
     | "utf-8"       -> `Enc_utf8
     | _             -> prerr_endline "*** encoding scheme set to Enc_utf8 (fallback)"; `Enc_utf8
 
