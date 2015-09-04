@@ -45,7 +45,7 @@ let opt =  {
              auto_try         = false;
              auto_try_stop    = false;
              user_agent       = "any-dl";
-             initial_referrer = "-";
+             initial_referrer = "";
              ms_sleep         = 0;
              sep              = "# --------------------\n"
            }
