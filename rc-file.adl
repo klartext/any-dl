@@ -1495,7 +1495,7 @@ end
 # =================================
 # mp4-files matched and downloaed =
 # =================================
-parsername "mp4": ( "http://www.ardmediathek.de/das-erste/report-muenchen/", "http://www.sueddeutsche.de/"  )
+parsername "mp4": ( "http://www.ardmediathek.de/das-erste/report-muenchen/", "http://www.sueddeutsche.de/", "https://denkfunk.de/"  )
 start
   match("(http://.*?mp4)");
   transpose;
