@@ -158,6 +158,8 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
     | E.Csv_read_error     msg  -> Printf.eprintf "Parser exited by Csv_read_error: \"%s\" ( URL: %s )\n" msg url; flush stderr
     | Network.Pipelined.Get_error   status -> Printf.eprintf "Parser abandoned, because of Get_error ( URL: %s )\n" url ; flush stderr
     | Network.Pipelined.Get_problem status -> Printf.eprintf "Parser abandoned, because of Get_problem ( URL: %s )\n" url ; flush stderr
+    | Invalid_argument str    as exc   -> Printf.eprintf "Parser abandoned: %s\n" (Printexc.to_string exc)
+    | Not_found               as exc   -> Printf.eprintf "Parser abandoned: %s\n" (Printexc.to_string exc)
 
 
 
