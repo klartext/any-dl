@@ -107,9 +107,9 @@ end
 # -------------------
 parsername "pageinfo2": ( )
 start
-  htmldecode;
   print_string("\n"); # blank line
   titleextract;
+  htmldecode;
   print;
   print( "   ", $STARTURL, "\n" );
 end
