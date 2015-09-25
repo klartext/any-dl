@@ -162,7 +162,7 @@ let rec  to_string  result_value (varmap : varmap_t) =
 (* Should replace "to_string", if Url is wanted.  *)
 (* ---------------------------------------------- *)
 let rec  urlify  result_value (varmap : varmap_t) =
-  let make_referrer () = to_string ( Varmap.find_excdef "REFERRER" varmap (String "-") ) varmap in
+  let make_referrer () = to_string ( Varmap.find_excdef "REFERRER" varmap (String "") ) varmap in
   let converted =
     match result_value with
       | Varname       varname      -> let res = (Varmap.find varname varmap) in
