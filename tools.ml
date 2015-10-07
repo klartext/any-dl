@@ -339,3 +339,18 @@ module Sleep =
 
   end
 
+
+
+
+let print_pcre_error  pcre_error =
+  let open Pcre in
+  match pcre_error with
+     |  Partial             -> prerr_endline "Pcre-Error: Partial"
+     |  BadPartial          -> prerr_endline "Pcre-Error: BadPartial"
+     |  BadPattern (str, i) -> Printf.eprintf "Pcre-Error: BadPattern: %s / %d\n%!" str i
+     |  BadUTF8             -> prerr_endline "Pcre-Error: BadUTF8"
+     |  BadUTF8Offset       -> prerr_endline "Pcre-Error: BadUTF8Offset"
+     |  MatchLimit          -> prerr_endline "Pcre-Error: MatchLimit"
+     |  RecursionLimit      -> prerr_endline "Pcre-Error: RecursionLimit"
+     |  InternalError str   -> Printf.eprintf "Pcre-Error: InternalError: %s\n%!" str
+
