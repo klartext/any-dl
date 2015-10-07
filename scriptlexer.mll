@@ -176,6 +176,8 @@ and read_string = parse
    | "\\t"          { Buffer.add_string stringbuf "\t"; read_string lexbuf }
    | "\\("          { Buffer.add_string stringbuf "\\("; read_string lexbuf }
    | "\\)"          { Buffer.add_string stringbuf "\\)"; read_string lexbuf }
+   | "\\{"          { Buffer.add_string stringbuf "\\{"; read_string lexbuf }
+   | "\\}"          { Buffer.add_string stringbuf "\\}"; read_string lexbuf }
    | "\\."          { Buffer.add_string stringbuf "\\."; read_string lexbuf }
    | "\\\""         { Buffer.add_char stringbuf '"'; read_string lexbuf }
    (*
