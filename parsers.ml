@@ -20,17 +20,19 @@ let activate_controlstrings str =
 
 
 
-(* *)
+(* -------------------------------------------------- *)
 let if_match_give_group_of_groups str ~regexp_str =
-  let regexp = Pcre.regexp regexp_str in
-  if Pcre.pmatch ~rex:regexp str
-  then
-    begin
-      let substring_obj_arr = Pcre.exec_all ~rex:regexp str in
-      Some (Array.map (fun substring_obj -> Pcre.get_substrings substring_obj) substring_obj_arr )
-    end
-  else
-    None
+  try
+    let regexp = Pcre.regexp regexp_str in
+    if Pcre.pmatch ~rex:regexp str
+    then
+      begin
+        let substring_obj_arr = Pcre.exec_all ~rex:regexp str in
+        Some (Array.map (fun substring_obj -> Pcre.get_substrings substring_obj) substring_obj_arr )
+      end
+    else
+      None
+  with Pcre.Error e -> Tools.print_pcre_error e; None
 
 
 (* index of first non-blank will be returned.      *)
