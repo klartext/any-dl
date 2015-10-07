@@ -1222,6 +1222,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            | Url (href, ref)    -> Unit ( print_url (href,ref) )
                                                            | Url_list  liste    -> Unit ( List.iter  print_url liste )
                                                            | Url_array arr      -> Unit ( Array.iter print_url arr )
+                                                           | Cookies   cooklist -> Unit ( List.iter Network.Cookies.print_cookie cooklist )
 
                                                            (*
                                                            | Doclist   doclist  -> let string_of_dl dl = Parsers.convert_doclist_to_htmlstring [dl] in
