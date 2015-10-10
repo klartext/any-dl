@@ -1584,25 +1584,12 @@ end
 # =================================
 # mp3-files matched and downloaed =
 # =================================
-parsername "mp3": ( "http://www.ardmediathek.de/b5-aktuell/",
-                    "http://www.deutschlandfunk.de/",
-                  )
+parsername "mp3": ( )
 start
-  match(".*(https?://.*?mp3).*");
-  dropcol(0);
-  uniq;
-  iselectmatch(0, "mp3", "mp3" );
-
+  linkextract;
+  grep("\.mp3");
   makeurl;
-  store("url");
-  basename;
-  store("basename");
-
-  recall("BASEDOC");
-  call("_extract-and-store-title_");
-
-  recall( "url" );
-  download( $title, "_", $basename  );
+  download;
 end
 
 
@@ -1616,7 +1603,7 @@ end
 # ==================================================
 parsername "mp3bulk": ( )
 start
-  match("(http://.*mp3)");
+  match("(https?://.*mp3)");
   dropcol(1);
   show_match;
   makeurl;
