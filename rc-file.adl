@@ -1594,21 +1594,6 @@ end
 
 
 
-# ==================================================
-# mp3-massive download files matched and downloaed =
-# --------------------------------------------------
-# This parser would save Mem-usage, if an optimizer
-# would reorder the Parsetree to make Get-Array-Save-Array
-# on array sbstituted by (Get-Save)-Array.
-# ==================================================
-parsername "mp3bulk": ( )
-start
-  match("(https?://.*mp3)");
-  dropcol(1);
-  show_match;
-  makeurl;
-  download;
-end
 
 
 
