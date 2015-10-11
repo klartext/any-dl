@@ -953,7 +953,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                          (* extract urls and rebase these extracted urls *)
                                                          let extract_and_rebase document url =
                                                              let extracted_urls = Parsers.linkextract_str document in
-                                                             List.iter (fun x -> very_verbose_printf stdout "---extracted url: %s\n" x) extracted_urls;
+                                                             List.iter (fun x -> very_verbose_printf "---extracted url: %s\n" x) extracted_urls;
                                                              rebase_urls extracted_urls url
                                                          in
 
