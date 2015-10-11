@@ -36,7 +36,7 @@ module Cookies =
       (match cookie.cookie_path    with None -> () | Some path -> Printf.printf "    cookie-path:    %s\n" path);
       Printf.printf "    cookie-secure:  %s\n" (if cookie.cookie_secure then "TRUE" else "FALSE");
       print_endline "  ------";
-      ()
+      flush_all()
 
       (* old format, as printed in curl-version *)
       (* -------------------------------------- *)
@@ -58,7 +58,8 @@ module Cookies =
             print_endline "=*=*=> COOOKIES:";
               List.iter print_cookie cookies;
             print_endline "<=*=*= COOKIES";
-            print_endline "<-------------------------------"
+            print_endline "<-------------------------------";
+            flush_all()
           end
 
 
@@ -198,6 +199,7 @@ module Pipelined =
         begin
           print_endline "------------------------------->";
           Printf.printf "%s URL: %s\n" cmd_string url;
+          flush_all()
         end;
 
 
@@ -234,7 +236,8 @@ module Pipelined =
         if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
         begin
           Printf.printf "Status-Code    %s:  %d\n" cmd_string (call_obj # response_status_code);
-          Printf.printf "Status-Message %s:  %s\n" cmd_string (call_obj # response_status_text)
+          Printf.printf "Status-Message %s:  %s\n" cmd_string (call_obj # response_status_text);
+          flush_all()
         end;
 
         (* check status (throws exceptions if not `Success) *)
