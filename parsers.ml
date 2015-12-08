@@ -84,6 +84,15 @@ module Rebase =
       Neturl.string_of_url stripped
 
 
+    (* -------------------------------------------------- *)
+    (* just remove the fragment from the url.             *)
+    (* argument and result both string.                   *)
+    (* -------------------------------------------------- *)
+    let remove_fragment_from_url  url =
+      let neturl           = parse_url ~accept_8bits:true ~enable_fragment:true  url in
+      let without_fragment = remove_from_url ~fragment:true neturl in
+      string_of_url without_fragment
+ 
 
 
 

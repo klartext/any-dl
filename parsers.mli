@@ -8,6 +8,7 @@ module Rebase :
     val guess_scheme : string -> string
     val common_syntax_of_url : string -> Neturl.url_syntax
     val remove_scheme_from_url : string -> string
+    val remove_fragment_from_url : string -> string
     val rebase_url : string -> string -> string option
     val try_rebase : string -> string -> string
   end
