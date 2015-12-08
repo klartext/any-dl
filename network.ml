@@ -201,6 +201,7 @@ module Pipelined =
           Printf.printf "%s URL: %s\n" cmd_string url;
           flush_all()
         end;
+        let url = Parsers.Rebase.remove_fragment_from_url url in
 
 
         (* the Pipeline to run the call *)
