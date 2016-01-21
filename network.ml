@@ -132,8 +132,7 @@ module Pipelined =
                                           prerr_endline (Printexc.to_string exc);
                                           raise (Get_error (`Http_protocol_error exc))
 
-           | `Redirection            -> prerr_endline "Get_problem: Redirection";
-                                        raise (Get_problem `Redirection)
+           | `Redirection            -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then ( print_string command_name; print_endline "-Redirection" )
 
            | `Server_error           -> prerr_endline "Get_error: Server_error";
                                         raise (Get_error `Server_error)
