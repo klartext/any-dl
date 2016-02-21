@@ -604,6 +604,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            match tmpvar with
                                                              | Document (doc, url) -> doc
                                                              | String    s         -> s
+                                                             | String_array strarr -> Array.fold_left ( fun collect str       -> collect ^ str) "" strarr
                                                              | Document_array arr  -> Array.fold_left ( fun collect (doc,url) -> collect ^ doc) "" arr
                                                              (* match also on other types?? Does matching an URL for example makes sense? *)
                                                              | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
