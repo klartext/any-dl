@@ -761,8 +761,27 @@ start
   print("---\n\n");
 
 
+
+  # grab description of the movie
+  # =============================
+  recall("BASEDOC");
+
+  # SHORT-description
+  # -----------------
+  tagselect("div"."class"="col-xs-12 description_short" | data );
+  to_string;
+  save_as( $title, "_short_description.txt" );
+
+  # DETAILED-description
+  #---------------------
+  recall("BASEDOC");
+  tagselect("div"."id"="content-description" | data );
+  to_string;
+  save_as( $title, "_detailed_description.txt" );
+
+
   # Now go on to grab the viewo-url and download the video.
-  #========================================================
+  # =======================================================
   recall("BASEDOC");
 
 
@@ -800,6 +819,9 @@ start
   #store("videourl");
   #recall( "videourl" );
   download( $title, "_", $subtitle, ".mp4" );
+
+
+
 
 end
 
