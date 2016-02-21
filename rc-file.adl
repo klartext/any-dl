@@ -770,14 +770,14 @@ start
   # -----------------
   tagselect("div"."class"="col-xs-12 description_short" | data );
   to_string;
-  save_as( $title, "_short_description.txt" );
+  save_as( $title, "_", $subtitle, "_short_description.txt" );
 
   # DETAILED-description
   #---------------------
   recall("BASEDOC");
   tagselect("div"."id"="content-description" | data );
   to_string;
-  save_as( $title, "_detailed_description.txt" );
+  save_as( $title, "_", $subtitle, "_detailed_description.txt" );
 
 
   # Now go on to grab the viewo-url and download the video.
