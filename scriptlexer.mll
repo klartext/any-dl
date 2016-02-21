@@ -180,6 +180,7 @@ and read_string = parse
    | "\\}"          { Buffer.add_string stringbuf "\\}"; read_string lexbuf }
    | "\\."          { Buffer.add_string stringbuf "\\."; read_string lexbuf }
    | "\\\""         { Buffer.add_char stringbuf '"'; read_string lexbuf }
+   | "\\\\"         { Buffer.add_char stringbuf '\\'; read_string lexbuf }
    (*
    | "\\\""         { Buffer.add_string stringbuf (Lexing.lexeme lexbuf); read_string lexbuf }
    *)
