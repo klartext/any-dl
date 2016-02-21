@@ -724,21 +724,25 @@ start
 end
 
 
+
 # ---------------------------------
 # ARTE-Mediathek-Download
 # ---------------------------------
 # 1. Hauptseite ziehen
 # 2. Titel extrahieren und sichern
-# 3. Match auf arte_vp_url ( "ALL.json" )
-# 4. get ALL.json
-# 5. extrahiere Video-URL: http://artestrsmv.*?mp4 aus dem ALL.json
-# 6. Download video-file
+# 3. Tagselect-matching auf div-Element mit "arte_vp_config" => extrahiere "arte_vp_url_oembed"
+# 4. das entsprechende Dokument saugen
+# 5. extrahiere die json-URL aus dem eben geholten Dokument
+# 6. extrahiere Video-URL aus dem json-Geraffel.
+# 7. Select file (automatisch oder interaktiv, falls "-i" flag)
+# 8. Download video-file
 # ---------------------------------
-# Example-URL: http://videos.arte.tv/de/videos/joe-strummer--7161356.html
+# Example-URL: http://www.arte.tv/guide/de/064415-000-A/dissonance
 # =================================
-parsername "arte-dl": ( "http://www.arte.tv/guide/fr/", "http://www.arte.tv/guide/de/"  )
+parsername "arte-dl": ( "http://www.arte.tv/guide/fr/", "http://www.arte.tv/guide/de/" )
 start
 
+  print("\n*** ARTE-Parser: for manual selection of the video-resolution, use -i option (interactivity).\n\n");
   # Extract Title
   # -------------
   call("_extract-and-store-title_");
@@ -754,72 +758,47 @@ start
   store("subtitle");
 
   print("Subtitle: ", $subtitle);
-  print("---");
+  print("---\n\n");
 
 
-  #select the JSON-URL ( e.g. http://org-www.arte.tv/papi/tvguide/videos/stream/player/F/044035-000_PLUS7-F/ALL/ALL.json )
-  # ------------------
+  # Now go on to grab the viewo-url and download the video.
+  #========================================================
   recall("BASEDOC");
 
 
   # Looking for arte_vp_url-entries, which look like these examples:
   # ----------------------------------------------------------------
-  # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url='http://arte.tv/papi/tvguide/videos/stream/player/D/051090-007_PLUS7-D/ALL/ALL.json' class='video-container'></div>
-  # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url='http://arte.tv/papi/tvguide/videos/stream/player/D/051090-007_EXTRAIT-D/ALL/ALL.json' class='video-container'></div>
-  # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url='http://arte.tv/papi/tvguide/videos/stream/player/D/051090-007_PLUS7-D/ALL/ALL.json' class='video-container'></div>
-  # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url='http://arte.tv/papi/tvguide/videos/stream/player/D/051090-007_EXTRAIT-D/ALL/ALL.json' class='video-container'></div>
+  # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url_oembed='https://api.arte.tv/api/player/v1/oembed/de/064415-000...
 
-  tagselect("div"."arte_vp_url" | arg("arte_vp_url") ); 
-  #show_match;
-
-
-  # throw out multiple entries (entries are held in columns)
-  transpose;  # transposition to get uniq working on the columns
-  uniq;       # uniq on the columns
-  # not transposing back, because iselectmatch() needs selectables in the columns.
-
-  # remove unnecessary video-urls
-  # -----------------------------
-  grep("PLUS7-D"); # here are the videos
-
-  #print("If you want to select a video by hand, please use the \"-i\"-command line switch. (In the first selection j´you can just press enter.)");
-
-  iselectmatch(0,"json", "json");
-  #rowselect(0);
-  #select(0);
-
+  tagselect("div"."arte_vp_config" | arg("arte_vp_url_oembed") ); 
+  colselect(0);
   makeurl;
-  get;    # get file "ALL.json"
+  get; # get the document that contains the video-urls
 
-  store("ALL.json"); # store it, just in case
+  # extract the json_url from the downloaded document
+  # -------------------------------------------------
+  match("json_url=(http.*?arte_tvguide)");
+  colselect(1);
+  urldecode;
+  makeurl;
+  get; # get the json-stuff
 
-
-  # extract videofile-name
+  # extract the video-urls
   # ----------------------
-  match(>>>("quality":".*?").*?(http.*?mp4).*?"versionShortLibelle":(".*?")<<<);
+  grep("http.*?mp4");
+  match(".*?(http.*?mp4)");
   dropcol(0);
+  subst("\\\\", ""); # remove backslash's from the url-strings
+  show_match; # just for the user as overview
 
-  droprow(2); # not sure if this is generally full of crap
+  iselectmatch(0,"mp4", "mp4"); # Do the match on column 1 (urls)
+  print_string("\nSelected URL: ");
+  print;
 
-
-  # print information on the selectable videos for the user
-  # -------------------------------------------------------
-  print("You can select from the following videos:");
-  print("-----------------------------------------");
-  show_match;
-
-  # now selection by the user
-  # -------------------------
-  iselectmatch(1,"mp4", "mp4"); # Do the match on column 1 (urls)
-  select(1); # index 1: the URL
-  #print;
-
+  print(  "\n\n*** The Video-file will be saved as: ", $title, "_", $subtitle, ".mp4" );
   makeurl;
-  store("videourl");
-
-  #get; # geht so nicht. bekommt rtsp:// angeboten... ?! -> debugging wäre sinnvoll
-
-  recall( "videourl" );
+  #store("videourl");
+  #recall( "videourl" );
   download( $title, "_", $subtitle, ".mp4" );
 
 end
