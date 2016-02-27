@@ -404,9 +404,11 @@ end
 # Parser-Definitions for the Mediathek-Parsers #
 # ==============================================
 
-# ---------------------------------
-# Extract OSR Shownotes, and write them to csv-file
-# ---------------------------------
+# ------------------------------------------------------
+# Extract OSR Shownotes, and write them to csv-file;
+# and download the audio-file.
+# with -i switch, the audio-file-type can be selected.
+# ------------------------------------------------------
 parsername "OSR-shownotes-2-csv": (  "http://www.openscienceradio.de/" )
 start
 
@@ -428,7 +430,26 @@ start
   #print;
   show_match;
 
-  csv_save;
+  csv_save; # SAVING the show-notes as csv-file.
+
+
+  # extract the AUDIO-urls
+  # ----------------------
+  recall("BASEDOC");
+  tagselect("meta"."property"="og:audio" | arg("content") );
+  transpose;
+
+  # downloading the AUDIO-file now, and print some messages to the user.
+  # --------------------------------------------------------------------
+  iselectmatch(0, "http", "mp3");
+  makeurl;
+  print_string("\n\n-------------------------------------\n");
+  print_string("Start downloading the audio-file now.\nURL: ");
+  print;
+  print("...please be patient.");
+  download;
+  print("done.");
+  print_string("-------------------------------------\n");
 
 end
 
