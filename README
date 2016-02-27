@@ -52,10 +52,6 @@ Overview
   it will make sense to have the following tools also installed:
 
   - rtmpdump
-  - mplayer
-  - ffmpeg      (for rtsp)
-  - vlc         (for rtsp)
-  - youtube-dl  (for youtube/vimeo, any-dl has now a parser that is just a wrapper here)
 
 
 Compilation / Installation / Setup
@@ -93,6 +89,21 @@ Compilation / Installation / Setup
 
       yojson:
         ?
+
+      nettls-gnutls:
+        ?
+
+  For ARCH-Linux, all necessary libs can be installed with
+  packages from AUR.
+  There also is a package for any-dl, but the github-code
+  is more up-to-date.
+
+  ( any-dl on AUR:  https://aur.archlinux.org/packages/any-dl/ )
+
+  If you use OPAM, all the needed libraries can be installed
+  with opam.
+  But for any-dl itself there is no OPAM-package at the moment.
+
 
 
   To compile any-dl, just type "make" at the shell then.
