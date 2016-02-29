@@ -366,4 +366,4 @@ let cookie_to_string  (cookie : Nethttp.netscape_cookie ) =
   (match cookie.cookie_domain  with None -> "" | Some dom  -> Printf.sprintf "    cookie-domain:  %s\n" dom) ^
   (match cookie.cookie_path    with None -> "" | Some path -> Printf.sprintf "    cookie-path:    %s\n" path) ^
   Printf.sprintf "    cookie-secure:  %s\n" (if cookie.cookie_secure then "TRUE" else "FALSE") ^
-  "  ------"
+  "  ------\n"

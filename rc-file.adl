@@ -1857,7 +1857,7 @@ end
 # ----------------------------------------------------
 defmacro "cookieecho":
 start
-  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
+  print("COOKIES.RECEIVED:\n", $COOKIES.RECEIVED );
 
   print("Preparing cookies for get");
   recall("COOKIES.RECEIVED");
@@ -1867,8 +1867,8 @@ start
   print;
   get;
 
-  print("COOKIES.SEND: ", $COOKIES.SEND );
-  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
+  print("COOKIES.SEND:\n", $COOKIES.SEND );
+  print("COOKIES.RECEIVED:\n", $COOKIES.RECEIVED );
 
 
   print("Preparing cookies for second get");
@@ -1879,8 +1879,8 @@ start
   print;
   get;
 
-  print("COOKIES.SEND: ", $COOKIES.SEND );
-  print("COOKIES.RECEIVED: ", $COOKIES.RECEIVED );
+  print("COOKIES.SEND:\n", $COOKIES.SEND );
+  print("COOKIES.RECEIVED:\n", $COOKIES.RECEIVED );
 end
 
 
