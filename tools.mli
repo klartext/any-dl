@@ -72,3 +72,4 @@ module Array2 :
 module Sleep :
   sig val sleep_float : float -> unit val sleep_ms : int -> unit end
 val print_pcre_error : Pcre.error -> unit
+val cookie_to_string : Nethttp.netscape_cookie -> string

@@ -354,3 +354,16 @@ let print_pcre_error  pcre_error =
      |  RecursionLimit      -> prerr_endline "Pcre-Error: RecursionLimit"
      |  InternalError str   -> Printf.eprintf "Pcre-Error: InternalError: %s\n%!" str
 
+
+
+(* special converter for the cookies: create string for to-string-function *)
+(* ======================================================================= *)
+let cookie_to_string  (cookie : Nethttp.netscape_cookie ) =
+  let open Nethttp in
+  Printf.sprintf "    cookie-name:    %s\n" cookie.cookie_name ^
+  Printf.sprintf "    cookie-value:   %s\n" cookie.cookie_value ^
+  (match cookie.cookie_expires with None -> "" | Some ex   -> Printf.sprintf "    cookie-expires: %f\n" ex) ^
+  (match cookie.cookie_domain  with None -> "" | Some dom  -> Printf.sprintf "    cookie-domain:  %s\n" dom) ^
+  (match cookie.cookie_path    with None -> "" | Some path -> Printf.sprintf "    cookie-path:    %s\n" path) ^
+  Printf.sprintf "    cookie-secure:  %s\n" (if cookie.cookie_secure then "TRUE" else "FALSE") ^
+  "  ------"

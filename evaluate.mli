@@ -162,7 +162,6 @@ module Varmap :
   end
 type varmap_t = results_t Varmap.Variablemap.t
 type command_fun_res_t = results_t * varmap_t
-val cookie_to_string : Nethttp.netscape_cookie -> string
 val boil_down : results_t -> results_t
 val to_string : results_t -> varmap_t -> string
 val urlify : results_t -> varmap_t -> results_t

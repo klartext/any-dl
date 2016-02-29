@@ -86,17 +86,6 @@ type varmap_t = results_t Varmap.Variablemap.t
 type command_fun_res_t = results_t * varmap_t
 
 
-(* special converter for the cookies: create string for to-string-function *)
-(* ======================================================================= *)
-let cookie_to_string  (cookie : Nethttp.netscape_cookie ) =
-  let open Nethttp in
-  Printf.sprintf "    cookie-name:    %s\n" cookie.cookie_name ^
-  Printf.sprintf "    cookie-value:   %s\n" cookie.cookie_value ^
-  (match cookie.cookie_expires with None -> "" | Some ex   -> Printf.sprintf "    cookie-expires: %f\n" ex) ^
-  (match cookie.cookie_domain  with None -> "" | Some dom  -> Printf.sprintf "    cookie-domain:  %s\n" dom) ^
-  (match cookie.cookie_path    with None -> "" | Some path -> Printf.sprintf "    cookie-path:    %s\n" path) ^
-  Printf.sprintf "    cookie-secure:  %s\n" (if cookie.cookie_secure then "TRUE" else "FALSE") ^
-  "  ------"
 
 
 (* ================================================================ *)
@@ -147,7 +136,7 @@ let rec  to_string  result_value (varmap : varmap_t) =
       (*
       | Doclist       dl           -> Parsers.convert_doclist_to_htmlstring dl
       *)
-      | Cookies        clist       -> list_string_append ( List.map cookie_to_string clist )
+      | Cookies        clist       -> list_string_append ( List.map Tools.cookie_to_string clist )
       | Dummy_result               -> ""
       (*
       *)
