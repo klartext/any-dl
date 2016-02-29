@@ -29,13 +29,8 @@ module Cookies =
     (* print the contents of a cookie to stdout *)
     (* ======================================== *)
     let print_cookie  cookie =
-      Printf.printf "    cookie-name:    %s\n" cookie.cookie_name;
-      Printf.printf "    cookie-value:   %s\n" cookie.cookie_value;
-      (match cookie.cookie_expires with None -> () | Some ex   -> Printf.printf "    cookie-expires: %f\n" ex);
-      (match cookie.cookie_domain  with None -> () | Some dom  -> Printf.printf "    cookie-domain:  %s\n" dom);
-      (match cookie.cookie_path    with None -> () | Some path -> Printf.printf "    cookie-path:    %s\n" path);
-      Printf.printf "    cookie-secure:  %s\n" (if cookie.cookie_secure then "TRUE" else "FALSE");
-      print_endline "  ------";
+      let cookie_as_string = Tools.cookie_to_string cookie in
+      print_endline cookie_as_string;
       flush_all()
 
       (* old format, as printed in curl-version *)
