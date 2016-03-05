@@ -811,6 +811,28 @@ start
   # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url_oembed='https://api.arte.tv/api/player/v1/oembed/de/064415-000...
 
   tagselect("div"."arte_vp_config" | arg("arte_vp_url_oembed") ); 
+  #show_match;
+
+  # ----------------------------------------------------------------------
+  # Sometimes, there are ARTEPLUS7- and other entries ( like "EXTRAIT" ).
+  # If that's the case, select the ARTEPLUS7-entries.
+  # They contain the stuff needed for the video.
+  # If there are no ARTEPLUS7-entries, try to extract EXTRAIT's
+  # and the video should be there.
+  # ----------------------------------------------------------------------
+  ifnotempty( grep("ARTEPLUS7"); )
+  then
+    # Transpose used before, because grep will need a transposed MatchResult.
+    # Afterwards, tranpose result again.
+    transpose;
+    grep("ARTEPLUS7");
+    transpose;
+  else
+    transpose;
+    grep("EXTRAIT");
+    transpose;
+  fi
+
   colselect(0);
   makeurl;
   get; # get the document that contains the video-urls
@@ -829,7 +851,7 @@ start
   match(".*?(http.*?mp4)");
   dropcol(0);
   subst("\\\\", ""); # remove backslash's from the url-strings
-  show_match; # just for the user as overview
+  uniq; # if there are multiple entries with same url, uniq-ify
 
   iselectmatch(0,"mp4", "mp4"); # Do the match on column 1 (urls)
   print_string("\nSelected URL: ");
