@@ -113,8 +113,9 @@ let boil_down value =
 (* ---------------------------------------------- *)
 let rec  to_string  result_value (varmap : varmap_t) =
 
-  let array_string_append str_arr = Array.fold_left ( ^ ) "" str_arr in
+  let array_string_append ?(sep="")  str_arr = Array.fold_left ( fun left right -> left ^ sep ^ right ) "" str_arr |> String.trim in
   let list_string_append str_lst  = List.fold_left  ( ^ ) "" str_lst in
+
 
   let str =
     match result_value with
@@ -128,7 +129,7 @@ let rec  to_string  result_value (varmap : varmap_t) =
       | Document      (doc, url)   -> url ^ ":" ^ doc
       | Document_array  arr        -> let strarr = Array.map ( fun (d,u) -> to_string (Document (d,u)) varmap ) arr in to_string (String_array strarr) varmap
       | String_array  str_arr      -> array_string_append str_arr
-      | Match_result  mres         -> let x = Array.map array_string_append mres in array_string_append x
+      | Match_result  mres         -> let rows = Array.map ( fun columns -> array_string_append ~sep:" " columns ) mres in array_string_append ~sep:"\n" rows
       | Url           (href, ref)  -> href
       | Url_list      url_list     -> List.fold_right ( fun a sofar -> "\"" ^ (fst a) ^ "\" " ^ sofar ) url_list ""
       | Url_array     url_arr      -> to_string  (Url_list ( Array.to_list url_arr)) varmap
