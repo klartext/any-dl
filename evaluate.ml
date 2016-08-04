@@ -68,7 +68,7 @@ module Varmap =
 
     let find varname varmap =
       match varname with
-        | "NOW" -> let open Unix in String( string_of_float ( time() ) )
+        | "NOW" -> let open Unix in String( time () |> int_of_float |> string_of_int )
         | _     -> try Variablemap.find varname varmap with Not_found -> raise (Variable_not_found varname)
 
     (* find with an exception-default value                                               *)
