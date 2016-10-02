@@ -160,6 +160,7 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
     | Network.Pipelined.Get_problem status -> Printf.eprintf "Parser abandoned, because of Get_problem ( URL: %s )\n" url ; flush stderr
     | Invalid_argument str    as exc   -> Printf.eprintf "Parser abandoned: %s\n" (Printexc.to_string exc)
     | Not_found               as exc   -> Printf.eprintf "Parser abandoned: %s\n" (Printexc.to_string exc)
+    | Neturl.Malformed_URL             -> Printf.eprintf "Parser abandoned: %s ( URL: %s )\n" "Neturl.Malformed_URL" url
 
 
 
