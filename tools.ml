@@ -102,7 +102,7 @@ let read_file  filename =
 
 (* ------------------------------------------------------------------------ *)
 (* Sortiere String-Liste mit Reihenfolge von a nach z; case insensitive *)
-let sort stringlist = List.sort ( fun a b -> let al = String.lowercase a and bl = String.lowercase b
+let sort stringlist = List.sort ( fun a b -> let al = String.lowercase_ascii a and bl = String.lowercase_ascii b
                                    in if al < bl then (-1) else if al = bl then 0 else 1)  stringlist
 (* ------------------------------------------------------------------------ *)
 
@@ -167,7 +167,7 @@ let select_decoding_scheme str =
     (* Array.iteri ( fun i s -> Printf.printf  "%d => %s\n" i s ) extracted; flush stdout; exit 99; (* for debugging *) *)
 
   (* "the W3C recommends UTF-8 as the default encoding in XML and HTML." ( https://en.wikipedia.org/wiki/UTF-8  (2015-08-28) ) *)
-  match String.lowercase scheme with
+  match String.lowercase_ascii scheme with
     | "iso-88-59-1" -> `Enc_iso88591
     | "iso-8859-1"  -> `Enc_iso88591
     | "utf-8"       -> `Enc_utf8
