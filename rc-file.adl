@@ -115,6 +115,28 @@ start
 end
 
 
+# show URL and title, html-decoded
+# -------------------
+# Htmldecode is done before text extraction
+# Therefore the title is also converted correctly to utf-8, if
+# other encodeings have been found.
+# This seems to be the correct pageinfo-parser,
+# which would relace "pageinfo" and "pageinfo2",
+# but because missing time to test intensively,
+# "pageinfo" and "pageinfo2" will not be removed now.
+# Maybe later "pageinfo3" will replace "pageinfo",
+# and the other pageinfo-parsers would be removed then.
+# -------------------
+parsername "pageinfo3": ( )
+start
+  print_string("\n"); # blank line
+  htmldecode;
+  titleextract;
+  print;
+  print( "   ", $STARTURL, "\n" );
+end
+
+
 # ------------------------------------------
 # only prints data part of the html, no tags
 # acts like html-2-txt, but does not change
