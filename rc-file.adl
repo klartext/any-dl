@@ -137,6 +137,29 @@ start
 end
 
 
+
+# -----------------------------------------------------------
+# Pageinfo as HTML-Link
+# -----------------------------------------------------------
+# use with CLI-switch   -sep=""
+# -----------------------------------------------------------
+# You need to add html-beginning and html-end,
+# but this creates the content in between,
+# if used on many urls on CLI.
+# -----------------------------------------------------------
+parsername "pageinfo_html": ( )
+start
+
+  print_string("<hr><p>");
+  htmldecode;
+  titleextract;
+  store("TITLE");
+
+  print_string("\n"); # blank line
+  print(>>><a href="<<<, $STARTURL, >>>"><<<, $TITLE, "</a>");
+end
+
+
 # ------------------------------------------
 # only prints data part of the html, no tags
 # acts like html-2-txt, but does not change
