@@ -171,7 +171,9 @@ let select_decoding_scheme str =
     | "iso-88-59-1" -> `Enc_iso88591
     | "iso-8859-1"  -> `Enc_iso88591
     | "utf-8"       -> `Enc_utf8
+    (*
     | "windows-1252"-> `Enc_windows1252
+    *)
     | _             -> prerr_endline ("*** encoding scheme set to Enc_utf8 (fallback) - extracted scheme: " ^ scheme); `Enc_utf8
 
 
