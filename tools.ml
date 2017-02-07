@@ -165,7 +165,6 @@ let select_decoding_scheme str =
   let extracted = try (Pcre.extract ~pat:"charset=[\"\']?([^\"\']+)" ~flags:[] str) with Not_found -> [|"utf-8"|] in
   let scheme = extracted.(1) in
     (* Array.iteri ( fun i s -> Printf.printf  "%d => %s\n" i s ) extracted; flush stdout; exit 99; (* for debugging *) *)
-    Array.iteri ( fun i s -> Printf.printf  "%d => %s\n" i s ) extracted; flush stdout; exit 99; (* for debugging *)
 
   (* "the W3C recommends UTF-8 as the default encoding in XML and HTML." ( https://en.wikipedia.org/wiki/UTF-8  (2015-08-28) ) *)
   match String.lowercase_ascii scheme with
