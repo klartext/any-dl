@@ -15,6 +15,7 @@ type opt_t = {
                mutable show_commands    :  bool;          (*  -c: show all commands of the parser definition language *)
                mutable verbose          :  bool;          (*  -v: print some more details (be verbose) *)
                mutable very_verbose     :  bool;          (* -vv: print a lot more details (be very verbose) *)
+               mutable verbosity        :  int;           (* -v / -vv: verbosity *)
                mutable safe             :  bool;          (*  -s: safe behaviour: no download via system invoked *)
                mutable interactive      :  bool;          (*  -i: interactive features enabled (e.g. iselectmatch() *)
                mutable auto_try         :  bool;          (*  -a: auto-try: automatically try all parsers *)
@@ -40,6 +41,7 @@ let opt =  {
              show_commands    = false;
              verbose          = false;
              very_verbose     = false;
+             verbosity        = 0;
              safe             = false;
              interactive      = false;
              auto_try         = false;
@@ -61,8 +63,8 @@ let parse () =
          ("-l",   Arg.Unit   (fun ()          -> opt.list_parsers     <- true ),              " list parsers" );
          ("-f",   Arg.String (fun rcfilename  -> opt.rc_filenames  <- rcfilename :: opt.rc_filenames ),        " rc-file-name" );
          ("-c",   Arg.Unit   (fun ()          -> opt.show_commands    <- true       ),        " show commands of parserdef-language" );
-         ("-v",   Arg.Unit   (fun ()          -> opt.verbose          <- true       ),        " verbose" );
-         ("-vv",  Arg.Unit   (fun ()          -> opt.very_verbose     <- true       ),        " very-verbose" );
+         ("-v",   Arg.Unit   (fun verbosity   -> opt.verbosity        <- 1; opt.verbose      <- true  ),        " verbose" );
+         ("-vv",  Arg.Unit   (fun verbosity   -> opt.verbosity        <- 2; opt.very_verbose <- true  ),        " very-verbose" );
          ("-s",   Arg.Unit   (fun ()          -> opt.safe             <- true       ),        " safe: no download via system invoked" );
          ("-i",   Arg.Unit   (fun ()          -> opt.interactive      <- true       ),        " interactive: interactive features enabled" );
          ("-a",   Arg.Unit   (fun ()          -> opt.auto_try         <- true       ),        " auto-try: try all parsers" );
