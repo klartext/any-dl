@@ -209,7 +209,7 @@ parsername "pics": ( )
 start
   linkextract;
   print;
-  grep("(\.jpg)|(\.jpeg)|(\.gif)|(\.png)|(\.svg)|(\.pnm)|(\.ppm)|(\.pgm)|(\.pbm)$");
+  grep("((\.jpg)|(\.jpeg)|(\.gif)|(\.png)|(\.svg)|(\.pnm)|(\.ppm)|(\.pgm)|(\.pbm))$");
   uniq;
   print( " ======================================================================== ");
   print;
