@@ -10,7 +10,9 @@ module Rebase :
     val remove_scheme_from_url : string -> string
     val remove_fragment_from_url : string -> string
     val rebase_url : string -> string -> string option
+    val rebase_url : ?verbose:bool -> string -> string -> string option
     val try_rebase : string -> string -> string
+    val try_rebase : ?verbose:bool -> string -> string -> string
   end
 val suffixes : string list
 val url_to_filename : string -> string
