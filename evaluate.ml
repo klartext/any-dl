@@ -935,7 +935,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                                                          (* extracted urls can be rebased with this function *)
                                                          let rebase_urls   url_list  parent_url =
-                                                             List.fold_right ( fun lnk sofar -> match Parsers.Rebase.rebase_url parent_url lnk with
+                                                             List.fold_right ( fun lnk sofar -> match Parsers.Rebase.rebase_url ~verbose:Cli.opt.Cli.very_verbose parent_url lnk with
                                                                                                   | Some rebased -> (rebased,  parent_url) :: sofar
                                                                                                   | None         -> sofar
                                                                              ) url_list []
@@ -980,7 +980,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                        | Rebase               ->
                                                        let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
-                                                       let rebase   = Parsers.Rebase.try_rebase ~verbose:Cli.opt.Cli.verbose  starturl in
+                                                       let rebase   = Parsers.Rebase.try_rebase ~verbose:Cli.opt.Cli.very_verbose  starturl in
 
                                                        let result =
                                                          begin
