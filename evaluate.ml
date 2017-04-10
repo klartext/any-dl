@@ -980,7 +980,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                        | Rebase               ->
                                                        let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
-                                                       let rebase   = Parsers.Rebase.try_rebase  starturl                in
+                                                       let rebase   = Parsers.Rebase.try_rebase ~verbose:Cli.opt.Cli.verbose  starturl in
 
                                                        let result =
                                                          begin

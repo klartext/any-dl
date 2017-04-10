@@ -98,7 +98,7 @@ module Rebase =
 
     (* reabse: rebasing an url: make relative urls absolute urls *)
     (* --------------------------------------------------------- *)
-    let rebase_url  url  extracted_link =
+    let rebase_url ?(verbose=false)  url  extracted_link =
 
       let syntax = common_syntax_of_url url in (* extract the syntax of the original *)
 
@@ -110,7 +110,7 @@ module Rebase =
 
         (* if very-verbose option is set, print out some details *)
         (* ----------------------------------------------------- *)
-        if Cli.opt.Cli.very_verbose
+        if verbose
         then
           begin
             Printf.printf "url:            %s\n" (url);
@@ -122,14 +122,15 @@ module Rebase =
             Printf.printf "base:           %s\n" (string_of_url base);
             Printf.printf "absurl:         %s\n" (string_of_url absurl);
             print_endline "----------------------------------------------------";
+            flush stdout
           end;
 
         Some (string_of_url absurl)
       with
         Neturl.Malformed_URL -> None
 
-    let try_rebase  url  extracted_link =
-      match rebase_url  url  extracted_link with
+    let try_rebase ?(verbose=false)  url  extracted_link =
+      match rebase_url ~verbose:verbose  url  extracted_link with
         | Some rebased -> rebased
         | None         -> prerr_endline "rebase not possible"; extracted_link
 
