@@ -99,8 +99,18 @@ module Rebase =
     (* reabse: rebasing an url: make relative urls absolute urls *)
     (* --------------------------------------------------------- *)
     let rebase_url ?(verbose=false)  url  extracted_link =
+      if verbose
+      then
+        begin
+          Printf.printf "url:            %s\n" (url);
+          Printf.printf "extracted_link  %s\n" (extracted_link);
+          print_endline "---------";
+        end;
+
+      if verbose then Printf.printf "rebase_url:  url = \"%s\"  | extracted_link = \"%s\"\n---------\n" url  extracted_link;
 
       let syntax = common_syntax_of_url url in (* extract the syntax of the original *)
+
 
       try
         let neturl        = parse_url ~accept_8bits:true ~enable_fragment:true  ~base_syntax:syntax  url in
@@ -113,10 +123,6 @@ module Rebase =
         if verbose
         then
           begin
-            Printf.printf "url:            %s\n" (url);
-            Printf.printf "extracted_link  %s\n" (extracted_link);
-            print_endline "---------";
-            (* --------------------------------- *)
             Printf.printf "neturl:         %s\n" (string_of_url neturl);
             Printf.printf "extracted_url:  %s\n" (string_of_url extracted_url);
             Printf.printf "base:           %s\n" (string_of_url base);
