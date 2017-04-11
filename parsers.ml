@@ -105,6 +105,7 @@ module Rebase =
           Printf.printf "url:            %s\n" (url);
           Printf.printf "extracted_link  %s\n" (extracted_link);
           print_endline "---------";
+          flush stdout
         end;
 
       if verbose then Printf.printf "rebase_url:  url = \"%s\"  | extracted_link = \"%s\"\n---------\n" url  extracted_link;
