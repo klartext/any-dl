@@ -20,7 +20,8 @@ val read_file : string -> string
 val sort : string list -> string list
 val array_drop : 'a array -> int -> 'a array
 val pairlist_to_list : ('a * 'a) list -> 'a list
-val select_decoding_scheme : string -> [> `Enc_iso88591 | `Enc_utf8 ]
+val select_decoding_scheme :
+  string -> [> `Enc_iso88591 | `Enc_utf8 | `Enc_windows1252 ]
 val html_decode : ?inenc:Netconversion.encoding -> string -> string
 val lines_of_string : string -> string list
 val test_pattern_match_on_string : string -> string -> bool
