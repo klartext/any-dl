@@ -172,8 +172,9 @@ let select_decoding_scheme str =
     | "iso-8859-1"  -> `Enc_iso88591
     | "utf-8"       -> `Enc_utf8
     (*
-    | "windows-1252"-> `Enc_windows1252
+    | "windows-1252"-> `Enc_utf8
     *)
+    | "windows-1252"-> `Enc_windows1252
     | _             -> prerr_endline ("*** encoding scheme set to Enc_utf8 (fallback) - extracted scheme: " ^ scheme); `Enc_utf8
 
 
@@ -253,8 +254,28 @@ let wrap_string left right stringlist =
   List.map ( fun str -> left ^ str ^ right ) stringlist
 
 
+module type Array2_slim =
+  sig
+    external length : 'a array -> int = "%array_length"
+    external get : 'a array -> int -> 'a = "%array_safe_get"
+    external set : 'a array -> int -> 'a -> unit = "%array_safe_set"
+    external make : int -> 'a -> 'a array = "caml_make_vect"
+    external create : int -> 'a -> 'a array = "caml_make_vect"
+    external create_float : int -> float array = "caml_make_float_vect"
+    val filter : ('a -> bool) -> 'a array -> 'a array
+    val filter_row_by_colmatch :
+      ('a -> bool) -> 'a array array -> 'a array array
+    val num_rows : 'a array -> int
+    val max_row_idx : 'a array -> int
+    val num_cols_of_row : int -> 'a array array -> int
+    val max_col_idx_of_row : int -> 'a array array -> int
+    val remove_empty_arrays_from_matrix :
+      ?message:bool -> ?msgtxt:string -> 'a array array -> 'a array array
+
+  end
 
 module Array2 =
+  (
   struct
     include Array
 
@@ -322,6 +343,9 @@ module Array2 =
 
 
   end
+  :
+  Array2_slim
+  )
 
 
 
