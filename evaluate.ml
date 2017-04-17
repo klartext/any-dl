@@ -50,7 +50,19 @@ exception Csv_read_error of string            (* csv_read-command: error *)
 (* -------------------- *)
 module Varmap =
   struct
-    module Variablemap = Map.Make( String )
+    module type Variablemap_slim =
+      sig
+        type key = String.t
+        type 'a t = 'a Map.Make(String).t
+        val empty : 'a t
+        val mem : key -> 'a t -> bool
+        val add : key -> 'a -> 'a t -> 'a t
+        val remove : key -> 'a t -> 'a t
+        val iter : (key -> 'a -> unit) -> 'a t -> unit
+        val find : key -> 'a t -> 'a
+      end
+
+    module Variablemap = ( Map.Make( String ) : Variablemap_slim )
 
     include Variablemap
 
