@@ -280,35 +280,6 @@ module Htmlparse =
                     (new Netchannels.input_string str)
 
 
-    (* ======================================================================================= *)
-    (* strip (trim) Data-Elements: String.trim used on Data-Elements.                          *)
-    (* Therefore leading and trailing blanks will be removed from the Data-Elements.           *)
-    (* Additionally, if String.trim results in "", then the whole Data-Element will be removed.*)
-    (* --------------------------------------------------------------------------------------- *)
-    (*                                                                                         *)
-    (* ======================================================================================= *)
-    let strip_html_data doclist =
-
-      let is_empty_data_element     elem = match elem with  Data d -> if d = "" then true else false  |  Element _ -> false in
-      let is_not_empty_data_element elem = not ( is_empty_data_element elem ) in
-
-      let remove_empty_data doclist = List.filter is_not_empty_data_element doclist in
-
-      let rec traverse dl newdl =
-        match dl with
-          | []       -> List.rev newdl     (* result with corrected order of aggregated / stripped elements *)
-          | hd :: tl -> let stripped =
-                          begin
-                            match hd with
-                              | Element (tag, arg, dl) -> let deeperlist = traverse dl [] in
-                                                          Element (tag, arg, remove_empty_data deeperlist)
-                              | Data d                 -> Data (String.trim d)
-                          end
-                        in
-                          (traverse tl (stripped::newdl)) (* go on with tail, prepend stripped to newdl *)
-      in
-        traverse doclist []
-
 
 
     (* ======================================================================================= *)

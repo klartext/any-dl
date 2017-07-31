@@ -10,7 +10,8 @@ module Rebase :
     val remove_scheme_from_url : string -> string
     val remove_fragment_from_url : string -> string
     val rebase_url : ?verbose:bool -> string -> string -> string option
-    val try_rebase : ?verbose:bool -> ?errmsg:bool -> string -> string -> string
+    val try_rebase :
+      ?verbose:bool -> ?errmsg:bool -> string -> string -> string
   end
 val suffixes : string list
 val url_to_filename : string -> string
@@ -32,7 +33,6 @@ module Xmlparse :
 module Htmlparse :
   sig
     val string_to_nethtml : string -> Nethtml.document list
-    val strip_html_data : Nethtml.document list -> Nethtml.document list
     val dump_html : Nethtml.document list -> unit
     val dump_html_data : Nethtml.document list -> unit
     val show_tags : Nethtml.document list -> unit
