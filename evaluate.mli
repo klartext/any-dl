@@ -140,6 +140,7 @@ exception Tagselect_empty_list
 exception No_Match
 exception No_Matchresult_available
 exception No_Matchable_value_available
+exception Html_decode_error
 exception Wrong_tmpvar_type
 exception Wrong_argument_type
 exception Conversion_error
@@ -151,14 +152,29 @@ exception Parse_exit
 exception Csv_read_error of string
 module Varmap :
   sig
-    module Variablemap :
+    module type Variablemap_slim =
       sig
         type key = String.t
         type 'a t = 'a Map.Make(String).t
         val empty : 'a t
+        val mem : key -> 'a t -> bool
+        val add : key -> 'a -> 'a t -> 'a t
+        val remove : key -> 'a t -> 'a t
+        val iter : (key -> 'a -> unit) -> 'a t -> unit
+        val find : key -> 'a t -> 'a
       end
+    module Variablemap : Variablemap_slim
     type key = String.t
     type 'a t = 'a Map.Make(String).t
+    val empty : 'a t
+    val mem : key -> 'a t -> bool
+    val add : key -> 'a -> 'a t -> 'a t
+    val remove : key -> 'a t -> 'a t
+    val iter : (key -> 'a -> unit) -> 'a t -> unit
+    val exists : Variablemap.key -> 'a Variablemap.t -> bool
+    val find : Variablemap.key -> results_t Variablemap.t -> results_t
+    val find_excdef :
+      Variablemap.key -> results_t Variablemap.t -> results_t -> results_t
   end
 type varmap_t = results_t Varmap.Variablemap.t
 type command_fun_res_t = results_t * varmap_t

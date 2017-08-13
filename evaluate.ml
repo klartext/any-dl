@@ -25,6 +25,8 @@ exception No_Match                      (* if a match was tried, but no match co
 exception No_Matchresult_available      (* if Select is used, but there is no match-result available as tmpvar *)
 exception No_Matchable_value_available  (* if Match is used, but there is no matchable tmpvar *)
 
+exception Html_decode_error             (* A problem occured while trying to use html-decode *)
+
 exception Wrong_tmpvar_type             (* if tmpvar has just the wrong type... without more detailed info *)
 exception Wrong_argument_type           (* e.g. Show_match on non-match *)
 
@@ -1545,7 +1547,11 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            | String str            -> String ( Tools.html_decode str )
                                                            | String_array strarr   -> String_array ( Array.map Tools.html_decode strarr )
                                                            | Document(doc, url)    -> let inenc = sd doc in
-                                                                                      Document( Tools.html_decode ~inenc:inenc doc, Tools.html_decode ~inenc:inenc url )
+                                                                                      begin
+                                                                                        try
+                                                                                          Document( Tools.html_decode ~inenc:inenc doc, Tools.html_decode ~inenc:inenc url )
+                                                                                        with _ -> raise Html_decode_error
+                                                                                      end
                                                            | Document_array docarr -> Document_array( Array.map (fun (d,u) -> (Tools.html_decode d, Tools.html_decode u) ) docarr )
                                                            | Url  (url, ref)       -> Url( Tools.html_decode url, Tools.html_decode ref )
                                                            | Url_list    urllist   -> Url_list( List.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urllist)
