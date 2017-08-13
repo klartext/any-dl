@@ -149,18 +149,18 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
           )
 
   with (* handle exceptions from the parse-tree-evaluation *)
-    | E.No_Match                -> Printf.eprintf "Parser problem: Could not match to pattern!\t Parse will be exited for url %s\n" url; flush stderr
-    | E.Invalid_Row_Index       -> Printf.eprintf "Error in script! Invalid_Row_Index!\t Parse exited.\n"; flush stderr
-    | E.Variable_not_found name -> Printf.eprintf "Variable_not_found: \"%s\"\t This parse exited.\n" name; flush stderr
-    | E.No_document_found       -> Printf.eprintf "No_document_found for URL %s\n" url; flush stderr
-    | E.Tagselect_empty_list    -> Printf.eprintf "Tagselect_empty_list for URL %s\n" url; flush stderr
+    | E.No_Match                -> Printf.eprintf "Parser abandoned, because: Could not match to pattern!\t Parse will be exited for url %s\n" url; flush stderr
+    | E.Invalid_Row_Index       -> Printf.eprintf "Parser abandoned, because Invalid_Row_Index!\t Parse exited. ( URL %s )\n"; url; flush stderr
+    | E.Variable_not_found name -> Printf.eprintf "Parser abandoned, because Variable_not_found: \"%s\" ( URL %s )\n" name url; flush stderr
+    | E.No_document_found       -> Printf.eprintf "No_document_found for URL %s - Parser abandoned\n" url; flush stderr
+    | E.Tagselect_empty_list    -> Printf.eprintf "Parser abandoned, because of Tagselect_empty_list for URL %s\n" url; flush stderr
     | E.Parse_exit              -> Printf.eprintf "Parser exited via exitparse-command\n"; flush stderr
-    | E.Csv_read_error     msg  -> Printf.eprintf "Parser exited by Csv_read_error: \"%s\" ( URL: %s )\n" msg url; flush stderr
-    | E.Html_decode_error       -> Printf.eprintf "Parser exited by Html_decode_error ( URL: %s )\n" url; flush stderr
+    | E.Csv_read_error     msg  -> Printf.eprintf "Parser abandoned, because of Csv_read_error: \"%s\" ( URL: %s )\n" msg url; flush stderr
+    | E.Html_decode_error       -> Printf.eprintf "Parser abandoned, because of Html_decode_error ( URL: %s )\n" url; flush stderr
     | Network.Pipelined.Get_error   status -> Printf.eprintf "Parser abandoned, because of Get_error ( URL: %s )\n" url ; flush stderr
     | Network.Pipelined.Get_problem status -> Printf.eprintf "Parser abandoned, because of Get_problem ( URL: %s )\n" url ; flush stderr
-    | Invalid_argument str    as exc   -> Printf.eprintf "Parser abandoned: %s\n" (Printexc.to_string exc)
-    | Not_found               as exc   -> Printf.eprintf "Parser abandoned: %s\n" (Printexc.to_string exc)
+    | Invalid_argument str    as exc   -> Printf.eprintf "Parser abandoned: %s ( URL: %s )\n" (Printexc.to_string exc) url; flush stderr
+    | Not_found               as exc   -> Printf.eprintf "Parser abandoned: %s ( URL: %s )\n" (Printexc.to_string exc) url; flush stderr
     | Neturl.Malformed_URL             -> Printf.eprintf "Parser abandoned: %s ( URL: %s )\n" "Neturl.Malformed_URL" url
 
 
