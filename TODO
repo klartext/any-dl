@@ -25,6 +25,18 @@ FEATUREs:
  a bit of priority
  =================
 
+ - Parser-Exceptions/-Errors in normal (non-auto-try) mode: should catch exceptions
+   for each url, and allow to work on the next url, after the parser has been disrupted by an exception !
+
+     # Get_error: Client_error
+     # Parser abandoned, because of Get_error ( URL: http://www.altermannblog.de/2016/ )
+
+
+ - grepv: + filters columns by row-match?
+          + filters rows by column-match?
+          + check sources in evaluate.ml - filter-naming seems not to fit functionality?!
+          + Documentation / README: add words about  it
+
  - adding XPATH-notation / XPATH-conversion for compatibility with other tools seems to make sense. (really?)
 
  - add the possibility to interpret scraperJSON for compatibility,
