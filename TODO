@@ -1,6 +1,15 @@
 ENHANCEMENT:
 ============
 
+A big work would be: migrate the ADT's to GADTs.
+I think it would be worth the effort,
+because it will decrease code-size (LOC)
+as well as making the source better readable and cleaner.
+Should be seen as hightes priority.
+All other changes later would be easier then.
+
+
+
 Needed feature: gzip-deflate for incomonbg data!
 
 
