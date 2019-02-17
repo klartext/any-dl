@@ -430,25 +430,7 @@ macrodefs_lst  wird in command benutzt. => Parameterübergabe?
 *)
 (* "command"-function is the main commands-parser/evaluator *)
 (* ======================================================== *)
-and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t =
-  flush_all();
-
-  (* For -vv print command name to stdout *)
-  (* ==================================== *)
-  if Cli.opt.Cli.very_verbose
-  then
-    begin
-      try
-        let str = Parsetreetypes.command_to_string (List.hd commandlist) in
-        print_endline ("_Command_ " ^ str)
-      with Failure _ -> () (* catches List.hd [] *)
-    end;
-
-  match commandlist with
-    | []        -> tmpvar, varmap (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
-    | cmd::tl   -> begin
-                     match cmd with
-                       | Post  fname_arglist       ->
+and     cmd_post commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist  :  results_t * varmap_t =
 
                                             let create_keyval_pair        key         = (key, to_string (Varmap.find key varmap) varmap ) in
                                             let create_post_argumentlist  varnamelist = List.map create_keyval_pair varnamelist in
@@ -468,7 +450,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                             end
 
 
-                       | Download  fname_arglist_opt      ->
+
+and     cmd_download commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist_opt  :  results_t * varmap_t =
                                                       begin
                                                         match tmpvar with
                                                           | Url (u,r)          -> let filename =
@@ -494,11 +477,9 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                                                           | _ -> raise Wrong_tmpvar_type
                                                         end
-(*
-*)
 
-
-                       | Get_url (url, referrer)  -> if Neturl.extract_url_scheme url = "file"
+and     cmd_get_url commandlist macrodefs_lst tmpvar varmap cmd tl (url, referrer)  :  results_t * varmap_t =
+                                                   if Neturl.extract_url_scheme url = "file"
 
                                                      then     (* FILE://... *)
                                                        begin
@@ -528,8 +509,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                          | None                          -> raise No_document_found
                                                        end
 
-
-                       | Get             -> (* This is not directly downloading the data; just inserting    *)
+and     cmd_get commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
+                                            (* This is not directly downloading the data; just inserting    *)
                                             (* the appropriate downloader-Tokens into the Tokenlist / "AST" *)
                                             (* ------------------------------------------------------------ *)
                                             begin
@@ -555,8 +536,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                 | _ -> raise Wrong_tmpvar_type
                                               end
 
-
-                       | Get_urls        ->
+and     cmd_get_urls commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                             (*
                                             (* two functions for creating the action-list from the url-list *)
                                             (* ------------------------------------------------------------ *)
@@ -587,20 +567,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                             end
 
 
-                         (* creates url and puts it into tmpvar *)
-                       | Make_url_tmpvar -> command tl macrodefs_lst (urlify tmpvar varmap) varmap
-                                            (*
-                                            let (url, referrer) = (to_string tmpvar varmap, "-") in
-                                            command tl macrodefs_lst (Url( url, referrer)) varmap
-                                            urlify tmpvar varmap
-                                            *)
-
-                       | Make_url (u,r)  -> let (url, referrer) = (to_string u varmap, to_string r varmap) in
-                                            command tl macrodefs_lst (Url( url, referrer)) varmap
-
-
-
-                       | Match   pattern            ->
+and     cmd_match commandlist macrodefs_lst tmpvar varmap cmd tl pattern  :  results_t * varmap_t =
                                                        verbose_printf "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
 
                                                        let str =
@@ -624,8 +591,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                        command tl macrodefs_lst (Match_result matched) varmap
 
-
-                       | Grep pattern_arglist       -> let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
+and     cmd_grep commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist  :  results_t * varmap_t =
+                                                       let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
                                                        (*
                                                          if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
                                                        *)
@@ -642,7 +609,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                                                        (* do the grep *)
                                                        (* ----------- *)
-                                                       let grepped = 
+                                                       let grepped =
                                                          begin
                                                            match tmpvar with
                                                              | Document (doc, url) -> let grepped_lines = grep_lines_from_string doc in
@@ -665,8 +632,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                          command tl macrodefs_lst grepped varmap
 
-                       | Grep_v pattern_arglist     ->  (* grep -v *)
-
+and     cmd_grep_v commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist  :  results_t * varmap_t =
                                                        let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
 
                                                        let test_match_on_string = test_pattern_match_on_string  pattern in (* partially application to the pattern *)
@@ -675,7 +641,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        (*
                                                          if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
                                                        *)
-                                                       let grepped = 
+                                                       let grepped =
                                                          begin
                                                            match tmpvar with
                                                              | Document (doc, url) -> let lines = Tools.lines_of_string doc in
@@ -692,7 +658,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                          command tl macrodefs_lst grepped varmap
 
-                       | Select index               -> 
+
+and     cmd_select commandlist macrodefs_lst tmpvar varmap cmd tl index  :  results_t * varmap_t =
                                                        begin
                                                          match tmpvar with
                                                            | Document (doc, url)   -> let res = if index = 1 then Url (url, "-") else String doc in
@@ -704,8 +671,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
                                                        end
 
-
-                       | MSelect index_list         -> 
+and     cmd_mselect commandlist macrodefs_lst tmpvar varmap cmd tl index_list  :  results_t * varmap_t =
                                                        begin
                                                          match tmpvar with
                                                            | String_array rowitems -> command tl macrodefs_lst (String_array(item_selection rowitems index_list)) varmap
@@ -713,12 +679,10 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            | _            -> prerr_endline "MSelect: nothing to match"; raise No_Matchresult_available
                                                        end
 
-                                                         
-
-                       | ColSelect   col_index        ->
+and     cmd_colselect commandlist macrodefs_lst tmpvar varmap cmd tl col_index  :  results_t * varmap_t =
                                                        begin
                                                          match tmpvar with
-                                                           | Match_result mres -> 
+                                                           | Match_result mres ->
                                                                                   let outer_maxidx = Array.length mres     - 1 in (* outer: row *)
                                                                                   let inner_maxidx = Array.length mres.(0) - 1 in (* inner: col *)
                                                                                   let res          = Array.make (Array.length mres) mres.(0).(0) in
@@ -738,8 +702,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            | _ -> print_warning "ColSelect: wrong type!!!"; raise Wrong_tmpvar_type
                                                        end
 
-
-                       | RowSelect   index            ->
+and     cmd_rowselect commandlist macrodefs_lst tmpvar varmap cmd tl index  :  results_t * varmap_t =
                                                        let res = ref Empty in
                                                        begin
                                                          match tmpvar with
@@ -756,11 +719,9 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        command tl macrodefs_lst !res varmap
 
 
-                                                         
-
                        (* Drops a column from a matchres *)
                        (* ------------------------------ *)
-                       | DropCol   col_index        ->
+and     cmd_dropcol commandlist macrodefs_lst tmpvar varmap cmd tl col_index  :  results_t * varmap_t =
                                                        begin
                                                          match tmpvar with
                                                            | Match_result mres ->
@@ -772,10 +733,9 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
                                                        end
 
-
                        (* Drops a row from a matchres *)
                        (* --------------------------- *)
-                       | DropRow   index            ->
+and     cmd_droprow commandlist macrodefs_lst tmpvar varmap cmd tl index  :  results_t * varmap_t =
                                                        let res =
                                                          begin
                                                            match tmpvar with
@@ -785,7 +745,9 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                          command tl macrodefs_lst res varmap
 
-                       | Select_match ( col_idx, matchpat) -> (* select match is a row-select, where the index *)
+
+                       (* select match is a row-select, where the index *)
+and     cmd_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_idx, matchpat)  :  results_t * varmap_t =
                                                               (* first match wins *)
                                                                begin
                                                                  match tmpvar with
@@ -805,8 +767,6 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                                                                    | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
                                                                end
-
-
 (*
 - iselectmatch with 3 parameters would be good:
    * selection-source
@@ -814,16 +774,15 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
    * default-selection
 *)
 
-                       | I_Select_match ( col_idx, matchpat, default_pattern )
-
-                                                           -> (* select match is a row-select, where the index *)
+and     cmd_i_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_idx, matchpat, default_pattern )  :  results_t * varmap_t =
+                                                             (* select match is a row-select, where the index *)
                                                                 (* first match wins *)
                                                                  begin
                                                                    match tmpvar with
                                                                      | Match_result mres ->
                                                                             let max_row_idx = Array.length ( mres ) - 1 in
                                                                             let max_col_idx = Array.length ( mres.(0) ) - 1 in
-  
+
                                                                             let rows     = Array.to_list mres in
 
                                                                             (* column selection from the match-result *)
@@ -861,21 +820,19 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                                               verbose_printf "found: %d items \n" (List.length selected);
 
                                                                               command tl macrodefs_lst (String_array (List.hd selected)) varmap (* first match wins *)
-  
+
                                                                      | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
                                                                  end
-
-
 
                        (* ------------------------------------------------------------------------------ *)
                        (* to matchres does conbverts to a matchres-like result (matrix (array of array)) *)
                        (* Urls will be converted in a way, that the link and the referrer will pop up as *)
                        (* seperate coulmns in each rows. With dropcol() they can be kiekced out!         *)
                        (* ------------------------------------------------------------------------------ *)
-                       | To_matchres                -> 
+and     cmd_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let pair_to_arr pair = [| fst pair; snd pair |] in
 
-                                                       let new_var = 
+                                                       let new_var =
                                                        begin
                                                          match tmpvar with
                                                             (*
@@ -900,7 +857,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                        command tl macrodefs_lst new_var varmap
 
-                       | Table_to_matchres          ->
+and     cmd_table_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let matchres =
                                                          match tmpvar with
                                                            | String   str -> let dl = Parsers.conv_to_doclist str in
@@ -910,8 +867,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                        command tl macrodefs_lst matchres varmap
 
-
-                       | Append_to  varname         -> (* append tmpvar to a Matchres, adressed by varname *)
+and     cmd_append_to commandlist macrodefs_lst tmpvar varmap cmd tl varname  :  results_t * varmap_t =
+                                                       (* append tmpvar to a Matchres, adressed by varname *)
                                                        (* if that variable is unknown, create it anew.     *)
 
                                                        let extract_matchres value = match value with Match_result mr -> mr | _ -> raise Wrong_argument_type in
@@ -931,8 +888,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        command tl macrodefs_lst tmpvar new_varmap (* tmpvar is not touched *)
 
 
-
-                       | Transpose                  ->
+and     cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let result =
                                                        begin
                                                          match tmpvar with
@@ -943,8 +899,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        command tl macrodefs_lst result varmap
 
 
-
-                       | Link_extract               ->
+and     cmd_link_extract commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        begin
 
                                                          (* extracted urls can be rebased with this function *)
@@ -981,8 +936,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
                                                        end
 
-
-                       | Link_extract_xml           ->
+and     cmd_link_extract_xml commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        begin
                                                          match tmpvar with
                                                            | Document(doc, url)-> let urls   = Array.of_list (Parsers.xml_get_href_from_string doc) in
@@ -992,7 +946,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            | _ -> print_warning "Link_extract_xml found non-usable type"; raise Wrong_tmpvar_type
                                                        end
 
-                       | Rebase               ->
+
+and     cmd_rebase commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
                                                        let rebase   = Parsers.Rebase.try_rebase ~verbose:Cli.opt.Cli.very_verbose  starturl in
 
@@ -1010,7 +965,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                        command tl macrodefs_lst result varmap
 
-                         | Title_extract            ->
+and     cmd_title_extract commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        begin
                                                          match tmpvar with
                                                            | Document (doc, url) ->
@@ -1027,7 +982,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end
 
 
-                       | Tag_select (selector, extractor )  ->
+and     cmd_tag_select commandlist macrodefs_lst tmpvar varmap cmd tl (selector, extractor )  :  results_t * varmap_t =
                                                        (* --------------------------------------------------------------------- *)
                                                        (* apply "find_elements_by_tag_name" to the doclist with hd as selector  *)
                                                        (* and the resulting doclist is used as input to the next call of        *)
@@ -1192,18 +1147,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        command tl macrodefs_lst result varmap
 
 
-
-                       | Paste paste_list            ->
-                                                        let res = paste_arglist_to_string  paste_list  varmap in
-                                                        command tl macrodefs_lst (String res) varmap
-
-
-
-                       | Print_args prt_args         ->
-                                                        ignore ( command [ Paste( prt_args ); Print ] macrodefs_lst Empty varmap ); (* use the Paste-command and the print-command *)
-                                                        command tl macrodefs_lst tmpvar varmap (* just next command without changed tmpvar *)
-
-                       | Print                      ->
+and     cmd_print commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let print_url url =  Printf.printf "%s  # Referrer:  %s\n" (fst url) (snd url) in
 
                                                        begin
@@ -1239,12 +1183,13 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        command tl macrodefs_lst tmpvar varmap
 
 
-                       | Show_match                -> (* prints "real" matches only (and not the fullmatch with index = 0) *)
+and     cmd_show_match commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
+                                                       (* prints "real" matches only (and not the fullmatch with index = 0) *)
                                                        begin
                                                          match tmpvar with
                                                            | Match_result mres ->
                                                                       verbose_fprintf stdout "for real matches: show_match: Col 0 is the whole match, all others are the groups\n";
-                                                                      Array.iteri ( fun idx x -> 
+                                                                      Array.iteri ( fun idx x ->
                                                                                              Printf.printf "Row %2d:\n" idx;
                                                                                              Printf.printf "-------\n";
                                                                                              for index = 0 to Array.length x -1
@@ -1257,12 +1202,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        command tl macrodefs_lst tmpvar varmap
 
-
-                       | Print_string str           -> print_string str;
-                                                       command tl macrodefs_lst tmpvar varmap
-
-
-                       | CSV_save_as argument_list -> (*  Save the data from a Match_result to a csv-file.                         *)
+and     cmd_csv_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list  :  results_t * varmap_t =
+                                                      (*  Save the data from a Match_result to a csv-file.                         *)
                                                       (* Data will be made square (equal number of columns per row) before saving! *)
                                                       (* ------------------------------------------------------------------------- *)
                                                        let filename = paste_arglist_to_string  argument_list  varmap in
@@ -1275,18 +1216,16 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        command tl macrodefs_lst tmpvar varmap
 
-
-
-                       | CSV_save                  -> (*  Save the data from a Match_result to a csv-file.                         *)
+and     cmd_csv_save commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
+                                                      (*  Save the data from a Match_result to a csv-file.                         *)
                                                       (* Data will be made square (equal number of columns per row) before saving! *)
                                                       (* ------------------------------------------------------------------------- *)
                                                        let url = Parsers.url_to_filename (to_string (Varmap.find "STARTURL" varmap) varmap) in
                                                        ignore ( command [CSV_save_as [String url; String ".csv"] ] macrodefs_lst tmpvar varmap ); (* do the CSV_save with the created filename *)
                                                        command tl macrodefs_lst tmpvar varmap
 
-
-
-                       | CSV_read  filename_arglist -> (*  Read data from file <filename> (given as arglist) as csv-data to Match_result *)
+and     cmd_csv_read commandlist macrodefs_lst tmpvar varmap cmd tl filename_arglist  :  results_t * varmap_t =
+                                                       (*  Read data from file <filename> (given as arglist) as csv-data to Match_result *)
                                                        let csv = try
                                                                    Csv.load (paste_arglist_to_string filename_arglist varmap)
                                                                  with Sys_error msg -> raise (Csv_read_error msg)
@@ -1295,8 +1234,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        command tl macrodefs_lst result varmap
 
 
-
-                       | Save_as      argument_list ->
+and     cmd_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list  :  results_t * varmap_t =
                                                        let filename = paste_arglist_to_string  argument_list  varmap in
                                                        begin
                                                          match tmpvar with
@@ -1309,8 +1247,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        command tl macrodefs_lst tmpvar varmap
 
-
-                       | Save                       ->
+and     cmd_save commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let saver (doc, url) = let fname = Parsers.url_to_filename url in
                                                                            save_string_to_file doc fname
                                                        in
@@ -1327,25 +1264,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        command tl macrodefs_lst tmpvar varmap
 
-
-                       | Setvar var                 ->
-                                                       command tl macrodefs_lst var varmap (* sets the argument of setvar as new tmpvar *)
-
-
-
-                       | Store  varname             ->  verbose_printf "Store tmpvar in varname \"%s\"\n" varname;
-                                                        command tl macrodefs_lst tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
-
-
-                       | Recall varname             -> verbose_printf "Recall variable: \"%s\"\n" varname;
-                                                       let varcontents = Varmap.find varname varmap in
-                                                       command tl macrodefs_lst varcontents varmap
-
-                       | Delete varname             -> verbose_printf "Delete variable \"%s\"\n" varname;
-                                                       command tl macrodefs_lst tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
-
-
-                       | Storematch  varname        ->
+and     cmd_storematch commandlist macrodefs_lst tmpvar varmap cmd tl varname  :  results_t * varmap_t =
                                                         verbose_printf "Storematch tmpvar to varname \"%s\"\n" varname;
                                                         let mat = match tmpvar with Match_result mat -> mat | _ ->  raise Wrong_tmpvar_type in
                                                         let mat = Tools.Array2.remove_empty_arrays_from_matrix ~message:true
@@ -1386,8 +1305,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
                                                         command tl macrodefs_lst (Match_result mat) newmap (* stores tmpvar as named variable *)
 
-
-                       | Sort                       -> (* sort entries *)
+and     cmd_sort commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let res =
                                                          begin
                                                            match tmpvar with
@@ -1405,7 +1323,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                          command tl macrodefs_lst res varmap  (* removes multiple data *)
 
 
-                       | Uniq                       -> (* uniq: make entries unique: ignore multiple entries with same contents *)
+                       (* uniq: make entries unique: ignore multiple entries with same contents *)
+and     cmd_uniq commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let res =
                                                          begin
                                                            match tmpvar with
@@ -1425,19 +1344,20 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                          command tl macrodefs_lst res varmap  (* removes multiple data *)
 
-
-                       | Show_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;
+and     cmd_show_variables commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
+                         Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;
                                                                                           ignore (command [Print; Print_string "\n"] macrodefs_lst value varmap ) ) varmap;
                                                        command tl macrodefs_lst tmpvar varmap
 
-                       | List_variables             -> Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\"\n" varname ) varmap;
+and     cmd_list_variables commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
+                                                       Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\"\n" varname ) varmap;
                                                        command tl macrodefs_lst tmpvar varmap
 
-                       | Show_type                   -> Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string ~details:true tmpvar);
+and     cmd_show_type commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
+                                                       Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string ~details:true tmpvar);
                                                        command tl macrodefs_lst tmpvar varmap
 
-
-                       | Basename                   -> 
+and     cmd_basename commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        begin
                                                          match tmpvar with
                                                            | String filename -> command tl macrodefs_lst (String(Filename.basename filename)) varmap
@@ -1445,8 +1365,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                            | _ -> raise Wrong_argument_type
                                                        end
 
-
-                       | Subst (from_re, to_str)    -> verbose_printf "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
+and     cmd_subst commandlist macrodefs_lst tmpvar varmap cmd tl (from_re, to_str)  :  results_t * varmap_t =
+                                                       verbose_printf "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
                                                        let replacer instring = Pcre.replace ~pat:from_re ~templ:to_str instring in
                                                        begin
                                                        match tmpvar with
@@ -1477,14 +1397,12 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end
 
 
-                       | Quote                      ->
+and     cmd_quote commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let str = to_string tmpvar varmap in
                                                        let quoted = "\"" ^ str ^ "\"" in
                                                        command tl macrodefs_lst (String (quoted)) varmap
 
-                       | To_string                  -> command tl macrodefs_lst (String (to_string tmpvar varmap)) varmap
-
-                       | Dump                       ->
+and     cmd_dump commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        begin
                                                        match tmpvar with
                                                          | Document(doc, url)-> Parsers.dump_html_from_string doc
@@ -1494,7 +1412,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        command tl macrodefs_lst tmpvar varmap
 
-                       | Show_tags                  ->
+and     cmd_show_tags commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        begin
                                                        match tmpvar with
                                                          | Document(doc, url)-> Parsers.show_tags_from_string doc
@@ -1502,7 +1420,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        command tl macrodefs_lst tmpvar varmap
 
-                       | Show_tags_fullpath         ->
+and     cmd_show_tags_fullpath commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        begin
                                                        match tmpvar with
                                                          | Document(doc, url)-> Parsers.show_tags_fullpath_from_string doc
@@ -1510,7 +1428,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        command tl macrodefs_lst tmpvar varmap
 
-                       | Dump_data                  ->
+and     cmd_dump_data commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        begin
                                                        match tmpvar with
                                                          | Document(doc, url)-> Parsers.dump_html_data_from_string doc
@@ -1518,7 +1436,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        command tl macrodefs_lst tmpvar varmap
 
-                       | System                     ->
+and     cmd_system commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        begin
                                                          match tmpvar with
                                                            | String syscmd -> (* verbosity-message *)
@@ -1536,10 +1454,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        end;
                                                        command tl macrodefs_lst tmpvar varmap
 
-                       | Exit_parse                 -> flush stdout; raise Parse_exit
-
-
-                       | Html_decode                ->
+and     cmd_html_decode commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let sd str = Tools.select_decoding_scheme str in
                                                        let newvar =
                                                          begin
@@ -1566,11 +1481,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        in
                                                        command tl macrodefs_lst newvar varmap
 
-                       | Url_decode                -> let newvar = default_application tmpvar Netencoding.Url.decode varmap in
-                                                      command tl macrodefs_lst newvar varmap
-
-
-                       | Readline  arg_opt          ->
+and     cmd_readline commandlist macrodefs_lst tmpvar varmap cmd tl arg_opt :  results_t * varmap_t =
                                                        let read_line = String ( read_line() ) in
                                                        begin
                                                          match arg_opt with
@@ -1580,11 +1491,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
 
 
 
-                       | Sleep_ms  milliseconds     -> Sleep.sleep_ms milliseconds;
-                                                       command tl macrodefs_lst tmpvar varmap
-
-
-                       | Json_prettify              ->
+and     cmd_json_prettify commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
                                                        let newval =
                                                          match tmpvar with
                                                            | String str ->
@@ -1601,7 +1508,8 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                          command tl macrodefs_lst newval varmap
 
 
-                       | Call_macro     macro_name  -> (* evaluating the commands of the macro, and afterwards the following commands   *)
+and     cmd_call_macro commandlist macrodefs_lst tmpvar varmap cmd tl macro_name  :  results_t * varmap_t =
+                                                       (* evaluating the commands of the macro, and afterwards the following commands   *)
                                                        (* that means: prepend the commands of the macro to the tail of the command-list *)
                                                        (* ----------------------------------------------------------------------------- *)
                                                        let macro_commandlist = (List.assoc macro_name macrodefs_lst) in
@@ -1609,6 +1517,121 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                                                        evaluate_statement ( List.append  macro_commandlist  stmts_tl ) macrodefs_lst tmpvar varmap
 
 
+
+
+(* ------------- INSERT FUNCTION ABOVE -------------------------------------------- *)
+
+and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t =
+  flush_all();
+
+  (* For -vv print command name to stdout *)
+  (* ==================================== *)
+  if Cli.opt.Cli.very_verbose
+  then
+    begin
+      try
+        let str = Parsetreetypes.command_to_string (List.hd commandlist) in
+        print_endline ("_Command_ " ^ str)
+      with Failure _ -> () (* catches List.hd [] *)
+    end;
+
+  match commandlist with
+    | []        -> tmpvar, varmap (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
+    | cmd::tl   -> begin
+                     match cmd with
+                       | Post  fname_arglist              -> cmd_post commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist
+                       | Download  fname_arglist_opt      -> cmd_download commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist_opt
+                       | Get_url (url, referrer)          -> cmd_get_url commandlist macrodefs_lst tmpvar varmap cmd tl (url, referrer)
+                       | Get                              -> cmd_get commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Get_urls                         -> cmd_get_urls commandlist macrodefs_lst tmpvar varmap cmd tl
+
+
+                         (* creates url and puts it into tmpvar *)
+                       | Make_url_tmpvar -> command tl macrodefs_lst (urlify tmpvar varmap) varmap
+                                            (*
+                                            let (url, referrer) = (to_string tmpvar varmap, "-") in
+                                            command tl macrodefs_lst (Url( url, referrer)) varmap
+                                            urlify tmpvar varmap
+                                            *)
+
+                       | Make_url (u,r)  -> let (url, referrer) = (to_string u varmap, to_string r varmap) in
+                                            command tl macrodefs_lst (Url( url, referrer)) varmap
+
+                       | Match   pattern            -> cmd_match commandlist macrodefs_lst tmpvar varmap cmd tl pattern
+                       | Grep pattern_arglist       -> cmd_grep commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist
+                       | Grep_v pattern_arglist     -> cmd_grep_v commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist (* grep -v *)
+                       | Select index               -> cmd_select commandlist macrodefs_lst tmpvar varmap cmd tl index
+                       | MSelect index_list         -> cmd_mselect commandlist macrodefs_lst tmpvar varmap cmd tl index_list
+                       | ColSelect   col_index      -> cmd_colselect commandlist macrodefs_lst tmpvar varmap cmd tl col_index
+                       | RowSelect   index          -> cmd_rowselect commandlist macrodefs_lst tmpvar varmap cmd tl index
+                       | DropCol   col_index        -> cmd_dropcol commandlist macrodefs_lst tmpvar varmap cmd tl col_index
+                       | DropRow   index            -> cmd_droprow commandlist macrodefs_lst tmpvar varmap cmd tl index
+                       | Select_match ( col_idx, matchpat) -> cmd_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_idx, matchpat)
+(*
+- iselectmatch with 3 parameters would be good:
+   * selection-source
+   * selection-match-string
+   * default-selection
+*)
+                       | I_Select_match ( col_idx, matchpat, default_pattern )
+                                                           -> cmd_i_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_idx, matchpat, default_pattern )
+
+                       | To_matchres                -> cmd_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Table_to_matchres          -> cmd_table_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Append_to  varname         -> cmd_append_to commandlist macrodefs_lst tmpvar varmap cmd tl varname
+                       | Transpose                  -> cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Link_extract               -> cmd_link_extract commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Link_extract_xml           -> cmd_link_extract_xml commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Rebase                     -> cmd_rebase commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Title_extract              -> cmd_title_extract commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Tag_select (selector, extractor )  -> cmd_tag_select commandlist macrodefs_lst tmpvar varmap cmd tl (selector, extractor )
+                       | Paste paste_list            -> let res = paste_arglist_to_string  paste_list  varmap in
+                                                        command tl macrodefs_lst (String res) varmap
+                       | Print_args prt_args         ->
+                                                        ignore ( command [ Paste( prt_args ); Print ] macrodefs_lst Empty varmap ); (* use the Paste-command and the print-command *)
+                                                        command tl macrodefs_lst tmpvar varmap (* just next command without changed tmpvar *)
+
+                       | Print                      -> cmd_print commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Show_match                 -> cmd_show_match commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Print_string str           -> print_string str;  command tl macrodefs_lst tmpvar varmap
+                       | CSV_save_as argument_list  -> cmd_csv_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list
+                       | CSV_save                   -> cmd_csv_save commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | CSV_read  filename_arglist -> cmd_csv_read commandlist macrodefs_lst tmpvar varmap cmd tl filename_arglist
+                       | Save_as      argument_list -> cmd_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list
+                       | Save                       -> cmd_save commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Setvar var                 -> command tl macrodefs_lst var varmap (* sets the argument of setvar as new tmpvar *)
+                       | Store  varname             -> verbose_printf "Store tmpvar in varname \"%s\"\n" varname;
+                                                       command tl macrodefs_lst tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
+
+                       | Recall varname             -> verbose_printf "Recall variable: \"%s\"\n" varname;
+                                                       let varcontents = Varmap.find varname varmap in
+                                                       command tl macrodefs_lst varcontents varmap
+
+                       | Delete varname             -> verbose_printf "Delete variable \"%s\"\n" varname;
+                                                       command tl macrodefs_lst tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
+
+                       | Storematch  varname        -> cmd_storematch commandlist macrodefs_lst tmpvar varmap cmd tl varname
+                       | Sort                       -> cmd_sort commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Uniq                       -> cmd_uniq commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Show_variables             -> cmd_show_variables commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | List_variables             -> cmd_list_variables commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Show_type                  -> cmd_show_type commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Basename                   -> cmd_basename commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Subst (from_re, to_str)    -> cmd_subst commandlist macrodefs_lst tmpvar varmap cmd tl (from_re, to_str)
+                       | Quote                      -> cmd_quote commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | To_string                  -> command tl macrodefs_lst (String (to_string tmpvar varmap)) varmap
+                       | Dump                       -> cmd_dump commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Show_tags                  -> cmd_show_tags commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Show_tags_fullpath         -> cmd_show_tags_fullpath commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Dump_data                  -> cmd_dump_data commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | System                     -> cmd_system commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Exit_parse                 -> flush stdout; raise Parse_exit
+                       | Html_decode                -> cmd_html_decode commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Url_decode                -> let newvar = default_application tmpvar Netencoding.Url.decode varmap in command tl macrodefs_lst newvar varmap
+                       | Readline  arg_opt          -> cmd_readline commandlist macrodefs_lst tmpvar varmap cmd tl arg_opt
+                       | Sleep_ms  milliseconds     -> Sleep.sleep_ms milliseconds;   command tl macrodefs_lst tmpvar varmap
+                       | Json_prettify              -> cmd_json_prettify commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Call_macro     macro_name  -> cmd_call_macro commandlist macrodefs_lst tmpvar varmap cmd tl macro_name
                        | Dummy                      -> command tl macrodefs_lst tmpvar varmap (* does nothing; just a Dummy (NOP) *)
                        | Empty_dummy                -> command tl macrodefs_lst Empty  varmap (* gives back Empty as result/tmpvar *)
 
