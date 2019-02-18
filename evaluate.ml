@@ -425,6 +425,126 @@ and evaluate_statement (statement_list : statements_t list) (macrodefs_lst : mac
                       in
                       evaluate_statement tl  macrodefs_lst res newvarmap (* result of the command-calls is new tmpvar *)
 
+
+(* ======================================================== *)
+and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t =
+  flush_all();
+
+  (* For -vv print command name to stdout *)
+  (* ==================================== *)
+  if Cli.opt.Cli.very_verbose
+  then
+    begin
+      try
+        let str = Parsetreetypes.command_to_string (List.hd commandlist) in
+        print_endline ("_Command_ " ^ str)
+      with Failure _ -> () (* catches List.hd [] *)
+    end;
+
+  match commandlist with
+    | []        -> tmpvar, varmap (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
+    | cmd::tl   -> begin
+                     match cmd with
+                       | Post  fname_arglist              -> cmd_post commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist
+                       | Download  fname_arglist_opt      -> cmd_download commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist_opt
+                       | Get_url (url, referrer)          -> cmd_get_url commandlist macrodefs_lst tmpvar varmap cmd tl (url, referrer)
+                       | Get                              -> cmd_get commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Get_urls                         -> cmd_get_urls commandlist macrodefs_lst tmpvar varmap cmd tl
+
+
+                         (* creates url and puts it into tmpvar *)
+                       | Make_url_tmpvar -> command tl macrodefs_lst (urlify tmpvar varmap) varmap
+                                            (*
+                                            let (url, referrer) = (to_string tmpvar varmap, "-") in
+                                            command tl macrodefs_lst (Url( url, referrer)) varmap
+                                            urlify tmpvar varmap
+                                            *)
+
+                       | Make_url (u,r)  -> let (url, referrer) = (to_string u varmap, to_string r varmap) in
+                                            command tl macrodefs_lst (Url( url, referrer)) varmap
+
+                       | Match   pattern            -> cmd_match commandlist macrodefs_lst tmpvar varmap cmd tl pattern
+                       | Grep pattern_arglist       -> cmd_grep commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist
+                       | Grep_v pattern_arglist     -> cmd_grep_v commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist (* grep -v *)
+                       | Select index               -> cmd_select commandlist macrodefs_lst tmpvar varmap cmd tl index
+                       | MSelect index_list         -> cmd_mselect commandlist macrodefs_lst tmpvar varmap cmd tl index_list
+                       | ColSelect   col_index      -> cmd_colselect commandlist macrodefs_lst tmpvar varmap cmd tl col_index
+                       | RowSelect   index          -> cmd_rowselect commandlist macrodefs_lst tmpvar varmap cmd tl index
+                       | DropCol   col_index        -> cmd_dropcol commandlist macrodefs_lst tmpvar varmap cmd tl col_index
+                       | DropRow   index            -> cmd_droprow commandlist macrodefs_lst tmpvar varmap cmd tl index
+                       | Select_match ( col_idx, matchpat) -> cmd_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_idx, matchpat)
+(*
+- iselectmatch with 3 parameters would be good:
+   * selection-source
+   * selection-match-string
+   * default-selection
+*)
+                       | I_Select_match ( col_idx, matchpat, default_pattern )
+                                                           -> cmd_i_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_idx, matchpat, default_pattern )
+
+                       | To_matchres                -> cmd_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Table_to_matchres          -> cmd_table_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Append_to  varname         -> cmd_append_to commandlist macrodefs_lst tmpvar varmap cmd tl varname
+                       | Transpose                  -> cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Link_extract               -> cmd_link_extract commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Link_extract_xml           -> cmd_link_extract_xml commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Rebase                     -> cmd_rebase commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Title_extract              -> cmd_title_extract commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Tag_select (selector, extractor )  -> cmd_tag_select commandlist macrodefs_lst tmpvar varmap cmd tl (selector, extractor )
+                       | Paste paste_list            -> let res = paste_arglist_to_string  paste_list  varmap in
+                                                        command tl macrodefs_lst (String res) varmap
+                       | Print_args prt_args         ->
+                                                        ignore ( command [ Paste( prt_args ); Print ] macrodefs_lst Empty varmap ); (* use the Paste-command and the print-command *)
+                                                        command tl macrodefs_lst tmpvar varmap (* just next command without changed tmpvar *)
+
+                       | Print                      -> cmd_print commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Show_match                 -> cmd_show_match commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Print_string str           -> print_string str;  command tl macrodefs_lst tmpvar varmap
+                       | CSV_save_as argument_list  -> cmd_csv_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list
+                       | CSV_save                   -> cmd_csv_save commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | CSV_read  filename_arglist -> cmd_csv_read commandlist macrodefs_lst tmpvar varmap cmd tl filename_arglist
+                       | Save_as      argument_list -> cmd_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list
+                       | Save                       -> cmd_save commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Setvar var                 -> command tl macrodefs_lst var varmap (* sets the argument of setvar as new tmpvar *)
+                       | Store  varname             -> verbose_printf "Store tmpvar in varname \"%s\"\n" varname;
+                                                       command tl macrodefs_lst tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
+
+                       | Recall varname             -> verbose_printf "Recall variable: \"%s\"\n" varname;
+                                                       let varcontents = Varmap.find varname varmap in
+                                                       command tl macrodefs_lst varcontents varmap
+
+                       | Delete varname             -> verbose_printf "Delete variable \"%s\"\n" varname;
+                                                       command tl macrodefs_lst tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
+
+                       | Storematch  varname        -> cmd_storematch commandlist macrodefs_lst tmpvar varmap cmd tl varname
+                       | Sort                       -> cmd_sort commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Uniq                       -> cmd_uniq commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Show_variables             -> cmd_show_variables commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | List_variables             -> cmd_list_variables commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Show_type                  -> cmd_show_type commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Basename                   -> cmd_basename commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Subst (from_re, to_str)    -> cmd_subst commandlist macrodefs_lst tmpvar varmap cmd tl (from_re, to_str)
+                       | Quote                      -> cmd_quote commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | To_string                  -> command tl macrodefs_lst (String (to_string tmpvar varmap)) varmap
+                       | Dump                       -> cmd_dump commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Show_tags                  -> cmd_show_tags commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Show_tags_fullpath         -> cmd_show_tags_fullpath commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Dump_data                  -> cmd_dump_data commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | System                     -> cmd_system commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Exit_parse                 -> flush stdout; raise Parse_exit
+                       | Html_decode                -> cmd_html_decode commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Url_decode                -> let newvar = default_application tmpvar Netencoding.Url.decode varmap in command tl macrodefs_lst newvar varmap
+                       | Readline  arg_opt          -> cmd_readline commandlist macrodefs_lst tmpvar varmap cmd tl arg_opt
+                       | Sleep_ms  milliseconds     -> Sleep.sleep_ms milliseconds;   command tl macrodefs_lst tmpvar varmap
+                       | Json_prettify              -> cmd_json_prettify commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Call_macro     macro_name  -> cmd_call_macro commandlist macrodefs_lst tmpvar varmap cmd tl macro_name
+                       | Dummy                      -> command tl macrodefs_lst tmpvar varmap (* does nothing; just a Dummy (NOP) *)
+                       | Empty_dummy                -> command tl macrodefs_lst Empty  varmap (* gives back Empty as result/tmpvar *)
+
+                   end
+
+(* COMMANDS-functions are followinf below *)
+
 (*
 macrodefs_lst  wird in command benutzt. => Parameterübergabe?
 *)
@@ -1520,122 +1640,6 @@ and     cmd_call_macro commandlist macrodefs_lst tmpvar varmap cmd tl macro_name
 
 
 (* ------------- INSERT FUNCTION ABOVE -------------------------------------------- *)
-
-and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t =
-  flush_all();
-
-  (* For -vv print command name to stdout *)
-  (* ==================================== *)
-  if Cli.opt.Cli.very_verbose
-  then
-    begin
-      try
-        let str = Parsetreetypes.command_to_string (List.hd commandlist) in
-        print_endline ("_Command_ " ^ str)
-      with Failure _ -> () (* catches List.hd [] *)
-    end;
-
-  match commandlist with
-    | []        -> tmpvar, varmap (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
-    | cmd::tl   -> begin
-                     match cmd with
-                       | Post  fname_arglist              -> cmd_post commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist
-                       | Download  fname_arglist_opt      -> cmd_download commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist_opt
-                       | Get_url (url, referrer)          -> cmd_get_url commandlist macrodefs_lst tmpvar varmap cmd tl (url, referrer)
-                       | Get                              -> cmd_get commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Get_urls                         -> cmd_get_urls commandlist macrodefs_lst tmpvar varmap cmd tl
-
-
-                         (* creates url and puts it into tmpvar *)
-                       | Make_url_tmpvar -> command tl macrodefs_lst (urlify tmpvar varmap) varmap
-                                            (*
-                                            let (url, referrer) = (to_string tmpvar varmap, "-") in
-                                            command tl macrodefs_lst (Url( url, referrer)) varmap
-                                            urlify tmpvar varmap
-                                            *)
-
-                       | Make_url (u,r)  -> let (url, referrer) = (to_string u varmap, to_string r varmap) in
-                                            command tl macrodefs_lst (Url( url, referrer)) varmap
-
-                       | Match   pattern            -> cmd_match commandlist macrodefs_lst tmpvar varmap cmd tl pattern
-                       | Grep pattern_arglist       -> cmd_grep commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist
-                       | Grep_v pattern_arglist     -> cmd_grep_v commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist (* grep -v *)
-                       | Select index               -> cmd_select commandlist macrodefs_lst tmpvar varmap cmd tl index
-                       | MSelect index_list         -> cmd_mselect commandlist macrodefs_lst tmpvar varmap cmd tl index_list
-                       | ColSelect   col_index      -> cmd_colselect commandlist macrodefs_lst tmpvar varmap cmd tl col_index
-                       | RowSelect   index          -> cmd_rowselect commandlist macrodefs_lst tmpvar varmap cmd tl index
-                       | DropCol   col_index        -> cmd_dropcol commandlist macrodefs_lst tmpvar varmap cmd tl col_index
-                       | DropRow   index            -> cmd_droprow commandlist macrodefs_lst tmpvar varmap cmd tl index
-                       | Select_match ( col_idx, matchpat) -> cmd_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_idx, matchpat)
-(*
-- iselectmatch with 3 parameters would be good:
-   * selection-source
-   * selection-match-string
-   * default-selection
-*)
-                       | I_Select_match ( col_idx, matchpat, default_pattern )
-                                                           -> cmd_i_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_idx, matchpat, default_pattern )
-
-                       | To_matchres                -> cmd_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Table_to_matchres          -> cmd_table_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Append_to  varname         -> cmd_append_to commandlist macrodefs_lst tmpvar varmap cmd tl varname
-                       | Transpose                  -> cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Link_extract               -> cmd_link_extract commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Link_extract_xml           -> cmd_link_extract_xml commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Rebase                     -> cmd_rebase commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Title_extract              -> cmd_title_extract commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Tag_select (selector, extractor )  -> cmd_tag_select commandlist macrodefs_lst tmpvar varmap cmd tl (selector, extractor )
-                       | Paste paste_list            -> let res = paste_arglist_to_string  paste_list  varmap in
-                                                        command tl macrodefs_lst (String res) varmap
-                       | Print_args prt_args         ->
-                                                        ignore ( command [ Paste( prt_args ); Print ] macrodefs_lst Empty varmap ); (* use the Paste-command and the print-command *)
-                                                        command tl macrodefs_lst tmpvar varmap (* just next command without changed tmpvar *)
-
-                       | Print                      -> cmd_print commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Show_match                 -> cmd_show_match commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Print_string str           -> print_string str;  command tl macrodefs_lst tmpvar varmap
-                       | CSV_save_as argument_list  -> cmd_csv_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list
-                       | CSV_save                   -> cmd_csv_save commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | CSV_read  filename_arglist -> cmd_csv_read commandlist macrodefs_lst tmpvar varmap cmd tl filename_arglist
-                       | Save_as      argument_list -> cmd_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list
-                       | Save                       -> cmd_save commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Setvar var                 -> command tl macrodefs_lst var varmap (* sets the argument of setvar as new tmpvar *)
-                       | Store  varname             -> verbose_printf "Store tmpvar in varname \"%s\"\n" varname;
-                                                       command tl macrodefs_lst tmpvar (Varmap.add varname tmpvar varmap)  (* stores tmpvar as named variable *)
-
-                       | Recall varname             -> verbose_printf "Recall variable: \"%s\"\n" varname;
-                                                       let varcontents = Varmap.find varname varmap in
-                                                       command tl macrodefs_lst varcontents varmap
-
-                       | Delete varname             -> verbose_printf "Delete variable \"%s\"\n" varname;
-                                                       command tl macrodefs_lst tmpvar (Varmap.remove varname varmap)  (* removes variable varname *)
-
-                       | Storematch  varname        -> cmd_storematch commandlist macrodefs_lst tmpvar varmap cmd tl varname
-                       | Sort                       -> cmd_sort commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Uniq                       -> cmd_uniq commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Show_variables             -> cmd_show_variables commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | List_variables             -> cmd_list_variables commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Show_type                  -> cmd_show_type commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Basename                   -> cmd_basename commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Subst (from_re, to_str)    -> cmd_subst commandlist macrodefs_lst tmpvar varmap cmd tl (from_re, to_str)
-                       | Quote                      -> cmd_quote commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | To_string                  -> command tl macrodefs_lst (String (to_string tmpvar varmap)) varmap
-                       | Dump                       -> cmd_dump commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Show_tags                  -> cmd_show_tags commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Show_tags_fullpath         -> cmd_show_tags_fullpath commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Dump_data                  -> cmd_dump_data commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | System                     -> cmd_system commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Exit_parse                 -> flush stdout; raise Parse_exit
-                       | Html_decode                -> cmd_html_decode commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Url_decode                -> let newvar = default_application tmpvar Netencoding.Url.decode varmap in command tl macrodefs_lst newvar varmap
-                       | Readline  arg_opt          -> cmd_readline commandlist macrodefs_lst tmpvar varmap cmd tl arg_opt
-                       | Sleep_ms  milliseconds     -> Sleep.sleep_ms milliseconds;   command tl macrodefs_lst tmpvar varmap
-                       | Json_prettify              -> cmd_json_prettify commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Call_macro     macro_name  -> cmd_call_macro commandlist macrodefs_lst tmpvar varmap cmd tl macro_name
-                       | Dummy                      -> command tl macrodefs_lst tmpvar varmap (* does nothing; just a Dummy (NOP) *)
-                       | Empty_dummy                -> command tl macrodefs_lst Empty  varmap (* gives back Empty as result/tmpvar *)
-
-                   end
 
 
 
