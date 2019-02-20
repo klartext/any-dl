@@ -698,23 +698,23 @@ and     cmd_match commandlist macrodefs_lst tmpvar varmap cmd tl pattern  :  res
           verbose_printf "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
 
           let str =
-           begin
-             match tmpvar with
-               | Document (doc, url) -> doc
-               | String    s         -> s
-               | String_array strarr -> Array.fold_left ( fun collect str       -> collect ^ str) "" strarr
-               | Document_array arr  -> Array.fold_left ( fun collect (doc,url) -> collect ^ doc) "" arr
-               (* match also on other types?? Does matching an URL for example makes sense? *)
-               | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
-           end
+            begin
+              match tmpvar with
+                | Document (doc, url) -> doc
+                | String    s         -> s
+                | String_array strarr -> Array.fold_left ( fun collect str       -> collect ^ str) "" strarr
+                | Document_array arr  -> Array.fold_left ( fun collect (doc,url) -> collect ^ doc) "" arr
+                (* match also on other types?? Does matching an URL for example makes sense? *)
+                | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
+            end
           in
           let match_res = Parsers.if_match_give_group_of_groups str ~regexp_str:pattern (* flags here *) in
           let matched =
-           begin
-             match match_res with
-               | None   -> raise No_Match
-               | Some res -> res
-           end
+            begin
+              match match_res with
+                | None   -> raise No_Match
+                | Some res -> res
+            end
           in
           command tl macrodefs_lst (Match_result matched) varmap
 
@@ -739,25 +739,25 @@ and     cmd_grep commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist 
           (* do the grep *)
           (* ----------- *)
           let grepped =
-           begin
-             match tmpvar with
-               | Document (doc, url) -> let grepped_lines = grep_lines_from_string doc in
-                                        String_array (Array.of_list grepped_lines )
+            begin
+              match tmpvar with
+                | Document (doc, url) -> let grepped_lines = grep_lines_from_string doc in
+                                         String_array (Array.of_list grepped_lines )
 
-               | Document_array docarr ->
-                                          let res =
-                                            Array.fold_left ( fun sofar (d,r) -> Array.append sofar (Array.of_list (grep_lines_from_string d)) ) [||] docarr in
-                                          String_array res
+                | Document_array docarr ->
+                                           let res =
+                                             Array.fold_left ( fun sofar (d,r) -> Array.append sofar (Array.of_list (grep_lines_from_string d)) ) [||] docarr in
+                                           String_array res
 
-               | String_array str_arr -> String_array( Array2.filter test_match_on_string str_arr)
+                | String_array str_arr -> String_array( Array2.filter test_match_on_string str_arr)
 
-               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_match_on_string url ||
-                                                                                     test_match_on_string ref ) url_arr )
+                | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_match_on_string url ||
+                                                                                      test_match_on_string ref ) url_arr )
 
-               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_match_on_string mres )
+                | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_match_on_string mres )
 
-               | _            -> prerr_endline "Grep: nothing to match"; raise No_Matchresult_available
-           end
+                | _            -> prerr_endline "Grep: nothing to match"; raise No_Matchresult_available
+            end
           in
            command tl macrodefs_lst grepped varmap
 
@@ -773,19 +773,19 @@ and     cmd_grep_v commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglis
            if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
           *)
           let grepped =
-           begin
-             match tmpvar with
-               | Document (doc, url) -> let lines = Tools.lines_of_string doc in
-                                        let selected_lines = ( List.filter test_nonmatch_on_string lines ) in
-                                        String_array (Array.of_list selected_lines )
+            begin
+              match tmpvar with
+                | Document (doc, url) -> let lines = Tools.lines_of_string doc in
+                                         let selected_lines = ( List.filter test_nonmatch_on_string lines ) in
+                                         String_array (Array.of_list selected_lines )
 
-               | String_array str_arr -> String_array( Array2.filter test_nonmatch_on_string str_arr)
-               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_nonmatch_on_string url &&
-                                                                                          test_nonmatch_on_string ref ) url_arr )
+                | String_array str_arr -> String_array( Array2.filter test_nonmatch_on_string str_arr)
+                | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_nonmatch_on_string url &&
+                                                                                           test_nonmatch_on_string ref ) url_arr )
 
-               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_nonmatch_on_string mres )
-               | _            -> prerr_endline "Grep_v: nothing to match"; raise No_Matchresult_available
-           end
+                | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_nonmatch_on_string mres )
+                | _            -> prerr_endline "Grep_v: nothing to match"; raise No_Matchresult_available
+            end
           in
            command tl macrodefs_lst grepped varmap
 
@@ -793,49 +793,49 @@ and     cmd_grep_v commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglis
 
 and     cmd_select commandlist macrodefs_lst tmpvar varmap cmd tl index  :  results_t * varmap_t =
           begin
-           match tmpvar with
-             | Document (doc, url)   -> let res = if index = 1 then Url (url, "-") else String doc in
-                                        command tl macrodefs_lst res varmap
-             | Document_array docarr -> command tl macrodefs_lst ( Document (fst docarr.(index), snd docarr.(index)) ) varmap
-             | String_array rowitems -> command tl macrodefs_lst (String(rowitems.(index))) varmap
-             | Url_array    rowitems -> command tl macrodefs_lst (Url( fst(rowitems.(index)), snd(rowitems.(index)))) varmap
-             | Url_list     rowitems -> command tl macrodefs_lst (Url( fst(List.nth rowitems index), snd(List.nth rowitems index))) varmap
-             | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+            match tmpvar with
+              | Document (doc, url)   -> let res = if index = 1 then Url (url, "-") else String doc in
+                                         command tl macrodefs_lst res varmap
+              | Document_array docarr -> command tl macrodefs_lst ( Document (fst docarr.(index), snd docarr.(index)) ) varmap
+              | String_array rowitems -> command tl macrodefs_lst (String(rowitems.(index))) varmap
+              | Url_array    rowitems -> command tl macrodefs_lst (Url( fst(rowitems.(index)), snd(rowitems.(index)))) varmap
+              | Url_list     rowitems -> command tl macrodefs_lst (Url( fst(List.nth rowitems index), snd(List.nth rowitems index))) varmap
+              | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
           end
 
 
 
 and     cmd_mselect commandlist macrodefs_lst tmpvar varmap cmd tl index_list  :  results_t * varmap_t =
           begin
-           match tmpvar with
-             | String_array rowitems -> command tl macrodefs_lst (String_array(item_selection rowitems index_list)) varmap
-             | Url_array    rowitems -> command tl macrodefs_lst (Url_array(item_selection rowitems index_list)) varmap
-             | _            -> prerr_endline "MSelect: nothing to match"; raise No_Matchresult_available
+            match tmpvar with
+              | String_array rowitems -> command tl macrodefs_lst (String_array(item_selection rowitems index_list)) varmap
+              | Url_array    rowitems -> command tl macrodefs_lst (Url_array(item_selection rowitems index_list)) varmap
+              | _            -> prerr_endline "MSelect: nothing to match"; raise No_Matchresult_available
           end
 
 
 
 and     cmd_colselect commandlist macrodefs_lst tmpvar varmap cmd tl col_index  :  results_t * varmap_t =
           begin
-           match tmpvar with
-             | Match_result mres ->
-                                    let outer_maxidx = Array.length mres     - 1 in (* outer: row *)
-                                    let inner_maxidx = Array.length mres.(0) - 1 in (* inner: col *)
-                                    let res          = Array.make (Array.length mres) mres.(0).(0) in
-                                    begin
-                                      if col_index >= 0 && col_index <= inner_maxidx
-                                      then
-                                        begin
-                                          for idx = 0 to outer_maxidx
-                                          do
-                                            res.(idx) <- mres.(idx).(col_index)
-                                          done;
-                                          command tl macrodefs_lst (String_array res) varmap
-                                        end
-                                      else
-                                        raise Invalid_Col_Index
-                                    end
-             | _ -> print_warning "ColSelect: wrong type!!!"; raise Wrong_tmpvar_type
+            match tmpvar with
+              | Match_result mres ->
+                                     let outer_maxidx = Array.length mres     - 1 in (* outer: row *)
+                                     let inner_maxidx = Array.length mres.(0) - 1 in (* inner: col *)
+                                     let res          = Array.make (Array.length mres) mres.(0).(0) in
+                                     begin
+                                       if col_index >= 0 && col_index <= inner_maxidx
+                                       then
+                                         begin
+                                           for idx = 0 to outer_maxidx
+                                           do
+                                             res.(idx) <- mres.(idx).(col_index)
+                                           done;
+                                           command tl macrodefs_lst (String_array res) varmap
+                                         end
+                                       else
+                                         raise Invalid_Col_Index
+                                     end
+              | _ -> print_warning "ColSelect: wrong type!!!"; raise Wrong_tmpvar_type
           end
 
 
@@ -843,16 +843,16 @@ and     cmd_colselect commandlist macrodefs_lst tmpvar varmap cmd tl col_index  
 and     cmd_rowselect commandlist macrodefs_lst tmpvar varmap cmd tl index  :  results_t * varmap_t =
           let res = ref Empty in
           begin
-           match tmpvar with
-             | Match_result mres ->
-                                    begin
-                                      if index >= 0 && index <= Array.length ( mres ) - 1
-                                      then
-                                        res := String_array ( mres.(index) )
-                                      else
-                                        raise Invalid_Row_Index
-                                    end
-             | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+            match tmpvar with
+              | Match_result mres ->
+                                     begin
+                                       if index >= 0 && index <= Array.length ( mres ) - 1
+                                       then
+                                         res := String_array ( mres.(index) )
+                                       else
+                                         raise Invalid_Row_Index
+                                     end
+              | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
           end;
           command tl macrodefs_lst !res varmap
 
@@ -862,14 +862,14 @@ and     cmd_rowselect commandlist macrodefs_lst tmpvar varmap cmd tl index  :  r
                        (* ------------------------------ *)
 and     cmd_dropcol commandlist macrodefs_lst tmpvar varmap cmd tl col_index  :  results_t * varmap_t =
           begin
-           match tmpvar with
-             | Match_result mres ->
-                        let dropres = Array.copy mres in
-                        Array.iteri ( fun idx the_row ->
-                                               dropres.(idx) <- array_drop the_row col_index (* !!! *)
-                                    ) mres;
-                        command tl macrodefs_lst (Match_result dropres) varmap
-             | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
+            match tmpvar with
+              | Match_result mres ->
+                         let dropres = Array.copy mres in
+                         Array.iteri ( fun idx the_row ->
+                                                dropres.(idx) <- array_drop the_row col_index (* !!! *)
+                                     ) mres;
+                         command tl macrodefs_lst (Match_result dropres) varmap
+              | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
           end
 
 
@@ -877,11 +877,11 @@ and     cmd_dropcol commandlist macrodefs_lst tmpvar varmap cmd tl col_index  : 
                        (* --------------------------- *)
 and     cmd_droprow commandlist macrodefs_lst tmpvar varmap cmd tl index  :  results_t * varmap_t =
           let res =
-           begin
-             match tmpvar with
-               | Match_result mres -> Match_result (array_drop mres index)
-               | _                 -> print_warning "DropRow: wrong type!!!"; raise Wrong_tmpvar_type
-           end
+            begin
+              match tmpvar with
+                | Match_result mres -> Match_result (array_drop mres index)
+                | _                 -> print_warning "DropRow: wrong type!!!"; raise Wrong_tmpvar_type
+            end
           in
            command tl macrodefs_lst res varmap
 
@@ -975,559 +975,559 @@ and     cmd_i_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_
                        (* seperate coulmns in each rows. With dropcol() they can be kiekced out!         *)
                        (* ------------------------------------------------------------------------------ *)
 and     cmd_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let pair_to_arr pair = [| fst pair; snd pair |] in
+          let pair_to_arr pair = [| fst pair; snd pair |] in
 
-                                                       let new_var =
-                                                       begin
-                                                         match tmpvar with
-                                                            (*
-                                                            | Varname         vn         -> Match_result [| [| vn |] |]
-                                                            *)
+          let new_var =
+            begin
+              match tmpvar with
+                 (*
+                 | Varname         vn         -> Match_result [| [| vn |] |]
+                 *)
 
-                                                            | String          s          -> Match_result [| [| s |] |]
-                                                            | String_array    str_arr    -> Match_result [| str_arr |]
-                                                            | Document        (doc, url) -> Match_result [| [| doc; url |] |]
-                                                            | Document_array  doc_arr    -> Match_result (Array.map pair_to_arr doc_arr)
-                                                            | Url             (url, ref) -> Match_result [| [| url; ref  |] |]
+                 | String          s          -> Match_result [| [| s |] |]
+                 | String_array    str_arr    -> Match_result [| str_arr |]
+                 | Document        (doc, url) -> Match_result [| [| doc; url |] |]
+                 | Document_array  doc_arr    -> Match_result (Array.map pair_to_arr doc_arr)
+                 | Url             (url, ref) -> Match_result [| [| url; ref  |] |]
 
-                                                            | Url_list        url_list   -> let url_array = Array.of_list url_list in
-                                                                                            Match_result (Array.map pair_to_arr url_array)
+                 | Url_list        url_list   -> let url_array = Array.of_list url_list in
+                                                 Match_result (Array.map pair_to_arr url_array)
 
-                                                            | Url_array       url_array  -> Match_result (Array.map pair_to_arr url_array)
-                                                            | Dummy_result               -> Match_result [| [| "DUMMY_A"; "DUMMY_B" |]; [| "DUMMY_C"; "DUMMY_D"|] |]
-                                                            | Match_result    match_res  -> Match_result match_res  (* stays the same *)
-                                                            | Empty                      -> Match_result [| [| "" |] |]
-                                                            | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       in
-                                                       command tl macrodefs_lst new_var varmap
+                 | Url_array       url_array  -> Match_result (Array.map pair_to_arr url_array)
+                 | Dummy_result               -> Match_result [| [| "DUMMY_A"; "DUMMY_B" |]; [| "DUMMY_C"; "DUMMY_D"|] |]
+                 | Match_result    match_res  -> Match_result match_res  (* stays the same *)
+                 | Empty                      -> Match_result [| [| "" |] |]
+                 | _ -> raise Wrong_argument_type
+            end;
+            in
+            command tl macrodefs_lst new_var varmap
 
 
 
 and     cmd_table_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let matchres =
-                                                         match tmpvar with
-                                                           | String   str -> let dl = Parsers.conv_to_doclist str in
-                                                                             let u = Parsers.table_unparse dl in
-                                                                             Match_result u
-                                                           | _ -> raise Wrong_argument_type
-                                                       in
-                                                       command tl macrodefs_lst matchres varmap
+          let matchres =
+            match tmpvar with
+              | String   str -> let dl = Parsers.conv_to_doclist str in
+                                let u = Parsers.table_unparse dl in
+                                Match_result u
+              | _ -> raise Wrong_argument_type
+          in
+          command tl macrodefs_lst matchres varmap
 
 
 
 and     cmd_append_to commandlist macrodefs_lst tmpvar varmap cmd tl varname  :  results_t * varmap_t =
-                                                       (* append tmpvar to a Matchres, adressed by varname *)
-                                                       (* if that variable is unknown, create it anew.     *)
+          (* append tmpvar to a Matchres, adressed by varname *)
+          (* if that variable is unknown, create it anew.     *)
 
-                                                       let extract_matchres value = match value with Match_result mr -> mr | _ -> raise Wrong_argument_type in
+          let extract_matchres value = match value with Match_result mr -> mr | _ -> raise Wrong_argument_type in
 
-                                                       let tmp_arr = extract_matchres tmpvar in
+          let tmp_arr = extract_matchres tmpvar in
 
-                                                       (* if known, extract array; if unknown, create empty array *)
-                                                       let known_arr = if Varmap.mem varname varmap
-                                                                       then extract_matchres (Varmap.find varname varmap)
-                                                                       else [| |]
-                                                       in
+          (* if known, extract array; if unknown, create empty array *)
+          let known_arr = if Varmap.mem varname varmap
+                          then extract_matchres (Varmap.find varname varmap)
+                          else [| |]
+          in
 
-                                                       let res = Match_result ( Array.append known_arr tmp_arr ) in (* append the tmpvar-array to the known array *)
+          let res = Match_result ( Array.append known_arr tmp_arr ) in (* append the tmpvar-array to the known array *)
 
-                                                       let new_varmap = Varmap.add varname res varmap in
+          let new_varmap = Varmap.add varname res varmap in
 
-                                                       command tl macrodefs_lst tmpvar new_varmap (* tmpvar is not touched *)
+          command tl macrodefs_lst tmpvar new_varmap (* tmpvar is not touched *)
 
 
 
 and     cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let result =
-                                                       begin
-                                                         match tmpvar with
-                                                            | Match_result    match_res  -> Match_result ( Tools.transpose match_res )
-                                                            | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       in
-                                                       command tl macrodefs_lst result varmap
+          let result =
+            begin
+              match tmpvar with
+                 | Match_result    match_res  -> Match_result ( Tools.transpose match_res )
+                 | _ -> raise Wrong_argument_type
+            end;
+            in
+            command tl macrodefs_lst result varmap
 
 
 
 and     cmd_link_extract commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       begin
+          begin
 
-                                                         (* extracted urls can be rebased with this function *)
-                                                         let rebase_urls   url_list  parent_url =
-                                                             List.fold_right ( fun lnk sofar -> match Parsers.Rebase.rebase_url ~verbose:Cli.opt.Cli.very_verbose parent_url lnk with
-                                                                                                  | Some rebased -> (rebased,  parent_url) :: sofar
-                                                                                                  | None         -> sofar
-                                                                             ) url_list []
-                                                         in
+            (* extracted urls can be rebased with this function *)
+            let rebase_urls   url_list  parent_url =
+                List.fold_right ( fun lnk sofar -> match Parsers.Rebase.rebase_url ~verbose:Cli.opt.Cli.very_verbose parent_url lnk with
+                                                     | Some rebased -> (rebased,  parent_url) :: sofar
+                                                     | None         -> sofar
+                                ) url_list []
+            in
 
-                                                         (* extract urls and rebase these extracted urls *)
-                                                         let extract_and_rebase document url =
-                                                             let extracted_urls = Parsers.linkextract_str document in
-                                                             List.iter (fun x -> very_verbose_printf "---extracted url: %s\n" x) extracted_urls;
-                                                             rebase_urls extracted_urls url
-                                                         in
-
-
-                                                         verbose_printf "%s" "Link_extract\n";
-
-                                                         match tmpvar with
-                                                           | Document (doc, url) ->
-                                                                     let rebased_urls = extract_and_rebase doc url               in
-                                                                     let links        = Url_array ( Array.of_list rebased_urls ) in
-                                                                    command tl macrodefs_lst links varmap
-
-                                                           | Document_array doc_url_array ->
-                                                                let rebased = List.map ( fun (doc,url) -> extract_and_rebase doc url ) (Array.to_list doc_url_array) in
-                                                                let rebased = List.flatten rebased in
-                                                                  let links        = Url_array ( Array.of_list rebased ) in
-                                                                  command tl macrodefs_lst links varmap
+            (* extract urls and rebase these extracted urls *)
+            let extract_and_rebase document url =
+                let extracted_urls = Parsers.linkextract_str document in
+                List.iter (fun x -> very_verbose_printf "---extracted url: %s\n" x) extracted_urls;
+                rebase_urls extracted_urls url
+            in
 
 
-                                                           | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
-                                                       end
+            verbose_printf "%s" "Link_extract\n";
+
+            match tmpvar with
+              | Document (doc, url) ->
+                        let rebased_urls = extract_and_rebase doc url               in
+                        let links        = Url_array ( Array.of_list rebased_urls ) in
+                       command tl macrodefs_lst links varmap
+
+              | Document_array doc_url_array ->
+                   let rebased = List.map ( fun (doc,url) -> extract_and_rebase doc url ) (Array.to_list doc_url_array) in
+                   let rebased = List.flatten rebased in
+                     let links        = Url_array ( Array.of_list rebased ) in
+                     command tl macrodefs_lst links varmap
+
+
+              | _ -> print_warning "Link_extract found non-usable type"; raise Wrong_tmpvar_type
+          end
 
 
 
 and     cmd_link_extract_xml commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       begin
-                                                         match tmpvar with
-                                                           | Document(doc, url)-> let urls   = Array.of_list (Parsers.xml_get_href_from_string doc) in
-                                                                                  (* the url of the doecument will become the referrer of the extracted url! *)
-                                                                                  let links  = Url_array (Array.map ( fun lnk -> (lnk, url) ) urls) in
-                                                                                  command tl macrodefs_lst links varmap
-                                                           | _ -> print_warning "Link_extract_xml found non-usable type"; raise Wrong_tmpvar_type
-                                                       end
+          begin
+            match tmpvar with
+              | Document(doc, url)-> let urls   = Array.of_list (Parsers.xml_get_href_from_string doc) in
+                                     (* the url of the doecument will become the referrer of the extracted url! *)
+                                     let links  = Url_array (Array.map ( fun lnk -> (lnk, url) ) urls) in
+                                     command tl macrodefs_lst links varmap
+              | _ -> print_warning "Link_extract_xml found non-usable type"; raise Wrong_tmpvar_type
+          end
 
 
 
 and     cmd_rebase commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
-                                                       let rebase   = Parsers.Rebase.try_rebase ~verbose:Cli.opt.Cli.very_verbose  starturl in
+          let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
+          let rebase   = Parsers.Rebase.try_rebase ~verbose:Cli.opt.Cli.very_verbose  starturl in
 
-                                                       let result =
-                                                         begin
-                                                           match tmpvar with
-                                                              | Url             (u,r)      -> Url ( rebase u, r )
-                                                              | Url_list        urllist    -> Url_list ( List.map ( fun (u,r) -> (rebase u, r)) urllist )
-                                                              | String          s          -> String ( rebase s )
-                                                              | String_array    str_arr    -> String_array ( Array.map rebase str_arr )
-                                                              | Match_result    match_res  -> Match_result ( Array.map ( fun x -> Array.map rebase x ) match_res )
+          let result =
+            begin
+              match tmpvar with
+                 | Url             (u,r)      -> Url ( rebase u, r )
+                 | Url_list        urllist    -> Url_list ( List.map ( fun (u,r) -> (rebase u, r)) urllist )
+                 | String          s          -> String ( rebase s )
+                 | String_array    str_arr    -> String_array ( Array.map rebase str_arr )
+                 | Match_result    match_res  -> Match_result ( Array.map ( fun x -> Array.map rebase x ) match_res )
 
-                                                              | _ -> print_warning "Rebase found non-usable type"; raise Wrong_tmpvar_type
-                                                         end
-                                                       in
-                                                       command tl macrodefs_lst result varmap
+                 | _ -> print_warning "Rebase found non-usable type"; raise Wrong_tmpvar_type
+            end
+          in
+          command tl macrodefs_lst result varmap
 
 
 
 and     cmd_title_extract commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       begin
-                                                         match tmpvar with
-                                                           | Document (doc, url) ->
-                                                                     let result = Array.of_list (Parsers.titleextract_str doc) in
-                                                                     command (Subst ("\n", "") :: tl) macrodefs_lst (String_array result) varmap
+          begin
+            match tmpvar with
+              | Document (doc, url) ->
+                        let result = Array.of_list (Parsers.titleextract_str doc) in
+                        command (Subst ("\n", "") :: tl) macrodefs_lst (String_array result) varmap
 
-                                                           | Document_array docarr ->  let doc_url_list = (Array.to_list docarr)    in
-                                                                                       let titlili      = List.map ( fun (d,u) -> Parsers.titleextract_str d  ) doc_url_list in
-                                                                                       let titli        = List.flatten titlili in
-                                                                                       let result = Array.of_list titli in
-                                                                                       command (Subst ("\n", "") :: tl) macrodefs_lst (String_array result) varmap
+              | Document_array docarr ->  let doc_url_list = (Array.to_list docarr)    in
+                                          let titlili      = List.map ( fun (d,u) -> Parsers.titleextract_str d  ) doc_url_list in
+                                          let titli        = List.flatten titlili in
+                                          let result = Array.of_list titli in
+                                          command (Subst ("\n", "") :: tl) macrodefs_lst (String_array result) varmap
 
-                                                           | _ -> print_warning "Title_extract found non-usable type"; raise Wrong_tmpvar_type
-                                                       end
+              | _ -> print_warning "Title_extract found non-usable type"; raise Wrong_tmpvar_type
+          end
 
 
 
 and     cmd_tag_select commandlist macrodefs_lst tmpvar varmap cmd tl (selector, extractor )  :  results_t * varmap_t =
-                                                       (* --------------------------------------------------------------------- *)
-                                                       (* apply "find_elements_by_tag_name" to the doclist with hd as selector  *)
-                                                       (* and the resulting doclist is used as input to the next call of        *)
-                                                       (* "find_elements_by_tag_name", with the next element from the list then *)
-                                                       (* --------------------------------------------------------------------- *)
-                                                       let selectloop sel_lst doclist =
-                                                         let rec aux sel dl = match sel with
-                                                           | hd::tl ->
-                                                                       let selector =
-                                                                       begin
-                                                                             match hd.tag_sel, hd.argkey_sel, hd.argval_sel with
+          (* --------------------------------------------------------------------- *)
+          (* apply "find_elements_by_tag_name" to the doclist with hd as selector  *)
+          (* and the resulting doclist is used as input to the next call of        *)
+          (* "find_elements_by_tag_name", with the next element from the list then *)
+          (* --------------------------------------------------------------------- *)
+          let selectloop sel_lst doclist =
+            let rec aux sel dl = match sel with
+              | hd::tl ->
+                          let selector =
+                          begin
+                                match hd.tag_sel, hd.argkey_sel, hd.argval_sel with
 
-                                                                               | None,     None,     Some aval -> Parsers.Htmlparse.find_elements_by_argval                aval  (* OK *)
-                                                                               | None,     Some key, None      -> Parsers.Htmlparse.find_elements_by_argkey           key        (* OK *)
-                                                                               | None,     Some key, Some aval -> Parsers.Htmlparse.find_elements_by_argpair          key  aval  (* OK *)
-                                                                               | Some tag, None,     None      -> Parsers.Htmlparse.find_elements_by_tag_name    tag             (* OK *)
-                                                                               | Some tag, None,     Some aval -> Parsers.Htmlparse.find_elements_by_tag_argval  tag       aval  (* OK *)
-                                                                               | Some tag, Some key, None      -> Parsers.Htmlparse.find_elements_by_tag_argkey  tag  key        (* OK *)
-                                                                               | Some tag, Some key, Some aval -> Parsers.Htmlparse.find_elements_by_tag_argpair tag  key  aval  (* OK *)
-                                                                               | None,     None,     None      -> assert false  (* this case makes no sense, and should not occur *)
-                                                                       end
-                                                                       in
-                                                                              aux tl (selector dl)
+                                  | None,     None,     Some aval -> Parsers.Htmlparse.find_elements_by_argval                aval  (* OK *)
+                                  | None,     Some key, None      -> Parsers.Htmlparse.find_elements_by_argkey           key        (* OK *)
+                                  | None,     Some key, Some aval -> Parsers.Htmlparse.find_elements_by_argpair          key  aval  (* OK *)
+                                  | Some tag, None,     None      -> Parsers.Htmlparse.find_elements_by_tag_name    tag             (* OK *)
+                                  | Some tag, None,     Some aval -> Parsers.Htmlparse.find_elements_by_tag_argval  tag       aval  (* OK *)
+                                  | Some tag, Some key, None      -> Parsers.Htmlparse.find_elements_by_tag_argkey  tag  key        (* OK *)
+                                  | Some tag, Some key, Some aval -> Parsers.Htmlparse.find_elements_by_tag_argpair tag  key  aval  (* OK *)
+                                  | None,     None,     None      -> assert false  (* this case makes no sense, and should not occur *)
+                          end
+                          in
+                                 aux tl (selector dl)
 
-                                                           | []     -> dl
-                                                         in
-                                                           aux sel_lst doclist
-                                                       in
-
-
-                                                       (* ---------------------- *)
-                                                       (* tagselection-functions *)
-                                                       (* ====================== *)
-
-                                                       (* -------------------------------------- *)
-                                                       (* function for tagselection from doclist *)
-                                                       (* -------------------------------------- *)
-                                                       let select_tags_from_doclist selector doclist =
-                                                           match selector with
-                                                             | Selector_any                     -> Parsers.Htmlparse.find_any_elements doclist
-                                                             | Specific_selector selector_liste -> selectloop selector_liste doclist (* the selected tags *)
-                                                       in
-                                                       (* ---------------------------------------------- *)
-                                                       (* function for tagselection from document-string *)
-                                                       (* ---------------------------------------------- *)
-                                                       let select_tags_from_document selector doc = select_tags_from_doclist selector (Parsers.conv_to_doclist doc)
-                                                       in
-                                                         
-                                                         
-                                                       (* select tags from the document in TMPVAR *)
-                                                       (* --------------------------------------- *)
-                                                       let selected_tags =
-                                                         begin
-                                                           match tmpvar with
-                                                             (* maybe it does make sense for using taglist-command on already extracted doclist?!
-                                                             | Doclist   doclist   -> selectloop selector_liste doclist (* the selected tags *)
-                                                             *)
-
-                                                             | Document (doc, url) -> select_tags_from_document selector doc 
-                                                             | Document_array doc_arr ->
-                                                                                         (* extract all document-strings *)
-                                                                                         let docs = Array.fold_right ( fun docref aggregation -> (fst docref) :: aggregation ) doc_arr [] in
-
-                                                                                         (* create the doclists *)
-                                                                                         let doclists = List.map Parsers.conv_to_doclist docs in
-
-                                                                                         (* selector-function: for given selector: fix the selector and extract tags *)
-                                                                                         (* ------------------------------------------------------------------------ *)
-                                                                                         let select_tags_for_given_selector doclist = select_tags_from_doclist selector doclist
-                                                                                         in
-
-                                                                                         (* for given selector extract the tags *)
-                                                                                         let extractions = List.map ( fun dl -> select_tags_for_given_selector dl ) doclists in
-                                                                                         List.flatten extractions
-
-                                                             | _ -> print_warning "Tag_select found non-usable type"; raise Wrong_tmpvar_type
-                                                         end
-                                                       in
-
-                                                       (* verbose-optional message to the user: how many matching tags were found *)
-                                                       (* ----------------------------------------------------------------------- *)
-                                                       verbose_printf "*** Tag_select:  Length of selected_tags-list: %d\n" (List.length selected_tags);
-
-                                                       (* if tagselect() gives back empty list, this means: no document found.                                      *)
-                                                       (* if not raising Tagselect_empty_list, this would be a fatal error, because of the following function-calls *)
-                                                       (* --------------------------------------------------------------------------------------------------------- *)
-                                                       if (List.length selected_tags) = 0
-                                                       then
-                                                         begin
-                                                           prerr_endline "tagselect: nothing found";
-                                                           (*
-                                                           raise Tagselect_empty_list
-                                                           *)
-                                                         end;
+              | []     -> dl
+            in
+              aux sel_lst doclist
+          in
 
 
-                                                       (* ------------------------------------------------------------------- *)
-                                                       (* basic extractor-functions that extract the DOM-stuff from a doclist *)
-                                                       (* ------------------------------------------------------------------- *)
-                                                       let extr_data dl      = Parsers.Htmlparse.collect_data_per_doc dl    in
-                                                       let extr_dataslurp dl = [ Parsers.Htmlparse.collect_data dl ] in  (* gives back list, for making retval a list, like the other functions *)
+          (* ---------------------- *)
+          (* tagselection-functions *)
+          (* ====================== *)
 
-                                                       let extr_arg   key dl = let pairs = List.map Parsers.Htmlparse.extract_arg_pairs_from_doc dl in
-                                                                               List.fold_left ( fun sofar pairlst -> try (List.assoc key pairlst) :: sofar with Not_found -> sofar ) [] pairs in
-
-                                                       let extr_tag       dl = Parsers.Htmlparse.extract_tagname_from_topdocs_of_doclist dl in
-                                                       let extr_argkeys   dl = Parsers.Htmlparse.extract_arg_keys_from_topdocs_of_doclist dl in
-                                                       let extr_argvals   dl = Parsers.Htmlparse.extract_arg_values_from_topdocs_of_doclist dl in
-                                                       let extr_argpairs  dl = Parsers.Htmlparse.extract_arg_pairs_from_topdocs_of_doclist dl in
-
-                                                       let extr_dump      dl = Parsers.Htmlparse.dump_html dl; (* dump!!! *)
-                                                                               [ Parsers.convert_doclist_to_htmlstring dl ] in  (* gives back list, for making retval a list, like the other functions *)
-                                                       let extr_html_str  dl = Parsers.convert_doclist_to_htmlstring dl in
-
-
-                                                       (* function, that extracts single-items from the doclist *)
-                                                       (* ----------------------------------------------------- *)
-                                                       let collect_singles extractor_liste elements =
-                                                         List.fold_left ( fun sofar extr ->
-                                                                                             begin
-                                                                                              match extr with
-                                                                                                | `Data        -> let dat        = extr_data      elements in (Array.of_list dat)
-                                                                                                | `Data_slurp  -> let dat        = extr_dataslurp elements in Array.of_list dat
-                                                                                                | `Tag         -> let tagnames   = extr_tag       elements in (Array.of_list tagnames)
-                                                                                                | `Arg key     -> let extracted  = extr_arg key   elements in Array.of_list extracted
-                                                                                                | `Dump        -> let dumped     = extr_dump      elements in Array.of_list dumped
-                                                                                                | `Html_string -> [| (extr_html_str elements) |]
-                                                                                                (*| `Doclist     -> Doclist elements *)
-                                                                                                | _            -> raise Extractor_list_failure
-                                                                                             end :: sofar
-                                                         ) [] (List.rev extractor_liste)
-                                                       in
-
-                                                       (* function, that extracts paired data from the doclist *)
-                                                       (* ---------------------------------------------------- *)
-                                                       let extract_pairs item elements =
-                                                                                 begin
-                                                                                  match item with
-                                                                                    | `Arg_pairs   -> let pairs      = extr_argpairs  elements in ( Array.of_list pairs )
-                                                                                    | `Arg_keys    -> let arg_keys   = extr_argkeys   elements in ( Array.of_list arg_keys )
-                                                                                    | `Arg_vals    -> let arg_values = extr_argvals   elements in ( Array.of_list arg_values )
-                                                                                    | _            -> raise Extractor_list_failure
-                                                                                 end
-                                                       in
+          (* -------------------------------------- *)
+          (* function for tagselection from doclist *)
+          (* -------------------------------------- *)
+          let select_tags_from_doclist selector doclist =
+              match selector with
+                | Selector_any                     -> Parsers.Htmlparse.find_any_elements doclist
+                | Specific_selector selector_liste -> selectloop selector_liste doclist (* the selected tags *)
+          in
+          (* ---------------------------------------------- *)
+          (* function for tagselection from document-string *)
+          (* ---------------------------------------------- *)
+          let select_tags_from_document selector doc = select_tags_from_doclist selector (Parsers.conv_to_doclist doc)
+          in
 
 
-                                                       let result =
-                                                         begin
-                                                           match extractor with
-                                                             | Pair_extr   extr     -> Match_result ( extract_pairs extr selected_tags )
-                                                             | Single_extr extr_lst -> Match_result ( Array.of_list ( collect_singles extr_lst selected_tags ) )
-                                                         end
-                                                       in
+          (* select tags from the document in TMPVAR *)
+          (* --------------------------------------- *)
+          let selected_tags =
+            begin
+              match tmpvar with
+                (* maybe it does make sense for using taglist-command on already extracted doclist?!
+                | Doclist   doclist   -> selectloop selector_liste doclist (* the selected tags *)
+                *)
 
-                                                       (*
-                                                         `Doclist
-                                                         is fundamentally different to the other return-values.
-                                                         It does not make sense to give it back, and it also is not of type string!!!!!
-                                                         So it also does not make sense to collect it tigether with the other items!
-                                                       *)
+                | Document (doc, url) -> select_tags_from_document selector doc
+                | Document_array doc_arr ->
+                                            (* extract all document-strings *)
+                                            let docs = Array.fold_right ( fun docref aggregation -> (fst docref) :: aggregation ) doc_arr [] in
 
-                                                       command tl macrodefs_lst result varmap
+                                            (* create the doclists *)
+                                            let doclists = List.map Parsers.conv_to_doclist docs in
+
+                                            (* selector-function: for given selector: fix the selector and extract tags *)
+                                            (* ------------------------------------------------------------------------ *)
+                                            let select_tags_for_given_selector doclist = select_tags_from_doclist selector doclist
+                                            in
+
+                                            (* for given selector extract the tags *)
+                                            let extractions = List.map ( fun dl -> select_tags_for_given_selector dl ) doclists in
+                                            List.flatten extractions
+
+                | _ -> print_warning "Tag_select found non-usable type"; raise Wrong_tmpvar_type
+            end
+          in
+
+          (* verbose-optional message to the user: how many matching tags were found *)
+          (* ----------------------------------------------------------------------- *)
+          verbose_printf "*** Tag_select:  Length of selected_tags-list: %d\n" (List.length selected_tags);
+
+          (* if tagselect() gives back empty list, this means: no document found.                                      *)
+          (* if not raising Tagselect_empty_list, this would be a fatal error, because of the following function-calls *)
+          (* --------------------------------------------------------------------------------------------------------- *)
+          if (List.length selected_tags) = 0
+          then
+            begin
+              prerr_endline "tagselect: nothing found";
+              (*
+              raise Tagselect_empty_list
+              *)
+            end;
+
+
+          (* ------------------------------------------------------------------- *)
+          (* basic extractor-functions that extract the DOM-stuff from a doclist *)
+          (* ------------------------------------------------------------------- *)
+          let extr_data dl      = Parsers.Htmlparse.collect_data_per_doc dl    in
+          let extr_dataslurp dl = [ Parsers.Htmlparse.collect_data dl ] in  (* gives back list, for making retval a list, like the other functions *)
+
+          let extr_arg   key dl = let pairs = List.map Parsers.Htmlparse.extract_arg_pairs_from_doc dl in
+                                  List.fold_left ( fun sofar pairlst -> try (List.assoc key pairlst) :: sofar with Not_found -> sofar ) [] pairs in
+
+          let extr_tag       dl = Parsers.Htmlparse.extract_tagname_from_topdocs_of_doclist dl in
+          let extr_argkeys   dl = Parsers.Htmlparse.extract_arg_keys_from_topdocs_of_doclist dl in
+          let extr_argvals   dl = Parsers.Htmlparse.extract_arg_values_from_topdocs_of_doclist dl in
+          let extr_argpairs  dl = Parsers.Htmlparse.extract_arg_pairs_from_topdocs_of_doclist dl in
+
+          let extr_dump      dl = Parsers.Htmlparse.dump_html dl; (* dump!!! *)
+                                  [ Parsers.convert_doclist_to_htmlstring dl ] in  (* gives back list, for making retval a list, like the other functions *)
+          let extr_html_str  dl = Parsers.convert_doclist_to_htmlstring dl in
+
+
+          (* function, that extracts single-items from the doclist *)
+          (* ----------------------------------------------------- *)
+          let collect_singles extractor_liste elements =
+             List.fold_left ( fun sofar extr ->
+                                                 begin
+                                                  match extr with
+                                                    | `Data        -> let dat        = extr_data      elements in (Array.of_list dat)
+                                                    | `Data_slurp  -> let dat        = extr_dataslurp elements in Array.of_list dat
+                                                    | `Tag         -> let tagnames   = extr_tag       elements in (Array.of_list tagnames)
+                                                    | `Arg key     -> let extracted  = extr_arg key   elements in Array.of_list extracted
+                                                    | `Dump        -> let dumped     = extr_dump      elements in Array.of_list dumped
+                                                    | `Html_string -> [| (extr_html_str elements) |]
+                                                    (*| `Doclist     -> Doclist elements *)
+                                                    | _            -> raise Extractor_list_failure
+                                                 end :: sofar
+             ) [] (List.rev extractor_liste)
+          in
+
+          (* function, that extracts paired data from the doclist *)
+          (* ---------------------------------------------------- *)
+          let extract_pairs item elements =
+            begin
+             match item with
+               | `Arg_pairs   -> let pairs      = extr_argpairs  elements in ( Array.of_list pairs )
+               | `Arg_keys    -> let arg_keys   = extr_argkeys   elements in ( Array.of_list arg_keys )
+               | `Arg_vals    -> let arg_values = extr_argvals   elements in ( Array.of_list arg_values )
+               | _            -> raise Extractor_list_failure
+            end
+          in
+
+
+          let result =
+            begin
+              match extractor with
+                | Pair_extr   extr     -> Match_result ( extract_pairs extr selected_tags )
+                | Single_extr extr_lst -> Match_result ( Array.of_list ( collect_singles extr_lst selected_tags ) )
+            end
+          in
+
+          (*
+            `Doclist
+            is fundamentally different to the other return-values.
+            It does not make sense to give it back, and it also is not of type string!!!!!
+            So it also does not make sense to collect it tigether with the other items!
+          *)
+
+          command tl macrodefs_lst result varmap
 
 
 
 and     cmd_print commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let print_url url =  Printf.printf "%s  # Referrer:  %s\n" (fst url) (snd url) in
+          let print_url url =  Printf.printf "%s  # Referrer:  %s\n" (fst url) (snd url) in
 
-                                                       begin
-                                                         match tmpvar with
-                                                           (* does Varname makes sense at all here? *)
-                                                           | Varname  varname  -> Printf.printf "\n\tVarname  varname => varname = \"%s\"\n" varname;
-                                                                                  Unit ( ignore (command [Print] macrodefs_lst (Varmap.find varname varmap) varmap) ) (* CHECK FUNCTIONALITY, PLEASE *)
+          begin
+            match tmpvar with
+              (* does Varname makes sense at all here? *)
+              | Varname  varname  -> Printf.printf "\n\tVarname  varname => varname = \"%s\"\n" varname;
+                                     Unit ( ignore (command [Print] macrodefs_lst (Varmap.find varname varmap) varmap) ) (* CHECK FUNCTIONALITY, PLEASE *)
 
-                                                           | String   str      -> Unit ( print_endline str )
-                                                           | Document(doc, url)-> Unit( print_endline doc )  (* only print the document, without referrer *)
+              | String   str      -> Unit ( print_endline str )
+              | Document(doc, url)-> Unit( print_endline doc )  (* only print the document, without referrer *)
 
-                                                           | Document_array doc_arr -> (* only print the documents, without referrer *)
-                                                                                       Unit(
-                                                                                       Array.iter (fun (doc,ref) -> print_endline doc;
-                                                                                                                    print_endline "----------------------------------" ) doc_arr
-                                                                                       )
+              | Document_array doc_arr -> (* only print the documents, without referrer *)
+                                          Unit(
+                                          Array.iter (fun (doc,ref) -> print_endline doc;
+                                                                       print_endline "----------------------------------" ) doc_arr
+                                          )
 
-                                                           | Match_result mres -> Unit( Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
-                                                                                                        print_newline() ) mres )
-                                                           | String_array     str_arr -> Unit ( Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr )
-                                                           | Url (href, ref)    -> Unit ( print_url (href,ref) )
-                                                           | Url_list  liste    -> Unit ( List.iter  print_url liste )
-                                                           | Url_array arr      -> Unit ( Array.iter print_url arr )
-                                                           | Cookies   cooklist -> Unit ( List.iter Network.Cookies.print_cookie cooklist )
+              | Match_result mres -> Unit( Array.iter ( fun x -> Array.iter ( fun y -> Printf.printf "\"%s\" ||| " y) x;
+                                                           print_newline() ) mres )
+              | String_array     str_arr -> Unit ( Array.iter ( fun str -> Printf.printf "\"%s\" \n" str) str_arr )
+              | Url (href, ref)    -> Unit ( print_url (href,ref) )
+              | Url_list  liste    -> Unit ( List.iter  print_url liste )
+              | Url_array arr      -> Unit ( Array.iter print_url arr )
+              | Cookies   cooklist -> Unit ( List.iter Network.Cookies.print_cookie cooklist )
 
-                                                           (*
-                                                           | Doclist   doclist  -> let string_of_dl dl = Parsers.convert_doclist_to_htmlstring [dl] in
-                                                                                   List.iter ( fun doc -> print_endline ( string_of_dl doc ) ) doclist (* one per line *)
-                                                           *)
+              (*
+              | Doclist   doclist  -> let string_of_dl dl = Parsers.convert_doclist_to_htmlstring [dl] in
+                                      List.iter ( fun doc -> print_endline ( string_of_dl doc ) ) doclist (* one per line *)
+              *)
 
-                                                           | _ -> Unit ( print_warning "Print-command found non-printable type" )
-                                                       end;
-                                                       command tl macrodefs_lst tmpvar varmap
+              | _ -> Unit ( print_warning "Print-command found non-printable type" )
+          end;
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_show_match commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       (* prints "real" matches only (and not the fullmatch with index = 0) *)
-                                                       begin
-                                                         match tmpvar with
-                                                           | Match_result mres ->
-                                                                      verbose_fprintf stdout "for real matches: show_match: Col 0 is the whole match, all others are the groups\n";
-                                                                      Array.iteri ( fun idx x ->
-                                                                                             Printf.printf "Row %2d:\n" idx;
-                                                                                             Printf.printf "-------\n";
-                                                                                             for index = 0 to Array.length x -1
-                                                                                             do
-                                                                                               Printf.printf "  Col %2d: \"%s\" \n" index x.(index)
-                                                                                             done;
-                                                                                             print_newline()
-                                                                                  ) mres
-                                                           | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
-                                                       end;
-                                                       command tl macrodefs_lst tmpvar varmap
+          (* prints "real" matches only (and not the fullmatch with index = 0) *)
+          begin
+            match tmpvar with
+              | Match_result mres ->
+                         verbose_fprintf stdout "for real matches: show_match: Col 0 is the whole match, all others are the groups\n";
+                         Array.iteri ( fun idx x ->
+                                                Printf.printf "Row %2d:\n" idx;
+                                                Printf.printf "-------\n";
+                                                for index = 0 to Array.length x -1
+                                                do
+                                                  Printf.printf "  Col %2d: \"%s\" \n" index x.(index)
+                                                done;
+                                                print_newline()
+                                     ) mres
+              | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
+          end;
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_csv_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list  :  results_t * varmap_t =
-                                                      (*  Save the data from a Match_result to a csv-file.                         *)
-                                                      (* Data will be made square (equal number of columns per row) before saving! *)
-                                                      (* ------------------------------------------------------------------------- *)
-                                                       let filename = paste_arglist_to_string  argument_list  varmap in
-                                                       begin
-                                                         match tmpvar with
-                                                           | Match_result mres -> let csv = Csv.of_array mres in
-                                                                                  let csvstuff = Csv.square csv in
-                                                                                  Csv.save filename csvstuff
-                                                           | _ -> raise Wrong_tmpvar_type
-                                                       end;
-                                                       command tl macrodefs_lst tmpvar varmap
+          (*  Save the data from a Match_result to a csv-file.                         *)
+          (* Data will be made square (equal number of columns per row) before saving! *)
+          (* ------------------------------------------------------------------------- *)
+          let filename = paste_arglist_to_string  argument_list  varmap in
+          begin
+            match tmpvar with
+              | Match_result mres -> let csv = Csv.of_array mres in
+                                     let csvstuff = Csv.square csv in
+                                     Csv.save filename csvstuff
+              | _ -> raise Wrong_tmpvar_type
+          end;
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_csv_save commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                      (*  Save the data from a Match_result to a csv-file.                         *)
-                                                      (* Data will be made square (equal number of columns per row) before saving! *)
-                                                      (* ------------------------------------------------------------------------- *)
-                                                       let url = Parsers.url_to_filename (to_string (Varmap.find "STARTURL" varmap) varmap) in
-                                                       ignore ( command [CSV_save_as [String url; String ".csv"] ] macrodefs_lst tmpvar varmap ); (* do the CSV_save with the created filename *)
-                                                       command tl macrodefs_lst tmpvar varmap
+          (*  Save the data from a Match_result to a csv-file.                         *)
+          (* Data will be made square (equal number of columns per row) before saving! *)
+          (* ------------------------------------------------------------------------- *)
+          let url = Parsers.url_to_filename (to_string (Varmap.find "STARTURL" varmap) varmap) in
+          ignore ( command [CSV_save_as [String url; String ".csv"] ] macrodefs_lst tmpvar varmap ); (* do the CSV_save with the created filename *)
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_csv_read commandlist macrodefs_lst tmpvar varmap cmd tl filename_arglist  :  results_t * varmap_t =
-                                                       (*  Read data from file <filename> (given as arglist) as csv-data to Match_result *)
-                                                       let csv = try
-                                                                   Csv.load (paste_arglist_to_string filename_arglist varmap)
-                                                                 with Sys_error msg -> raise (Csv_read_error msg)
-                                                       in
-                                                       let result = Match_result (Csv.to_array csv) in
-                                                       command tl macrodefs_lst result varmap
+          (*  Read data from file <filename> (given as arglist) as csv-data to Match_result *)
+          let csv = try
+                      Csv.load (paste_arglist_to_string filename_arglist varmap)
+                    with Sys_error msg -> raise (Csv_read_error msg)
+          in
+          let result = Match_result (Csv.to_array csv) in
+          command tl macrodefs_lst result varmap
 
 
 
 and     cmd_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list  :  results_t * varmap_t =
-                                                       let filename = paste_arglist_to_string  argument_list  varmap in
-                                                       begin
-                                                         match tmpvar with
-                                                           | String  str              -> save_string_to_file str filename
-                                                           | Document(doc, url)       -> save_string_to_file doc filename
-                                                           | Document_array doc_array ->
-                                                                                         print_warning "Only the first document is saved with save_as!";
-                                                                                         save_string_to_file ( fst doc_array.(0) ) filename
-                                                           | _ -> raise Wrong_tmpvar_type
-                                                       end;
-                                                       command tl macrodefs_lst tmpvar varmap
+          let filename = paste_arglist_to_string  argument_list  varmap in
+          begin
+            match tmpvar with
+              | String  str              -> save_string_to_file str filename
+              | Document(doc, url)       -> save_string_to_file doc filename
+              | Document_array doc_array ->
+                                            print_warning "Only the first document is saved with save_as!";
+                                            save_string_to_file ( fst doc_array.(0) ) filename
+              | _ -> raise Wrong_tmpvar_type
+          end;
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_save commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let saver (doc, url) = let fname = Parsers.url_to_filename url in
-                                                                           save_string_to_file doc fname
-                                                       in
+          let saver (doc, url) = let fname = Parsers.url_to_filename url in
+                                 save_string_to_file doc fname
+          in
 
-                                                       begin
-                                                         match tmpvar with
-                                                           | String  str              -> let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
-                                                                                         let filename = Parsers.url_to_filename starturl in
-                                                                                          save_string_to_file str filename
+          begin
+            match tmpvar with
+              | String  str              -> let starturl = to_string (Varmap.find "STARTURL" varmap) varmap  in
+                                            let filename = Parsers.url_to_filename starturl in
+                                             save_string_to_file str filename
 
-                                                           | Document(doc, url)       -> saver (doc, url)
-                                                           | Document_array doc_array -> Array.iter saver doc_array
-                                                           | _ -> raise Wrong_tmpvar_type
-                                                       end;
-                                                       command tl macrodefs_lst tmpvar varmap
+              | Document(doc, url)       -> saver (doc, url)
+              | Document_array doc_array -> Array.iter saver doc_array
+              | _ -> raise Wrong_tmpvar_type
+          end;
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_storematch commandlist macrodefs_lst tmpvar varmap cmd tl varname  :  results_t * varmap_t =
-                                                        verbose_printf "Storematch tmpvar to varname \"%s\"\n" varname;
-                                                        let mat = match tmpvar with Match_result mat -> mat | _ ->  raise Wrong_tmpvar_type in
-                                                        let mat = Tools.Array2.remove_empty_arrays_from_matrix ~message:true
-                                                                                                               ~msgtxt:"Storematch changed tmpvar! (removed empty cols)"
-                                                                                                               mat     in (* remove empty arrays from matrix *)
+          verbose_printf "Storematch tmpvar to varname \"%s\"\n" varname;
+          let mat = match tmpvar with Match_result mat -> mat | _ ->  raise Wrong_tmpvar_type in
+          let mat = Tools.Array2.remove_empty_arrays_from_matrix ~message:true
+                                                                 ~msgtxt:"Storematch changed tmpvar! (removed empty cols)"
+                                                                 mat     in (* remove empty arrays from matrix *)
 
-                                                        (* generator-function for the name for the named var from idx-values and var-basename *)
-                                                        (* ---------------------------------------------------------------------------------- *)
-                                                        let create_name  basename rowidx colidx = Printf.sprintf "%s.(%d).(%d)" basename rowidx colidx in
+          (* generator-function for the name for the named var from idx-values and var-basename *)
+          (* ---------------------------------------------------------------------------------- *)
+          let create_name  basename rowidx colidx = Printf.sprintf "%s.(%d).(%d)" basename rowidx colidx in
 
-                                                        (* function to add one item to the varmap *)
-                                                        (* -------------------------------------- *)
-                                                        let add_item_to_map basename rowidx colidx matr map =
-                                                            let name = create_name basename rowidx colidx in
-                                                            Varmap.add name ( String matr.(rowidx).(colidx) ) map
-                                                        in
+          (* function to add one item to the varmap *)
+          (* -------------------------------------- *)
+          let add_item_to_map basename rowidx colidx matr map =
+              let name = create_name basename rowidx colidx in
+              Varmap.add name ( String matr.(rowidx).(colidx) ) map
+          in
 
-                                                        (* add_items_to_map adds items to the Variable-map *)
-                                                        (* ----------------------------------------------- *)
-                                                        let add_items_to_map basename matr map =
-                                                          let max_rowidx = Array2.max_row_idx mat in
+          (* add_items_to_map adds items to the Variable-map *)
+          (* ----------------------------------------------- *)
+          let add_items_to_map basename matr map =
+            let max_rowidx = Array2.max_row_idx mat in
 
-                                                          let rec aux rowidx colidx map_acc =
-                                                            let max_colidx = Array2.max_col_idx_of_row rowidx mat in
-                                                            match rowidx, colidx with
-                                                              | r, c when r <= max_rowidx && c < max_colidx -> let newmap = add_item_to_map varname rowidx colidx mat map_acc
-                                                                                                               in aux rowidx (colidx + 1) newmap
-                                                              | r, c when r <  max_rowidx && c = max_colidx -> let newmap = add_item_to_map varname rowidx colidx mat map_acc
-                                                                                                               in aux (rowidx+1) 0 newmap
-                                                              | r, c when r =  max_rowidx && c = max_colidx -> add_item_to_map varname rowidx colidx mat map_acc (* done *)
-                                                              | r,c -> Printf.eprintf "r: %d   c: %d\n" r c;
-                                                                       raise ( Invalid_argument "Empty matrix - should not never occur (storematch)" )
-                                                          in
-                                                            aux 0 0 map
-                                                        in
+            let rec aux rowidx colidx map_acc =
+              let max_colidx = Array2.max_col_idx_of_row rowidx mat in
+              match rowidx, colidx with
+                | r, c when r <= max_rowidx && c < max_colidx -> let newmap = add_item_to_map varname rowidx colidx mat map_acc
+                                                                 in aux rowidx (colidx + 1) newmap
+                | r, c when r <  max_rowidx && c = max_colidx -> let newmap = add_item_to_map varname rowidx colidx mat map_acc
+                                                                 in aux (rowidx+1) 0 newmap
+                | r, c when r =  max_rowidx && c = max_colidx -> add_item_to_map varname rowidx colidx mat map_acc (* done *)
+                | r,c -> Printf.eprintf "r: %d   c: %d\n" r c;
+                         raise ( Invalid_argument "Empty matrix - should not never occur (storematch)" )
+            in
+              aux 0 0 map
+          in
 
-                                                        let newmap = add_items_to_map varname mat varmap in
+          let newmap = add_items_to_map varname mat varmap in
 
-                                                        command tl macrodefs_lst (Match_result mat) newmap (* stores tmpvar as named variable *)
+          command tl macrodefs_lst (Match_result mat) newmap (* stores tmpvar as named variable *)
 
 
 
 and     cmd_sort commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let res =
-                                                         begin
-                                                           match tmpvar with
-                                                             | Match_result mres -> Array.sort compare mres; (* in-place sort; unit type *)
-                                                                                    Match_result mres        (* give back the sorted array *)
+          let res =
+            begin
+              match tmpvar with
+                | Match_result mres -> Array.sort compare mres; (* in-place sort; unit type *)
+                                       Match_result mres        (* give back the sorted array *)
 
-                                                             | Url_list  liste   -> Url_list ( List.sort compare liste )
+                | Url_list  liste   -> Url_list ( List.sort compare liste )
 
-                                                             | Url_array arr     -> Array.sort compare arr;  (* in-place sort; unit type *)
-                                                                                    Url_array arr            (* give back the sorted array *)
+                | Url_array arr     -> Array.sort compare arr;  (* in-place sort; unit type *)
+                                       Url_array arr            (* give back the sorted array *)
 
-                                                             | _ -> raise Wrong_tmpvar_type
-                                                         end
-                                                       in
-                                                         command tl macrodefs_lst res varmap  (* removes multiple data *)
+                | _ -> raise Wrong_tmpvar_type
+            end
+          in
+            command tl macrodefs_lst res varmap  (* removes multiple data *)
 
 
 
                        (* uniq: make entries unique: ignore multiple entries with same contents *)
 and     cmd_uniq commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let res =
-                                                         begin
-                                                           match tmpvar with
-                                                             | Match_result mres -> let li_of_colarr = Array.to_list mres in
-                                                                                    let uniq = Tools.add_item_once li_of_colarr in
-                                                                                    Match_result (Array.of_list uniq)
+          let res =
+            begin
+              match tmpvar with
+                | Match_result mres -> let li_of_colarr = Array.to_list mres in
+                                       let uniq = Tools.add_item_once li_of_colarr in
+                                       Match_result (Array.of_list uniq)
 
-                                                             | Url (href, ref)   -> Url (href, ref)
-                                                             | Url_list  liste   -> Url_list ( Tools.add_item_once liste )
-                                                             | Url_array arr     -> Url_list ( Tools.add_item_once (Array.to_list arr) )
-                                                             | String   str as s -> s
+                | Url (href, ref)   -> Url (href, ref)
+                | Url_list  liste   -> Url_list ( Tools.add_item_once liste )
+                | Url_array arr     -> Url_list ( Tools.add_item_once (Array.to_list arr) )
+                | String   str as s -> s
 
-                                                             | String_array  str_arr -> String_array ( Array.of_list ( Tools.add_item_once  (Array.to_list str_arr)) )
+                | String_array  str_arr -> String_array ( Array.of_list ( Tools.add_item_once  (Array.to_list str_arr)) )
 
-                                                             | _ -> raise Wrong_tmpvar_type
-                                                         end
-                                                       in
-                                                         command tl macrodefs_lst res varmap  (* removes multiple data *)
+                | _ -> raise Wrong_tmpvar_type
+            end
+          in
+            command tl macrodefs_lst res varmap  (* removes multiple data *)
 
 
 
 and     cmd_show_variables commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                         Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;
-                                                                                          ignore (command [Print; Print_string "\n"] macrodefs_lst value varmap ) ) varmap;
-                                                       command tl macrodefs_lst tmpvar varmap
+          Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;
+                                                                           ignore (command [Print; Print_string "\n"] macrodefs_lst value varmap ) ) varmap;
+                                        command tl macrodefs_lst tmpvar varmap
 
 
 and     cmd_list_variables commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\"\n" varname ) varmap;
-                                                       command tl macrodefs_lst tmpvar varmap
+          Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\"\n" varname ) varmap;
+          command tl macrodefs_lst tmpvar varmap
 
 
 and     cmd_show_type commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
@@ -1536,180 +1536,180 @@ and     cmd_show_type commandlist macrodefs_lst tmpvar varmap cmd tl :  results_
 
 
 and     cmd_basename commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       begin
-                                                         match tmpvar with
-                                                           | String filename -> command tl macrodefs_lst (String(Filename.basename filename)) varmap
-                                                           | Url (href, ref) -> command tl macrodefs_lst (String(Filename.basename href)) varmap
-                                                           | _ -> raise Wrong_argument_type
-                                                       end
+          begin
+            match tmpvar with
+              | String filename -> command tl macrodefs_lst (String(Filename.basename filename)) varmap
+              | Url (href, ref) -> command tl macrodefs_lst (String(Filename.basename href)) varmap
+              | _ -> raise Wrong_argument_type
+          end
 
 
 and     cmd_subst commandlist macrodefs_lst tmpvar varmap cmd tl (from_re, to_str)  :  results_t * varmap_t =
-                                                       verbose_printf "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
-                                                       let replacer instring = Pcre.replace ~pat:from_re ~templ:to_str instring in
-                                                       begin
-                                                       match tmpvar with
-                                                         | String str           -> command tl macrodefs_lst (String (replacer str)) varmap
+          verbose_printf "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
+          let replacer instring = Pcre.replace ~pat:from_re ~templ:to_str instring in
+          begin
+          match tmpvar with
+            | String str           -> command tl macrodefs_lst (String (replacer str)) varmap
 
-                                                         | String_array str_arr -> let replaced = Array.map replacer str_arr in
-                                                                                   command tl macrodefs_lst (String_array replaced) varmap
+            | String_array str_arr -> let replaced = Array.map replacer str_arr in
+                                      command tl macrodefs_lst (String_array replaced) varmap
 
-                                                         | Url (href, ref)      -> command tl macrodefs_lst ( Url (replacer href, replacer ref) ) varmap
+            | Url (href, ref)      -> command tl macrodefs_lst ( Url (replacer href, replacer ref) ) varmap
 
-                                                         | Url_array   url_arr  -> let changed = Array.map ( fun (u,r) -> (replacer u, replacer r) ) url_arr in
-                                                                                    command tl macrodefs_lst ( Url_array changed ) varmap
+            | Url_array   url_arr  -> let changed = Array.map ( fun (u,r) -> (replacer u, replacer r) ) url_arr in
+                                       command tl macrodefs_lst ( Url_array changed ) varmap
 
-                                                         | Url_list    url_lst  -> let changed = List.map ( fun (u,r) -> (replacer u, replacer r) ) url_lst in
-                                                                                    command tl macrodefs_lst ( Url_list changed ) varmap
+            | Url_list    url_lst  -> let changed = List.map ( fun (u,r) -> (replacer u, replacer r) ) url_lst in
+                                       command tl macrodefs_lst ( Url_list changed ) varmap
 
-                                                         | Document(doc, ref)   -> let newdoc = Document( replacer doc, replacer ref ) in
-                                                                                   command tl macrodefs_lst (newdoc) varmap
+            | Document(doc, ref)   -> let newdoc = Document( replacer doc, replacer ref ) in
+                                      command tl macrodefs_lst (newdoc) varmap
 
-                                                         | Document_array doc_arr ->
-                                                                    let new_docarr = Array.map ( fun (doc,ref) -> (replacer doc, replacer ref) ) doc_arr in
-                                                                    command tl macrodefs_lst (Document_array new_docarr) varmap
+            | Document_array doc_arr ->
+                       let new_docarr = Array.map ( fun (doc,ref) -> (replacer doc, replacer ref) ) doc_arr in
+                       command tl macrodefs_lst (Document_array new_docarr) varmap
 
-                                                         | Match_result  arrarr -> let res = Array.map (fun arr -> let a = Array.copy arr in Array.map replacer a ) arrarr in
-                                                                                   command tl macrodefs_lst (Match_result res) varmap
+            | Match_result  arrarr -> let res = Array.map (fun arr -> let a = Array.copy arr in Array.map replacer a ) arrarr in
+                                      command tl macrodefs_lst (Match_result res) varmap
 
-                                                         | _ -> raise Wrong_argument_type
-                                                       end
+            | _ -> raise Wrong_argument_type
+          end
 
 
 
 and     cmd_quote commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let str = to_string tmpvar varmap in
-                                                       let quoted = "\"" ^ str ^ "\"" in
-                                                       command tl macrodefs_lst (String (quoted)) varmap
+          let str = to_string tmpvar varmap in
+          let quoted = "\"" ^ str ^ "\"" in
+          command tl macrodefs_lst (String (quoted)) varmap
 
 
 
 and     cmd_dump commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       begin
-                                                       match tmpvar with
-                                                         | Document(doc, url)-> Parsers.dump_html_from_string doc
-                                                         | Document_array doc_arr -> let docs = Array.map fst doc_arr in
-                                                                                     Array.iter Parsers.dump_html_from_string docs
-                                                         | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       command tl macrodefs_lst tmpvar varmap
+          begin
+          match tmpvar with
+            | Document(doc, url)-> Parsers.dump_html_from_string doc
+            | Document_array doc_arr -> let docs = Array.map fst doc_arr in
+                                        Array.iter Parsers.dump_html_from_string docs
+            | _ -> raise Wrong_argument_type
+          end;
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_show_tags commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       begin
-                                                       match tmpvar with
-                                                         | Document(doc, url)-> Parsers.show_tags_from_string doc
-                                                         | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       command tl macrodefs_lst tmpvar varmap
+          begin
+          match tmpvar with
+            | Document(doc, url)-> Parsers.show_tags_from_string doc
+            | _ -> raise Wrong_argument_type
+          end;
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_show_tags_fullpath commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       begin
-                                                       match tmpvar with
-                                                         | Document(doc, url)-> Parsers.show_tags_fullpath_from_string doc
-                                                         | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       command tl macrodefs_lst tmpvar varmap
+          begin
+          match tmpvar with
+            | Document(doc, url)-> Parsers.show_tags_fullpath_from_string doc
+            | _ -> raise Wrong_argument_type
+          end;
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_dump_data commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       begin
-                                                       match tmpvar with
-                                                         | Document(doc, url)-> Parsers.dump_html_data_from_string doc
-                                                         | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       command tl macrodefs_lst tmpvar varmap
+          begin
+          match tmpvar with
+            | Document(doc, url)-> Parsers.dump_html_data_from_string doc
+            | _ -> raise Wrong_argument_type
+          end;
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_system commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       begin
-                                                         match tmpvar with
-                                                           | String syscmd -> (* verbosity-message *)
-                                                                              (* ----------------- *)
-                                                                              verbose_printf "System-cmd: %s" syscmd;
+          begin
+            match tmpvar with
+              | String syscmd -> (* verbosity-message *)
+                                 (* ----------------- *)
+                                 verbose_printf "System-cmd: %s" syscmd;
 
-                                                                              (* do the work *)
-                                                                              (* ----------- *)
-                                                                              if Cli.opt.Cli.safe = false
-                                                                              then
-                                                                                 ignore( Sys.command syscmd )
-                                                                              else
-                                                                                (Printf.fprintf stderr "*** Command not invoked: %s\n" syscmd)
-                                                           | _ -> raise Wrong_argument_type
-                                                       end;
-                                                       command tl macrodefs_lst tmpvar varmap
+                                 (* do the work *)
+                                 (* ----------- *)
+                                 if Cli.opt.Cli.safe = false
+                                 then
+                                    ignore( Sys.command syscmd )
+                                 else
+                                   (Printf.fprintf stderr "*** Command not invoked: %s\n" syscmd)
+              | _ -> raise Wrong_argument_type
+          end;
+          command tl macrodefs_lst tmpvar varmap
 
 
 
 and     cmd_html_decode commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let sd str = Tools.select_decoding_scheme str in
-                                                       let newvar =
-                                                         begin
-                                                         match tmpvar with
-                                                           | String str            -> String ( Tools.html_decode str )
-                                                           | String_array strarr   -> String_array ( Array.map Tools.html_decode strarr )
-                                                           | Document(doc, url)    -> let inenc = sd doc in
-                                                                                      begin
-                                                                                        try
-                                                                                          Document( Tools.html_decode ~inenc:inenc doc, Tools.html_decode ~inenc:inenc url )
-                                                                                        with _ -> raise Html_decode_error
-                                                                                      end
-                                                           | Document_array docarr -> Document_array( Array.map (fun (d,u) -> (Tools.html_decode d, Tools.html_decode u) ) docarr )
-                                                           | Url  (url, ref)       -> Url( Tools.html_decode url, Tools.html_decode ref )
-                                                           | Url_list    urllist   -> Url_list( List.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urllist)
-                                                           | Url_array urlarr      -> Url_array( Array.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urlarr )
+          let sd str = Tools.select_decoding_scheme str in
+          let newvar =
+            begin
+            match tmpvar with
+              | String str            -> String ( Tools.html_decode str )
+              | String_array strarr   -> String_array ( Array.map Tools.html_decode strarr )
+              | Document(doc, url)    -> let inenc = sd doc in
+                                         begin
+                                           try
+                                             Document( Tools.html_decode ~inenc:inenc doc, Tools.html_decode ~inenc:inenc url )
+                                           with _ -> raise Html_decode_error
+                                         end
+              | Document_array docarr -> Document_array( Array.map (fun (d,u) -> (Tools.html_decode d, Tools.html_decode u) ) docarr )
+              | Url  (url, ref)       -> Url( Tools.html_decode url, Tools.html_decode ref )
+              | Url_list    urllist   -> Url_list( List.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urllist)
+              | Url_array urlarr      -> Url_array( Array.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urlarr )
 
 
-                                                           | Match_result  arrarr -> let res = Array.map (fun arr -> let a = Array.copy arr in Array.map Tools.html_decode a ) arrarr in
-                                                                                     (Match_result res)
+              | Match_result  arrarr -> let res = Array.map (fun arr -> let a = Array.copy arr in Array.map Tools.html_decode a ) arrarr in
+                                        (Match_result res)
 
-                                                           | _ -> raise Wrong_argument_type
-                                                         end
-                                                       in
-                                                       command tl macrodefs_lst newvar varmap
+              | _ -> raise Wrong_argument_type
+            end
+          in
+          command tl macrodefs_lst newvar varmap
 
 
 
 and     cmd_readline commandlist macrodefs_lst tmpvar varmap cmd tl arg_opt :  results_t * varmap_t =
-                                                       let read_line = String ( read_line() ) in
-                                                       begin
-                                                         match arg_opt with
-                                                           | None         -> command tl macrodefs_lst read_line varmap
-                                                           | Some varname -> command tl macrodefs_lst tmpvar ( Varmap.add varname read_line varmap )
-                                                       end
+          let read_line = String ( read_line() ) in
+          begin
+            match arg_opt with
+              | None         -> command tl macrodefs_lst read_line varmap
+              | Some varname -> command tl macrodefs_lst tmpvar ( Varmap.add varname read_line varmap )
+          end
 
 
 
 and     cmd_json_prettify commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       let newval =
-                                                         match tmpvar with
-                                                           | String str ->
-                                                                           begin
-                                                                             try
-                                                                               String (Yojson.Safe.prettify str)
-                                                                             with
-                                                                               Yojson.Json_error _ -> (* if conversion fails string has wrong contents *)
-                                                                                                      prerr_endline "Json_prettify failed";
-                                                                                                      raise Conversion_error
-                                                                           end
-                                                           | _ -> raise Wrong_argument_type
-                                                       in
-                                                         command tl macrodefs_lst newval varmap
+          let newval =
+            match tmpvar with
+              | String str ->
+                              begin
+                                try
+                                  String (Yojson.Safe.prettify str)
+                                with
+                                  Yojson.Json_error _ -> (* if conversion fails string has wrong contents *)
+                                                         prerr_endline "Json_prettify failed";
+                                                         raise Conversion_error
+                              end
+              | _ -> raise Wrong_argument_type
+          in
+            command tl macrodefs_lst newval varmap
 
 
 
 and     cmd_call_macro commandlist macrodefs_lst tmpvar varmap cmd tl macro_name  :  results_t * varmap_t =
-                                                       (* evaluating the commands of the macro, and afterwards the following commands   *)
-                                                       (* that means: prepend the commands of the macro to the tail of the command-list *)
-                                                       (* ----------------------------------------------------------------------------- *)
-                                                       let macro_commandlist = (List.assoc macro_name macrodefs_lst) in
-                                                       let stmts_tl = List.map ( fun cmd -> Command cmd ) tl in
-                                                       evaluate_statement ( List.append  macro_commandlist  stmts_tl ) macrodefs_lst tmpvar varmap
+          (* evaluating the commands of the macro, and afterwards the following commands   *)
+          (* that means: prepend the commands of the macro to the tail of the command-list *)
+          (* ----------------------------------------------------------------------------- *)
+          let macro_commandlist = (List.assoc macro_name macrodefs_lst) in
+          let stmts_tl = List.map ( fun cmd -> Command cmd ) tl in
+          evaluate_statement ( List.append  macro_commandlist  stmts_tl ) macrodefs_lst tmpvar varmap
 
 
 
