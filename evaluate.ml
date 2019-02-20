@@ -552,360 +552,362 @@ macrodefs_lst  wird in command benutzt. => Parameterübergabe?
 (* ======================================================== *)
 and     cmd_post commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist  :  results_t * varmap_t =
 
-                                            let create_keyval_pair        key         = (key, to_string (Varmap.find key varmap) varmap ) in
-                                            let create_post_argumentlist  varnamelist = List.map create_keyval_pair varnamelist in
+          let create_keyval_pair        key         = (key, to_string (Varmap.find key varmap) varmap ) in
+          let create_post_argumentlist  varnamelist = List.map create_keyval_pair varnamelist in
 
-                                            let post_arglist = create_post_argumentlist (List.map (fun x -> to_string x varmap) fname_arglist)  in (* the argument-list for POST-call *)
+          let post_arglist = create_post_argumentlist (List.map (fun x -> to_string x varmap) fname_arglist)  in (* the argument-list for POST-call *)
 
-                                            begin
-                                              match tmpvar with
-                                                | Url (url,referrer) ->
-                                                               begin
-                                                               match post_document  url referrer post_arglist  varmap with
-                                                                 | Some ( doc, url, new_varmap ) -> command tl macrodefs_lst (Document (doc, url)) new_varmap (* $URL *)
-                                                                 | None                          -> raise No_document_found
-                                                               end
+          begin
+            match tmpvar with
+              | Url (url,referrer) ->
+                             begin
+                             match post_document  url referrer post_arglist  varmap with
+                               | Some ( doc, url, new_varmap ) -> command tl macrodefs_lst (Document (doc, url)) new_varmap (* $URL *)
+                               | None                          -> raise No_document_found
+                             end
 
-                                                | _ -> raise Wrong_tmpvar_type
-                                            end
+              | _ -> raise Wrong_tmpvar_type
+          end
 
 
 
 and     cmd_download commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist_opt  :  results_t * varmap_t =
-                                                      begin
-                                                        match tmpvar with
-                                                          | Url (u,r)          -> let filename =
-                                                                                    match fname_arglist_opt with
-                                                                                      | None -> Parsers.url_to_filename u (* auto-filename, from URL    *)
-                                                                                      | Some arg_list -> paste_arglist_to_string arg_list varmap  (* filename given as argument *)
-                                                                                  in
+          begin
+            match tmpvar with
+              | Url (u,r)          -> let filename =
+                                        match fname_arglist_opt with
+                                          | None -> Parsers.url_to_filename u (* auto-filename, from URL    *)
+                                          | Some arg_list -> paste_arglist_to_string arg_list varmap  (* filename given as argument *)
+                                      in
 
-                                                                                  let new_varmap_opt = download  u r filename varmap in
-                                                                                  begin
-                                                                                    match new_varmap_opt with
-                                                                                      | None       -> command tl macrodefs_lst tmpvar varmap
-                                                                                      | Some newvm -> command tl macrodefs_lst tmpvar newvm
-                                                                                  end
-                                                          | Url_list ul        ->
-                                                                                  (* Download on Url_list necessarily use auto-filenaming *)
-                                                                                  Unit ( List.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap );
-                                                                                                                      if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep ) ul ) , varmap
-                                                          | Url_array ua        ->
-                                                                                  (* Download on Url_array necessarily use auto-filenaming *)
-                                                                                  Unit ( Array.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap );
-                                                                                                                       if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep ) ua ) , varmap
+                                      let new_varmap_opt = download  u r filename varmap in
+                                      begin
+                                        match new_varmap_opt with
+                                          | None       -> command tl macrodefs_lst tmpvar varmap
+                                          | Some newvm -> command tl macrodefs_lst tmpvar newvm
+                                      end
+              | Url_list ul        ->
+                                      (* Download on Url_list necessarily use auto-filenaming *)
+                                      Unit ( List.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap );
+                                                                          if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep ) ul ) , varmap
+              | Url_array ua        ->
+                                      (* Download on Url_array necessarily use auto-filenaming *)
+                                      Unit ( Array.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap );
+                                                                           if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep ) ua ) , varmap
 
-                                                          | _ -> raise Wrong_tmpvar_type
-                                                        end
+              | _ -> raise Wrong_tmpvar_type
+            end
+
+
 
 and     cmd_get_url commandlist macrodefs_lst tmpvar varmap cmd tl (url, referrer)  :  results_t * varmap_t =
-                                                   if Neturl.extract_url_scheme url = "file"
+          if Neturl.extract_url_scheme url = "file"
 
-                                                     then     (* FILE://... *)
-                                                       begin
+           then     (* FILE://... *)
+             begin
 
-                                                         (* extract the filename from the url *)
-                                                         (* --------------------------------- *)
-                                                         let url_strlen = String.length url in
-                                                         let scheme_strlen = String.length "file:///" in 
-                                                         let scheme_short_strlen = String.length "file://" in
+               (* extract the filename from the url *)
+               (* --------------------------------- *)
+               let url_strlen = String.length url in
+               let scheme_strlen = String.length "file:///" in
+               let scheme_short_strlen = String.length "file://" in
 
-                                                         let filename = if String.sub url 0 scheme_strlen = "file:///"
-                                                                        then String.sub url scheme_short_strlen (url_strlen - scheme_short_strlen )
-                                                                        else (prerr_endline "Get_url - file-urlscheme problem! "; flush stderr; raise No_document_found) (* other exception better? *)
-                                                         in
+               let filename = if String.sub url 0 scheme_strlen = "file:///"
+                              then String.sub url scheme_short_strlen (url_strlen - scheme_short_strlen )
+                              else (prerr_endline "Get_url - file-urlscheme problem! "; flush stderr; raise No_document_found) (* other exception better? *)
+               in
 
-                                                         (* read file and go on with Document from file as tmpvar *)
-                                                         (* ----------------------------------------------------- *)
-                                                         let contents   = Tools.read_file filename in
-                                                         command tl macrodefs_lst (Document (contents, "-")) varmap
+               (* read file and go on with Document from file as tmpvar *)
+               (* ----------------------------------------------------- *)
+               let contents   = Tools.read_file filename in
+               command tl macrodefs_lst (Document (contents, "-")) varmap
 
-                                                       end
+             end
 
-                                                     else     (* HTTP://... *)
-                                                       begin
-                                                       match get_document  url referrer varmap with
-                                                         | Some ( doc, url, new_varmap ) -> command tl macrodefs_lst (Document (doc, url)) new_varmap (* $URL *)
-                                                         | None                          -> raise No_document_found
-                                                       end
+           else     (* HTTP://... *)
+             begin
+             match get_document  url referrer varmap with
+               | Some ( doc, url, new_varmap ) -> command tl macrodefs_lst (Document (doc, url)) new_varmap (* $URL *)
+               | None                          -> raise No_document_found
+             end
 
 
 
 and     cmd_get commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                            (* This is not directly downloading the data; just inserting    *)
-                                            (* the appropriate downloader-Tokens into the Tokenlist / "AST" *)
-                                            (* ------------------------------------------------------------ *)
-                                            begin
-                                              match tmpvar with
-                                                | Url (u,r)          -> command (Get_url (u,r) :: tl) macrodefs_lst tmpvar varmap
-                                                | Url_list  urllist  -> if List.length urllist > 1
-                                                                        then command (Get_urls :: tl) macrodefs_lst tmpvar varmap
-                                                                        else
-                                                                          begin
-                                                                            let (u,r) = List.hd urllist in
-                                                                            command (Get_url (u,r) :: tl) macrodefs_lst tmpvar varmap
-                                                                          end
+          (* This is not directly downloading the data; just inserting    *)
+          (* the appropriate downloader-Tokens into the Tokenlist / "AST" *)
+          (* ------------------------------------------------------------ *)
+          begin
+            match tmpvar with
+              | Url (u,r)          -> command (Get_url (u,r) :: tl) macrodefs_lst tmpvar varmap
+              | Url_list  urllist  -> if List.length urllist > 1
+                                      then command (Get_urls :: tl) macrodefs_lst tmpvar varmap
+                                      else
+                                        begin
+                                          let (u,r) = List.hd urllist in
+                                          command (Get_url (u,r) :: tl) macrodefs_lst tmpvar varmap
+                                        end
 
-                                                | Url_array urlarray -> if Array.length urlarray > 1
-                                                                        then command (Get_urls :: tl) macrodefs_lst tmpvar varmap
-                                                                        else
-                                                                          begin
-                                                                            let (u,r) = urlarray.(0) in
-                                                                            command (Get_url (u,r) :: tl) macrodefs_lst tmpvar varmap
-                                                                          end
-                                                (* MATCHRES ???
-                                                *)
-                                                | _ -> raise Wrong_tmpvar_type
-                                              end
+              | Url_array urlarray -> if Array.length urlarray > 1
+                                      then command (Get_urls :: tl) macrodefs_lst tmpvar varmap
+                                      else
+                                        begin
+                                          let (u,r) = urlarray.(0) in
+                                          command (Get_url (u,r) :: tl) macrodefs_lst tmpvar varmap
+                                        end
+              (* MATCHRES ???
+              *)
+              | _ -> raise Wrong_tmpvar_type
+            end
 
 
 
 and     cmd_get_urls commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                            (*
-                                            (* two functions for creating the action-list from the url-list *)
-                                            (* ------------------------------------------------------------ *)
-                                            let get_save_url (url,ref) = [ Get_url (url, ref); Save; Sleep_ms Cli.opt.Cli.ms_sleep ] in
-                                            let create_actionlist  url_liste = List.flatten ( List.map get_save_url (List.rev url_liste) ) in
-                                            *)
+          (*
+          (* two functions for creating the action-list from the url-list *)
+          (* ------------------------------------------------------------ *)
+          let get_save_url (url,ref) = [ Get_url (url, ref); Save; Sleep_ms Cli.opt.Cli.ms_sleep ] in
+          let create_actionlist  url_liste = List.flatten ( List.map get_save_url (List.rev url_liste) ) in
+          *)
 
 
-                                            (* Remark: The last Sleep added by this process is not necessary... (one sleep too much) *)
+          (* Remark: The last Sleep added by this process is not necessary... (one sleep too much) *)
 
-                                            (* ----------------------------------------------------------------------- *)
-                                            (* here the download-actions will be done, either directly or via creating *)
-                                            (* a tokenlist that will do Get-Sleep-Save action-triplets, and prepends   *)
-                                            (* these actions before the tail of the former command-list.               *)
-                                            (* ----------------------------------------------------------------------- *)
-                                            begin
-                                              match tmpvar with
-                                                | Url_list  urllist  -> prerr_endline "Should now get Documents!";
-                                                                        let docs, vm = get_document_list  urllist varmap in
-                                                                        command tl macrodefs_lst (Document_array (Array.of_list docs)) vm
+          (* ----------------------------------------------------------------------- *)
+          (* here the download-actions will be done, either directly or via creating *)
+          (* a tokenlist that will do Get-Sleep-Save action-triplets, and prepends   *)
+          (* these actions before the tail of the former command-list.               *)
+          (* ----------------------------------------------------------------------- *)
+          begin
+            match tmpvar with
+              | Url_list  urllist  -> prerr_endline "Should now get Documents!";
+                                      let docs, vm = get_document_list  urllist varmap in
+                                      command tl macrodefs_lst (Document_array (Array.of_list docs)) vm
 
-                                                | Url_array urlarray -> prerr_endline "Should now get Documents!";
-                                                                        let urllist = Array.to_list urlarray in
-                                                                        let docs, vm = get_document_list  (Array.to_list urlarray) varmap in
-                                                                        command tl macrodefs_lst (Document_array (Array.of_list docs)) vm
+              | Url_array urlarray -> prerr_endline "Should now get Documents!";
+                                      let urllist = Array.to_list urlarray in
+                                      let docs, vm = get_document_list  (Array.to_list urlarray) varmap in
+                                      command tl macrodefs_lst (Document_array (Array.of_list docs)) vm
 
-                                                | _                -> raise Wrong_tmpvar_type
-                                            end
+              | _                -> raise Wrong_tmpvar_type
+          end
 
 
 
 and     cmd_match commandlist macrodefs_lst tmpvar varmap cmd tl pattern  :  results_t * varmap_t =
-                                                       verbose_printf "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
+          verbose_printf "MATCH-PATTERN: \"%s\"\n" pattern; (* devel-debug-info *)
 
-                                                       let str =
-                                                         begin
-                                                           match tmpvar with
-                                                             | Document (doc, url) -> doc
-                                                             | String    s         -> s
-                                                             | String_array strarr -> Array.fold_left ( fun collect str       -> collect ^ str) "" strarr
-                                                             | Document_array arr  -> Array.fold_left ( fun collect (doc,url) -> collect ^ doc) "" arr
-                                                             (* match also on other types?? Does matching an URL for example makes sense? *)
-                                                             | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
-                                                         end
-                                                       in
-                                                       let match_res = Parsers.if_match_give_group_of_groups str ~regexp_str:pattern (* flags here *) in
-                                                       let matched =
-                                                         begin
-                                                           match match_res with
-                                                             | None   -> raise No_Match
-                                                             | Some res -> res
-                                                         end
-                                                       in
-                                                       command tl macrodefs_lst (Match_result matched) varmap
+          let str =
+           begin
+             match tmpvar with
+               | Document (doc, url) -> doc
+               | String    s         -> s
+               | String_array strarr -> Array.fold_left ( fun collect str       -> collect ^ str) "" strarr
+               | Document_array arr  -> Array.fold_left ( fun collect (doc,url) -> collect ^ doc) "" arr
+               (* match also on other types?? Does matching an URL for example makes sense? *)
+               | _            -> raise No_Matchable_value_available (* this is a type-error Wrong_tmpvar_type *)
+           end
+          in
+          let match_res = Parsers.if_match_give_group_of_groups str ~regexp_str:pattern (* flags here *) in
+          let matched =
+           begin
+             match match_res with
+               | None   -> raise No_Match
+               | Some res -> res
+           end
+          in
+          command tl macrodefs_lst (Match_result matched) varmap
 
 
 
 and     cmd_grep commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist  :  results_t * varmap_t =
-                                                       let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
-                                                       (*
-                                                         if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
-                                                       *)
+          let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
+          (*
+           if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
+          *)
 
-                                                       (* for each line of a string apply a grep-on-pattern and return list of matching lines *)
-                                                       (* ----------------------------------------------------------------------------------- *)
-                                                       let grep_lines_from_string  str =              (* partially application to the pattern *)
-                                                         let lines = Tools.lines_of_string str in
-                                                         List.filter ( fun line -> test_pattern_match_on_string pattern line ) lines
-                                                       in
+          (* for each line of a string apply a grep-on-pattern and return list of matching lines *)
+          (* ----------------------------------------------------------------------------------- *)
+          let grep_lines_from_string  str =              (* partially application to the pattern *)
+           let lines = Tools.lines_of_string str in
+           List.filter ( fun line -> test_pattern_match_on_string pattern line ) lines
+          in
 
-                                                       let test_match_on_string = test_pattern_match_on_string  pattern in (* partially application to the pattern *)
+          let test_match_on_string = test_pattern_match_on_string  pattern in (* partially application to the pattern *)
 
 
-                                                       (* do the grep *)
-                                                       (* ----------- *)
-                                                       let grepped =
-                                                         begin
-                                                           match tmpvar with
-                                                             | Document (doc, url) -> let grepped_lines = grep_lines_from_string doc in
-                                                                                      String_array (Array.of_list grepped_lines )
+          (* do the grep *)
+          (* ----------- *)
+          let grepped =
+           begin
+             match tmpvar with
+               | Document (doc, url) -> let grepped_lines = grep_lines_from_string doc in
+                                        String_array (Array.of_list grepped_lines )
 
-                                                             | Document_array docarr ->
-                                                                                        let res =
-                                                                                          Array.fold_left ( fun sofar (d,r) -> Array.append sofar (Array.of_list (grep_lines_from_string d)) ) [||] docarr in
-                                                                                        String_array res
+               | Document_array docarr ->
+                                          let res =
+                                            Array.fold_left ( fun sofar (d,r) -> Array.append sofar (Array.of_list (grep_lines_from_string d)) ) [||] docarr in
+                                          String_array res
 
-                                                             | String_array str_arr -> String_array( Array2.filter test_match_on_string str_arr)
+               | String_array str_arr -> String_array( Array2.filter test_match_on_string str_arr)
 
-                                                             | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_match_on_string url ||
-                                                                                                                                   test_match_on_string ref ) url_arr )
+               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_match_on_string url ||
+                                                                                     test_match_on_string ref ) url_arr )
 
-                                                             | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_match_on_string mres )
+               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_match_on_string mres )
 
-                                                             | _            -> prerr_endline "Grep: nothing to match"; raise No_Matchresult_available
-                                                         end
-                                                       in
-                                                         command tl macrodefs_lst grepped varmap
+               | _            -> prerr_endline "Grep: nothing to match"; raise No_Matchresult_available
+           end
+          in
+           command tl macrodefs_lst grepped varmap
 
 
 
 and     cmd_grep_v commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist  :  results_t * varmap_t =
-                                                       let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
+          let pattern = paste_arglist_to_string  pattern_arglist  varmap in (* create pattern-string from argument-list *)
 
-                                                       let test_match_on_string = test_pattern_match_on_string  pattern in (* partially application to the pattern *)
-                                                       let test_nonmatch_on_string str = not (test_match_on_string str)  in (* negation of test_match_on_string    *)
+          let test_match_on_string = test_pattern_match_on_string  pattern in (* partially application to the pattern *)
+          let test_nonmatch_on_string str = not (test_match_on_string str)  in (* negation of test_match_on_string    *)
 
-                                                       (*
-                                                         if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
-                                                       *)
-                                                       let grepped =
-                                                         begin
-                                                           match tmpvar with
-                                                             | Document (doc, url) -> let lines = Tools.lines_of_string doc in
-                                                                                      let selected_lines = ( List.filter test_nonmatch_on_string lines ) in
-                                                                                      String_array (Array.of_list selected_lines )
+          (*
+           if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
+          *)
+          let grepped =
+           begin
+             match tmpvar with
+               | Document (doc, url) -> let lines = Tools.lines_of_string doc in
+                                        let selected_lines = ( List.filter test_nonmatch_on_string lines ) in
+                                        String_array (Array.of_list selected_lines )
 
-                                                             | String_array str_arr -> String_array( Array2.filter test_nonmatch_on_string str_arr)
-                                                             | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_nonmatch_on_string url &&
-                                                                                                                                        test_nonmatch_on_string ref ) url_arr )
+               | String_array str_arr -> String_array( Array2.filter test_nonmatch_on_string str_arr)
+               | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_nonmatch_on_string url &&
+                                                                                          test_nonmatch_on_string ref ) url_arr )
 
-                                                             | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_nonmatch_on_string mres )
-                                                             | _            -> prerr_endline "Grep_v: nothing to match"; raise No_Matchresult_available
-                                                         end
-                                                       in
-                                                         command tl macrodefs_lst grepped varmap
+               | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_nonmatch_on_string mres )
+               | _            -> prerr_endline "Grep_v: nothing to match"; raise No_Matchresult_available
+           end
+          in
+           command tl macrodefs_lst grepped varmap
 
 
 
 and     cmd_select commandlist macrodefs_lst tmpvar varmap cmd tl index  :  results_t * varmap_t =
-                                                       begin
-                                                         match tmpvar with
-                                                           | Document (doc, url)   -> let res = if index = 1 then Url (url, "-") else String doc in
-                                                                                      command tl macrodefs_lst res varmap
-                                                           | Document_array docarr -> command tl macrodefs_lst ( Document (fst docarr.(index), snd docarr.(index)) ) varmap
-                                                           | String_array rowitems -> command tl macrodefs_lst (String(rowitems.(index))) varmap
-                                                           | Url_array    rowitems -> command tl macrodefs_lst (Url( fst(rowitems.(index)), snd(rowitems.(index)))) varmap
-                                                           | Url_list     rowitems -> command tl macrodefs_lst (Url( fst(List.nth rowitems index), snd(List.nth rowitems index))) varmap
-                                                           | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
-                                                       end
+          begin
+           match tmpvar with
+             | Document (doc, url)   -> let res = if index = 1 then Url (url, "-") else String doc in
+                                        command tl macrodefs_lst res varmap
+             | Document_array docarr -> command tl macrodefs_lst ( Document (fst docarr.(index), snd docarr.(index)) ) varmap
+             | String_array rowitems -> command tl macrodefs_lst (String(rowitems.(index))) varmap
+             | Url_array    rowitems -> command tl macrodefs_lst (Url( fst(rowitems.(index)), snd(rowitems.(index)))) varmap
+             | Url_list     rowitems -> command tl macrodefs_lst (Url( fst(List.nth rowitems index), snd(List.nth rowitems index))) varmap
+             | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
+          end
 
 
 
 and     cmd_mselect commandlist macrodefs_lst tmpvar varmap cmd tl index_list  :  results_t * varmap_t =
-                                                       begin
-                                                         match tmpvar with
-                                                           | String_array rowitems -> command tl macrodefs_lst (String_array(item_selection rowitems index_list)) varmap
-                                                           | Url_array    rowitems -> command tl macrodefs_lst (Url_array(item_selection rowitems index_list)) varmap
-                                                           | _            -> prerr_endline "MSelect: nothing to match"; raise No_Matchresult_available
-                                                       end
+          begin
+           match tmpvar with
+             | String_array rowitems -> command tl macrodefs_lst (String_array(item_selection rowitems index_list)) varmap
+             | Url_array    rowitems -> command tl macrodefs_lst (Url_array(item_selection rowitems index_list)) varmap
+             | _            -> prerr_endline "MSelect: nothing to match"; raise No_Matchresult_available
+          end
 
 
 
 and     cmd_colselect commandlist macrodefs_lst tmpvar varmap cmd tl col_index  :  results_t * varmap_t =
-                                                       begin
-                                                         match tmpvar with
-                                                           | Match_result mres ->
-                                                                                  let outer_maxidx = Array.length mres     - 1 in (* outer: row *)
-                                                                                  let inner_maxidx = Array.length mres.(0) - 1 in (* inner: col *)
-                                                                                  let res          = Array.make (Array.length mres) mres.(0).(0) in
-                                                                                  begin
-                                                                                    if col_index >= 0 && col_index <= inner_maxidx
-                                                                                    then
-                                                                                      begin
-                                                                                        for idx = 0 to outer_maxidx
-                                                                                        do
-                                                                                          res.(idx) <- mres.(idx).(col_index)
-                                                                                        done;
-                                                                                        command tl macrodefs_lst (String_array res) varmap
-                                                                                      end
-                                                                                    else
-                                                                                      raise Invalid_Col_Index
-                                                                                  end
-                                                           | _ -> print_warning "ColSelect: wrong type!!!"; raise Wrong_tmpvar_type
-                                                       end
+          begin
+           match tmpvar with
+             | Match_result mres ->
+                                    let outer_maxidx = Array.length mres     - 1 in (* outer: row *)
+                                    let inner_maxidx = Array.length mres.(0) - 1 in (* inner: col *)
+                                    let res          = Array.make (Array.length mres) mres.(0).(0) in
+                                    begin
+                                      if col_index >= 0 && col_index <= inner_maxidx
+                                      then
+                                        begin
+                                          for idx = 0 to outer_maxidx
+                                          do
+                                            res.(idx) <- mres.(idx).(col_index)
+                                          done;
+                                          command tl macrodefs_lst (String_array res) varmap
+                                        end
+                                      else
+                                        raise Invalid_Col_Index
+                                    end
+             | _ -> print_warning "ColSelect: wrong type!!!"; raise Wrong_tmpvar_type
+          end
 
 
 
 and     cmd_rowselect commandlist macrodefs_lst tmpvar varmap cmd tl index  :  results_t * varmap_t =
-                                                       let res = ref Empty in
-                                                       begin
-                                                         match tmpvar with
-                                                           | Match_result mres ->
-                                                                                  begin
-                                                                                    if index >= 0 && index <= Array.length ( mres ) - 1
-                                                                                    then
-                                                                                      res := String_array ( mres.(index) )
-                                                                                    else
-                                                                                      raise Invalid_Row_Index
-                                                                                  end
-                                                           | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
-                                                       end;
-                                                       command tl macrodefs_lst !res varmap
+          let res = ref Empty in
+          begin
+           match tmpvar with
+             | Match_result mres ->
+                                    begin
+                                      if index >= 0 && index <= Array.length ( mres ) - 1
+                                      then
+                                        res := String_array ( mres.(index) )
+                                      else
+                                        raise Invalid_Row_Index
+                                    end
+             | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+          end;
+          command tl macrodefs_lst !res varmap
 
 
 
                        (* Drops a column from a matchres *)
                        (* ------------------------------ *)
 and     cmd_dropcol commandlist macrodefs_lst tmpvar varmap cmd tl col_index  :  results_t * varmap_t =
-                                                       begin
-                                                         match tmpvar with
-                                                           | Match_result mres ->
-                                                                      let dropres = Array.copy mres in
-                                                                      Array.iteri ( fun idx the_row -> 
-                                                                                             dropres.(idx) <- array_drop the_row col_index (* !!! *)
-                                                                                  ) mres;
-                                                                      command tl macrodefs_lst (Match_result dropres) varmap
-                                                           | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
-                                                       end
+          begin
+           match tmpvar with
+             | Match_result mres ->
+                        let dropres = Array.copy mres in
+                        Array.iteri ( fun idx the_row ->
+                                               dropres.(idx) <- array_drop the_row col_index (* !!! *)
+                                    ) mres;
+                        command tl macrodefs_lst (Match_result dropres) varmap
+             | _ -> raise Wrong_argument_type (* wrong tmpvar type *)
+          end
 
 
                        (* Drops a row from a matchres *)
                        (* --------------------------- *)
 and     cmd_droprow commandlist macrodefs_lst tmpvar varmap cmd tl index  :  results_t * varmap_t =
-                                                       let res =
-                                                         begin
-                                                           match tmpvar with
-                                                             | Match_result mres -> Match_result (array_drop mres index)
-                                                             | _                 -> print_warning "DropRow: wrong type!!!"; raise Wrong_tmpvar_type
-                                                         end
-                                                       in
-                                                         command tl macrodefs_lst res varmap
+          let res =
+           begin
+             match tmpvar with
+               | Match_result mres -> Match_result (array_drop mres index)
+               | _                 -> print_warning "DropRow: wrong type!!!"; raise Wrong_tmpvar_type
+           end
+          in
+           command tl macrodefs_lst res varmap
 
 
 
                        (* select match is a row-select, where the index *)
 and     cmd_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_idx, matchpat)  :  results_t * varmap_t =
-                                                              (* first match wins *)
-                                                               begin
-                                                                 match tmpvar with
-                                                                   | Match_result mres ->
+          (* first match wins *)
+           begin
+             match tmpvar with
+               | Match_result mres ->
 
-                                                                          (*let max_row_idx = Array.length ( mres ) - 1 in*)
-                                                                          (*let max_col_idx = Array.length ( mres.(0) ) - 1 in*)
+                      (*let max_row_idx = Array.length ( mres ) - 1 in*)
+                      (*let max_col_idx = Array.length ( mres.(0) ) - 1 in*)
 
-                                                                          let rows     = Array.to_list mres in
+                      let rows     = Array.to_list mres in
 
-                                                                          (* here is the selection: via string match of the lookup-pattern *)
-                                                                          let selected = List.filter ( fun item -> test_pattern_match_on_string matchpat item.(col_idx)  ) rows in
-                                                                          if List.length selected = 0 then raise No_Match;
+                      (* here is the selection: via string match of the lookup-pattern *)
+                      let selected = List.filter ( fun item -> test_pattern_match_on_string matchpat item.(col_idx)  ) rows in
+                      if List.length selected = 0 then raise No_Match;
 
-                                                                          verbose_printf "found: %d items \n" (List.length selected);
-                                                                          command tl macrodefs_lst (String_array (List.hd selected)) varmap (* first match wins *)
+                      verbose_printf "found: %d items \n" (List.length selected);
+                      command tl macrodefs_lst (String_array (List.hd selected)) varmap (* first match wins *)
 
-                                                                   | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
-                                                               end
+               | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+           end
 
 
 
@@ -916,54 +918,54 @@ and     cmd_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_id
    * default-selection
 *)
 and     cmd_i_select_match commandlist macrodefs_lst tmpvar varmap cmd tl ( col_idx, matchpat, default_pattern )  :  results_t * varmap_t =
-                                                             (* select match is a row-select, where the index *)
-                                                                (* first match wins *)
-                                                                 begin
-                                                                   match tmpvar with
-                                                                     | Match_result mres ->
-                                                                            let max_row_idx = Array.length ( mres ) - 1 in
-                                                                            let max_col_idx = Array.length ( mres.(0) ) - 1 in
+          (* select match is a row-select, where the index *)
+            (* first match wins *)
+             begin
+               match tmpvar with
+                 | Match_result mres ->
+                        let max_row_idx = Array.length ( mres ) - 1 in
+                        let max_col_idx = Array.length ( mres.(0) ) - 1 in
 
-                                                                            let rows     = Array.to_list mres in
+                        let rows     = Array.to_list mres in
 
-                                                                            (* column selection from the match-result *)
-                                                                            (* -------------------------------------- *)
-                                                                            let col = Array.make (Array.length mres) mres.(0).(0) in
-                                                                            begin
-                                                                              if col_idx >= 0 && col_idx <= max_col_idx
-                                                                              then
-                                                                                begin
-                                                                                  for idx = 0 to max_row_idx
-                                                                                  do
-                                                                                    col.(idx) <- mres.(idx).(col_idx)
-                                                                                  done
-                                                                                end
-                                                                              else
-                                                                                raise Invalid_Col_Index
-                                                                            end;
+                        (* column selection from the match-result *)
+                        (* -------------------------------------- *)
+                        let col = Array.make (Array.length mres) mres.(0).(0) in
+                        begin
+                          if col_idx >= 0 && col_idx <= max_col_idx
+                          then
+                            begin
+                              for idx = 0 to max_row_idx
+                              do
+                                col.(idx) <- mres.(idx).(col_idx)
+                              done
+                            end
+                          else
+                            raise Invalid_Col_Index
+                        end;
 
-                                                                            (* select the match-pattern: either interactively, *)
-                                                                            (* or use the default from the parser-definition.  *)
-                                                                            (* ----------------------------------------------- *)
-                                                                            let match_pattern =
-                                                                              if
-                                                                                Cli.opt.Cli.interactive = true
-                                                                              then
-                                                                                interactive_string_select col default_pattern
-                                                                              else
-                                                                                default_pattern
-                                                                            in
-                                                                              verbose_printf "selected pattern: \"%s\"\n" match_pattern;
+                        (* select the match-pattern: either interactively, *)
+                        (* or use the default from the parser-definition.  *)
+                        (* ----------------------------------------------- *)
+                        let match_pattern =
+                          if
+                            Cli.opt.Cli.interactive = true
+                          then
+                            interactive_string_select col default_pattern
+                          else
+                            default_pattern
+                        in
+                          verbose_printf "selected pattern: \"%s\"\n" match_pattern;
 
-                                                                              let selected = List.filter ( fun item -> test_pattern_match_on_string match_pattern item.(col_idx)  ) rows in
-                                                                              if List.length selected = 0 then raise No_Match;
+                          let selected = List.filter ( fun item -> test_pattern_match_on_string match_pattern item.(col_idx)  ) rows in
+                          if List.length selected = 0 then raise No_Match;
 
-                                                                              verbose_printf "found: %d items \n" (List.length selected);
+                          verbose_printf "found: %d items \n" (List.length selected);
 
-                                                                              command tl macrodefs_lst (String_array (List.hd selected)) varmap (* first match wins *)
+                          command tl macrodefs_lst (String_array (List.hd selected)) varmap (* first match wins *)
 
-                                                                     | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
-                                                                 end
+                 | _ -> print_warning "RowSelect: wrong type!!!"; raise Wrong_tmpvar_type
+             end
 
 
 
