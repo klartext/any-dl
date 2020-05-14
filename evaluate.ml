@@ -580,7 +580,9 @@ and     cmd_download commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglis
                                           | Some arg_list -> paste_arglist_to_string arg_list varmap  (* filename given as argument *)
                                       in
 
-                                      let new_varmap_opt = download  u r filename varmap in
+                                      let new_varmap_opt = try download  u r filename varmap
+                                                                with Network.Pipelined.Get_error status -> Printf.eprintf "Download failed because of Get_error ( URL: %s )\n" "" ; Some varmap
+                                                            in
                                       begin
                                         match new_varmap_opt with
                                           | None       -> command tl macrodefs_lst tmpvar varmap
