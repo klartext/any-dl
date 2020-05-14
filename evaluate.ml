@@ -485,7 +485,9 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                        | To_matchres                -> cmd_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Table_to_matchres          -> cmd_table_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Append_to  varname         -> cmd_append_to commandlist macrodefs_lst tmpvar varmap cmd tl varname
+                       (*
                        | Transpose                  -> cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl
+                       *)
                        | Link_extract               -> cmd_link_extract commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Link_extract_xml           -> cmd_link_extract_xml commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Rebase                     -> cmd_rebase commandlist macrodefs_lst tmpvar varmap cmd tl
@@ -500,9 +502,11 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                        | Print                      -> cmd_print commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Show_match                 -> cmd_show_match commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Print_string str           -> print_string str;  command tl macrodefs_lst tmpvar varmap
+                       (*
                        | CSV_save_as argument_list  -> cmd_csv_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list
                        | CSV_save                   -> cmd_csv_save commandlist macrodefs_lst tmpvar varmap cmd tl
                        | CSV_read  filename_arglist -> cmd_csv_read commandlist macrodefs_lst tmpvar varmap cmd tl filename_arglist
+                       *)
                        | Save_as      argument_list -> cmd_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list
                        | Save                       -> cmd_save commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Setvar var                 -> command tl macrodefs_lst var varmap (* sets the argument of setvar as new tmpvar *)
@@ -1040,6 +1044,7 @@ and     cmd_append_to commandlist macrodefs_lst tmpvar varmap cmd tl varname  : 
 
 
 
+(*
 and     cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
           let result =
             begin
@@ -1049,6 +1054,7 @@ and     cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl :  results_
             end;
             in
             command tl macrodefs_lst result varmap
+*)
 
 
 
@@ -1364,6 +1370,7 @@ and     cmd_show_match commandlist macrodefs_lst tmpvar varmap cmd tl :  results
           command tl macrodefs_lst tmpvar varmap
 
 
+(*
 
 and     cmd_csv_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list  :  results_t * varmap_t =
           (*  Save the data from a Match_result to a csv-file.                         *)
@@ -1400,6 +1407,7 @@ and     cmd_csv_read commandlist macrodefs_lst tmpvar varmap cmd tl filename_arg
           let result = Match_result (Csv.to_array csv) in
           command tl macrodefs_lst result varmap
 
+*)
 
 
 and     cmd_save_as commandlist macrodefs_lst tmpvar varmap cmd tl argument_list  :  results_t * varmap_t =
