@@ -150,7 +150,7 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
 
   with (* handle exceptions from the parse-tree-evaluation *)
     | E.No_Match                -> Printf.eprintf "Parser abandoned, because: Could not match to pattern!\t Parse will be exited for url %s\n" url; flush stderr
-    | E.Invalid_Row_Index       -> Printf.eprintf "Parser abandoned, because Invalid_Row_Index!\t Parse exited. ( URL %s )\n"; url; flush stderr
+    | E.Invalid_Row_Index       -> Printf.eprintf "Parser abandoned, because Invalid_Row_Index!\t Parse exited. ( URL %s )\n" url; flush stderr
     | E.Variable_not_found name -> Printf.eprintf "Parser abandoned, because Variable_not_found: \"%s\" ( URL %s )\n" name url; flush stderr
     | E.No_document_found       -> Printf.eprintf "No_document_found for URL %s - Parser abandoned\n" url; flush stderr
     | E.Tagselect_empty_list    -> Printf.eprintf "Parser abandoned, because of Tagselect_empty_list for URL %s\n" url; flush stderr
