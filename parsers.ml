@@ -779,7 +779,7 @@ let conv_to_doclist str = Nethtml.parse(new Netchannels.input_string str)
 (* ---------------------------------------- *)
 let print_doclist_to_outchannel doclist =
   let open Netchannels in
-    Nethtml.write (new output_channel Pervasives.stdout) doclist
+    Nethtml.write (new output_channel Stdlib.stdout) doclist
 
 
 (* convert a doclist to a html-string *)
