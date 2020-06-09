@@ -280,7 +280,7 @@ let rec var_is_empty value (varmap : varmap_t) =
 
 (* "post_document"-function, is used by Post-command *)
 (* ================================================= *)
-let rec post_document  url referrer post_params (varmap : varmap_t) =
+let post_document  url referrer post_params (varmap : varmap_t) =
 
   (* if a cookie already has been received/stored                *)
   (* pick it from the variable-map for sending it back to server *)
@@ -691,7 +691,6 @@ and     cmd_get_urls commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t
                                       command tl macrodefs_lst (Document_array (Array.of_list docs)) vm
 
               | Url_array urlarray -> prerr_endline "Should now get Documents!";
-                                      let urllist = Array.to_list urlarray in
                                       let docs, vm = get_document_list  (Array.to_list urlarray) varmap in
                                       command tl macrodefs_lst (Document_array (Array.of_list docs)) vm
 
