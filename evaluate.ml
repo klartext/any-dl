@@ -759,6 +759,9 @@ and     cmd_grep commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglist 
                 | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_match_on_string url ||
                                                                                       test_match_on_string ref ) url_arr )
 
+                | Url_list     url_arr -> Url_list (List.filter ( fun (url,ref) -> test_match_on_string url ||
+                                                                                     test_match_on_string ref ) url_arr )
+
                 | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_match_on_string mres )
 
                 | _            -> prerr_endline "Grep: nothing to match"; raise No_Matchresult_available
@@ -786,6 +789,9 @@ and     cmd_grep_v commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglis
 
                 | String_array str_arr -> String_array( Array2.filter test_nonmatch_on_string str_arr)
                 | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_nonmatch_on_string url &&
+                                                                                           test_nonmatch_on_string ref ) url_arr )
+
+                | Url_list     url_arr -> Url_list (List.filter ( fun (url,ref) -> test_nonmatch_on_string url &&
                                                                                            test_nonmatch_on_string ref ) url_arr )
 
                 | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_nonmatch_on_string mres )
