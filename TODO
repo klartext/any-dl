@@ -25,6 +25,17 @@ BETTER STRUCTURE, CLEANER CODE:
  - dump is rather a deparse; dump_data is dump-like or deparse-like too;
    possibly better names should be used here
 
+ - Replacing the ..._array-and ..._list-types by one of these, or by a collection-type,
+   which supports both.
+
+   But be aware, not to replace single-entity types by a collection with size 1,
+   because the distinction between single and multiple values is intentionally.
+   (For example Url is different to Url_list / Url_array with one element!
+    And it is meant to be different, because in some situations the special case is
+    used to distinguish use cases.)
+    The same holds for the other types that have ..._array types.
+
+
 
 
 FEATUREs:
