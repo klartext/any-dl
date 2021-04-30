@@ -180,7 +180,7 @@ module Pipelined =
       (* To load the data to memory, set opt_outfilename to None.                             *)
       (* To save the data to a file, set opt_outfilename to Some (filename).                  *)
       (* ==================================================================================== *)
-      let get_or_post_to_mem_or_file url (referer: string option) opt_postdata cookies opt_outfilename =
+      let get_or_post_to_mem_or_file_raw url (referer: string option) opt_postdata cookies opt_outfilename =
 
         let cmd_string      = match opt_postdata, opt_outfilename with
           | None,   None   -> "GET  (MEM)"
@@ -248,6 +248,10 @@ module Pipelined =
           | None   -> ( Some (call_obj # response_body # value) , Some cookies )
           | Some _ -> (None, Some cookies)
 
+      let get_or_post_to_mem_or_file url (referer: string option) opt_postdata cookies opt_outfilename =
+        try
+          get_or_post_to_mem_or_file_raw url (referer: string option) opt_postdata cookies opt_outfilename
+        with Failure msg -> Printf.eprintf "Error caught (get_or_post_to_mem_or_file_raw) (url:%s) (message: %s)\n" url msg; (None, None)
 
 
       (* ============================================================================ *)
