@@ -8,6 +8,14 @@
 *)
 
 
+type verbosity = Silent | Verbose | Very_verbose
+let verbosity = ref Silent
+
+let networking_verbosity = function
+    | `Silent -> verbosity := Silent
+    | `Verbose -> verbosity := Verbose
+    | `Very_verbose -> verbosity := Verbose
+
 
 module Simple =
   struct
