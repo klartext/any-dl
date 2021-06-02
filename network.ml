@@ -55,7 +55,7 @@ module Cookies =
       (* the cookies, sorrounded by some eye catcher-text.  *)
       (* ================================================== *)
       let if_veryverbose_print_cookies cookies =
-        if Cli.opt.Cli.very_verbose
+        if !verbosity = Very_verbose
         then
           begin
             print_endline "=*=*=> COOOKIES:";
@@ -135,12 +135,12 @@ module Pipelined =
                                           prerr_endline (Printexc.to_string exc);
                                           raise (Get_error (`Http_protocol_error exc))
 
-           | `Redirection            -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then ( print_string command_name; print_endline "-Redirection" )
+           | `Redirection            -> if !verbosity = Verbose || !verbosity = Very_verbose then ( print_string command_name; print_endline "-Redirection" )
 
            | `Server_error           -> prerr_endline "Get_error: Server_error";
                                         raise (Get_error `Server_error)
 
-           | `Successful             -> if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then ( print_string command_name; print_endline "-Successful" )
+           | `Successful             -> if !verbosity = Verbose || !verbosity  = Very_verbose then ( print_string command_name; print_endline "-Successful" )
 
            | `Unserved               -> prerr_endline "Get_problem: Unserved";
                                         raise (Get_problem `Unserved)
@@ -197,7 +197,7 @@ module Pipelined =
           | Some _, Some _ -> "POST (DOWNLOAD)"
         in
 
-        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
+        if !verbosity = Verbose || !verbosity  = Very_verbose then
         begin
           print_endline "------------------------------->";
           Printf.printf "%s URL: %s\n" cmd_string url;
@@ -236,7 +236,7 @@ module Pipelined =
 
         (* verbosity-message with status-infos for call-object *)
         (* --------------------------------------------------- *)
-        if Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
+        if !verbosity = Verbose || !verbosity  = Very_verbose then
         begin
           Printf.printf "Status-Code    %s:  %d\n" cmd_string (call_obj # response_status_code);
           Printf.printf "Status-Message %s:  %s\n" cmd_string (call_obj # response_status_text);
