@@ -174,6 +174,14 @@ let invoke_parser_on_url  url  parser_urllist  parser_namehash  parser_selection
 let main ()  =
     Cli.parse(); (* parse the command line *)
 
+    (* set verbosity on some modules *)
+    begin
+        match Cli.opt.Cli.verbosity with
+            | 0 -> Network.networking_verbosity `Silent (* ok, it's the default *)
+            | 1 -> Network.networking_verbosity `Verbose
+            | 2 -> Network.networking_verbosity `Very_verbose
+    end;
+
 
     (* ------------------------------------------------------------------------------------- *)
     (* Setting the default config-files                                                      *)
