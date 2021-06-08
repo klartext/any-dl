@@ -182,6 +182,10 @@ let main ()  =
             | 2 -> Network.networking_verbosity `Very_verbose
     end;
 
+    (* set user agent string for network-module *)
+    Network.set_useragent Cli.opt.Cli.user_agent;
+
+
 
     (* ------------------------------------------------------------------------------------- *)
     (* Setting the default config-files                                                      *)

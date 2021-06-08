@@ -14,7 +14,12 @@ let verbosity = ref Silent
 let networking_verbosity = function
     | `Silent -> verbosity := Silent
     | `Verbose -> verbosity := Verbose
-    | `Very_verbose -> verbosity := Verbose
+    | `Very_verbose -> verbosity := Very_verbose
+
+(* user agent *)
+let user_agent = ref "any-dl"
+let set_useragent agent_string = user_agent := agent_string
+
 
 
 module Simple =
@@ -221,7 +226,7 @@ module Pipelined =
 
         set_response_body_storage_of_call call_obj opt_outfilename; (* If there is Some outfilename (for download), then set it as set_response_body_storage *)
 
-        set_useragent_of_call call_obj Cli.opt.Cli.user_agent;      (* set the USER-AGENT string *)
+        set_useragent_of_call call_obj !user_agent;      (* set the USER-AGENT string *)
 
         set_referrer_of_call call_obj referer;                      (* set the REFERER string *)
 

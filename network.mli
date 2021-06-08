@@ -1,4 +1,5 @@
 val networking_verbosity : [< `Silent | `Verbose | `Very_verbose ] -> unit
+val set_useragent : string -> unit
 module Simple :
   sig
     val get : string -> string
