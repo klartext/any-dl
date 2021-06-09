@@ -17,8 +17,8 @@ let networking_verbosity = function
     | `Very_verbose -> verbosity := Very_verbose
 
 (* user agent *)
-let user_agent = ref "any-dl"
-let set_useragent agent_string = user_agent := agent_string
+let user_agent_ref = ref "any-dl"
+let set_useragent agent_string = user_agent_ref := agent_string
 
 
 
@@ -193,7 +193,7 @@ module Pipelined =
       (* To load the data to memory, set opt_outfilename to None.                             *)
       (* To save the data to a file, set opt_outfilename to Some (filename).                  *)
       (* ==================================================================================== *)
-      let get_or_post_to_mem_or_file_raw url (referer: string option) opt_postdata cookies opt_outfilename =
+      let get_or_post_to_mem_or_file_raw url ?user_agent:(user_agent = !user_agent_ref) (referer: string option) opt_postdata cookies opt_outfilename =
 
         let cmd_string      = match opt_postdata, opt_outfilename with
           | None,   None   -> "GET  (MEM)"
@@ -226,7 +226,7 @@ module Pipelined =
 
         set_response_body_storage_of_call call_obj opt_outfilename; (* If there is Some outfilename (for download), then set it as set_response_body_storage *)
 
-        set_useragent_of_call call_obj !user_agent;      (* set the USER-AGENT string *)
+        set_useragent_of_call call_obj user_agent;      (* set the USER-AGENT string *)
 
         set_referrer_of_call call_obj referer;                      (* set the REFERER string *)
 

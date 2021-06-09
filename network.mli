@@ -44,6 +44,7 @@ module Pipelined :
       Nethttp.netscape_cookie list option -> unit
     val get_or_post_to_mem_or_file_raw :
       string ->
+      ?user_agent:string ->
       string option ->
       (string * string) list option ->
       Nethttp.netscape_cookie list option ->
