@@ -29,32 +29,6 @@ module Pipelined :
        | `Successful
        | `Unserved ] ->
       unit
-    val set_response_body_storage_of_call :
-      < set_response_body_storage : [> `File of 'a -> 'b | `Memory ] -> 'c;
-        .. > ->
-      'b option -> 'c
-    val set_useragent_of_call :
-      < request_header : [> `Base ] -> #Nethttp.http_header; .. > ->
-      string -> unit
-    val set_referrer_of_call :
-      < request_header : [> `Base ] -> #Nethttp.http_header; .. > ->
-      string option -> unit
-    val set_cookies_of_call :
-      < request_header : [> `Base ] -> #Nethttp.http_header; .. > ->
-      Nethttp.netscape_cookie list option -> unit
-    val get_or_post_to_mem_or_file_raw :
-      string ->
-      ?user_agent:string ->
-      string option ->
-      (string * string) list option ->
-      Nethttp.netscape_cookie list option ->
-      string option -> string option * Nethttp.netscape_cookie list option
-    val get_or_post_to_mem_or_file :
-      string ->
-      string option ->
-      (string * string) list option ->
-      Nethttp.netscape_cookie list option ->
-      string option -> string option * Nethttp.netscape_cookie list option
     val get :
       string ->
       string option ->
