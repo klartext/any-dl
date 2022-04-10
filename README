@@ -66,44 +66,21 @@ Compilation / Installation / Setup
   You will need to have OCaml installed, as well as
   some libraries.
 
-  For the libraries in use, under Debian
-  the following packages for each library are listed:
+  When using OPAM, you need the following packages:
 
-  (I'm not a Debian package expert, so please send me
-  corrections, if necessary.)
-    
-      pcre:
-        libpcre-ocaml-dev
-        libpcre-ocaml
+  - pcre
+  - ocamlnet
+  - conf-gnutls (gnutls must be installed on your system too)
+  - xmlm
+  - yojson
+  - csv (currently not used, was disabled in the code, but will be used again)
 
-      netstring, netsys, netclient:
-        libocamlnet-ocaml
-        libocamlnet-ocaml-bin
-        libocamlnet-ocaml-dev
+  If you don't use OPAM but instead the package manager from your Linux installation,
+  the packages might have different names.
+  On Arch some packages might only be available via AUR.
 
-      xmlm:
-        ?
-
-      ocaml-csv:
-        ?
-
-      yojson:
-        ?
-
-      nettls-gnutls:
-        ?
-
-  For ARCH-Linux, all necessary libs can be installed with
-  packages from AUR.
-  There also is a package for any-dl, but the github-code
-  is more up-to-date.
-
-  ( any-dl on AUR:  https://aur.archlinux.org/packages/any-dl/ )
-
-  If you use OPAM, all the needed libraries can be installed
-  with opam.
-  But for any-dl itself there is no OPAM-package at the moment.
-
+  At the moment any-dl itself has no OPAM-package.
+  It might be added later.
 
 
   To compile any-dl, just type "make" at the shell then.
