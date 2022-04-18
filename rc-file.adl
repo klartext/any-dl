@@ -981,7 +981,7 @@ end
 # ====================================
 parsername "youtube-and-vimeo": ( "https://www.youtube.com/", "https://vimeo.com/" )
 start
-  paste(" youtube-dl ", $STARTURL );
+  paste(" yt-dlp ", $STARTURL );
   system;
 end
 
