@@ -1885,6 +1885,32 @@ start
 end
 
 
+# =================================
+# youtube Info
+# =================================
+# For a youtube-link directly to a
+# video, print title, date and url.
+# ---------------------------------
+parsername "ytinfo": ( )
+start
+
+  # Title
+  #recall("BASEDOC");
+  tagselect("meta"."property"="og:title" | arg("content"));
+  htmldecode;
+  to_string;
+  print;
+
+  # Date
+  recall("BASEDOC");
+  tagselect("meta"."itemprop"="datePublished" | arg("content") );
+  store("datePublished");
+  print("   - ", $datePublished, " -");
+
+  # Video URL
+  print($STARTURL);
+
+end
 
 
 
