@@ -1976,6 +1976,19 @@ start
   print("COOKIES.RECEIVED:\n", $COOKIES.RECEIVED );
 end
 
+# -------------------------------------------------
+# All fields of  an <input> are listed (as columns)
+# -------------------------------------------------
+# Col 0, Col 2, Col 4, ... are fieldnames,
+# Col 1, Col 3, Col 5, ... are fieldvalues
+# -------------------------------------------------
+# use case: analyze page for setting up POST call
+# -------------------------------------------------
+parsername "showinput": ()
+start
+  tagselect( "input" | argpairs );
+  show_match;
+end
 
 
 # show form's arg-pairs
