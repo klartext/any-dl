@@ -1911,6 +1911,15 @@ start
   print($STARTURL);
 
 end
+#
+# vimscript-Function to insert the result of the ytinfo-parser into your current vim buffer:
+#
+#:function Youtubeinfo()
+#: call inputsave()
+#: let url = input(' Enter youtube-URL: ')
+#: call inputrestore()
+#: execute "r! any-dl -p ytinfo -sep=\"\" " . url
+#:endfunction
 
 
 
