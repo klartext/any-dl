@@ -103,6 +103,18 @@ start
 end
 
 
+# show URL and title - print as markdown link
+# -------------------------------------------
+# To be used as:
+#   $ any-dl -sep "" -p pageinfo.md <url.1> <url.2> ... <url.3>
+parsername "pageinfo.md": ( )
+start
+  titleextract;
+  store("title");
+  print( "[", $title, "](", $STARTURL, ")" );
+end
+
+
 # show URL and title, html-decoded
 # -------------------
 parsername "pageinfo2": ( )
