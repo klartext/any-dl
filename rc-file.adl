@@ -1916,6 +1916,7 @@ start
   # Date
   recall("BASEDOC");
   tagselect("meta"."itemprop"="datePublished" | arg("content") );
+  subst("T.*", ""); # remove time, only date needed (better readable without time)
   store("datePublished");
   print("   - ", $datePublished, " -");
 
