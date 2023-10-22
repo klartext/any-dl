@@ -8,7 +8,7 @@ SOURCES :=  cli.ml tools.ml parsetreetypes.ml scriptparser.mly scriptlexer.mll p
 
 PACKS := pcre netstring netsys netclient nettls-gnutls xmlm yojson netunidata
 
-OCAMLFLAGS := -w +11+22+26+32+33+34+35+36+37+38+39-58 -safe-string
+OCAMLFLAGS := -w +11+22+26+32+33+34+35+36+37+38+39-58 -safe-string -I +unix
 #OCAMLFLAGS := -w +11+22+26+27+32+33+34+35+36+37+38+39
 
 YFLAGS=-v
