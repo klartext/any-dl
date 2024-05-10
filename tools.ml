@@ -258,12 +258,11 @@ let wrap_string left right stringlist =
 
 module type Array2_slim =
   sig
+    type 'a t = 'a array
     external length : 'a array -> int = "%array_length"
     external get : 'a array -> int -> 'a = "%array_safe_get"
     external set : 'a array -> int -> 'a -> unit = "%array_safe_set"
-    external make : int -> 'a -> 'a array = "caml_make_vect"
-    external create : int -> 'a -> 'a array = "caml_make_vect"
-    external create_float : int -> float array = "caml_make_float_vect"
+    external make : int -> 'a -> 'a t = "caml_make_vect"
     val filter : ('a -> bool) -> 'a array -> 'a array
     val filter_row_by_colmatch :
       ('a -> bool) -> 'a array array -> 'a array array
