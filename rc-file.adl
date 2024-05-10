@@ -20,11 +20,13 @@ start
 end
 
 
+
 parsername "linkextract": ( )
 start
   linkextract;
   print;
 end
+
 
 
 # seconds since the unix-epoche ( seconds since 00 h 00 min 00 s, 01.01.1970 )
@@ -36,12 +38,14 @@ start
 end
 
 
+
 parsername "linkextract-uniq": ( )
 start
   linkextract;
   uniq;
   print;
 end
+
 
 
 parsername "linkextract-uniq-sorted": ( )
@@ -53,6 +57,7 @@ start
 end
 
 
+
 parsername "linkextract2csv": ( )
 start
   linkextract;
@@ -62,6 +67,7 @@ start
 end
 
 
+
 parsername "linkextract_xml": ( )
 start
   linkextract_xml;
@@ -69,11 +75,13 @@ start
 end
 
 
+
 # html-deparse-dump
 parsername "dump": ( )
 start
   dump;
 end
+
 
 
 # show tags
@@ -84,12 +92,14 @@ start
 end
 
 
+
 # show tags with complete html-path
 # ---------------------------------
 parsername "show_tags_full": ( )
 start
   show_tags_fullpath;
 end
+
 
 
 # show URL and title
@@ -101,6 +111,7 @@ start
   print;
   print( "   ", $STARTURL, "\n" );
 end
+
 
 
 # show URL and title - print as markdown link
@@ -115,6 +126,7 @@ start
 end
 
 
+
 # show URL and title, html-decoded
 # -------------------
 parsername "pageinfo2": ( )
@@ -125,6 +137,7 @@ start
   print;
   print( "   ", $STARTURL, "\n" );
 end
+
 
 
 # show URL and title, html-decoded
@@ -172,6 +185,7 @@ start
 end
 
 
+
 # ------------------------------------------
 # only prints data part of the html, no tags
 # acts like html-2-txt, but does not change
@@ -184,6 +198,7 @@ start
 end
 
 
+
 # ------------------------------------------
 # same as dumptext, but with html-decode
 # ------------------------------------------
@@ -194,6 +209,7 @@ start
 end
 
 
+
 # show video-files
 parsername "videonames": ( )
 start
@@ -201,6 +217,7 @@ start
   uniq;
   print;
 end
+
 
 
 # show video-files
@@ -216,6 +233,7 @@ start
 end
 
 
+
 # downloading picture-files
 parsername "pics": ( )
 start
@@ -228,6 +246,7 @@ start
   show_type;
   download; # directly writing files to disk
 end
+
 
 
 # downloads the img-src
@@ -262,6 +281,19 @@ start
 end
 
 
+
+# =================================
+# mp3-files matched and downloaed =
+# =================================
+parsername "mp3": ( )
+start
+  linkextract;
+  grep("\.mp3");
+  makeurl;
+  download;
+end
+
+
 # ------------------------
 # Show all script-sources
 # ------------------------
@@ -278,6 +310,7 @@ start
 end
 
 
+
 # ------------------------
 # Download all source-src
 # ------------------------
@@ -291,6 +324,7 @@ start
 end
 
 
+
 # ------------------------
 # Show all meta-tags
 # ------------------------
@@ -298,6 +332,7 @@ parsername "show-meta": ( )
 start
   tagselect( "meta" | dump );
 end
+
 
 
 # ------------------------
@@ -318,7 +353,6 @@ start
   recall("META");
   save_as( $FILENAME );
 end
-
 
 
 
@@ -343,7 +377,6 @@ end
 
 
 
-
 # ---------------------------------------------
 # show all argkey-combinations of meta-tags
 # ---------------------------------------------
@@ -357,7 +390,6 @@ start
   print("Meta-Tag argkey-combinations: (alphabetically sorted) from site ", $STARTURL, "\n");
   show_match;
 end
-
 
 
 
@@ -384,6 +416,7 @@ start
 end
 
 
+
 parsername "desktop2": ()
 start
   print( "[Desktop Entry]" );
@@ -400,6 +433,7 @@ print;
 end
 
 
+
 # ----------------------------------------------------
 # parser for testing cookies
 # ----------------------------------------------------
@@ -413,6 +447,7 @@ parsername "cookieecho": ( )
 start
   call("cookieecho");
 end
+
 
 
 # ---------------------------------------------
@@ -434,6 +469,7 @@ start
   call("cookieecho");
 
 end
+
 
 
 # ----------------------------------------------------
@@ -466,7 +502,7 @@ end
 # and download the audio-file.
 # with -i switch, the audio-file-type can be selected.
 # ------------------------------------------------------
-parsername "OSR-shownotes-2-csv": (  "http://www.openscienceradio.de/" )
+parsername "OSR-shownotes-2-csv": (  "https://www.openscienceradio.org/" )
 start
 
   # extract title, for usage as part of the filename
@@ -511,19 +547,19 @@ start
 end
 
 
+
 # ---------------------------------
 # Resonator
 # ---------------------------------
+# Downloads mp3 by default.
+# With -i switch on command line,
+# the user can select preferred audio file.
+# ------------------------------------------
 parsername "resonator": (  "https://resonator-podcast.de", "http://resonator-podcast.de" )
 start
-    # from the resonator-webpage:
-    # <source src="http://files.wrint.de/RES051_Muellim_Meer.m4a" type="audio/mp4"/>
-    # <source src="http://files.wrint.de/RES051_Muellim_Meer.opus" type="audio/opus"/>
-    # <source src="http://files.wrint.de/RES051_Muellim_Meer.mp3" type="audio/mpeg"/>
-
   # extract the audio-urls
   # ----------------------
-  tagselect("source"."type" | arg("src") );
+  tagselect("meta"."property"="og:audio" | arg("content") );
   transpose;
   #show_match;
   iselectmatch(0, "RES", "mp3");
@@ -536,456 +572,23 @@ start
 end
 
 
+
 # ---------------------------------
 # ARD 
 # ---------------------------------
-# Example: http://www.ardmediathek.de/das-erste/polizeiruf-110/am-set-von-polizeiruf-110-interview-mit-charly-huebner?documentId=11177770
+# Example: https://www.ardmediathek.de/video/charite/folge-1-barmherzigkeit-s01-e01/mdr-fernsehen/Y3JpZDovL21kci5kZS9zZW5kdW5nLzI4MjA0MS8yMDI0MDIwNjAwMzUvbWRycGx1cy1zZW5kdW5nLTgwNjI
 # =================================
-parsername "ard_mediathek_get": ("http://www.ardmediathek.de" )
+parsername "ard_mediathek_get": ("https://www.ardmediathek.de" )
 start
-  match( >>>(rtmpt{0,1}://[^\"]+).*?(mp4:[^\"]+)"<<< );
-  store("match");
-  iselectmatch(2, "hd", "hd");
-  store("high");
-
-  #show_type;
-  #print;
-
-  select(1); quote;  store("rtmp");
-  recall("high");
-  select(2); quote; store("mp4");
-
-  # create filename
-  # ---------------
-  to_string;
-  basename;
-  #subst(>>>(["+?/%;&= ]+)|(%..)<<<, "_");
-  subst(>>>\?.*?$<<<, ""); # remove the ?-paramater stuff from the filename !
-  subst(>>>"<<<, "");      # remove double-quote, which may have survived until here
-  store("filename");
-  #print;
-
-  # create new filename from folename and the title of the video
-  # ------------------------------------------------------------
-  recall("BASEDOC");
-  match(>>><meta itemprop="name" content="([^\"]+)<<<);
-  rowselect(0);
-  select(1);
-
-  subst(>>>(["+?/%;&= ]+)|(%..)<<<, "_"); # remove all that crap from the title
-  subst(>>>"<<<, ""); # remove quotings
-  store("title");
-
-  paste( $title, "_", $filename );
-  quote;
-  store("filename");
-
-  # Titel:   <meta itemprop="name" content="Verkauft und versklavt - Gott und die Welt"/>
-
-  # "outfile.mp4" is bad; better use a name, derived from the URL 
-  # --------------------------------------------------------------
-  paste("rtmpdump --resume  -r ",  $rtmp, " -y ", $mp4, " -o ", $filename );
-  print;
-  system;
-
-end
-
-
-
-# ---------------------------------
-# ARD / das erste
-# ---------------------------------
-# Example: http://www.ardmediathek.de/das-erste/satire-gipfel/die-sendung-vom-4-februar-2013?documentId=13300098
-# =================================
-parsername "ard_das-erste_get": ( "http://www.ardmediathek.de/das-erste/" )
-start
-  match( >>>(rtmp[^"]+)", "mp4:(.*mp4.*?for=(Web-.)&amp[^"]+)<<< );  # the inner group-match is col 3 -> iselectmatch
-  show_match;
-
-  # Quality selection
-  # -----------------
-  iselectmatch(3, "Web-M", "Web-M"); # match on third column and default to middle quality
-  store("select"); # this is the selected quality and we need to save it for later
-
-  # select the rtmp-part
-  # --------------------
-  select(1);
-  store("rtmp");
-
-  # select the mp4-part
-  # -------------------
-  recall("select"); 
-  select(2);
-  subst("\.mp4.*", ".mp4");
-  store("mp4");
-
-  paste( $rtmp, $mp4 );
-  quote;
-  store("URL");
-
-  #print($URL); exitparse;
-
-
-  # grab the title
-  # --------------
-  recall("BASEDOC");
   call("_extract-and-store-title_");
 
-  # get the video
-  # -------------
-  paste("rtmpdump --resume  -r ",  $URL, " -o ", $title, ".mp4" );
-  print;
-  system;
+  recall("BASEDOC");
+  tagselect("meta"."property"="contentUrl" | arg("content") );
+  makeurl;
 
-
+  download($title, ".mp4");
 end
 
-
-# ---------------------------------
-# ARD / das erste
-# ---------------------------------
-# Example: http://www.ardmediathek.de/das-erste/satire-gipfel/die-sendung-vom-4-februar-2013?documentId=13300098
-# =================================
-parsername "ard_das-erste_get": ( "http://www.ardmediathek.de/tv/" )
-start
-  # extract the mp4-video-url from the webpage and save result in variable "link"
-  # -----------------------------------------------------------------------------
-  match(".*(http.*?mp4)");
-  dropcol(0);
-show_match;
-  store("link");
-
-  # extract the title of the document, make it filename'able and store it in var. "title"
-  # -------------------------------------------------------------------------------------
-  recall("BASEDOC");
-  htmldecode;
-  call("_extract-and-store-title_");
-  print; # show title to user
-
-  recall("link");
-  makeurl;
-  get;
-  save_as( $title, ".mp4" );
-end
-
-
-# ---------------------------------
-# ARD / das erste Sondersendung
-# ---------------------------------
-# Example: http://www.ardmediathek.de/das-erste/ard-sondersendung/edward-snowden-interview-in-english?documentId=19295624
-# =================================
-parsername "ard_das-erste_sondersendung": ( "http://www.ardmediathek.de/das-erste/ard-sondersendung/" )
-start
-  match( "(http://media.ndr.de.*mp4)" );  # the inner group-match is col 3 -> iselectmatch
-  show_match;
-
-  # Quality selection
-  # -----------------
-  iselectmatch(0, "hi.mp4", "hi.mp4"); # match on column 0 and default to 2nd highest quality
-  select(0);
-  store("select"); # this is the selected quality and we need to save it for later
-
-  # grab the title
-  # --------------
-  recall("BASEDOC");
-  call("_extract-and-store-title_");
-
-  # get the video
-  # -------------
-  recall( "select" );
-  makeurl;
-  download( $title, ".mp4" );
-
-end
-
-
-
-# ---------------------------------
-# ARD Tagesthemen
-# ---------------------------------
-# other possuble source (RSS/XML) would be:
-# http://www.tagesschau.de/export/video-podcast/tagesthemen/
-# ---------------------------------
-parsername "ard_tagesthemen": ( "http://www.tagesschau.de/multimedia/video/",
-                                "http://www.tagesschau.de/multimedia/sendung/",
-                                "http://www.tagesschau.de/ausland/",
-                                "http://www.ardmediathek.de/das-erste/tagesthemen",
-                                "http://mediathek.rbb-online.de/rbb-fernsehen/rbb-praxis/",
-                                "http://www.ardmediathek.de/das-erste/tagesschau-in-100-sek",
-                                "http://www.ardmediathek.de/das-erste/",
-                                "http://www.tagesschau.de/sendung/tagesthemen"
-                                )
-start
-  match( >>>http://(.*?).mp4<<< );
-  dropcol(1);
-  iselectmatch(0,"webm.h264.mp4", "webm.h264.mp4");
-  select(0);
-print;
-  store("mp4url");
-  basename;
-  store("basename");
-
-  # extract title
-  # -------------
-  recall("BASEDOC");
-  titleextract;
-  htmldecode;
-  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
-  print;
-  store("title");
- 
-  recall( "mp4url" );
-  makeurl;
-  download( $title, "_", $basename );
-end
-
-
-
-# =========================================================== #
-# Eins-Festival-Parser
-# =========================================================== #
-# Example: http://www.einsfestival.de/mediathek/player.jsp?vid=658125 <http://www.einsfestival.de/mediathek/player.jsp?vid=658125
-# -------------------------------------------------------------------------------------------------------------------------
-# jQuery(video).attr('src','http://http-ras.wdr.de//CMS2010/mdb/ondemand/weltweit/fsk0/78/781378/781378_8442663.mp4');
-# -------------------------------------------------------------------------------------------------------------------------
-parsername "einsfestival":  ( "http://www.einsfestival.de/mediathek/player" )
-start
-
-  # extract and store the title
-  call("_extract-and-store-title_");
-
-  # extract mp4-url
-  # ---------------
-  recall("BASEDOC");
-  match(>>>jQuery\(video\).attr\(\'src\',\'(http.*?mp4)<<<);
-  dropcol(0);
-  subst("de//", "de/" ); # stupid malformed url-part removed
-
-  makeurl;
-  store("url");
-
-  # create file-basename
-  # --------------------
-  to_string;
-  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
-  subst("_mp4", ".mp4");        # correct extension
-  store("filename");
-
-  # Extract title (for filename)
-  # ----------------------------
-  recall("BASEDOC");
-  titleextract;
-  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
-  store("title");
-
-  # download the mp4-file
-  # ---------------------
-  recall("url");
-  print("Saving video to file: ", $title, "_", $filename);
-  download($title, "_", $filename);
-end
-
-
-
-# =========================================================== #
-# get the overview-xml files on the whole program / mediathek #
-# =========================================================== #
-parsername "arte-rss":  ( "http://www.arte.tv/sites/de/aktuelles/rss-feeds/" )
-start
-  linkextract;
-  grep("xml");
-
-  makeurl;
-  get;
-  save;
-  print;
-end
-
-
-
-# ---------------------------------
-# ARTE-Mediathek-Download
-# ---------------------------------
-# 1. Hauptseite ziehen
-# 2. Titel extrahieren und sichern
-# 3. Tagselect-matching auf div-Element mit "arte_vp_config" => extrahiere "arte_vp_url_oembed"
-# 4. das entsprechende Dokument saugen
-# 5. extrahiere die json-URL aus dem eben geholten Dokument
-# 6. extrahiere Video-URL aus dem json-Geraffel.
-# 7. Select file (automatisch oder interaktiv, falls "-i" flag)
-# 8. Download video-file
-# ---------------------------------
-# Example-URL: http://www.arte.tv/guide/de/064415-000-A/dissonance
-# =================================
-parsername "arte-dl": ( "http://www.arte.tv/guide/fr/", "http://www.arte.tv/guide/de/" )
-start
-
-  print("\n*** ARTE-Parser: for manual selection of the video-resolution, use -i option (interactivity).\n\n");
-  # Extract Title
-  # -------------
-  call("_extract-and-store-title_");
-  print("Title:    ", $title);
-
-  # Extract Subtitle
-  # ----------------
-  recall("BASEDOC");
-  tagselect("h2"."class"="text-thin mb-20" | data );
-  rowselect(0);
-  to_string;
-  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
-  store("subtitle");
-
-  print("Subtitle: ", $subtitle);
-  print("---\n\n");
-
-
-
-  # grab description of the movie
-  # =============================
-  recall("BASEDOC");
-
-  # SHORT-description
-  # -----------------
-  tagselect("div"."class"="col-xs-12 description_short" | data );
-  to_string;
-  save_as( $title, "_", $subtitle, "_description_short.txt" );
-
-  # DETAILED-description
-  #---------------------
-  recall("BASEDOC");
-  tagselect("div"."id"="content-description" | data );
-  to_string;
-  save_as( $title, "_", $subtitle, "_description_detailed.txt" );
-
-
-  # Now go on to grab the viewo-url and download the video.
-  # =======================================================
-  recall("BASEDOC");
-
-
-  # Looking for arte_vp_url-entries, which look like these examples:
-  # ----------------------------------------------------------------
-  # <div arte_vp_config='arte_tvguide' arte_vp_lang='de_DE' arte_vp_url_oembed='https://api.arte.tv/api/player/v1/oembed/de/064415-000...
-
-  tagselect("div"."arte_vp_config" | arg("arte_vp_url_oembed") ); 
-  #show_match;
-
-  # ----------------------------------------------------------------------
-  # Sometimes, there are ARTEPLUS7- and other entries ( like "EXTRAIT" ).
-  # If that's the case, select the ARTEPLUS7-entries.
-  # They contain the stuff needed for the video.
-  # If there are no ARTEPLUS7-entries, try to extract EXTRAIT's
-  # and the video should be there.
-  # ----------------------------------------------------------------------
-  ifnotempty( grep("ARTEPLUS7"); )
-  then
-    # Transpose used before, because grep will need a transposed MatchResult.
-    # Afterwards, tranpose result again.
-    transpose;
-    grep("ARTEPLUS7");
-    transpose;
-  else
-    transpose;
-    grep("EXTRAIT");
-    transpose;
-  fi
-
-  colselect(0);
-  makeurl;
-  get; # get the document that contains the video-urls
-
-  # extract the json_url from the downloaded document
-  # -------------------------------------------------
-  match("json_url=(http.*?arte_tvguide)");
-  colselect(1);
-  urldecode;
-  makeurl;
-  get; # get the json-stuff
-
-  # extract the video-urls
-  # ----------------------
-  grep("http.*?mp4");
-  match(".*?(http.*?mp4)");
-  dropcol(0);
-  subst("\\\\", ""); # remove backslash's from the url-strings
-  uniq; # if there are multiple entries with same url, uniq-ify
-
-  iselectmatch(0,"mp4", "mp4"); # Do the match on column 1 (urls)
-  print_string("\nSelected URL: ");
-  print;
-
-  print(  "\n\n*** The Video-file will be saved as: ", $title, "_", $subtitle, ".mp4" );
-  makeurl;
-  #store("videourl");
-  #recall( "videourl" );
-  download( $title, "_", $subtitle, ".mp4" );
-
-
-
-
-end
-
-
-
-# ---------------------------------
-# NDR 
-# ---------------------------------
-# Example: http://www.ndr.de/fernsehen/sendungen/mein_nachmittag/videos/wochenserie361.html
-# =================================
-parsername "ndr_mediathek_get": ( "http://www.ndr.de", "http://www.ardmediathek.de/ndr-fernsehen/", "http://www.ardmediathek.de/das-erste/guenther-jauch/",
-"http://www.ardmediathek.de/wdr-fernsehen/die-story", "http://www.ardmediathek.de/das-erste/panorama" )
-start
-  match( "http://.*?mp4" );
-  show_match;
-  iselectmatch(0, ".hi.mp4", ".hi.mp4" );
-  #iselectmatch(0, ".mp4" );
-  select(0);
-  makeurl;
-  store("url");
-
-  basename;
-  store("origname");
-
-  recall("BASEDOC");
-  call("_extract-and-store-title_");
-  print("Title: ", $title);
-
-  # download the video
-  # ------------------
-  recall( "url" );
-  download( $title, $origname );
-end
-
-
-# ---------------------------------
-# ARD / Nachtmagazin
-# ---------------------------------
-# Example: http://www.ardmediathek.de/das-erste/nachtmagazin/nachtmagazin?documentId=13244376
-# =================================
-parsername "ard_nachtmagazin": ( "http://www.ardmediathek.de/das-erste/nachtmagazin/", "http://www.ardmediathek.de/das-erste/brennpunkt/" )
-start
-  match( "http://.*?mp4" );
-  show_match;
-
-  # select quality
-  # --------------
-  iselectmatch(0, "webm.h264.mp4", "webm.h264.mp4");
-  makeurl;
-  store("url");
-
-  # build filename
-  # --------------
-  to_string;
-  basename;
-  store("filename");
-  paste("Nachtmagazin_", $filename);
-  store("filename");
-
-  # download the video
-  # ------------------
-  recall("url");
-  download( $filename );
-end
 
 
 # ------------------------------------
@@ -998,845 +601,9 @@ start
 end
 
 
-# ==========================================
-# Download ZDF-Mediathek-Videos (webm-Files)
-# ------------------------------------------
-# Use the -i switch on command-line, to
-# interactively select one of the files.
-# ==========================================
-parsername "zdf": ( "http://www.zdf.de/ZDFmediathek/beitrag/video/" )
-start
-  # first extract the video-ID from the URL:
-  # ----------------------------------------
-  recall( "STARTURL" );
-  to_string;
-  print;
-  match( "[0-9]+" );
-  rowselect(0); # selecting video-id, if more numbers are following (e.g. "sv1")
-  store("videoid");
-
-  # now get the info-xml for this video:
-  # ------------------------------------
-  paste("http://www.zdf.de/ZDFmediathek/xmlservice/web/beitragsDetails?ak=web&id=", $videoid);
-  makeurl;
-  get;
-
-  # extract the webm-file-urls and select one:
-  # ------------------------------------------
-  match("((http:.*?webm)|(http:.*?mp4))"); # match file-url's
-  colselect(0); # gives back StringArray
-  to_matchres;  # for selection again matchres is needed.
-  transpose;    # ttransposition to have the correct orientation for iselectmatch
-  grepv("metafilegen"); # non-working url removed
-  sort;
-  iselectmatch(0, "http", "webm");
-
-  # message to user on the selection
-  # --------------------------------
-  print("Selected: ");
-  print;
-
-  # download the file:
-  # ------------------
-  makeurl;
-  download;
-end
-
-
-# ---------------------------------
-# SRF.CH 
-# ---------------------------------
-# Example: http://www.srf.ch/player/tv/rundschau/video/michail-gorbatschow-exklusiv?id=02183e52-ba13-4f0b-9558-a3c7448be0cc
-# =================================
-parsername "srf": ( "http://www.srf.ch/player/tv/rundschau/video" )
-start
-  match(>>>(http.*?mp4)<<<);
-  #show_match;
-  droprow(0); # full-match removed
-
-  # remove doublettes
-  # -----------------
-  transpose;
-  uniq;
-  transpose;
-
-  makeurl;
-  to_string;
-  subst("\"", ""); # necessary because of stupid match?
-  makeurl;
-  store("videourl");
-
-  to_string;
-  basename;
-  store("basename");
-
-  recall("BASEDOC");
-  call("_extract-and-store-title_");
-
-  recall( "videourl" );
-  download( $title, $basename );
-
-end
-
-
-
-
-
-# ---------------------------------
-# WDR 
-# ---------------------------------
-# Example: http://www.wdr.de/mediathek/html/regional/2013/01/09/hier-und-heute.xml
-# =================================
-parsername "wdr_mediathek": ( "http://www.wdr.de" )
-start
-  match("(rtmp://.*?(web-.).mp4)");
-  show_match;
-
-  iselectmatch(2,".*?web-m.mp4", ".*?web-m.mp4");
-
-  select(1); # use item with index 1 (rtmp-url)
-  #show_type;
-
-  to_string;
-  store("rtmp");
-  #show_type;
-
-  basename;
-  store("filename");
-  #print;
-
-  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $filename );
-  print;
-  system;
-end
-
-
-
-# ---------------------------------
-# WDR - Monitor
-# ---------------------------------
-parsername "wdr-monitor": ( "http://www.wdr.de/tv/monitor/sendungen" )
-start
-  # first extract the mp4-url
-  # -------------------------
-  match("Src=(http://http-ras.wdr.de/.*?mp4)");
-  show_match;
-  dropcol(0);
-  makeurl;
-  store("mp4url");
-
-  # extract and "beautify" the title
-  # --------------------------------
-  recall("BASEDOC");
-  call("_extract-and-store-title_");
-
-  # get the file via wget
-  # ---------------------
-  recall( "mp4url" );
-  download( $title, ".mp4" );
-end
-
-
-
-
-# ---------------------------------
-# ARD/HR 
-# ---------------------------------
-# Example: http://www.ardmediathek.de/hr-fernsehen/alle-wetter/mikroblockheizkraftwerke?documentId=13068860
-# =================================
-parsername "ard__hr_wdr": ( "http://www.ardmediathek.de/hr-fernsehen/", "http://www.ardmediathek.de/wdr-fernsehen/hier-und-heute/", "http://www.ardmediathek.de/das-erste/anne-will/", "http://http://www.ardmediathek.de/wdr-fernsehen/" )
-start
-  match( "http://media.*mp4" );
-print;
-  #rowselect(2);
-  show_match;
-  iselectmatch(0, "", "");
-#to_matchres;
-#show_match;
-  makeurl;
-  store("url");
-
-  # make a better outfilename with title
-  # ------------------------------------
-  recall("BASEDOC");
-  match(>>><meta itemprop="name" content="([^\"]+)<<<);
-
-  rowselect(0);
-  select(1);
-  #subst("[! -]+", "_");
-  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
-  store("title");
-
-  paste($title, ".mp4");
-  subst("_\.", ".");
-  store("outfilename");
-
-
-  # download the video
-  # ------------------
-  recall( "url" );
-  download( $outfilename );
-end
-
-
-# ---------------------------------
-# ARD/WDR
-# ---------------------------------
-# Example: http://www.ardmediathek.de/wdr-fernsehen/bericht-aus-bruessel/sendung-vom-30-01-2013?documentId=13242946
-# =================================
-parsername "ard_wdr": ( "http://www.ardmediathek.de/wdr-fernsehen/" )
-start
-
-  match("(rtmp://.*?.mp4)");
-  #show_match;
-
-  iselectmatch(1,".*?web-m.mp4", ".*?web-m.mp4");
-
-  select(1); # use item with index 1 (rtmp-url)
-  subst(>>>", "<<<, "/");
-  #show_type;
-
-  store("rtmp");
-
-  basename;
-  store("filename");
-  #print;
-
-  paste("rtmpdump --resume  -r \"",  $rtmp, "\"  -o ", $filename );
-  print;
-  system;
-
-end
-
-
-
-
-# ---------------------------------
-# ARD
-# ---------------------------------
-# Example: http://www.ardmediathek.de/das-erste/report-muenchen/50-jahre-muenchner-sicherheitskonferenz?documentId=19432422
-# =================================
-parsername "ard_report": ( "http://www.ardmediathek.de/das-erste/report-muenchen" )
-start
-
-  # extract the filename first
-  # --------------------------
-  titleextract;
-  subst(>>>([|":+?/%;&= ]+)|(%..)<<<, "_");
-  store("filename");
-
-  # now get the URL for the video
-  # -----------------------------
-  recall("BASEDOC");
-  match("(http://cdn-storage.br.de/.*?.mp4)");
-  print;
-  #match("(rtmp://.*?.mp4)");
-  #show_match;
-
-  #iselectmatch(1,".*?B.mp4");  #   http://.*?B.mp4  is of acceptable size, so it's used as default
-  iselectmatch(1, ".*?mp4", ".*?mp4");  #   http://.*?B.mp4  is of acceptable size, so it's used as default
-print("=======================");
-print;
-
-  select(1); # use item with index 1
-
-print("=======================");
-print;
-  #subst(>>>", "<<<, "/");
-  #show_type;
-
-  print;
-
-  print("Downloading video, please be patient.");
-  makeurl;
-  print;
-  download( $filename, ".mp4" );
-
-
-end
-
-
-# ---------------------------------
-# ARD/RBB
-# ---------------------------------
-# Example: http://www.ardmediathek.de/rbb-fernsehen/klartext/personal-als-sicherheitsrisiko?documentId=13243418
-# =================================
-parsername "ard_rbb_swr": ( "http://www.ardmediathek.de/rbb-fernsehen/",
-                            "http://www.ardmediathek.de/swr-fernsehen/",
-                            "http://www.ardmediathek.de/wdr-fernsehen/quarks-und-co",
-                            "http://mediathek.daserste.de/sendungen_a-z/"  )
-start
-  match("(rtmp://.*?)\".*?\"(mp4:.*?mp4)");
-  show_match;
-
-  # select the right match, according to the wished quality
-  # -------------------------------------------------------
-  #!electmatch(2,".*.mp4");
-
-  # get the rtmp-part from the selected match
-  # -----------------------------------------
-  store("selected_match");
-  select(1); # use item with index 1 (rtmp-url)
-  store("rtmp");
-
-  # get the mp4-part from the selected match
-  # -----------------------------------------
-  recall("selected_match");
-  select(2); # use item with index 2 (mp4-url)
-  store("mp4");
-
-
-  # get the basename as filename
-  # ----------------------------
-  basename;
-  store("filename");
-
-  recall("BASEDOC");
-  titleextract;
-  htmldecode;
-  print;
-  subst(>>>(["+?/%;&= :,']+)|(%..)<<<, "_"); # remove all that crap from the title
-  subst(>>>(\[+)|(\])+<<<, "_"); # remove all that crap from the title
-  subst("_-_", "_"); # substitute multiple underscores by a single one
-  subst("__+", "_"); # substitute multiple underscores by a single one
-  print;
-  store("title");
-
-  paste("rtmpdump --resume  -r \"",  $rtmp, "\" -y \"", $mp4, "\"  -o ", $title, $filename );
-  print;
-  system;
-
-end
-
-
-# 3SAT: all video-URLs are available via RSS:
-# http://www.3sat.de/mediathek/rss/mediathek.xml
-
-# ---------------------------------
-# 3SAT
-# ---------------------------------
-# Example: http://www.3sat.de/mediathek/?mode=play&obj=44029
-# =================================
-parsername "3sat_mediathek_get": ( "http://www.3sat.de/mediathek/")
-start
- match(>>>.*(http.*xmlservice[^"]+)<<<);
- ### url_xmlservice="http://www.3sat.de/mediathek/xmlservice/web/beitragsDetails?ak=web&id=40880";
- rowselect(0);
- select(1);
- makeurl;
- get;
-
- match("(http.*3gp)|(http.*mp4)");
- dropcol(2);
- dropcol(1);
- grepv("metafilegenerator");
- grepv("nrodl");
- show_match;
-
- iselectmatch(0,"http.*p5v.*3gp", "http.*p5v.*3gp");
-
- print("Downloading video, please be patient.");
- makeurl;
- download;
- #get;
- #save;
-end
-
-
-
-# ---------------------------------
-# 3SAT
-# ---------------------------------
-# Example: http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34110
-# http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=34191
-# =================================
-parsername "3sat_mediathek_get_old": ( "http://www.3sat.de" )
-start
-  get("http://vqm.zdf.de/conf/zdfplayer/1.2/3sat/vqm.xml");
-  print;
-
-  print("------------------");
-  print("STARTURL: ", $STARTURL);
-
-
-  # get the Object-ID from the STARTURL
-  # from the url: "http://..../......obj=<object-id>
-  # ------------------------------------------------
-  recall("STARTURL");
-  to_string;
-  subst(>>>(.*obj=)<<<, "");
-  store("object_id");
-
-  print("object_id:", $object_id);
-
-
-  # to get the name of the video, we have to look into the following file:
-  # ----------------------------------------------------------------------
-  paste("http://www.3sat.de/mediathek/xmlservice/web/trackingIVW?embeddedEdition=mediathek&beitragsId=", $object_id);
-  makeurl;
-  get;
-
-  #print("------------------");
-  #print;
-  #print("------------------");
-
-  # extract the smilname
-  # --------------------
-  # example of what we look for:  <value key="count">http://3sat.ivwbox.de/cgi-bin/ivw/CP/mediathek/play/ard;130630_adel_in_deutschland_ard/web</value>
-  match( >>>http:.*?;(.*?)/web</value<<< );
-  rowselect(0);
-  select(1);
-  store("smilname");
-  print;
-
-  # Year and Month must be extracted from the smilname seperately
-  # -------------------------------------------------------------
-  match("^(..)(..)");
-  print;
-  rowselect(0);
-
-  # Year
-  store("tmp");
-  select(1);
-  store("YY"); # Year as YY
-
-  # Month
-  recall("tmp");
-  select(2);
-  store("MM"); # Month as MM
-
-# Problem:
-# http://www.3sat.de/mediathek/index.php?display=1&mode=play&obj=30622
-# will link to  http://fstreaming.zdf.de/3sat/veryhigh/120514_gelenke_nano.smil
-# -> there is not Year and Month as part of the link!
-# Possibly the older pages (2012) don't use Year and month additionally in URL,
-# but that is new in 2013.
-# Nevertheless it must be coded somewhere, and should be possible to be parsed...
-
-  # The complete smil-url
-  # ---------------------
-  # Example:  http://fstreaming.zdf.de/3sat/veryhigh/13/06/130630_adel_in_deutschland_ard.smil
-  #paste("http://fstreaming.zdf.de/3sat/veryhigh/", $YY, "/", $MM, "/", $smilname, ".smil" );
-  paste("http://fstreaming.zdf.de/3sat/veryhigh/", $smilname, ".smil" );
-  print;
-
-
-  # get the SMIL-file
-  # -----------------
-  #get("http://fstreaming.zdf.de/3sat/veryhigh/13/06/130630_adel_in_deutschland_ard.smil");
-  show_type;
-  makeurl;
-  get;
-
-
-  store("smil_file");
-  #print;
-
-#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_51k_p7v9.mp4" system-bitrate="62000">
-#<param name="quality" value="low" />
-#</video>
-#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_536k_p9v9.mp4" system-bitrate="700000">
-#<param name="quality" value="high" />
-#</video>
-#<video dur="00:44:08" paramGroup="gl-vod-rtmp" src="mp4:3sat/12/12/121216_american_collapse_online_1596k_p13v9.mp4" system-bitrate="1700000">
-#<param name="quality" value="veryhigh" />
-
-# Beispiel: select VeryHigh quality
-# ---------------------------------
-
-  # match filename
-  #match( >>>(mp4:.*?)"|(name="quality" value="(.*))"<<<);
-  match( >>>(mp4:.*?)".*?\n.*?(name="quality" value="(.*))"<<<);
-  show_match;
-
-  # select quality here (default: high)
-  # -------------------
-  #!electmatch(3, "high");
-
-
-  # select the mp4-filename
-  # -----------------------
-  select(1);
-  store("mp4");
-  subst("mp4:", "");
-  store("mp4_simple");
-  print;
-  basename;
-  store("outname");
-  print;
-
-
-  # find out the app-name (which is part of the download-url)
-  # It's inside the SMIL-file
-  # ---------------------------------------------------------
-  recall("smil_file");
-  match( >>>param name="app" value="(.*?)"<<<);
-  show_match;
-
-  # select the real appname-value now
-  # ---------------------------------
-  rowselect(0);
-  select(1);
-  print;
-  store("app");
-
-  # look up host-part from SMIL-file
-  # --------------------------------
-  recall("smil_file");
-  match( >>>param name="host" value="(.*?)"<<<);
-  show_match;
-  rowselect(0);
-  select(1);
-  store("rtmp_hostname");
-
-  # get title and prepare it for prepending to "outname"
-  # ----------------------------------------------------
-  recall("BASEDOC"); titleextract;
-  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
-  store("title");
-
-  paste(" rtmpdump --resume -r rtmp://", $rtmp_hostname, "/", $app, "/", $mp4_simple, " -o ", $title, "_", $outname );
-
-  print("_________________\n");
-  print;
-
-  system;
-
-end
-
-
-
-# -----------------------------------------------------------
-# TED
-# -----------------------------------------------------------
-# Example: http://download.ted.com/talks/GlennGreenwald_2014G-320k.mp4
-# -----------------------------------------------------------
-# simple parser, just picks the easiesed way,
-# with no quality selection so far.
-# Just to have something handy right now.
-# ===========================================================
-parsername "ted": ( "http://www.ted.com/talks/" )
-start
-  match(>>>:"(http://.*?mp4)"<<<);
-
-  #show_match;
-
-  dropcol(0); # full-match removed
-
-  # drop two rows ( seem to be crap... but not sure they always are)
-  # -------------
-  droprow(0);
-  droprow(0);
-
-  sort; # sort the entries (will be many, if subtext is offered)
-  #selectmatch(0,"mp4");
-
-  makeurl;
-  download;
-end
-
-
-
-
-# -----------------------------------------------------------
-# ARD DW-TV
-# -----------------------------------------------------------
-# Example: http://www.ardmediathek.de/dw-tv/made-in-germany-das-wirtschaftsmagazin?documentId=13387934
-# -----------------------------------------------------------
-# 
-# ===========================================================
-parsername "ard_dw-tv": ( "http://www.ardmediathek.de/dw-tv/" )
-start
-
-  match( "http://tv-download.dw.de.*mp4" );
-  print;
-  show_match;
-  rowselect(0);
-  makeurl;
-  print;
-  store("url");
-
-  basename;
-  store("filename");
-
-  # create title
-  # -------------
-  recall("BASEDOC");
-  call("_extract-and-store-title_");
-
-  print("URL: ", $url, "\nTitle: ", $title, "\nFilename: ", $filename);
-
-  recall( "url" );
-  download( $title, "_", $filename );
-end
-
-
-
-
-# ---------------------------------
-# wdr.de/tv
-# ---------------------------------
-# Example: http://www.wdr.de/tv/westart/sonntag/sendungsbeitraege/2013/0602/index.jsp
-# =>: rtmp://gffstream.fcod.llnwd.net/a792/e2/CMS2010/mdb/15/153162/westarttalkdahabenwirwasangerichtetfoerderntafelndiearmut_1512942.mp4
-# =================================
-parsername "wdr_de_tv_westart": ( "http://www.wdr.de/tv/westart/sonntag/sendungsbeitraege" )
-start
-  match( "(rtmp:.*?mp4)" );
-  rowselect(0);
-  select(0);
-  store("rtmp_url");
-  basename;
-  store("filename");
-  print;
-  paste("rtmpdump --resume  -r ",  $rtmp_url, " -o ", $filename );
-  print;
-end
 
 
 # =================================
-# mp4-files matched and downloaed =
-# =================================
-parsername "mp4": ( "http://www.ardmediathek.de/das-erste/report-muenchen/", "http://www.sueddeutsche.de/", "https://denkfunk.de/"  )
-start
-  match("(http://.*?mp4)");
-  transpose;
-  uniq;
-  iselectmatch(0,"mp4", "mp4");
-  select(0);
-  #show_type;
-
-  store("url");
-  basename;
-  store("basename");
-
-  recall("BASEDOC");
-  call("_extract-and-store-title-htmldecode_");
-
-  recall("url");
-  makeurl;
-  download( $title, "_", $basename );
-end
-
-
-
-#######################################################
-####                   R A D I O                    ###
-#######################################################
-
-
-# ---------------------------------
-# www.ndr.de Feature
-# ---------------------------------
-# Example: http://www.ndr.de/info/programm/sendungen/feature/audio189059.html
-# http://www.ndr.de/info/programm/sendungen/feature/
-# =================================
-parsername "ndr_feature": ( "http://www.ndr.de/info/programm/sendungen/feature/", "http://www.ndr.de/info/" )
-start
-  call("_extract-and-store-title_");
-  print;
-  paste($title, ".mp3");
-  store("filename");
-
-  recall("BASEDOC");
-  match("src:'(http://.*?.mp3)");
-  print;
-  show_match;
-  colselect(1);
-  print;
-
-  makeurl;
-  print;
-  download; # get-save, directly writing file to disk (not temp. in mem).
-end
-
-
-# =================================
-#
-# =================================
-parsername "wdr5_toene_texte_bilder": ( "http://www.wdr5.de/sendungen/toene-texte-bilder/" )
-start
-  match("dslSrc=(http://.*?mp3)");
-  rowselect(0);
-  select(1);
-  store("url");
-  print("mp3-URL: ", $url);
-  makeurl;
-  download;
-end
-
-
-# =================================
-#
-# =================================
-parsername "DRKultur_breitband": ( "http://breitband.deutschlandradiokultur.de/" )
-start
-  match("(http://ondemand-mp3.*?mp3)");
-  rowselect(0);
-  select(1);
-
-  store("url");
-  print("mp3-URL: ", $url);
-  makeurl;
-  download;
-end
-
-
-
-# =================================
-# mp3-files matched and downloaed =
-# =================================
-parsername "mp3": ( )
-start
-  linkextract;
-  grep("\.mp3");
-  makeurl;
-  download;
-end
-
-
-
-
-
-
-
-# ---------------------------------
-# BR-Abendschau
-# ---------------------------------
-# Example: 
-# =================================
-parsername "br_abendschau": ( "http://www.br.de/fernsehen/bayerisches-fernsehen/sendungen/abendschau-der-sueden" )
-start
-  match( "http://.*?mp4" );
-  print;
-  #exitparse;
-  #!electmatch(0, ".*?A.mp4");
-  makeurl;
-  store("url");
-  basename;
-  store("url_name");
-
-  recall("BASEDOC");
-  call("_extract-and-store-title_");
-  print;
-
-  paste("wget ", $url, " -O ", $title, "__", $url_name ); 
-  system;
-end
-
-
-# ---------------------------------
-# BR quer
-# ---------------------------------
-# ---------------------------------
-# Example: http://www.br.de/mediathek/video/sendungen/quer/140130-quer-schlaeger-100.html
-# =================================
-parsername "BR_quer": ( "http://www.br.de/mediathek/video/sendungen/quer", "http://www.br.de/mediathek/video/" )
-start
-
-  # extract the URL for the xml-file
-  # --------------------------------
-  match( "dataURL:'(.*?.xml)" );
-  print;
-  rowselect(0);
-  select(1);
-  store("url");
-
-
-  recall("STARTURL");
-  paste("http://www.br.de/", $url );
-  makeurl;
-  print;
-
-  get;
-  match("<downloadUrl>(http.*?.mp4)");
-  # <downloadUrl>http://cdn-storage.br.de/MUJIuUOVBwQIbtC2uKJDM6OhuLnC_2rc5U1S/_-iS/_ykg_AN6/d41a6800-ff14-44e1-9e47-f8c742cd10f7_0.mp4
-  # http://cdn-storage.br.de/MUJIuUOVBwQIbtC2uKJDM6OhuLnC_2rc5U1S/_-iS/_ykg_AN6/d41a6800-ff14-44e1-9e47-f8c742cd10f7_B.mp4
-  #!electmatch(1, "http.*?B.mp4");
-  select(1);
-
-  print;
-
-  # save the URL for the video-file
-  # -------------------------------
-  makeurl;
-  store("URL");
-
-  # extract title and convert to make it useful for filenames
-  # ---------------------------------------------------------
-  recall("BASEDOC");
-  call("_extract-and-store-title_");
-
-  print;
-
-  # Download and save_as
-  # --------------------
-  recall("URL");
-  download( $title, ".mp4" );
-
-end
-
-
-# =================================
-# =================================
-# =================================
-parsername "DWN": ( "http://deutsche-wirtschafts-nachrichten.de/2015/" )
-start
-  # get the file that contains the video-url
-  # ----------------------------------------
-  tagselect("iframe"."class" = "vzaar-video-player" | arg( "src" ) ) ;
-  makeurl;
-  get;
-
-  # extract the video-url
-  # ---------------------
-  tagselect("source"."type" = "video/mp4" | arg( "src" ) );
-  makeurl;
-  store("videourl");
-
-
-  # create the video-filename from the initial url of the qwebpage (STARTURL)
-  # -------------------------------------------------------------------------
-  recall( "STARTURL" );
-  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
-  store("basename");
-
-  
-  # get video
-  # ---------
-  recall("videourl");
-  download( $basename, ".mp4" );
-end
-
-
-# ---------------------------------
-# DCTP
-# ---------------------------------
-# Example: 
-# =================================
-#parsername "dctp_mediathek_get": ( "http://www.dctp.tv" )
-#start
-#  match( "(mp4:.*\")" );
-#  print;
-#end
-
-
-# ---------------------------------
-# ORF
-# ---------------------------------
-# Example: 
-# http://tvthek.orf.at/topics/Wehrpflicht%20oder%20Berufsheer/5219477-Zeit-im-Bild/segments/5219513-Zivildienst-fuer-Frauen
-# =================================
-parsername "orf_mediathek_get": ( "http://tvthek.orf.at" )
-start
-  #linkextract;
-  #print;
-  match( "(mp4:.*?mp4)|(rtmp.*?\")" );
-  show_match;
-end
-
-
-
-
 # working, but too simple, you could use wget instead ;-) It's just for testing purposes
 parsername "save": ( )
 start
@@ -1846,56 +613,6 @@ start
   get;   # get all documents, to which the extracted documents are linking
   save;  # save all the retrieved documents, that wre elinked to via the main page
 end
-
-# =================================
-# RBB
-# =================================
-parsername "rbb": ( "http://www.rbb-online.de/" )
-start
-  # Example-video: http://www.rbb-online.de/stilbruch/archiv/20150219_2215/thomas-brussig-roman-das-gibts-in-keinem-russenfilm.html
-  #<meta property="og:video" content="http://www.rbb-online.de/basis/jwplayer/5_9/player.swf?file=http%3A%2F%2Fhttp-stream.rbb-online.de%2Frbb%2Fstilbruch%2Fstilbruch_20150219_ddr_m_16_9_512x288.mp4&autostart=true"/>
-  tagselect( "meta"."property"="og:video" | arg("content") );
-
-
-  # extract the file's url
-  # ----------------------
-  urldecode;
-  subst(".*?file=", "");
-  subst("&autostart=true", "");
-
-  makeurl;
-  download;
-
-end
-
-
-# =================================
-# focus.de
-# =================================
-parsername "focus": ( "http://www.focus.de/gesundheit/videos/" )
-start
-  match(>>>((sdurl)|(hdurl)) = "(http.*?)"<<<);
-  #show_match;
-  dropcol(1);
-  dropcol(1);
-  dropcol(1);
-  #show_match;
-  iselectmatch(0, "sdurl", "sdurl" ); # SD is default (for HD use -i and select it by hand)
-  select(1); # select the url
-  store("urlstring");
-
-  subst("[[:^alnum:]]+", "_");  # non-alnum -> "_"
-  store("urlname");
-
-  recall("BASEDOC");
-  call("_extract-and-store-title_");
-
-  recall("urlstring");
-  makeurl;
-  download( $title, "_", $urlname );
-
-end
-
 
 # =================================
 # youtube Info
