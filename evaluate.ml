@@ -576,6 +576,7 @@ and     cmd_post commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist  :
 
 
 and     cmd_download commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist_opt  :  results_t * varmap_t =
+          (* Maybe use let open Cli in here *)
           begin
             match tmpvar with
               | Url (u,r)          -> let filename =
@@ -803,26 +804,27 @@ and     cmd_grep_v commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglis
 
 
 and     cmd_select commandlist macrodefs_lst tmpvar varmap cmd tl index  :  results_t * varmap_t =
-          begin
+          let newtmp =
             match tmpvar with
-              | Document (doc, url)   -> let res = if index = 1 then Url (url, "-") else String doc in
-                                         command tl macrodefs_lst res varmap
-              | Document_array docarr -> command tl macrodefs_lst ( Document (fst docarr.(index), snd docarr.(index)) ) varmap
-              | String_array rowitems -> command tl macrodefs_lst (String(rowitems.(index))) varmap
-              | Url_array    rowitems -> command tl macrodefs_lst (Url( fst(rowitems.(index)), snd(rowitems.(index)))) varmap
-              | Url_list     rowitems -> command tl macrodefs_lst (Url( fst(List.nth rowitems index), snd(List.nth rowitems index))) varmap
+              | Document (doc, url)   -> if index = 1 then Url (url, "-") else String doc
+              | Document_array docarr -> Document (fst docarr.(index), snd docarr.(index))
+              | String_array rowitems -> String(rowitems.(index))
+              | Url_array    rowitems -> Url( fst(rowitems.(index)), snd(rowitems.(index)))
+              | Url_list     rowitems -> Url( fst(List.nth rowitems index), snd(List.nth rowitems index))
               | _            -> prerr_endline "Select: nothing to match"; raise No_Matchresult_available
-          end
+          in
+            command tl macrodefs_lst newtmp varmap
 
 
 
 and     cmd_mselect commandlist macrodefs_lst tmpvar varmap cmd tl index_list  :  results_t * varmap_t =
-          begin
+          let newtmp =
             match tmpvar with
-              | String_array rowitems -> command tl macrodefs_lst (String_array(item_selection rowitems index_list)) varmap
-              | Url_array    rowitems -> command tl macrodefs_lst (Url_array(item_selection rowitems index_list)) varmap
+              | String_array rowitems -> String_array(item_selection rowitems index_list)
+              | Url_array    rowitems -> Url_array(item_selection rowitems index_list)
               | _            -> prerr_endline "MSelect: nothing to match"; raise No_Matchresult_available
-          end
+          in
+            command tl macrodefs_lst newtmp varmap
 
 
 
@@ -1551,12 +1553,13 @@ and     cmd_show_type commandlist macrodefs_lst tmpvar varmap cmd tl :  results_
 
 
 and     cmd_basename commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-          begin
+          let newtmp =
             match tmpvar with
-              | String filename -> command tl macrodefs_lst (String(Filename.basename filename)) varmap
-              | Url (href, ref) -> command tl macrodefs_lst (String(Filename.basename href)) varmap
+              | String filename -> String(Filename.basename filename)
+              | Url (href, ref) -> String(Filename.basename href)
               | _ -> raise Wrong_argument_type
-          end
+          in
+            command tl macrodefs_lst newtmp varmap
 
 
 and     cmd_subst commandlist macrodefs_lst tmpvar varmap cmd tl (from_re, to_str)  :  results_t * varmap_t =
