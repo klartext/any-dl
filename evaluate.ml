@@ -1562,33 +1562,19 @@ and     cmd_basename commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t
 and     cmd_subst commandlist macrodefs_lst tmpvar varmap cmd tl (from_re, to_str)  :  results_t * varmap_t =
           verbose_printf "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
           let replacer instring = Pcre.replace ~pat:from_re ~templ:to_str instring in
-          begin
-          match tmpvar with
-            | String str           -> command tl macrodefs_lst (String (replacer str)) varmap
-
-            | String_array str_arr -> let replaced = Array.map replacer str_arr in
-                                      command tl macrodefs_lst (String_array replaced) varmap
-
-            | Url (href, ref)      -> command tl macrodefs_lst ( Url (replacer href, replacer ref) ) varmap
-
-            | Url_array   url_arr  -> let changed = Array.map ( fun (u,r) -> (replacer u, replacer r) ) url_arr in
-                                       command tl macrodefs_lst ( Url_array changed ) varmap
-
-            | Url_list    url_lst  -> let changed = List.map ( fun (u,r) -> (replacer u, replacer r) ) url_lst in
-                                       command tl macrodefs_lst ( Url_list changed ) varmap
-
-            | Document(doc, ref)   -> let newdoc = Document( replacer doc, replacer ref ) in
-                                      command tl macrodefs_lst (newdoc) varmap
-
-            | Document_array doc_arr ->
-                       let new_docarr = Array.map ( fun (doc,ref) -> (replacer doc, replacer ref) ) doc_arr in
-                       command tl macrodefs_lst (Document_array new_docarr) varmap
-
-            | Match_result  arrarr -> let res = Array.map (fun arr -> let a = Array.copy arr in Array.map replacer a ) arrarr in
-                                      command tl macrodefs_lst (Match_result res) varmap
-
-            | _ -> raise Wrong_argument_type
-          end
+          let newtmp =
+              match tmpvar with
+                | String str           -> String (replacer str)
+                | String_array str_arr -> String_array( Array.map replacer str_arr )
+                | Url (href, ref)      -> Url (replacer href, replacer ref)
+                | Url_array   url_arr  -> Url_array( Array.map ( fun (u,r) -> (replacer u, replacer r) ) url_arr )
+                | Url_list    url_lst  -> Url_list( List.map ( fun (u,r) -> (replacer u, replacer r) ) url_lst )
+                | Document(doc, ref)   -> Document( replacer doc, replacer ref )
+                | Document_array doc_arr -> Document_array( Array.map ( fun (doc,ref) -> (replacer doc, replacer ref) ) doc_arr )
+                | Match_result  arrarr -> Match_result( Array.map (fun arr -> let a = Array.copy arr in Array.map replacer a ) arrarr )
+                | _ -> raise Wrong_argument_type
+          in
+            command tl macrodefs_lst newtmp varmap
 
 
 
