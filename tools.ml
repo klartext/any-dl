@@ -273,8 +273,7 @@ module type Array2_slim =
 
   end
 
-module Array2 =
-  (
+module Array2 : Array2_slim =
   struct
     include Array
 
@@ -342,9 +341,6 @@ module Array2 =
 
 
   end
-  :
-  Array2_slim
-  )
 
 
 
