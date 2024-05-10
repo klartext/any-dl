@@ -1,14 +1,6 @@
 any-dl, a tool for downloading Mediathek video-files
 ====================================================
 
-! This stuff is becoming more and a more mature, nevertheless
-! it is under development.
-! Be aware, that the parser-definition-language is not frozen so far
-! and may change in the future!
-!
-! For users who just want to use any-dl, without caring about
-! the internals of it or it's parser-defs, this does not matter.
-
 
 Overview
 ========
@@ -57,6 +49,7 @@ Overview
 Compilation / Installation / Setup
 ==================================
 
+
   When you read this README file from within the directory
   you downloaded (via git or elsewhere), then you
   already have unpacked it.
@@ -66,6 +59,10 @@ Compilation / Installation / Setup
   You will need to have OCaml installed, as well as
   some libraries.
 
+  The library ocamlnet currently (May 2024) is not available for ocaml 5.x.
+  So you need to use ocaml 4. The currently used version in development is
+  ocaml 4.14.2.
+
   When using OPAM, you need the following packages:
 
   - pcre
@@ -73,7 +70,7 @@ Compilation / Installation / Setup
   - conf-gnutls (gnutls must be installed on your system too)
   - xmlm
   - yojson
-  - csv (currently not used, was disabled in the code, but will be used again)
+  - csv
 
   If you don't use OPAM but instead the package manager from your Linux installation,
   the packages might have different names.
