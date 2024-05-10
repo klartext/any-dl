@@ -216,7 +216,6 @@ let add_item_once lst =
 
 
 
-(*
 (* ------------------------------------------------- *)
 (* transpose an array-of-arrays                      *)
 (* ------------------------------------------------- *)
@@ -226,7 +225,6 @@ let transpose arrarr =
   let data = Csv.of_array arrarr in
   let tr = Csv.transpose data in
   Csv.to_array tr
-*)
 
 
 

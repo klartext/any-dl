@@ -485,9 +485,7 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
                        | To_matchres                -> cmd_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Table_to_matchres          -> cmd_table_to_matchres commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Append_to  varname         -> cmd_append_to commandlist macrodefs_lst tmpvar varmap cmd tl varname
-                       (*
                        | Transpose                  -> cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl
-                       *)
                        | Link_extract               -> cmd_link_extract commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Link_extract_xml           -> cmd_link_extract_xml commandlist macrodefs_lst tmpvar varmap cmd tl
                        | Rebase                     -> cmd_rebase commandlist macrodefs_lst tmpvar varmap cmd tl
@@ -1049,7 +1047,6 @@ and     cmd_append_to commandlist macrodefs_lst tmpvar varmap cmd tl varname  : 
 
 
 
-(*
 and     cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
           let result =
             begin
@@ -1059,7 +1056,6 @@ and     cmd_transpose commandlist macrodefs_lst tmpvar varmap cmd tl :  results_
             end;
             in
             command tl macrodefs_lst result varmap
-*)
 
 
 
