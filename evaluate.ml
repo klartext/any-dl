@@ -234,6 +234,8 @@ let paste_arglist_to_string  argument_list  (varmap : varmap_t) =
 (* apply a function to the value, giving back a value of the same type *)
 (* =================================================================== *)
 let default_application variable basefunc (varmap : varmap_t) =
+  let base_both pair = Tools.apply_on_pair basefunc pair in (* apply basefunc on fst and snd of pair *)
+
   match variable with
     (*
     | Varname         vn         -> to_string (Varmap.find vn varmap) varmap
@@ -241,10 +243,10 @@ let default_application variable basefunc (varmap : varmap_t) =
     | String          str        -> String ( basefunc str )
     | String_array    strarr     -> String_array ( Array.map basefunc strarr )
     | Document        (doc,url)  -> Document ( basefunc doc, basefunc url )
-    | Document_array  docarr     -> Document_array ( Array.map ( fun (doc,url) -> basefunc doc, basefunc url ) docarr )
+    | Document_array  docarr     -> Document_array ( Array.map base_both docarr )
     | Url             (url, ref) -> Url ( basefunc url, basefunc ref )
-    | Url_list        urllist    -> Url_list ( List.map ( fun (u,r) -> basefunc u, basefunc r ) urllist )
-    | Url_array       urlarray   -> Url_array ( Array.map ( fun (u,r) -> basefunc u, basefunc r ) urlarray )
+    | Url_list        urllist    -> Url_list ( List.map base_both urllist )
+    | Url_array       urlarray   -> Url_array ( Array.map base_both urlarray )
     | Dummy_result               -> Empty
     | Match_result    arrarr     -> let res = Array.map (fun arr -> let a = Array.copy arr in Array.map basefunc a ) arrarr in
                                     (Match_result res)
@@ -786,10 +788,10 @@ and     cmd_grep_v commandlist macrodefs_lst tmpvar varmap cmd tl pattern_arglis
 
                 | String_array str_arr -> String_array( Array2.filter test_nonmatch_on_string str_arr)
                 | Url_array    url_arr -> Url_array (Array2.filter ( fun (url,ref) -> test_nonmatch_on_string url &&
-                                                                                           test_nonmatch_on_string ref ) url_arr )
+                                                                                      test_nonmatch_on_string ref ) url_arr )
 
                 | Url_list     url_arr -> Url_list (List.filter ( fun (url,ref) -> test_nonmatch_on_string url &&
-                                                                                           test_nonmatch_on_string ref ) url_arr )
+                                                                                   test_nonmatch_on_string ref ) url_arr )
 
                 | Match_result mres -> Match_result ( Array2.filter_row_by_colmatch test_nonmatch_on_string mres )
                 | _            -> prerr_endline "Grep_v: nothing to match"; raise No_Matchresult_available
@@ -1530,8 +1532,8 @@ and     cmd_uniq commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * v
 
 and     cmd_show_variables commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
           Varmap.iter ( fun varname value -> Printf.printf "***** \"%s\": " varname;
-                                                                           ignore (command [Print; Print_string "\n"] macrodefs_lst value varmap ) ) varmap;
-                                        command tl macrodefs_lst tmpvar varmap
+                                             ignore (command [Print; Print_string "\n"] macrodefs_lst value varmap ) ) varmap;
+          command tl macrodefs_lst tmpvar varmap
 
 
 and     cmd_list_variables commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
@@ -1540,8 +1542,8 @@ and     cmd_list_variables commandlist macrodefs_lst tmpvar varmap cmd tl :  res
 
 
 and     cmd_show_type commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
-                                                       Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string ~details:true tmpvar);
-                                                       command tl macrodefs_lst tmpvar varmap
+                       Printf.printf "TMPVAR (1-val-stack) contains: %s\n" (Parsetreetypes.result_to_string ~details:true tmpvar);
+                       command tl macrodefs_lst tmpvar varmap
 
 
 and     cmd_basename commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
@@ -1557,15 +1559,17 @@ and     cmd_basename commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t
 and     cmd_subst commandlist macrodefs_lst tmpvar varmap cmd tl (from_re, to_str)  :  results_t * varmap_t =
           verbose_printf "Subst: \"%s\" -> \"%s\"\n" from_re to_str;
           let replacer instring = Pcre.replace ~pat:from_re ~templ:to_str instring in
+          let replace_on_pair pair = Tools.apply_on_pair replacer pair in (* string-replacement on fst and snd of pair *)
+
           let newtmp =
               match tmpvar with
                 | String str           -> String (replacer str)
                 | String_array str_arr -> String_array( Array.map replacer str_arr )
                 | Url (href, ref)      -> Url (replacer href, replacer ref)
-                | Url_array   url_arr  -> Url_array( Array.map ( fun (u,r) -> (replacer u, replacer r) ) url_arr )
-                | Url_list    url_lst  -> Url_list( List.map ( fun (u,r) -> (replacer u, replacer r) ) url_lst )
+                | Url_array   url_arr  -> Url_array( Array.map replace_on_pair url_arr )
+                | Url_list    url_lst  -> Url_list( List.map replace_on_pair url_lst )
                 | Document(doc, ref)   -> Document( replacer doc, replacer ref )
-                | Document_array doc_arr -> Document_array( Array.map ( fun (doc,ref) -> (replacer doc, replacer ref) ) doc_arr )
+                | Document_array doc_arr -> Document_array( Array.map replace_on_pair doc_arr )
                 | Match_result  arrarr -> Match_result( Array.map (fun arr -> let a = Array.copy arr in Array.map replacer a ) arrarr )
                 | _ -> raise Wrong_argument_type
           in
@@ -1644,6 +1648,8 @@ and     cmd_system commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t *
 
 and     cmd_html_decode commandlist macrodefs_lst tmpvar varmap cmd tl :  results_t * varmap_t =
           let sd str = Tools.select_decoding_scheme str in
+          let decode_both pair = Tools.apply_on_pair Tools.html_decode pair in (* apply Tools.html_decode on fst and snd of pair *)
+
           let newvar =
             begin
             match tmpvar with
@@ -1655,10 +1661,10 @@ and     cmd_html_decode commandlist macrodefs_lst tmpvar varmap cmd tl :  result
                                              Document( Tools.html_decode ~inenc:inenc doc, Tools.html_decode ~inenc:inenc url )
                                            with _ -> raise Html_decode_error
                                          end
-              | Document_array docarr -> Document_array( Array.map (fun (d,u) -> (Tools.html_decode d, Tools.html_decode u) ) docarr )
+              | Document_array docarr -> Document_array( Array.map decode_both docarr )
               | Url  (url, ref)       -> Url( Tools.html_decode url, Tools.html_decode ref )
-              | Url_list    urllist   -> Url_list( List.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urllist)
-              | Url_array urlarr      -> Url_array( Array.map (fun (u,r) -> (Tools.html_decode u, Tools.html_decode r) ) urlarr )
+              | Url_list    urllist   -> Url_list( List.map decode_both urllist)
+              | Url_array urlarr      -> Url_array( Array.map decode_both urlarr )
 
 
               | Match_result  arrarr -> let res = Array.map (fun arr -> let a = Array.copy arr in Array.map Tools.html_decode a ) arrarr in
