@@ -403,26 +403,27 @@ and evaluate_statement (statement_list : statements_t list) (macrodefs_lst : mac
                       let res, newvarmap =
                         begin
                           match statement with
-                            | Command     cmd                                        -> command  [ cmd ] macrodefs_lst tmpvar varmap
-                            | Assignment  (varname, cmd)                             -> command  ( cmd :: [ (Store varname) ] ) macrodefs_lst tmpvar varmap
+                            | Command     cmd            -> command  [ cmd ] macrodefs_lst tmpvar varmap
+                            | Assignment  (varname, cmd) -> command  ( cmd :: [ (Store varname) ] ) macrodefs_lst tmpvar varmap
 
-                            | Conditional  (if_stmtlist, then_stmtlist, else_stmtlist_opt) -> let testresult =  fst ( evaluate_statement  if_stmtlist macrodefs_lst tmpvar varmap ) in
-                                                                                      (* if the variable has Unit-type, then it is always true-empty *)
-                                                                                      if not ( var_is_empty testresult varmap )
-                                                                                      then evaluate_statement then_stmtlist macrodefs_lst tmpvar varmap
-                                                                                      else
-                                                                                      begin
-                                                                                        match else_stmtlist_opt with
-                                                                                          | None               -> evaluate_statement [] macrodefs_lst tmpvar varmap
-                                                                                          | Some else_commands -> evaluate_statement else_commands macrodefs_lst tmpvar varmap
-                                                                                      end
+                            | Conditional  (if_stmtlist, then_stmtlist, else_stmtlist_opt) ->
+                                                         let testresult =  fst ( evaluate_statement  if_stmtlist macrodefs_lst tmpvar varmap ) in
+                                                         (* if the variable has Unit-type, then it is always true-empty *)
+                                                         if not ( var_is_empty testresult varmap )
+                                                         then evaluate_statement then_stmtlist macrodefs_lst tmpvar varmap
+                                                         else
+                                                         begin
+                                                           match else_stmtlist_opt with
+                                                             | None               -> evaluate_statement [] macrodefs_lst tmpvar varmap
+                                                             | Some else_commands -> evaluate_statement else_commands macrodefs_lst tmpvar varmap
+                                                         end
 
-                            | Loop        (test_cmdlst, todo_cmdslst)               -> while ( not ( var_is_empty (fst ( evaluate_statement test_cmdlst macrodefs_lst tmpvar varmap )) varmap ) )
-                                                                                       do
-                                                                                        Unit ( ignore ( evaluate_statement todo_cmdslst macrodefs_lst tmpvar varmap ) ), varmap
-                                                                                       done; Unit (), varmap
-
-                                                                                      (* if the variable has Unit-type, then it is always true-empty => possibly endless loop! *) (* TODO ! *)
+                            | Loop        (test_cmdlst, todo_cmdslst) ->
+                                                         while ( not ( var_is_empty (fst ( evaluate_statement test_cmdlst macrodefs_lst tmpvar varmap )) varmap ) )
+                                                         do
+                                                           Unit ( ignore ( evaluate_statement todo_cmdslst macrodefs_lst tmpvar varmap ) ), varmap
+                                                         done; Unit (), varmap
+                                                         (* if the variable has Unit-type, then it is always true-empty => possibly endless loop! *) (* TODO ! *)
                         end
                       in
                       evaluate_statement tl  macrodefs_lst res newvarmap (* result of the command-calls is new tmpvar *)
@@ -447,11 +448,11 @@ and     command commandlist macrodefs_lst tmpvar varmap  :  results_t * varmap_t
     | []        -> tmpvar, varmap (* Printf.printf "<========================== BACK. Leave evaluate_statement_list() now!\n"*)
     | cmd::tl   -> begin
                      match cmd with
-                       | Post  fname_arglist              -> cmd_post commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist
-                       | Download  fname_arglist_opt      -> cmd_download commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist_opt
-                       | Get_url (url, referrer)          -> cmd_get_url commandlist macrodefs_lst tmpvar varmap cmd tl (url, referrer)
-                       | Get                              -> cmd_get commandlist macrodefs_lst tmpvar varmap cmd tl
-                       | Get_urls                         -> cmd_get_urls commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Post  fname_arglist         -> cmd_post commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist
+                       | Download  fname_arglist_opt -> cmd_download commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglist_opt
+                       | Get_url (url, referrer)     -> cmd_get_url commandlist macrodefs_lst tmpvar varmap cmd tl (url, referrer)
+                       | Get                         -> cmd_get commandlist macrodefs_lst tmpvar varmap cmd tl
+                       | Get_urls                    -> cmd_get_urls commandlist macrodefs_lst tmpvar varmap cmd tl
 
 
                          (* creates url and puts it into tmpvar *)
