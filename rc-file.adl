@@ -652,6 +652,23 @@ end
 #:endfunction
 
 
+# Extract table for voting poll data in germany.
+# You need to use the specific url of the institutes,
+# like
+# https://www.wahlrecht.de/umfragen/<institute_name>.htm
+# to get the data tables.
+# -------------------------------------------------------
+parsername "wahlumfrage": ( "https://www.wahlrecht.de/umfragen/" )
+start
+  tagselect( "table"."class" = "wilko" | htmlstring );
+  to_string;
+  #show_type;
+
+  table_to_matchres;
+  show_match;
+  print("saving data to csv file");
+  csv_save;
+end
 
 # =====================================================
 #            M   A   C   R   O   S 
