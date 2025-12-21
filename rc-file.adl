@@ -652,6 +652,18 @@ end
 #:endfunction
 
 
+# For URL of a video, the channel ID is extracted and printed
+parsername "ytchannelid": ()
+start
+  grep("channelId");
+  subst(>>>.*channelId":"<<<, "");
+  subst(>>>".*<<<, "");
+  uniq;
+  print;
+end
+
+
+
 # Extract table for voting poll data in germany.
 # You need to use the specific url of the institutes,
 # like
