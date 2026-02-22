@@ -18,15 +18,9 @@ open Tools
 module E = Evaluate
 
 
-
-exception AutoTry_success               (* in auto-try mode (switch -a), if successful, this exception will be thrown *)
+exception AutoTry_success (* in auto-try mode (switch -a), if successful, this exception will be thrown *)
 exception No_parser_found_for_this_url  (* *)
 exception Unknown_parser  (* if a parsername is requested, which does not exist *)
-
-
-
-
-
 
 
 (* ============================================ *)
@@ -41,34 +35,38 @@ let parse_parser_definitions_from_files filenames_list =
   (*
   Parsing.set_trace true; (* only for debugging purposes *)
   *)
-  List.iter ( fun filename ->
-                              let input_channel = open_in filename in
+  List.iter
+    ( fun filename ->
+        let input_channel = open_in filename in
 
-                              let lexer = Lexing.from_channel input_channel in
-                                begin
-                                  try
-                                    while true do
-                                      let result = Scriptparser.main Scriptlexer.read_command lexer in
-                                      tokenlist := result :: !tokenlist
-                                    done
-                                  with
-                                    | End_of_file         -> verbose_printf "End of rc-file reached; parser definitions were read."
-                                    | Parsing.Parse_error -> 
-                                                             Printf.eprintf "Parse error in file \"%s\", line %4d\n" filename !Scriptlexer.linenum;
-                                                             exit 1
+        let lexer = Lexing.from_channel input_channel in
+          begin
+            try
+              while true do
+                let result = Scriptparser.main Scriptlexer.read_command lexer in
+                tokenlist := result :: !tokenlist
+              done
+            with
+              | End_of_file         -> verbose_printf
+                                         "End of rc-file reached; parser definitions were read."
+              | Parsing.Parse_error ->
+                                       Printf.eprintf
+                                         "Parse error in file \"%s\", line %4d\n" filename !Scriptlexer.linenum;
+                                       exit 1
 
-                                     (*
-                                     | Not_found -> prerr_string "Variable not known in line ";
-                                                    prerr_int !Scriptlex.linenum;prerr_newline()
-                                                    (*
-                                                    exit 1
-                                                    *)
-                                     *)
+               (*
+               | Not_found -> prerr_string "Variable not known in line ";
+                              prerr_int !Scriptlex.linenum;prerr_newline()
+                              (*
+                              exit 1
+                              *)
+               *)
 
-                                end;
-                                close_in input_channel;
-                                Scriptlexer.linenum := 1 (* reset the linenumber for the next rc-file *)
-            ) filenames_list;
+          end;
+          close_in input_channel;
+          Scriptlexer.linenum := 1 (* reset the linenumber for the next rc-file *)
+    )
+    filenames_list;
 
   List.rev !tokenlist
 
@@ -82,11 +80,13 @@ let parsername_lookup_by_url url lookup_lst =
     | hd :: tl -> let parser_url  = fst hd in
                   let parser_name = snd hd in
 
-                  verbose_printf "parser-lookup via url: %s\n\t%s  ->  %s\n--\n" url parser_url parser_name;
+                  verbose_printf
+                    "parser-lookup via url: %s\n\t%s  ->  %s\n--\n" url parser_url parser_name;
 
                   let parser_url_len = String.length parser_url in
                   try
-                    if parser_url_len > 0 && parser_url = String.sub url 0 parser_url_len then parser_name else aux tl
+                    if parser_url_len > 0 && parser_url = String.sub url 0 parser_url_len
+                    then parser_name else aux tl
                   with Invalid_argument _ -> aux tl (* this happens if url is shorter than parser_url *)
   in
     aux lookup_lst
@@ -102,22 +102,24 @@ let get_parserdef url parser_urllist parser_namehash  parser_selection =
         begin
           match parser_selection with
             | Some parsername ->
-                                 begin
-                                 try
-                                   Hashtbl.find parser_namehash parsername
-                                 with Not_found -> prerr_endline ("Unknown parser " ^ parsername);
-                                                   raise Unknown_parser
-                                 end
+                 begin
+                 try
+                   Hashtbl.find parser_namehash parsername
+                 with Not_found -> prerr_endline ("Unknown parser " ^ parsername);
+                                   raise Unknown_parser
+                 end
 
-            | None            -> (* parsername looked up via from url *)
+            | None -> (* parsername looked up via from url *)
 
-                                 (* comparing the url with the strings in the url-parsername-assoc-list *)
-                                 (* ------------------------------------------------------------------- *)
-                                 let parsername = parsername_lookup_by_url  url  parser_urllist in
-                                 verbose_printf "*** selected parser: %s\n" parsername;
-                                 Hashtbl.find parser_namehash  parsername
+                 (* comparing the url with the strings in the url-parsername-assoc-list *)
+                 (* ------------------------------------------------------------------- *)
+                 let parsername = parsername_lookup_by_url  url  parser_urllist in
+                 verbose_printf "*** selected parser: %s\n" parsername;
+                 Hashtbl.find parser_namehash  parsername
         end
-      with Not_found         -> prerr_endline ("No parser found for " ^ url); raise No_parser_found_for_this_url
+      with Not_found ->
+          prerr_endline
+            ("No parser found for " ^ url); raise No_parser_found_for_this_url
 
 
 
@@ -199,25 +201,33 @@ let main ()  =
         (* XDG_CONFIG_HOME - directory *)
         (* --------------------------- *)
         let xdg_config_home =
-          try Sys.getenv "XDG_CONFIG_HOME"
-          with Not_found -> Filename.concat (Sys.getenv "HOME") (".config") (* fall-back value for undefed env.var *)
+          try
+            Sys.getenv "XDG_CONFIG_HOME"
+          with
+            Not_found -> Filename.concat (* fall-back value for undefed env.var *)
+                           (Sys.getenv "HOME")
+                           (".config")
         in
         let xdg_config_home =
           if xdg_config_home = ""
-          then Filename.concat (Sys.getenv "HOME") (".config") (* fallback-value for empty env.var *)
+          then Filename.concat (* fallback-value for empty env.var *)
+                 (Sys.getenv "HOME")
+                 (".config")
           else xdg_config_home
         in
 
 
         (* systemwide rc-file in /etc/ *)
-        let etc_rcfile    = "/etc/any-dl.rc"                                          in
+        let etc_rcfile    = "/etc/any-dl.rc"
+        in
 
         (* "classical" rc-file (dotfile) in HOME-dir *)
-        let home_rcfile   = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")        in
+        let home_rcfile   = Filename.concat (Sys.getenv "HOME") (".any-dl.rc")
+        in
 
         (* rc-file inside $XDG_CONFIG_HOME *)
-        let xdg_config_rcfile = Filename.concat xdg_config_home ("any-dl.rc") in
-
+        let xdg_config_rcfile = Filename.concat xdg_config_home ("any-dl.rc")
+        in
 
         (* include those rc-files which do exist *)
         (* ===================================== *)
@@ -236,7 +246,11 @@ let main ()  =
     (* CLI-args plausibility checks *)
     (* ---------------------------- *)
     if Cli.opt.Cli.auto_try && Cli.opt.Cli.parser_selection != None
-    then begin prerr_endline "Option auto-try and parser selection together make no sense!"; exit 1 end;
+    then
+      begin
+        prerr_endline "Option auto-try and parser selection together make no sense!";
+        exit 1
+      end;
     (* ...other checks might follow here... *)
 
     (* if cli-switches ask for it, print all commands of the parser-language *)
@@ -266,10 +280,23 @@ let main ()  =
     let definitions_list = parse_parser_definitions_from_files Cli.opt.Cli.rc_filenames in
 
 
-    let parser_list = List.fold_right ( fun def sofar -> match def with Parserdef pdef -> pdef :: sofar | _ -> sofar ) definitions_list [] in
-    let parser_list = List.rev parser_list in (* as long as no other order is pushed later, let order as is read from file *)
+    let parser_list =
+      List.fold_right
+        ( fun def sofar -> match def with Parserdef pdef -> pdef :: sofar | _ -> sofar )
+        definitions_list
+        []
+    in
+    let parser_list = (* as long as no other order is pushed later, let order as is read from file *)
+      List.rev
+        parser_list
+    in
 
-    let (macro_list : macrodef_t list) = List.fold_right ( fun def sofar -> match def with Macrodef mdef -> mdef :: sofar | _ -> sofar ) definitions_list [] in
+    let (macro_list : macrodef_t list) =
+      List.fold_right
+        ( fun def sofar -> match def with Macrodef mdef -> mdef :: sofar | _ -> sofar )
+        definitions_list
+        []
+    in
 
 
     (* if cli-switches ask for it, print the number of parser-defintions found *)
@@ -282,38 +309,48 @@ let main ()  =
     (* ------------------------------------------------------------ *)
     let parser_namehash = Hashtbl.create (List.length parser_list) in
     let parser_urllist_raw  = ref [] in
-    List.iter ( fun parserdef ->
-                                 (* add the parsers to the parser_name-hash (for parser-lookup by name) *)
-                                 Hashtbl.add parser_namehash parserdef.parsername parserdef;
+    List.iter
+      ( fun parserdef ->
+           (* add the parsers to the parser_name-hash (for parser-lookup by name) *)
+           Hashtbl.add parser_namehash parserdef.parsername parserdef;
 
-                                 (* add the parsers to the parser_url-list (for parser-lookup by url) *)
-                                 (* and also print some information, if according CLI-args were set.  *)
-                                 (* ----------------------------------------------------------------- *)
-                                 if List.length parserdef.urllist > 0 then
-                                 begin
-                                   List.iter ( fun url -> 
-                                                          (* add entry to list *)
-                                                          (* ----------------- *)
-                                                          parser_urllist_raw := (url, parserdef.parsername) :: !parser_urllist_raw;
+           (* add the parsers to the parser_url-list (for parser-lookup by url) *)
+           (* and also print some information, if according CLI-args were set.  *)
+           (* ----------------------------------------------------------------- *)
+           if List.length parserdef.urllist > 0 then
+           begin
+             List.iter
+               ( fun url ->
+                    (* add entry to list *)
+                    (* ----------------- *)
+                    parser_urllist_raw := (url, parserdef.parsername) :: !parser_urllist_raw;
 
 
-                                                          (* If CLI-switches ask for it, print the URL and the parser's name, it is bound to *)
-                                                          (* ------------------------------------------------------------------------------- *)
-                                                          if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
-                                                          then
-                                                            Printf.fprintf stdout "Init: bound Base-URL %-30s -> parser %s\n" url parserdef.parsername
+                    (* If CLI-switches ask for it, print the URL and the parser's name, it is bound to *)
+                    (* ------------------------------------------------------------------------------- *)
+                    if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
+                    then
+                      Printf.fprintf
+                        stdout
+                        "Init: bound Base-URL %-30s -> parser %s\n"
+                        url
+                        parserdef.parsername
 
-                                             ) parserdef.urllist;
-                                 end
-                                 else
-                                 begin
-                                    (* If CLI-switches ask for it, print the parser's-name, mentioning that no url is bound to it *)
-                                    (* ------------------------------------------------------------------------------------------ *)
-                                    if Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose then
-                                      Printf.fprintf stdout "Init: (unbound to URL)%-30s-> parser %s\n"   ""  parserdef.parsername
-                                 end
+               )
+               parserdef.urllist;
+           end
+           else
+           begin
+              (* If CLI-switches ask for it, print the parser's-name, mentioning that no url is bound to it *)
+              (* ------------------------------------------------------------------------------------------ *)
+              if
+                Cli.opt.Cli.list_parsers || Cli.opt.Cli.verbose || Cli.opt.Cli.very_verbose
+              then
+                Printf.fprintf stdout "Init: (unbound to URL)%-30s-> parser %s\n"   ""  parserdef.parsername
+           end
 
-              ) parser_list;
+      )
+      parser_list;
 
     flush stdout; (* all init-stuff should be flushed, before evaluation stage is entered! *)
 
@@ -327,8 +364,11 @@ let main ()  =
       So, the first url-match will be the most-specific url,
       and hence giving the name of the most-specific parser.
     *)
-    let parser_urllist = List.sort ( fun elem1 elem2 -> String.length (fst elem2) - String.length (fst elem1) ) !parser_urllist_raw in
-
+    let parser_urllist =
+      List.sort
+        ( fun elem1 elem2 -> String.length (fst elem2) - String.length (fst elem1) )
+        !parser_urllist_raw
+    in
 
     (* for all distinct URLs from the command line, do the intended work :-) *)
     (* ===================================================================== *)
@@ -346,24 +386,32 @@ let main ()  =
         let parsernames = Hashtbl.fold ( fun k v sofar -> k :: sofar) parser_namehash [] in
         (* for each url try the work *)
         (* ------------------------- *)
-        List.iter ( fun url ->
-                               (* for this url try all parsers *)
-                               
-                               try
-                                 List.iter ( fun parsername -> prerr_endline ("========================> Parser: " ^ parsername ^ " <========================");
-                                                               try
-                                                                 invoke_parser_on_url  url  parser_urllist  parser_namehash  (Some parsername) macro_list;
-                                                                 if Cli.opt.Cli.auto_try_stop then raise AutoTry_success
-                                                               with
-                                                                 | AutoTry_success -> raise AutoTry_success
-                                                                 | _               -> prerr_endline "Parser failed with exception!" (* eats exception *)
-                                           ) parsernames
-                               with AutoTry_success -> prerr_endline "Parser succeeded." (* catch only a success; any other exceptions igonre here *)
+        List.iter
+          ( fun url ->
+               (* for this url try all parsers *)
+               try
+                 List.iter
+                   ( fun parsername ->
+                         prerr_endline ("========================> Parser: " ^ parsername ^ " <========================");
+                         try
+                           invoke_parser_on_url  url  parser_urllist  parser_namehash  (Some parsername) macro_list;
+                           if Cli.opt.Cli.auto_try_stop then raise AutoTry_success
+                         with
+                           | AutoTry_success -> raise AutoTry_success
+                           | _               -> prerr_endline "Parser failed with exception!" (* eats exception *)
+                   )
+                   parsernames
+               with
+                AutoTry_success -> (* catch only a success; any other exceptions igonre here *)
+                  prerr_endline "Parser succeeded."
 
-                  ) list_of_urls
+          )
+          list_of_urls
       end
     else (* non-auto (normal mode) *)
-      List.iter ( fun url -> invoke_parser_on_url  url  parser_urllist  parser_namehash  Cli.opt.Cli.parser_selection macro_list ) list_of_urls
+      List.iter
+        ( fun url -> invoke_parser_on_url  url  parser_urllist  parser_namehash  Cli.opt.Cli.parser_selection macro_list )
+        list_of_urls
 
 
 let _ =
@@ -374,15 +422,16 @@ let _ =
 
   try
     main()
-  with Sys_error msg -> if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
-                        then
-                          begin
-                            Printf.fprintf stderr "The config file is missing. Possible default places for it:\n";
-                            Printf.fprintf stderr "$XDG_CONFIG_HOME/any-dl.rc or $HOME/.any-dl.rc or /etc/any-dl.rc\n";
-                            Printf.fprintf stderr "Please provide a rc-file there or use -f optia rc-file, if you want to use a different rc-file.\n"
-                          end
-                        else
-                          raise ( Sys_error msg )
+  with Sys_error msg ->
+      if Pcre.pmatch ~pat:".any-dl.rc: No such file or directory" msg
+      then
+        begin
+          Printf.fprintf stderr "The config file is missing. Possible default places for it:\n";
+          Printf.fprintf stderr "$XDG_CONFIG_HOME/any-dl.rc or $HOME/.any-dl.rc or /etc/any-dl.rc\n";
+          Printf.fprintf stderr "Please provide a rc-file there or use -f optia rc-file, if you want to use a different rc-file.\n"
+        end
+      else
+        raise ( Sys_error msg )
 
 
 (* --------------------------------------------------------------------------------------------------------------
@@ -394,7 +443,7 @@ rtmp / rtmpt:
   rtmpdump --resume  -r rtmp://.... -y mp4:....  -o outfile.ext
 
 mms:
-  mplayer -dumpstream mms://example.com/Globalplayers/GP_14.wmv -dumpfile ./download/test.wmv 
+  mplayer -dumpstream mms://example.com/Globalplayers/GP_14.wmv -dumpfile ./download/test.wmv
 
 rtsp:
   cvlc  rtsp://....foobar.mp4 --sout=file/ts:foobar.mp4
