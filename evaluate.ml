@@ -578,27 +578,27 @@ and     cmd_download commandlist macrodefs_lst tmpvar varmap cmd tl fname_arglis
           (* Maybe use let open Cli in here *)
           begin
             match tmpvar with
-              | Url (u,r)          -> let filename =
-                                        match fname_arglist_opt with
-                                          | None -> Parsers.url_to_filename u (* auto-filename, from URL    *)
-                                          | Some arg_list -> paste_arglist_to_string arg_list varmap  (* filename given as argument *)
-                                      in
+              | Url (u,r)    -> let filename =
+                                  match fname_arglist_opt with
+                                    | None -> Parsers.url_to_filename u (* auto-filename, from URL    *)
+                                    | Some arg_list -> paste_arglist_to_string arg_list varmap  (* filename given as argument *)
+                                in
 
-                                      let new_varmap_opt = try download  u r filename varmap
-                                                                with Network.Pipelined.Get_error status -> Printf.eprintf "Download failed because of Get_error ( URL: %s )\n" "" ; Some varmap
-                                                            in
-                                      begin
-                                        match new_varmap_opt with
-                                          | None       -> command tl macrodefs_lst tmpvar varmap
-                                          | Some newvm -> command tl macrodefs_lst tmpvar newvm
-                                      end
-              | Url_list ul        ->
-                                      (* Download on Url_list necessarily use auto-filenaming *)
-                                      Unit ( List.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap );
-                                                                          if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep ) ul ) , varmap
-              | Url_array ua        ->
-                                      (* Download on Url_array necessarily use auto-filenaming *)
-                                      Unit ( Array.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap );
+                                let new_varmap_opt = try download  u r filename varmap
+                                                          with Network.Pipelined.Get_error status -> Printf.eprintf "Download failed because of Get_error ( URL: %s )\n" "" ; Some varmap
+                                                      in
+                                begin
+                                  match new_varmap_opt with
+                                    | None       -> command tl macrodefs_lst tmpvar varmap
+                                    | Some newvm -> command tl macrodefs_lst tmpvar newvm
+                                end
+              | Url_list ul  ->
+                                (* Download on Url_list necessarily use auto-filenaming *)
+                                Unit ( List.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap );
+                                                                    if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep ) ul ) , varmap
+              | Url_array ua  ->
+                                (* Download on Url_array necessarily use auto-filenaming *)
+                                Unit ( Array.iter ( fun (url,ref) -> ignore ( command [ Download None ] macrodefs_lst (Url (url, ref)) varmap );
                                                                            if Cli.opt.Cli.ms_sleep > 0 then Sleep.sleep_ms Cli.opt.Cli.ms_sleep ) ua ) , varmap
 
               | _ -> raise Wrong_tmpvar_type
