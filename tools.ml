@@ -41,8 +41,11 @@ let very_verbose_fprintf ?(optflag=false) channel formatstr =
   else Printf.ifprintf channel frmt
 
 
-let verbose_printf       ?(optflag=false) formatstr = verbose_fprintf      ~optflag:optflag stdout formatstr
-let very_verbose_printf  ?(optflag=false) formatstr = very_verbose_fprintf ~optflag:optflag stdout formatstr
+let verbose_printf       ?(optflag=false) formatstr =
+  verbose_fprintf      ~optflag:optflag stdout formatstr
+
+let very_verbose_printf  ?(optflag=false) formatstr =
+  very_verbose_fprintf ~optflag:optflag stdout formatstr
 
 
 (* -v means: very_verbose is wanted output, not an error... why then stderr? -> unneeded?
@@ -102,8 +105,14 @@ let read_file  filename =
 
 (* ------------------------------------------------------------------------ *)
 (* Sortiere String-Liste mit Reihenfolge von a nach z; case insensitive *)
-let sort stringlist = List.sort ( fun a b -> let al = String.lowercase_ascii a and bl = String.lowercase_ascii b
-                                   in if al < bl then (-1) else if al = bl then 0 else 1)  stringlist
+let sort stringlist =
+  List.sort
+    ( fun a b ->
+        let al = String.lowercase_ascii a and bl = String.lowercase_ascii b
+        in
+        if al < bl then (-1) else if al = bl then 0 else 1
+    )
+    stringlist
 (* ------------------------------------------------------------------------ *)
 
 
@@ -162,8 +171,15 @@ in
 (* value for encoding                                               *)
 (* ================================================================ *)
 let select_decoding_scheme str =
-  let extracted = try (Pcre.extract ~pat:"charset=[\"\']?([^\"\']+)" ~flags:[] str) with Not_found -> [|"utf-8"|] in
-  let scheme = extracted.(1) in
+  let extracted =
+    try
+      (Pcre.extract ~pat:"charset=[\"\']?([^\"\']+)" ~flags:[] str)
+    with
+      Not_found -> [|"utf-8"|]
+  in
+  let scheme =
+    extracted.(1)
+  in
     (* Array.iteri ( fun i s -> Printf.printf  "%d => %s\n" i s ) extracted; flush stdout; exit 99; (* for debugging *) *)
 
   (* "the W3C recommends UTF-8 as the default encoding in XML and HTML." ( https://en.wikipedia.org/wiki/UTF-8  (2015-08-28) ) *)
